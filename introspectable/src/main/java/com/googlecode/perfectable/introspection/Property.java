@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
 
 public abstract class Property<CT, PT> {
 
@@ -19,6 +20,10 @@ public abstract class Property<CT, PT> {
 	protected Property(CT bean) {
 		this.bean = bean;
 	}
+
+	public abstract boolean isReadable();
+
+	public abstract boolean isWriteable();
 
 	@Nullable
 	public abstract PT get();
@@ -57,7 +62,10 @@ public abstract class Property<CT, PT> {
 		}
 		Optional<Method> getter = Methods.findGetter(beanClass, name, type);
 		Optional<Method> setter = Methods.findSetter(beanClass, name, type);
-		return new MethodProperty<>(bean, getter, setter);
+		if(setter.isPresent() || getter.isPresent()) {
+			return new MethodProperty<>(bean, getter, setter);
+		}
+		throw new IllegalArgumentException("No property " + name + " for " + beanClass);
 	}
 
 	public static <CX> Property<CX, Object> from(CX bean, Field field) {
@@ -70,11 +78,12 @@ public abstract class Property<CT, PT> {
 		checkNotNull(field);
 		checkArgument(field.getDeclaringClass().isAssignableFrom(bean.getClass()));
 		checkArgument(field.getType().equals(type));
+		checkArgument(!Fields.isStatic(field));
 		return new FieldProperty<>(bean, field);
 	}
 
 	private static class FieldProperty<CT, PT> extends Property<CT, PT> {
-		private Field field;
+		private final Field field;
 
 		public FieldProperty(CT bean, Field field) {
 			super(bean);
@@ -88,7 +97,7 @@ public abstract class Property<CT, PT> {
 				this.field.set(this.bean, value);
 			}
 			catch(IllegalArgumentException | IllegalAccessException e) {
-				throw new RuntimeException(e); // TODO Auto-generated catch block
+				throw Throwables.propagate(e);
 			}
 		}
 
@@ -99,7 +108,7 @@ public abstract class Property<CT, PT> {
 				return (PT) this.field.get(this.bean);
 			}
 			catch(IllegalArgumentException | IllegalAccessException e) {
-				throw new RuntimeException(e); // TODO Auto-generated catch block
+				throw Throwables.propagate(e);
 			}
 		}
 
@@ -114,6 +123,16 @@ public abstract class Property<CT, PT> {
 		public Class<PT> type() {
 			return (Class<PT>) this.field.getType();
 		}
+
+		@Override
+		public boolean isReadable() {
+			return Fields.isGettable(this.field);
+		}
+
+		@Override
+		public boolean isWriteable() {
+			return Fields.isSettable(this.field);
+		}
 	}
 
 	private static class MethodProperty<CT, PT> extends Property<CT, PT> {
@@ -122,8 +141,11 @@ public abstract class Property<CT, PT> {
 
 		public MethodProperty(CT bean, Optional<Method> getter, Optional<Method> setter) {
 			super(bean);
-			checkArgument(!getter.isPresent() || getter.get().getDeclaringClass().equals(bean.getClass()));
-			checkArgument(!setter.isPresent() || setter.get().getDeclaringClass().equals(bean.getClass()));
+			checkArgument(getter.isPresent() || setter.isPresent());
+			checkArgument(!getter.isPresent() ||
+					Methods.isGetter(getter.get()) && getter.get().getDeclaringClass().equals(bean.getClass()));
+			checkArgument(!setter.isPresent() ||
+					Methods.isSetter(setter.get()) && setter.get().getDeclaringClass().equals(bean.getClass()));
 			this.getter = getter;
 			this.setter = setter;
 		}
@@ -136,7 +158,7 @@ public abstract class Property<CT, PT> {
 				return (PT) this.getter.get().invoke(this.bean);
 			}
 			catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException(e); // TODO Auto-generated catch block
+				throw Throwables.propagate(e);
 			}
 		}
 
@@ -147,7 +169,7 @@ public abstract class Property<CT, PT> {
 				this.setter.get().invoke(this.bean, value);
 			}
 			catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException(e); // TODO Auto-generated catch block
+				throw Throwables.propagate(e);
 			}
 		}
 
@@ -173,8 +195,26 @@ public abstract class Property<CT, PT> {
 				return checkNotNull(firstParameterType);
 			}
 			else {
-				throw new RuntimeException(); // MARK
+				throw new RuntimeException("MethodProperty created without setter or getter, which is forbidden by constructor");
 			}
+		}
+
+		@Override
+		public boolean isReadable() {
+			if(!this.getter.isPresent()) {
+				return false;
+			}
+			final Method getterMethod = this.getter.get();
+			return Methods.isCallable(getterMethod);
+		}
+
+		@Override
+		public boolean isWriteable() {
+			if(!this.setter.isPresent()) {
+				return false;
+			}
+			final Method setterMethod = this.setter.get();
+			return Methods.isCallable(setterMethod);
 		}
 
 	}

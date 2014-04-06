@@ -7,6 +7,8 @@ import java.lang.reflect.Modifier;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Throwables;
+
 public class Fields {
 
 	@Nullable
@@ -29,14 +31,18 @@ public class Fields {
 				// continue the search
 			}
 			catch(SecurityException e) {
-				throw new RuntimeException(e); // TODO Auto-generated catch block
+				throw Throwables.propagate(e);
 			}
 		}
 		return null;
 	}
 
+	public static boolean isGettable(Field field) {
+		return field.isAccessible();
+	}
+
 	public static boolean isSettable(Field field) {
-		return !Modifier.isFinal(field.getModifiers());
+		return field.isAccessible() && !Modifier.isFinal(field.getModifiers());
 	}
 
 	public static boolean isStatic(Field field) {

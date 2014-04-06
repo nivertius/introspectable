@@ -44,6 +44,9 @@ public final class Copier<T> implements Function<T, T> {
 
 	@Override
 	public boolean equals(@Nullable Object obj) {
+		if(this == obj) {
+			return true;
+		}
 		if(!(obj instanceof Copier)) {
 			return false;
 		}

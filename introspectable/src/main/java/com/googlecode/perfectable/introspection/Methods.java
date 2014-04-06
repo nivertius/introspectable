@@ -3,8 +3,10 @@ package com.googlecode.perfectable.introspection;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
 
 public final class Methods {
 
@@ -27,7 +29,7 @@ public final class Methods {
 				// continue the search
 			}
 			catch(SecurityException e) {
-				throw new RuntimeException(e); // TODO Auto-generated catch block
+				throw Throwables.propagate(e);
 			}
 		}
 		return Optional.absent();
@@ -51,6 +53,26 @@ public final class Methods {
 		return setter;
 	}
 
+	public static boolean isCallable(Method method) {
+		return method.isAccessible() && !Modifier.isAbstract(method.getModifiers());
+	}
+
+	public static boolean isGetter(Method method) {
+		final boolean actuallyReturns = !Void.TYPE.equals(method.getReturnType());
+		final boolean hasNoParameters = method.getParameterTypes().length == 0;
+		final boolean startsWithAppropriatePrefix =
+				Boolean.class.equals(method.getReturnType()) && method.getName().startsWith("is") ||
+						!Boolean.class.equals(method.getReturnType()) && method.getName().startsWith("get");
+		return actuallyReturns && hasNoParameters && startsWithAppropriatePrefix;
+	}
+
+	public static boolean isSetter(Method method) {
+		final boolean doesntReturn = Void.TYPE.equals(method.getReturnType());
+		final boolean hasOneParameter = method.getParameterTypes().length == 1;
+		final boolean startsWithAppropriatePrefix = method.getName().startsWith("set");
+		return doesntReturn && hasOneParameter && startsWithAppropriatePrefix;
+	}
+
 	private static String getterName(String name) {
 		return capitalizeWithPrefix("get", name);
 	}
@@ -65,4 +87,5 @@ public final class Methods {
 
 	private Methods() {
 	}
+
 }

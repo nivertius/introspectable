@@ -1,10 +1,11 @@
 package com.googlecode.perfectable.introspection;
 
-import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import com.google.common.base.Function;
 import com.google.common.base.Throwables;
 
 public final class Classes {
@@ -12,14 +13,34 @@ public final class Classes {
 		return !type.isInterface(); // MARK abstract class, primitive, array...
 	}
 
+	public interface ClassLoaderFunction<T> extends Function<String, Class<? extends T>> {
+		// renaming only
+	}
+
+	public static <T> ClassLoaderFunction<T> loaderFunction(final Class<T> expectedSupertype) {
+		return new ClassLoaderFunction<T>() {
+
+			@Override
+			public Class<? extends T> apply(String input) {
+				try {
+					return load(input, expectedSupertype);
+				}
+				catch(ClassNotFoundException e) {
+					throw Throwables.propagate(e);
+				}
+			}
+
+		};
+	}
+
 	public static <T> T instantiate(Class<T> type) {
-		checkState(instantiable(type));
+		checkArgument(instantiable(type), "%s is not instantiable", type);
 		try {
 			T instance = type.newInstance();
 			return instance;
 		}
 		catch(InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException(e); // TODO Auto-generated catch block
+			throw Throwables.propagate(e);
 		}
 	}
 
@@ -29,10 +50,17 @@ public final class Classes {
 			loadedClass = load(className);
 		}
 		catch(ClassNotFoundException e) {
-			throw Throwables.propagate(e); // TODO Auto-generated catch block
+			throw Throwables.propagate(e);
 		}
 		Class<? extends T> instanceClass = loadedClass.asSubclass(expectedSuperclass);
 		return instantiate(instanceClass);
+	}
+
+	public static <T> Class<? extends T> load(String className, Class<T> expectedSupertype)
+			throws ClassNotFoundException, ClassCastException {
+		Class<?> raw = load(className);
+		final Class<? extends T> casted = raw.asSubclass(expectedSupertype);
+		return casted;
 	}
 
 	public static Class<?> load(String className) throws ClassNotFoundException {
