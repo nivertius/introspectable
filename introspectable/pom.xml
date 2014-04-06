@@ -9,6 +9,7 @@
 		<groupId>com.googlecode.perfectable</groupId>
 		<artifactId>perfectable</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../perfectable-parent/pom.xml</relativePath>
 	</parent>
 
 	<dependencies>
