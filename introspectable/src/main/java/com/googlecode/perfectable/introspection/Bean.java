@@ -23,7 +23,10 @@ public class Bean<T> {
 	public Iterable<Object> related() {
 		Collection<Object> result = new LinkedList<>();
 		for(Property<T, ?> property : this.fieldProperties()) {
-			result.add(property.get());
+			Object related = property.get();
+			if(related != null) {
+				result.add(related);
+			}
 		}
 		return result;
 	}
