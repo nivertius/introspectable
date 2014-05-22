@@ -4,8 +4,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.function.Function;
 
-import com.google.common.base.Function;
 import com.google.common.base.Throwables;
 
 public final class Classes {
@@ -33,9 +33,10 @@ public final class Classes {
 		};
 	}
 
-	public static <T> T instantiate(Class<T> type) {
+	public static <T> T instantiate(Class<? extends T> type) {
 		checkArgument(instantiable(type), "%s is not instantiable", type);
 		try {
+			@SuppressWarnings("null")
 			T instance = type.newInstance();
 			return instance;
 		}

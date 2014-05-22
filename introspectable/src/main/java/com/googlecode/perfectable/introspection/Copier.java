@@ -2,9 +2,9 @@ package com.googlecode.perfectable.introspection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import javax.annotation.Nullable;
+import java.util.function.Function;
 
-import com.google.common.base.Function;
+import javax.annotation.Nullable;
 
 public final class Copier<T> implements Function<T, T> {
 	private final Class<T> beanClass;
@@ -14,7 +14,7 @@ public final class Copier<T> implements Function<T, T> {
 	}
 
 	public static final <X> X copy(X source) {
-		@SuppressWarnings("null")
+		@SuppressWarnings("unchecked")
 		Class<X> sourceClass = checkNotNull((Class<X>) source.getClass());
 		return Copier.<X> forClass(sourceClass).perform(source);
 	}
@@ -24,8 +24,7 @@ public final class Copier<T> implements Function<T, T> {
 	}
 
 	@Override
-	@Nullable
-	public T apply(@Nullable T input) {
+	public @Nullable T apply(@Nullable T input) {
 		if(input == null) {
 			return null;
 		}
@@ -34,7 +33,8 @@ public final class Copier<T> implements Function<T, T> {
 
 	private T perform(T input) {
 		checkNotNull(input);
-		T instance = Classes.instantiate((Class<T>) input.getClass());
+		final Class<? extends T> inputClass = (Class<? extends T>) input.getClass();
+		T instance = Classes.instantiate(inputClass);
 		Bean<T> inputBean = Bean.from(input);
 		for(Property<T, ?> property : inputBean.fieldProperties()) {
 			property.copy(instance);

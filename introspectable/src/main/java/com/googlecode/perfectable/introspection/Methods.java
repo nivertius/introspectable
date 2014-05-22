@@ -4,8 +4,8 @@ import static com.google.common.base.Preconditions.checkState;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Optional;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 
 public final class Methods {
@@ -32,7 +32,7 @@ public final class Methods {
 				throw Throwables.propagate(e);
 			}
 		}
-		return Optional.absent();
+		return Optional.empty();
 	}
 
 	public static Optional<Method> findGetter(Class<?> beanClass, String name, Class<?> type) {

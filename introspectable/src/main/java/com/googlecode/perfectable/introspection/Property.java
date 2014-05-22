@@ -7,15 +7,15 @@ import static com.google.common.base.Preconditions.checkState;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 
 public abstract class Property<CT, PT> {
 
-	protected final Object bean;
+	protected final CT bean;
 
 	protected Property(CT bean) {
 		this.bean = bean;
@@ -31,7 +31,7 @@ public abstract class Property<CT, PT> {
 	public abstract void set(@Nullable PT value);
 
 	public final Optional<PT> optional() {
-		return Optional.fromNullable(this.get());
+		return Optional.ofNullable(this.get());
 	}
 
 	public abstract String name();
@@ -44,7 +44,9 @@ public abstract class Property<CT, PT> {
 	}
 
 	public final PropertySlot<CT, PT> slot() {
-		return PropertySlot.from((Class<CT>) this.bean.getClass(), this.name(), this.type());
+		@SuppressWarnings("unchecked")
+		final Class<? extends CT> beanClass = (Class<? extends CT>) this.bean.getClass();
+		return PropertySlot.from(beanClass, this.name(), this.type());
 	}
 
 	public static <CX> Property<CX, Object> raw(CX bean, String name) {
@@ -101,8 +103,10 @@ public abstract class Property<CT, PT> {
 			}
 		}
 
+		// checked at construction
 		@Override
 		@Nullable
+		@SuppressWarnings("unchecked")
 		public PT get() {
 			try {
 				return (PT) this.field.get(this.bean);
@@ -112,14 +116,14 @@ public abstract class Property<CT, PT> {
 			}
 		}
 
-		@SuppressWarnings("null")
 		@Override
 		public String name() {
 			return this.field.getName();
 		}
 
-		@SuppressWarnings("null")
+		// checked at construction
 		@Override
+		@SuppressWarnings("unchecked")
 		public Class<PT> type() {
 			return (Class<PT>) this.field.getType();
 		}
@@ -150,6 +154,8 @@ public abstract class Property<CT, PT> {
 			this.setter = setter;
 		}
 
+		// checked at construction
+		@SuppressWarnings("unchecked")
 		@Override
 		@Nullable
 		public PT get() {
@@ -175,7 +181,7 @@ public abstract class Property<CT, PT> {
 
 		@Override
 		public String name() {
-			String unformatted = this.getter.or(this.setter).get().getName();
+			String unformatted = this.getter.orElseGet(this.setter::get).getName();
 			return String.valueOf(unformatted.charAt(3)).toLowerCase() + unformatted.substring(4);
 		}
 
@@ -183,6 +189,7 @@ public abstract class Property<CT, PT> {
 		public Class<PT> type() {
 			if(this.getter.isPresent()) {
 				final Method getterMethod = this.getter.get();
+				@SuppressWarnings("unchecked")
 				final Class<PT> resultType = (Class<PT>) getterMethod.getReturnType();
 				return checkNotNull(resultType);
 			}
