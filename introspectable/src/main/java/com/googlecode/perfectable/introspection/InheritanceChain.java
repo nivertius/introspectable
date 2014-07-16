@@ -1,42 +1,55 @@
 package com.googlecode.perfectable.introspection;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
 import java.util.Iterator;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.AbstractIterator;
-
 public class InheritanceChain<T> implements Iterable<Class<? super T>> {
 
-	private Class<T> startClass;
+	private final Class<T> startClass;
+	private final @Nullable Class<? super T> stopClass;
 
 	public static <T> InheritanceChain<T> startingAt(Class<T> startClass) {
-		return new InheritanceChain<>(startClass);
+		checkNotNull(startClass);
+		return new InheritanceChain<>(startClass, null);
 	}
 
-	private InheritanceChain(Class<T> startClass) {
+	public InheritanceChain<T> upToExcluding(@SuppressWarnings("hiding") Class<? super T> stopClass) {
+		checkNotNull(stopClass);
+		return new InheritanceChain<>(this.startClass, stopClass);
+	}
+
+	public InheritanceChain<T> upToIncluding(@SuppressWarnings("hiding") Class<? super T> stopClass) {
+		checkNotNull(stopClass);
+		return new InheritanceChain<>(this.startClass, stopClass.getSuperclass());
+	}
+
+	private InheritanceChain(Class<T> startClass, Class<? super T> stopClass) {
 		this.startClass = startClass;
+		this.stopClass = stopClass;
 	}
 
 	@Override
 	public Iterator<Class<? super T>> iterator() {
-		return new InheritanceIterator<>(this.startClass);
+		return new InheritanceIterator();
 	}
 
-	protected static class InheritanceIterator<X> extends AbstractIterator<Class<? super X>> {
-		@Nullable
-		private Class<? super X> currentClass;
+	protected class InheritanceIterator implements Iterator<Class<? super T>> {
+		private @Nullable Class<? super T> currentClass = InheritanceChain.this.startClass;
 
-		public InheritanceIterator(@Nullable Class<X> startClass) {
-			this.currentClass = startClass;
+		@Override
+		public boolean hasNext() {
+			return this.currentClass != InheritanceChain.this.stopClass;
 		}
 
 		@Override
-		protected Class<? super X> computeNext() {
-			final Class<? super X> result = this.currentClass;
-			if(result == null) {
-				return this.endOfData();
-			}
+		public Class<? super T> next() {
+			checkState(hasNext());
+			checkState(this.currentClass != null);
+			final Class<? super T> result = this.currentClass;
 			this.currentClass = result.getSuperclass();
 			return result;
 		}
