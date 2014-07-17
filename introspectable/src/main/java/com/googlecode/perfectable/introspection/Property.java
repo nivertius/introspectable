@@ -58,9 +58,9 @@ public abstract class Property<CT, PT> {
 		if(beanClass == null) {
 			throw new IllegalArgumentException();
 		}
-		Field field = Fields.find(beanClass, name, type);
-		if(field != null) {
-			return new FieldProperty<>(bean, field);
+		Optional<Field> field = Introspection.of(beanClass).fields().named(name).ofType(type).option();
+		if(field.isPresent()) {
+			return new FieldProperty<>(bean, field.get());
 		}
 		Optional<Method> getter = Methods.findGetter(beanClass, name, type);
 		Optional<Method> setter = Methods.findSetter(beanClass, name, type);
@@ -70,7 +70,7 @@ public abstract class Property<CT, PT> {
 		throw new IllegalArgumentException("No property " + name + " for " + beanClass);
 	}
 
-	public static <CX> Property<CX, Object> from(CX bean, Field field) {
+	public static <CX> Property<CX, ?> from(CX bean, Field field) {
 		checkNotNull(field);
 		checkArgument(field.getDeclaringClass().isAssignableFrom(bean.getClass()));
 		return new FieldProperty<>(bean, field);
@@ -167,7 +167,7 @@ public abstract class Property<CT, PT> {
 				throw Throwables.propagate(e);
 			}
 		}
-
+		
 		@Override
 		public void set(@Nullable PT value) {
 			checkState(this.setter.isPresent());
