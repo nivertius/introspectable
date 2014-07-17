@@ -36,7 +36,6 @@ public final class Classes {
 	public static <T> T instantiate(Class<? extends T> type) {
 		checkArgument(instantiable(type), "%s is not instantiable", type);
 		try {
-			@SuppressWarnings("null")
 			T instance = type.newInstance();
 			return instance;
 		}

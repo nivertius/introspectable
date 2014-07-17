@@ -1,40 +1,22 @@
 package com.googlecode.perfectable.introspection;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Throwables;
-
 public class Fields {
 
 	@Nullable
+	@Deprecated
 	public static Field find(Class<?> beanClass, String name, Class<?> type) {
-		Field field = find(beanClass, name);
-		if(field == null) {
-			return null;
-		}
-		checkState(type.isAssignableFrom(field.getType()));
-		return field;
+		return Introspection.of(beanClass).fields().named(name).ofType(type).single();
 	}
 
 	@Nullable
+	@Deprecated
 	public static Field find(Class<?> sourceClass, String name) {
-		for(Class<?> currentClass : InheritanceChain.startingAt(sourceClass)) {
-			try {
-				return currentClass.getDeclaredField(name);
-			}
-			catch(NoSuchFieldException e) {
-				// continue the search
-			}
-			catch(SecurityException e) {
-				throw Throwables.propagate(e);
-			}
-		}
-		return null;
+		return Introspection.of(sourceClass).fields().named(name).single();
 	}
 
 	public static boolean isGettable(Field field) {
