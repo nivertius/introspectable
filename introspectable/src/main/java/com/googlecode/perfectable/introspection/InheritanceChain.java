@@ -4,6 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.Iterator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.Nullable;
 
@@ -30,6 +32,10 @@ public class InheritanceChain<T> implements Iterable<Class<? super T>> {
 	private InheritanceChain(Class<T> startClass, Class<? super T> stopClass) {
 		this.startClass = startClass;
 		this.stopClass = stopClass;
+	}
+
+	public Stream<Class<? super T>> stream() {
+		return StreamSupport.stream(spliterator(), false);
 	}
 
 	@Override
