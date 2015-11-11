@@ -1,4 +1,4 @@
-package com.googlecode.perfectable.introspection;
+package com.googlecode.perfectable.introspection.bean;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -12,6 +12,9 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Throwables;
+import com.googlecode.perfectable.introspection.Fields;
+import com.googlecode.perfectable.introspection.Introspection;
+import com.googlecode.perfectable.introspection.Methods;
 
 public abstract class Property<CT, PT> {
 

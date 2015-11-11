@@ -1,4 +1,4 @@
-package com.googlecode.perfectable.introspection;
+package com.googlecode.perfectable.introspection.bean;
 
 public final class PropertySlot<CT, PT> {
 

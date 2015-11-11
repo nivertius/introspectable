@@ -1,4 +1,4 @@
-package com.googlecode.perfectable.introspection;
+package com.googlecode.perfectable.introspection.bean;
 
 import static com.google.common.base.Preconditions.checkState;
 

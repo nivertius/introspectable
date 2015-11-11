@@ -2,11 +2,13 @@ package com.googlecode.perfectable.introspection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import javax.annotation.Nullable;
 
-public final class Copier<T> implements Function<T, T> {
+import com.googlecode.perfectable.introspection.bean.Bean;
+
+public final class Copier<T> implements UnaryOperator<T> {
 	private final Class<T> beanClass;
 
 	public static final <X> Copier<X> forClass(Class<X> beanClass) {
@@ -38,9 +40,8 @@ public final class Copier<T> implements Function<T, T> {
 		final Class<? extends T> inputClass = (Class<? extends T>) input.getClass();
 		T instance = Classes.instantiate(inputClass);
 		Bean<T> inputBean = Bean.from(input);
-		for(Property<T, ?> property : inputBean.fieldProperties()) {
-			property.copy(instance);
-		}
+		inputBean.fieldProperties()
+				.forEach(property -> property.copy(instance));
 		return instance;
 	}
 

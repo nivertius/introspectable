@@ -1,5 +1,9 @@
 package com.googlecode.perfectable.introspection;
 
+import com.googlecode.perfectable.introspection.query.FieldQuery;
+import com.googlecode.perfectable.introspection.query.InterfaceQuery;
+import com.googlecode.perfectable.introspection.query.MethodQuery;
+
 public final class Introspection<X> {
 	public static <X> Introspection<X> of(Class<X> type) {
 		return new Introspection<>(type);

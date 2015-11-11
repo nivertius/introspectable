@@ -3,6 +3,8 @@ package com.googlecode.perfectable.introspection;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.googlecode.perfectable.introspection.bean.PropertySlot;
+
 public abstract class Injection<T> {
 	public static <TX, PX> Injection<TX> create(PropertySlot<TX, PX> slot, PX value) {
 		return new PropertyInjection<>(slot, value);
