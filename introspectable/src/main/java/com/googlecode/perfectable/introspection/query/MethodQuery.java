@@ -3,7 +3,6 @@ package com.googlecode.perfectable.introspection.query;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -110,7 +109,18 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 
 		@Override
 		protected boolean matches(Method candidate) {
-			return Arrays.equals(this.parameterTypes, candidate.getParameterTypes());
+			Class<?>[] actualParameterTypes = candidate.getParameterTypes();
+			if(this.parameterTypes.length != actualParameterTypes.length) {
+				return false;
+			}
+			for(int i = 0; i < this.parameterTypes.length; i++) {
+				Class<?> expectedParameterType = this.parameterTypes[i];
+				Class<?> actualParameterType = actualParameterTypes[i];
+				if(!expectedParameterType.isAssignableFrom(actualParameterType)) {
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 
