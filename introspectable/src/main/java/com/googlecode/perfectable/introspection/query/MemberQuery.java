@@ -28,7 +28,7 @@ public abstract class MemberQuery<M extends Member & AnnotatedElement, Q extends
 	}
 
 	public final Optional<M> option() {
-		final Iterator<M> iterator = iterator();
+		Iterator<M> iterator = iterator();
 		if(iterator.hasNext()) {
 			return Optional.of(iterator.next());
 		}
