@@ -54,6 +54,11 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		return new AnnotatedMethodQuery(this, annotationFilter);
 	}
 	
+	@Override
+	public MethodQuery excludingModifier(int excludedModifier) {
+		return new ExcludedModifierMethodQuery(this, excludedModifier);
+	}
+	
 	private static final class CompleteMethodQuery<X> extends MethodQuery {
 		private final InheritanceChain<X> chain;
 
@@ -164,4 +169,19 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 			return this.annotationFilter.appliesOn(candidate);
 		}
 	}
+	
+	private static class ExcludedModifierMethodQuery extends FilteredMethodQuery {
+		private final int excludedModifier;
+
+		public ExcludedModifierMethodQuery(MethodQuery parent, int excludedModifier) {
+			super(parent);
+			this.excludedModifier = excludedModifier;
+		}
+		
+		@Override
+		protected boolean matches(Method candidate) {
+			return (candidate.getModifiers() & this.excludedModifier) == 0;
+		}
+	}
+	
 }
