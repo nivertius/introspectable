@@ -22,7 +22,7 @@ public class BeanSlot<T> {
 		return PropertySlot.from(this.beanClass, name, type);
 	}
 
-	public PropertySlot<T, Object> property(String name) {
+	public PropertySlot<T, ?> property(String name) {
 		return PropertySlot.raw(this.beanClass, name);
 	}
 }
