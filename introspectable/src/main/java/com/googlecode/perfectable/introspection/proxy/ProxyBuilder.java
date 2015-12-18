@@ -7,4 +7,8 @@ public interface ProxyBuilder<I> {
 	static <I> ProxyBuilder<I> ofInterfaces(Class<I> mainInterface, Class<?>... otherInterfaces) {
 		return JdkProxyBuilder.ofInterfaces(mainInterface, otherInterfaces);
 	}
+
+	static <I> ProxyBuilder<I> sameAs(I sourceInstance) {
+		return JdkProxyBuilder.sameAs(sourceInstance);
+	}
 }

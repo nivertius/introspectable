@@ -10,7 +10,7 @@ public class Fields {
 	@Nullable
 	@Deprecated
 	public static Field find(Class<?> beanClass, String name, Class<?> type) {
-		return Introspection.of(beanClass).fields().named(name).ofType(type).single();
+		return Introspection.of(beanClass).fields().named(name).typed(type).single();
 	}
 
 	@Nullable
