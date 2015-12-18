@@ -32,6 +32,13 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		return new ParametersMethodQuery(this, parameterTypes);
 	}
 
+	// only implements super
+	@Deprecated
+	@Override
+	public MethodQuery typed(Class<?> type) {
+		return returning(type);
+	}
+
 	public MethodQuery returning(Class<?> type) {
 		checkNotNull(type);
 		return new ReturningMethodQuery(this, type);

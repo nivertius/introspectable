@@ -14,6 +14,8 @@ public abstract class MemberQuery<M extends Member & AnnotatedElement, Q extends
 	
 	public abstract Q named(String name);
 
+	public abstract Q typed(Class<?> type);
+
 	public abstract Q matching(Predicate<? super M> filter);
 
 	public abstract Stream<M> stream();

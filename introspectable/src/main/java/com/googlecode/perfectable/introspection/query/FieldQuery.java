@@ -26,8 +26,9 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		checkNotNull(filter);
 		return new PredicatedFieldQuery(this, filter);
 	}
-	
-	public FieldQuery ofType(Class<?> type) {
+
+	@Override
+	public FieldQuery typed(Class<?> type) {
 		checkNotNull(type);
 		return new TypedFieldQuery(this, type);
 	}
