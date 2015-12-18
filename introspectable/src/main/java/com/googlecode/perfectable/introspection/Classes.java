@@ -2,8 +2,6 @@ package com.googlecode.perfectable.introspection;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.function.Function;
 
 import com.google.common.base.Throwables;
@@ -65,28 +63,6 @@ public final class Classes {
 
 	public static Class<?> load(String className) throws ClassNotFoundException {
 		return Thread.currentThread().getContextClassLoader().loadClass(className);
-	}
-
-	// MARK this is overly simplified, should return set of bounds, needs mooore checks
-	public static <T> Class<?> getInterfaceArgumentBound(Class<? extends T> testedClass, Class<T> interfaceClass,
-			int argumentPosition) {
-		for(Type genericInterface : testedClass.getGenericInterfaces()) {
-			if(!(genericInterface instanceof ParameterizedType)) {
-				continue;
-			}
-			ParameterizedType parametrized = (ParameterizedType) genericInterface;
-			if(!interfaceClass.equals(parametrized.getRawType())) {
-				continue;
-			}
-			Type parameter = parametrized.getActualTypeArguments()[argumentPosition];
-			if(!(parameter instanceof Class)) {
-				// MARK support TypeVariable
-				throw new RuntimeException(parameter.getClass().getName());
-			}
-			Class<?> parameterClass = (Class<?>) parameter;
-			return parameterClass;
-		}
-		throw new IllegalArgumentException("Class " + testedClass + " has no generic interface " + interfaceClass);
 	}
 
 	private Classes() {

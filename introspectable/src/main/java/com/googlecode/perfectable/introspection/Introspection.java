@@ -1,6 +1,7 @@
 package com.googlecode.perfectable.introspection;
 
 import com.googlecode.perfectable.introspection.query.FieldQuery;
+import com.googlecode.perfectable.introspection.query.GenericsQuery;
 import com.googlecode.perfectable.introspection.query.InterfaceQuery;
 import com.googlecode.perfectable.introspection.query.MethodQuery;
 
@@ -19,6 +20,10 @@ public final class Introspection<X> {
 
 	public InterfaceQuery<X> interfaces() {
 		return InterfaceQuery.of(this.type);
+	}
+	
+	public GenericsQuery<X> generics() {
+		return GenericsQuery.of(this.type);
 	}
 	
 	private final Class<X> type;
