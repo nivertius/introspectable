@@ -61,7 +61,7 @@ public abstract class Property<CT, PT> {
 		if(beanClass == null) {
 			throw new IllegalArgumentException();
 		}
-		Optional<Field> field = Introspection.of(beanClass).fields().named(name).ofType(type).option();
+		Optional<Field> field = Introspection.of(beanClass).fields().named(name).typed(type).option();
 		if(field.isPresent()) {
 			return new FieldProperty<>(bean, field.get());
 		}
