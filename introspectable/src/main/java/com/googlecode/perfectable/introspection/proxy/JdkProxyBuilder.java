@@ -17,7 +17,10 @@ public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		Class<?>[] interfaces =
 				Introspection.of(sourceInstance.getClass()).interfaces().stream()
 						.toArray(Class[]::new);
-		return (JdkProxyBuilder<I>) ofInterfaces(interfaces);
+		// MARK this is safe almost always?
+		@SuppressWarnings("unchecked")
+		final JdkProxyBuilder<I> builder = (JdkProxyBuilder<I>) ofInterfaces(interfaces);
+		return builder;
 	}
 
 	public static <X> JdkProxyBuilder<X> ofInterfaces(Class<X> mainInterface, Class<?>... otherInterfaces) {
