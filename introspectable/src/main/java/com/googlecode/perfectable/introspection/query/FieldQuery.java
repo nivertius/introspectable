@@ -32,7 +32,14 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		checkNotNull(type);
 		return new TypedFieldQuery(this, type);
 	}
+
+	@Override
+	public FieldQuery annotatedWith(AnnotationFilter annotationFilter) {
+		checkNotNull(annotationFilter);
+		return new AnnotatedFieldQuery(this, annotationFilter);
+	}
 	
+	@Override
 	public FieldQuery excludingModifier(int excludedModifier) {
 		return new ExcludedModifierFieldQuery(this, excludedModifier);
 	}
@@ -109,6 +116,20 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 
+	private class AnnotatedFieldQuery extends FilteredFieldQuery {
+		private final AnnotationFilter annotationFilter;
+		
+		public AnnotatedFieldQuery(FieldQuery parent, AnnotationFilter annotationFilter) {
+			super(parent);
+			this.annotationFilter = annotationFilter;
+		}
+
+		@Override
+		protected boolean matches(Field candidate) {
+			return this.annotationFilter.appliesOn(candidate);
+		}
+	}
+	
 	private static class ExcludedModifierFieldQuery extends FilteredFieldQuery {
 		private final int excludedModifier;
 

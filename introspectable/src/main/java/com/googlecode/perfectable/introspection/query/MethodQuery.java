@@ -48,6 +48,12 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		return returning(Void.TYPE);
 	}
 
+	@Override
+	public MethodQuery annotatedWith(AnnotationFilter annotationFilter) {
+		checkNotNull(annotationFilter);
+		return new AnnotatedMethodQuery(this, annotationFilter);
+	}
+	
 	private static final class CompleteMethodQuery<X> extends MethodQuery {
 		private final InheritanceChain<X> chain;
 
@@ -145,4 +151,17 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		}
 	}
 
+	private class AnnotatedMethodQuery extends FilteredMethodQuery {
+		private final AnnotationFilter annotationFilter;
+		
+		public AnnotatedMethodQuery(MethodQuery parent, AnnotationFilter annotationFilter) {
+			super(parent);
+			this.annotationFilter = annotationFilter;
+		}
+
+		@Override
+		protected boolean matches(Method candidate) {
+			return this.annotationFilter.appliesOn(candidate);
+		}
+	}
 }
