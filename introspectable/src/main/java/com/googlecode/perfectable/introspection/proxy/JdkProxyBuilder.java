@@ -13,9 +13,9 @@ import com.googlecode.perfectable.introspection.Introspection;
 
 public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 	
-	public static <I> JdkProxyBuilder<I> sameAs(I sourceInstance) {
+	public static <I> JdkProxyBuilder<I> ofInterfacesOf(Class<? extends I> implementingClass) {
 		Class<?>[] interfaces =
-				Introspection.of(sourceInstance.getClass()).interfaces().stream()
+				Introspection.of(implementingClass).interfaces().stream()
 						.toArray(Class[]::new);
 		// MARK this is safe almost always?
 		@SuppressWarnings("unchecked")
@@ -23,6 +23,12 @@ public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		return builder;
 	}
 
+	public static <I> JdkProxyBuilder<I> sameAs(I sourceInstance) {
+		@SuppressWarnings("unchecked")
+		Class<? extends I> implementingClass = (Class<? extends I>) sourceInstance.getClass();
+		return ofInterfacesOf(implementingClass);
+	}
+	
 	public static <X> JdkProxyBuilder<X> ofInterfaces(Class<X> mainInterface, Class<?>... otherInterfaces) {
 		Class<?>[] usedInterfaces = ObjectArrays.concat(mainInterface, otherInterfaces);
 		@SuppressWarnings("unchecked")
