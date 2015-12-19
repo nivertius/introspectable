@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
 import com.googlecode.perfectable.introspection.Methods;
 
 public final class Invocation<T> {
@@ -20,7 +22,7 @@ public final class Invocation<T> {
 		return new Invocation<>(method, arguments);
 	}
 
-	public Object invokeOn(T receiver) throws Throwable {
+	public Object invokeOn(@Nullable T receiver) throws Throwable {
 		try {
 			Object result = this.method.invoke(receiver, this.arguments);
 			return result;
@@ -38,7 +40,7 @@ public final class Invocation<T> {
 		Class<X> similarClass = (Class<X>) similarInstance.getClass();
 		return asSimilar(similarClass);
 	}
-	
+
 	public <X> Invocation<X> asSimilar(Class<X> similarClass) throws NoSuchMethodException {
 		Optional<Method> similarOption = Methods.similar(similarClass, this.method);
 		Method similar = similarOption.orElseThrow(NoSuchMethodException::new);
@@ -47,4 +49,15 @@ public final class Invocation<T> {
 		return checked;
 	}
 
+	public interface Decomposer {
+		void method(Method method);
+		
+		void arguments(Object[] arguments);
+	}
+
+	public void decompose(Decomposer decomposer) {
+		decomposer.method(this.method);
+		decomposer.arguments(this.arguments);
+	}
+	
 }
