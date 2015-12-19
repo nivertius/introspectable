@@ -1,35 +1,43 @@
 package com.googlecode.perfectable.introspection.query;
 
-import java.util.Iterator;
-import java.util.stream.Stream;
+import java.util.Collection;
 
-import com.googlecode.perfectable.introspection.InheritanceChain;
+import com.google.common.collect.ImmutableList;
+import com.googlecode.perfectable.introspection.MappingIterable;
 
-public final class InterfaceQuery<X> implements Iterable<Class<? super X>> {
+public final class InterfaceQuery<X> extends MappingIterable<Class<? super X>> implements Iterable<Class<? super X>> {
 	public static <X> InterfaceQuery<X> of(Class<X> type) {
-		return new InterfaceQuery<>(type);
+		ImmutableList<Class<? super X>> initial;
+		if(type.isInterface()) {
+			initial = ImmutableList.of(type);
+		}
+		else {
+			initial = ImmutableList.copyOf(safeGetInterfaces(type));
+		}
+		return new InterfaceQuery<>(initial);
 	}
 	
-	private final InheritanceChain<X> chain;
-
-	private InterfaceQuery(Class<X> type) {
-		this.chain = InheritanceChain.startingAt(type);
+	private final ImmutableList<Class<? super X>> initial;
+	
+	public InterfaceQuery(ImmutableList<Class<? super X>> initial) {
+		this.initial = initial;
 	}
-
-	public Stream<Class<? super X>> stream() {
-		return this.chain.stream()
-				.flatMap(InterfaceQuery::safeGetInterfacesStream);
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <X> Stream<Class<? super X>> safeGetInterfacesStream(Class<? super X> candidateClass) {
-		final Class<? super X>[] interfaceArray = (Class<? super X>[]) candidateClass.getInterfaces();
-		return Stream.of(interfaceArray);
+	
+	@Override
+	protected Collection<Class<? super X>> seed() {
+		return this.initial;
 	}
 
 	@Override
-	public Iterator<Class<? super X>> iterator() {
-		return stream().iterator();
+	protected Collection<Class<? super X>> map(Class<? super X> current) {
+		Class<X> castedCurrent = (Class<X>) current;
+		return safeGetInterfaces(castedCurrent);
+	}
+	
+	private static <X> Collection<Class<? super X>> safeGetInterfaces(Class<X> type) {
+		@SuppressWarnings("unchecked")
+		final Class<? super X>[] interfaceArray = (Class<? super X>[]) type.getInterfaces();
+		return ImmutableList.copyOf(interfaceArray);
 	}
 	
 }
