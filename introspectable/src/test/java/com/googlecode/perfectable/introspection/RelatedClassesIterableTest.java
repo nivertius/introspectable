@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 
 import org.junit.Test;
 
+@SuppressWarnings("static-method")
 public class RelatedClassesIterableTest {
 
 	@Test
