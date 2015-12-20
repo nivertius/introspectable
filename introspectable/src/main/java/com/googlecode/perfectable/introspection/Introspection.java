@@ -25,7 +25,11 @@ public final class Introspection<X> {
 	public GenericsQuery<X> generics() {
 		return GenericsQuery.of(this.type);
 	}
-	
+
+	public RelatedClassesIterable related() {
+		return RelatedClassesIterable.of(this.type);
+	}
+
 	private final Class<X> type;
 	
 	private Introspection(Class<X> type) {
