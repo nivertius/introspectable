@@ -4,14 +4,18 @@ import static com.google.common.base.Preconditions.checkState;
 
 import java.util.Collection;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 public abstract class MappingIterable<T> implements Iterable<T> {
 
@@ -41,11 +45,11 @@ public abstract class MappingIterable<T> implements Iterable<T> {
 	}
 
 	@Override
-	public final Iterator<T> iterator() {
+	public Iterator<T> iterator() {
 		return new MappingIterator();
 	}
 
-	private final class MappingIterator implements Iterator<T> {
+	protected class MappingIterator implements Iterator<T> {
 		private final Deque<T> left = new LinkedList<>(seed());
 		
 		@Override
@@ -58,8 +62,29 @@ public abstract class MappingIterable<T> implements Iterable<T> {
 			checkState(hasNext());
 			T current = this.left.pop();
 			Collection<T> generated = map(current);
-			this.left.addAll(generated);
+			push(generated);
 			return current;
+		}
+		
+		protected void push(Collection<T> generated) {
+			this.left.addAll(generated);
+		}
+	}
+	
+	public static abstract class Unique<T> extends MappingIterable<T> {
+		@Override
+		public Iterator<T> iterator() {
+			return new UniqueMappingIterator();
+		}
+
+		class UniqueMappingIterator extends MappingIterator {
+			private final Set<T> processed = new HashSet<>(seed());
+
+			@Override
+			protected void push(Collection<T> generated) {
+				super.push(Sets.difference(ImmutableSet.copyOf(generated), this.processed));
+				this.processed.addAll(generated);
+			}
 		}
 	}
 
