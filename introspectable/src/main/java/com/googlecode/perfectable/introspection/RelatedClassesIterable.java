@@ -62,7 +62,7 @@ public class RelatedClassesIterable extends MappingIterable.Unique<Class<?>> {
 		return result;
 	}
 	
-	private Stream<Class<?>> extractSuperClasses(Class<?> current) {
+	private static Stream<Class<?>> extractSuperClasses(Class<?> current) {
 		// MARK this should work on generic superclass
 		Stream.Builder<Class<?>> resultBuilder = Stream.builder();
 		if(current.getSuperclass() != null) {
@@ -72,7 +72,7 @@ public class RelatedClassesIterable extends MappingIterable.Unique<Class<?>> {
 		return resultBuilder.build();
 	}
 	
-	private Stream<Class<?>> extractEnclosingClasses(Class<?> current) {
+	private static Stream<Class<?>> extractEnclosingClasses(Class<?> current) {
 		final Class<?> enclosingClass = current.getEnclosingClass();
 		if(enclosingClass == null) {
 			return Stream.empty();
@@ -80,16 +80,16 @@ public class RelatedClassesIterable extends MappingIterable.Unique<Class<?>> {
 		return Stream.of(enclosingClass);
 	}
 	
-	private Stream<Class<?>> extractNestedClasses(Class<?> current) {
+	private static Stream<Class<?>> extractNestedClasses(Class<?> current) {
 		return Stream.of(current.getClasses());
 	}
 	
-	private Stream<Class<?>> extractFieldClasses(Class<?> current) {
+	private static Stream<Class<?>> extractFieldClasses(Class<?> current) {
 		return Stream.of(current.getDeclaredFields())
 				.map(Field::getType);
 	}
 	
-	private Stream<Class<?>> extractMethodClasses(Class<?> current) {
+	private static Stream<Class<?>> extractMethodClasses(Class<?> current) {
 		// MARK this should work on generic parameter and return types
 		return Stream.of(current.getDeclaredMethods())
 				.flatMap(method -> Stream.concat(
@@ -101,7 +101,7 @@ public class RelatedClassesIterable extends MappingIterable.Unique<Class<?>> {
 				);
 	}
 	
-	private Stream<Class<?>> extractParameterClasses(Class<?> current) {
+	private static Stream<Class<?>> extractParameterClasses(Class<?> current) {
 		return Stream.of(current.getTypeParameters())
 				.flatMap(variable -> Stream.of(variable.getBounds()))
 				.filter(type -> type instanceof Class)
