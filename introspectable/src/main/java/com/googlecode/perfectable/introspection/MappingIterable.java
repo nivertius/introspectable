@@ -1,5 +1,6 @@
 package com.googlecode.perfectable.introspection;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.Collection;
@@ -30,7 +31,9 @@ public abstract class MappingIterable<T> implements Iterable<T> {
 
 			@Override
 			protected Collection<T> map(T current) {
-				return mapper.apply(current).collect(Collectors.toList());
+				@SuppressWarnings("null")
+				Stream<T> stream = checkNotNull(mapper.apply(current));
+				return stream.collect(Collectors.toList());
 			}
 
 		};

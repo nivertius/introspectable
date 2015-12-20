@@ -30,6 +30,7 @@ public final class InterfaceQuery<X> extends MappingIterable<Class<? super X>> i
 
 	@Override
 	protected Collection<Class<? super X>> map(Class<? super X> current) {
+		@SuppressWarnings("unchecked")
 		Class<X> castedCurrent = (Class<X>) current;
 		return safeGetInterfaces(castedCurrent);
 	}
