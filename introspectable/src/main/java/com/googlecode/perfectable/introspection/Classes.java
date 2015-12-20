@@ -1,8 +1,11 @@
 package com.googlecode.perfectable.introspection;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.function.Function;
+
+import javax.annotation.Nullable;
 
 import com.google.common.base.Throwables;
 
@@ -15,11 +18,12 @@ public final class Classes {
 		// renaming only
 	}
 
-	public static <T> ClassLoaderFunction<T> loaderFunction(final Class<T> expectedSupertype) {
+	public static <T> ClassLoaderFunction<T> loaderFunction(Class<T> expectedSupertype) {
 		return new ClassLoaderFunction<T>() {
 
 			@Override
-			public Class<? extends T> apply(String input) {
+			public Class<? extends T> apply(@Nullable String input) {
+				checkNotNull(input);
 				try {
 					return load(input, expectedSupertype);
 				}

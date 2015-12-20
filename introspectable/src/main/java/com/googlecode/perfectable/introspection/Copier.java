@@ -24,8 +24,7 @@ public final class Copier<T> implements UnaryOperator<T> {
 	private Copier(Class<T> beanClass) {
 		this.beanClass = checkNotNull(beanClass);
 	}
-
-	@SuppressWarnings("null")
+	
 	@Override
 	public @Nullable T apply(@Nullable T input) {
 		if(input == null) {

@@ -29,7 +29,7 @@ public class InheritanceChain<T> implements Iterable<Class<? super T>> {
 		return new InheritanceChain<>(this.startClass, stopClass.getSuperclass());
 	}
 
-	private InheritanceChain(Class<T> startClass, Class<? super T> stopClass) {
+	private InheritanceChain(Class<T> startClass, @Nullable Class<? super T> stopClass) {
 		this.startClass = startClass;
 		this.stopClass = stopClass;
 	}

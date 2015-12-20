@@ -1,6 +1,7 @@
 package com.googlecode.perfectable.introspection.proxy;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -8,15 +9,16 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.ObjectArrays;
 import com.googlecode.perfectable.introspection.Introspection;
 
 public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 	
 	public static <I> JdkProxyBuilder<I> ofInterfacesOf(Class<? extends I> implementingClass) {
-		Class<?>[] interfaces =
-				Introspection.of(implementingClass).interfaces().stream()
-						.toArray(Class[]::new);
+		Class<?>[] interfaces = Introspection.of(implementingClass).interfaces().stream()
+				.toArray(Class[]::new);
 		// MARK this is safe almost always?
 		@SuppressWarnings("unchecked")
 		final JdkProxyBuilder<I> builder = (JdkProxyBuilder<I>) ofInterfaces(interfaces);
@@ -97,7 +99,9 @@ public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		}
 
 		@Override
-		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		public Object invoke(@Nullable Object proxy, @Nullable Method method, @Nullable Object[] args) throws Throwable {
+			checkNotNull(method);
+			checkNotNull(args);
 			@SuppressWarnings("unchecked")
 			Invocation<Object> invocation = (Invocation<Object>) Invocation.of(method, args);
 			@SuppressWarnings("unchecked")
