@@ -8,11 +8,11 @@ import org.junit.Test;
 
 @SuppressWarnings("static-method")
 public class RelatedClassesIterableTest {
-
+	
 	@Test
 	public void testString() {
 		RelatedClassesIterable related = RelatedClassesIterable.of(String.class);
-
+		
 		assertThat(related)
 				.contains(int.class)
 				.contains(void.class)

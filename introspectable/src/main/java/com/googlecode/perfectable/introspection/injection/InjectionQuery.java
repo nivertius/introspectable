@@ -20,11 +20,11 @@ import com.googlecode.perfectable.introspection.query.MemberQuery;
 import com.googlecode.perfectable.introspection.query.MethodQuery;
 
 public abstract class InjectionQuery<T, I> {
-
+	
 	public static <X> InjectionQuery<X, Object> create() {
 		return new CompleteInjectionQuery<>();
 	}
-
+	
 	public final Injection<T> push(I injected) {
 		Stream.Builder<Injection<T>> builder = Stream.builder();
 		fieldInjections(injected).forEach(builder::add);
@@ -32,14 +32,14 @@ public abstract class InjectionQuery<T, I> {
 		return builder.build().<CompositeInjection<T>> collect(Injection::createComposite, CompositeInjection::add,
 				CompositeInjection::add);
 	}
-
+	
 	private Stream<Injection<T>> fieldInjections(I injected) {
 		final FieldQuery fieldQuery = FieldQuery.of(injected.getClass());
 		return limit(fieldQuery)
 				.stream()
 				.map(field -> Injection.create(field, injected));
 	}
-
+	
 	private Stream<Injection<T>> methodInjections(I injected) {
 		final Function<Method, Injection<T>> i = method -> Injection.create(method, injected);
 		return limit(MethodQuery.of(injected.getClass()))
@@ -54,7 +54,7 @@ public abstract class InjectionQuery<T, I> {
 	public <X> InjectionQuery<T, X> typed(Class<X> injectionClass) {
 		return new TypedInjectionQuery<>(this, injectionClass);
 	}
-
+	
 	protected abstract <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limit(Q query);
 	
 	static final class CompleteInjectionQuery<T> extends InjectionQuery<T, Object> {
@@ -67,32 +67,32 @@ public abstract class InjectionQuery<T, I> {
 					.excludingModifier(Modifier.FINAL);
 		}
 	}
-
+	
 	static abstract class FilteredInjectionQuery<T, I> extends InjectionQuery<T, I> {
 		private final InjectionQuery<T, I> parent;
-
+		
 		public FilteredInjectionQuery(InjectionQuery<T, I> parent) {
 			this.parent = parent;
 		}
-
+		
 		protected abstract <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limitConcrete(
 				Q query);
-
+		
 		@Override
 		protected final <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limit(Q query) {
 			Q parentLimited = this.parent.limit(query);
 			return limitConcrete(parentLimited);
 		}
 	}
-
+	
 	static final class NamedInjectionQuery<T, I> extends FilteredInjectionQuery<T, I> {
 		private final String injectionName;
-
+		
 		public NamedInjectionQuery(InjectionQuery<T, I> parent, String injectionName) {
 			super(parent);
 			this.injectionName = checkNotNull(injectionName);
 		}
-
+		
 		@Override
 		protected <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limitConcrete(Q query) {
 			final SingleAnnotationFilter<Named> filter = AnnotationFilter.of(Named.class)
@@ -105,17 +105,17 @@ public abstract class InjectionQuery<T, I> {
 		// this cannot inherit from FilteredInjectionQuery because of changed types
 		private final InjectionQuery<T, I> parent;
 		private final Class<J> injectionClass;
-
+		
 		public TypedInjectionQuery(InjectionQuery<T, I> parent, Class<J> injectionClass) {
 			this.parent = parent;
 			this.injectionClass = injectionClass;
 		}
-
+		
 		@Override
 		protected <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limit(Q query) {
 			Q parentLimited = this.parent.limit(query);
 			return parentLimited.typed(this.injectionClass);
 		}
-
+		
 	}
 }

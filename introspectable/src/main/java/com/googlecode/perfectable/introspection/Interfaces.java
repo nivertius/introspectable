@@ -1,6 +1,5 @@
 package com.googlecode.perfectable.introspection;
 
-
 public class Interfaces {
 	
 	@Deprecated

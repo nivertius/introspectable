@@ -6,7 +6,7 @@ import org.junit.Test;
 
 @SuppressWarnings("static-method")
 public class InheritanceChainTest {
-
+	
 	class Root {
 		// test class
 	}
@@ -18,7 +18,7 @@ public class InheritanceChainTest {
 	class Leaf extends Branch {
 		// test class
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testString() {
@@ -42,7 +42,7 @@ public class InheritanceChainTest {
 		
 		assertThat(chain).containsExactly(Leaf.class, Branch.class);
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testIncludingRoot() {

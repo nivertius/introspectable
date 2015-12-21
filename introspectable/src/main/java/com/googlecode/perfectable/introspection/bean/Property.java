@@ -17,45 +17,45 @@ import com.googlecode.perfectable.introspection.Introspection;
 import com.googlecode.perfectable.introspection.Methods;
 
 public abstract class Property<CT, PT> {
-
+	
 	protected final CT bean;
-
+	
 	protected Property(CT bean) {
 		this.bean = bean;
 	}
-
+	
 	public abstract boolean isReadable();
-
+	
 	public abstract boolean isWriteable();
-
+	
 	@Nullable
 	public abstract PT get();
-
+	
 	public abstract void set(@Nullable PT value);
-
+	
 	public final Optional<PT> optional() {
 		return Optional.ofNullable(this.get());
 	}
-
+	
 	public abstract String name();
-
+	
 	public abstract Class<PT> type();
-
+	
 	public final void copy(CT other) {
 		PT current = this.get();
 		this.slot().put(other).set(current);
 	}
-
+	
 	public final PropertySlot<CT, PT> slot() {
 		@SuppressWarnings("unchecked")
 		final Class<? extends CT> beanClass = (Class<? extends CT>) this.bean.getClass();
 		return PropertySlot.from(beanClass, this.name(), this.type());
 	}
-
+	
 	public static <CX> Property<CX, Object> raw(CX bean, String name) {
 		return from(bean, name, Object.class);
 	}
-
+	
 	public static <CX, PX> Property<CX, PX> from(CX bean, String name, Class<PX> type) {
 		Class<?> beanClass = bean.getClass();
 		if(beanClass == null) {
@@ -72,13 +72,13 @@ public abstract class Property<CT, PT> {
 		}
 		throw new IllegalArgumentException("No property " + name + " for " + beanClass);
 	}
-
+	
 	public static <CX> Property<CX, ?> from(CX bean, Field field) {
 		checkNotNull(field);
 		checkArgument(field.getDeclaringClass().isAssignableFrom(bean.getClass()));
 		return new FieldProperty<>(bean, field);
 	}
-
+	
 	public static <CX, PX> Property<CX, PX> from(CX bean, Field field, Class<PX> type) {
 		checkNotNull(field);
 		checkArgument(field.getDeclaringClass().isAssignableFrom(bean.getClass()));
@@ -86,16 +86,16 @@ public abstract class Property<CT, PT> {
 		checkArgument(!Fields.isStatic(field));
 		return new FieldProperty<>(bean, field);
 	}
-
+	
 	private static class FieldProperty<CT, PT> extends Property<CT, PT> {
 		private final Field field;
-
+		
 		public FieldProperty(CT bean, Field field) {
 			super(bean);
 			this.field = field;
 			this.field.setAccessible(true);
 		}
-
+		
 		@Override
 		public void set(@Nullable PT value) {
 			try {
@@ -105,7 +105,7 @@ public abstract class Property<CT, PT> {
 				throw Throwables.propagate(e);
 			}
 		}
-
+		
 		// checked at construction
 		@Override
 		@Nullable
@@ -118,34 +118,34 @@ public abstract class Property<CT, PT> {
 				throw Throwables.propagate(e);
 			}
 		}
-
+		
 		@Override
 		public String name() {
 			return this.field.getName();
 		}
-
+		
 		// checked at construction
 		@Override
 		@SuppressWarnings("unchecked")
 		public Class<PT> type() {
 			return (Class<PT>) this.field.getType();
 		}
-
+		
 		@Override
 		public boolean isReadable() {
 			return Fields.isGettable(this.field);
 		}
-
+		
 		@Override
 		public boolean isWriteable() {
 			return Fields.isSettable(this.field);
 		}
 	}
-
+	
 	private static class MethodProperty<CT, PT> extends Property<CT, PT> {
 		private final Optional<Method> getter;
 		private final Optional<Method> setter;
-
+		
 		public MethodProperty(CT bean, Optional<Method> getter, Optional<Method> setter) {
 			super(bean);
 			checkArgument(getter.isPresent() || setter.isPresent());
@@ -156,7 +156,7 @@ public abstract class Property<CT, PT> {
 			this.getter = getter;
 			this.setter = setter;
 		}
-
+		
 		// checked at construction
 		@SuppressWarnings("unchecked")
 		@Override
@@ -181,13 +181,13 @@ public abstract class Property<CT, PT> {
 				throw Throwables.propagate(e);
 			}
 		}
-
+		
 		@Override
 		public String name() {
 			String unformatted = this.getter.orElseGet(this.setter::get).getName();
 			return String.valueOf(unformatted.charAt(3)).toLowerCase() + unformatted.substring(4);
 		}
-
+		
 		@Override
 		public Class<PT> type() {
 			if(this.getter.isPresent()) {
@@ -208,7 +208,7 @@ public abstract class Property<CT, PT> {
 				throw new RuntimeException("MethodProperty created without setter or getter, which is forbidden by constructor");
 			}
 		}
-
+		
 		@Override
 		public boolean isReadable() {
 			if(!this.getter.isPresent()) {
@@ -217,7 +217,7 @@ public abstract class Property<CT, PT> {
 			final Method getterMethod = this.getter.get();
 			return Methods.isCallable(getterMethod);
 		}
-
+		
 		@Override
 		public boolean isWriteable() {
 			if(!this.setter.isPresent()) {
@@ -226,7 +226,7 @@ public abstract class Property<CT, PT> {
 			final Method setterMethod = this.setter.get();
 			return Methods.isCallable(setterMethod);
 		}
-
+		
 	}
-
+	
 }

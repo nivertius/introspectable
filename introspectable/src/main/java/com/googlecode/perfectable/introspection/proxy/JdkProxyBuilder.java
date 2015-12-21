@@ -24,7 +24,7 @@ public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		final JdkProxyBuilder<I> builder = (JdkProxyBuilder<I>) ofInterfaces(interfaces);
 		return builder;
 	}
-
+	
 	public static <I> JdkProxyBuilder<I> sameAs(I sourceInstance) {
 		@SuppressWarnings("unchecked")
 		Class<? extends I> implementingClass = (Class<? extends I>) sourceInstance.getClass();
@@ -75,7 +75,7 @@ public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	private static void checkProxyableInterface(Class<?> testedInterface) {
 		checkArgument(testedInterface.isInterface());
 		checkArgument(!testedInterface.isPrimitive());
@@ -85,19 +85,19 @@ public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		Stream.of(otherInterfaces)
 				.forEach(i -> checkArgument(classLoader.equals(i.getClassLoader())));
 	}
-
+	
 	private static class JdkInvocationHandlerAdapter implements java.lang.reflect.InvocationHandler {
 		
 		private final InvocationHandler<?> handler;
-
+		
 		public JdkInvocationHandlerAdapter(InvocationHandler<?> handler) {
 			this.handler = handler;
 		}
-
+		
 		public static JdkInvocationHandlerAdapter adapt(InvocationHandler<?> handler) {
 			return new JdkInvocationHandlerAdapter(handler);
 		}
-
+		
 		@Override
 		public Object invoke(@Nullable Object proxy, @Nullable Method method, @Nullable Object[] args) throws Throwable {
 			checkNotNull(method);
@@ -108,7 +108,7 @@ public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 			InvocationHandler<Object> castedHandler = (InvocationHandler<Object>) this.handler;
 			return castedHandler.handle(invocation);
 		}
-
+		
 	}
 	
 }

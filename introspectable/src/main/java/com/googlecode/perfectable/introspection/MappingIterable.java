@@ -19,39 +19,39 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 public abstract class MappingIterable<T> implements Iterable<T> {
-
+	
 	@SafeVarargs
 	static <T> MappingIterable<T> create(Function<T, Stream<T>> mapper, T... seeds) {
 		return new MappingIterable<T>() {
-
+			
 			@Override
 			protected Collection<T> seed() {
 				return ImmutableList.copyOf(seeds);
 			}
-
+			
 			@Override
 			protected Collection<T> map(T current) {
 				@SuppressWarnings("null")
 				Stream<T> stream = checkNotNull(mapper.apply(current));
 				return stream.collect(Collectors.toList());
 			}
-
+			
 		};
 	}
-
+	
 	protected abstract Collection<T> seed();
-
+	
 	protected abstract Collection<T> map(T current);
-
+	
 	public Stream<T> stream() {
 		return StreamSupport.stream(spliterator(), false);
 	}
-
+	
 	@Override
 	public Iterator<T> iterator() {
 		return new MappingIterator();
 	}
-
+	
 	protected class MappingIterator implements Iterator<T> {
 		private final Deque<T> left = new LinkedList<>(seed());
 		
@@ -79,10 +79,10 @@ public abstract class MappingIterable<T> implements Iterable<T> {
 		public Iterator<T> iterator() {
 			return new UniqueMappingIterator();
 		}
-
+		
 		class UniqueMappingIterator extends MappingIterator {
 			private final Set<T> processed = new HashSet<>(seed());
-
+			
 			@Override
 			protected void push(Collection<T> generated) {
 				super.push(Sets.difference(ImmutableSet.copyOf(generated), this.processed));
@@ -90,5 +90,5 @@ public abstract class MappingIterable<T> implements Iterable<T> {
 			}
 		}
 	}
-
+	
 }

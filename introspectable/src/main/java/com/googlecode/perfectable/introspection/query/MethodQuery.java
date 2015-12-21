@@ -9,45 +9,45 @@ import java.util.stream.Stream;
 import com.googlecode.perfectable.introspection.InheritanceChain;
 
 public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
-
+	
 	public static <X> MethodQuery of(Class<X> type) {
 		checkNotNull(type);
 		return new CompleteMethodQuery<>(type);
 	}
-
+	
 	@Override
 	public MethodQuery named(String name) {
 		checkNotNull(name);
 		return new NamedMethodQuery(this, name);
 	}
-
+	
 	@Override
 	public MethodQuery matching(Predicate<? super Method> filter) {
 		checkNotNull(filter);
 		return new PredicatedMethodQuery(this, filter);
 	}
-
+	
 	public MethodQuery parameters(Class<?>... parameterTypes) {
 		checkNotNull(parameterTypes);
 		return new ParametersMethodQuery(this, parameterTypes);
 	}
-
+	
 	// only implements super
 	@Deprecated
 	@Override
 	public MethodQuery typed(Class<?> type) {
 		return returning(type);
 	}
-
+	
 	public MethodQuery returning(Class<?> type) {
 		checkNotNull(type);
 		return new ReturningMethodQuery(this, type);
 	}
-
+	
 	public MethodQuery returningVoid() {
 		return returning(Void.TYPE);
 	}
-
+	
 	@Override
 	public MethodQuery annotatedWith(AnnotationFilter annotationFilter) {
 		checkNotNull(annotationFilter);
@@ -61,27 +61,27 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	
 	private static final class CompleteMethodQuery<X> extends MethodQuery {
 		private final InheritanceChain<X> chain;
-
+		
 		public CompleteMethodQuery(Class<X> type) {
 			this.chain = InheritanceChain.startingAt(type);
 		}
-
+		
 		@Override
 		public Stream<Method> stream() {
 			return this.chain.stream()
 					.flatMap(c -> Stream.of(c.getDeclaredMethods()));
 		}
 	}
-
+	
 	private static abstract class FilteredMethodQuery extends MethodQuery {
 		private final MethodQuery parent;
 		
 		public FilteredMethodQuery(MethodQuery parent) {
 			this.parent = parent;
 		}
-
+		
 		protected abstract boolean matches(Method candidate);
-
+		
 		@Override
 		public Stream<Method> stream() {
 			return this.parent.stream()
@@ -91,7 +91,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	
 	private class PredicatedMethodQuery extends FilteredMethodQuery {
 		private final Predicate<? super Method> filter;
-
+		
 		public PredicatedMethodQuery(MethodQuery parent, Predicate<? super Method> filter) {
 			super(parent);
 			this.filter = filter;
@@ -102,10 +102,10 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 			return this.filter.test(candidate);
 		}
 	}
-
+	
 	private class NamedMethodQuery extends FilteredMethodQuery {
 		private final String name;
-
+		
 		public NamedMethodQuery(MethodQuery parent, String name) {
 			super(parent);
 			this.name = name;
@@ -119,7 +119,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	
 	private class ParametersMethodQuery extends FilteredMethodQuery {
 		private final Class<?>[] parameterTypes;
-
+		
 		public ParametersMethodQuery(MethodQuery parent, Class<?>[] parameterTypes) {
 			super(parent);
 			this.parameterTypes = parameterTypes;
@@ -144,7 +144,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	
 	private class ReturningMethodQuery extends FilteredMethodQuery {
 		private final Class<?> returnType;
-
+		
 		public ReturningMethodQuery(MethodQuery parent, Class<?> returnType) {
 			super(parent);
 			this.returnType = returnType;
@@ -155,7 +155,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 			return this.returnType.equals(candidate.getReturnType());
 		}
 	}
-
+	
 	private class AnnotatedMethodQuery extends FilteredMethodQuery {
 		private final AnnotationFilter annotationFilter;
 		
@@ -163,7 +163,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 			super(parent);
 			this.annotationFilter = annotationFilter;
 		}
-
+		
 		@Override
 		protected boolean matches(Method candidate) {
 			return this.annotationFilter.appliesOn(candidate);
@@ -172,7 +172,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	
 	private static class ExcludedModifierMethodQuery extends FilteredMethodQuery {
 		private final int excludedModifier;
-
+		
 		public ExcludedModifierMethodQuery(MethodQuery parent, int excludedModifier) {
 			super(parent);
 			this.excludedModifier = excludedModifier;

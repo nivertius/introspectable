@@ -16,17 +16,17 @@ public final class RelatedClassesIterable extends MappingIterable.Unique<Class<?
 	public static RelatedClassesIterable of(Class<?> initial) {
 		return new RelatedClassesIterable(initial, tested -> true);
 	}
-
+	
 	private RelatedClassesIterable(Class<?> initial, Predicate<Class<?>> inclusionPredicate) {
 		this.initial = initial;
 		this.inclusionPredicate = inclusionPredicate;
 	}
-
+	
 	@Override
 	protected Collection<Class<?>> seed() {
 		return map(this.initial);
 	}
-
+	
 	public RelatedClassesIterable excludingPackage(Package newExcludedPackage) {
 		checkNotNull(newExcludedPackage);
 		return filter(tested -> !newExcludedPackage.equals(tested.getPackage()));

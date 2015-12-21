@@ -26,13 +26,13 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		checkNotNull(filter);
 		return new PredicatedFieldQuery(this, filter);
 	}
-
+	
 	@Override
 	public FieldQuery typed(Class<?> type) {
 		checkNotNull(type);
 		return new TypedFieldQuery(this, type);
 	}
-
+	
 	@Override
 	public FieldQuery annotatedWith(AnnotationFilter annotationFilter) {
 		checkNotNull(annotationFilter);
@@ -46,11 +46,11 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	
 	private static final class CompleteFieldQuery<X> extends FieldQuery {
 		private final InheritanceChain<X> chain;
-
+		
 		public CompleteFieldQuery(Class<X> type) {
 			this.chain = InheritanceChain.startingAt(type);
 		}
-
+		
 		@Override
 		public Stream<Field> stream() {
 			return this.chain.stream()
@@ -60,7 +60,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	
 	private static abstract class FilteredFieldQuery extends FieldQuery {
 		private final FieldQuery parent;
-
+		
 		public FilteredFieldQuery(FieldQuery parent) {
 			this.parent = parent;
 		}
@@ -73,7 +73,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 					.filter(this::matches);
 		}
 	}
-
+	
 	private static class NamedFieldQuery extends FilteredFieldQuery {
 		private final String name;
 		
@@ -87,7 +87,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 			return this.name.equals(candidate.getName());
 		}
 	}
-
+	
 	private static class PredicatedFieldQuery extends FilteredFieldQuery {
 		private final Predicate<? super Field> filter;
 		
@@ -104,7 +104,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	
 	private class TypedFieldQuery extends FilteredFieldQuery {
 		private final Class<?> type;
-
+		
 		public TypedFieldQuery(FieldQuery parent, Class<?> type) {
 			super(parent);
 			this.type = type;
@@ -115,7 +115,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 			return this.type.isAssignableFrom(candidate.getType());
 		}
 	}
-
+	
 	private class AnnotatedFieldQuery extends FilteredFieldQuery {
 		private final AnnotationFilter annotationFilter;
 		
@@ -123,7 +123,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 			super(parent);
 			this.annotationFilter = annotationFilter;
 		}
-
+		
 		@Override
 		protected boolean matches(Field candidate) {
 			return this.annotationFilter.appliesOn(candidate);
@@ -132,7 +132,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	
 	private static class ExcludedModifierFieldQuery extends FilteredFieldQuery {
 		private final int excludedModifier;
-
+		
 		public ExcludedModifierFieldQuery(FieldQuery parent, int excludedModifier) {
 			super(parent);
 			this.excludedModifier = excludedModifier;
@@ -143,7 +143,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 			return (candidate.getModifiers() & this.excludedModifier) == 0;
 		}
 	}
-
+	
 	FieldQuery() {
 		// MARK
 	}

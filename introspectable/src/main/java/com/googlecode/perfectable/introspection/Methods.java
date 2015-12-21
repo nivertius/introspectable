@@ -37,7 +37,7 @@ public final class Methods {
 		final boolean hasNoParameters = method.getParameterTypes().length == 0;
 		final boolean startsWithAppropriatePrefix =
 				Boolean.class.equals(method.getReturnType()) && method.getName().startsWith("is") ||
-				!Boolean.class.equals(method.getReturnType()) && method.getName().startsWith("get");
+						!Boolean.class.equals(method.getReturnType()) && method.getName().startsWith("get");
 		return actuallyReturns && hasNoParameters && startsWithAppropriatePrefix;
 	}
 	

@@ -27,7 +27,7 @@ public final class InterfaceQuery<X> extends MappingIterable<Class<? super X>> i
 	protected Collection<Class<? super X>> seed() {
 		return this.initial;
 	}
-
+	
 	@Override
 	protected Collection<Class<? super X>> map(Class<? super X> current) {
 		@SuppressWarnings("unchecked")

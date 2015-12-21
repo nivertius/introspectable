@@ -10,7 +10,7 @@ public interface AnnotationFilter {
 		
 		private final Class<A> annotationClass;
 		private final Predicate<A> predicate;
-
+		
 		public static <A extends Annotation> SingleAnnotationFilter<A> create(Class<A> annotationClass) {
 			return new SingleAnnotationFilter<>(annotationClass, annotation -> annotation != null);
 		}
@@ -19,7 +19,7 @@ public interface AnnotationFilter {
 			this.annotationClass = annotationClass;
 			this.predicate = predicate;
 		}
-
+		
 		public SingleAnnotationFilter<A> andMatching(Predicate<A> addedPredicate) {
 			return new SingleAnnotationFilter<>(this.annotationClass, this.predicate.and(addedPredicate));
 		}

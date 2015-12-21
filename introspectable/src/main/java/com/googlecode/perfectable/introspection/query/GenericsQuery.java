@@ -25,10 +25,10 @@ public final class GenericsQuery<X> {
 		TypeVariable<Class<X>> parameter = typeParameters[number];
 		return new Resolver<>(parameter);
 	}
-
+	
 	public static class Resolver<X> {
 		private final Type resolved;
-
+		
 		private Resolver(Type resolved) {
 			this.resolved = resolved;
 		}
