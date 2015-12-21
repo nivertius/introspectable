@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import com.googlecode.perfectable.introspection.Copier;
 import com.googlecode.perfectable.introspection.query.FieldQuery;
 
-public class Bean<T> {
+public final class Bean<T> {
 	
 	private final T bean;
 	

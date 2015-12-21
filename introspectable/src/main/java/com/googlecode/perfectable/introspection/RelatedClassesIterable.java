@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class RelatedClassesIterable extends MappingIterable.Unique<Class<?>> {
+public final class RelatedClassesIterable extends MappingIterable.Unique<Class<?>> {
 	private final Class<?> initial;
 	private final Predicate<Class<?>> inclusionPredicate;
 	
