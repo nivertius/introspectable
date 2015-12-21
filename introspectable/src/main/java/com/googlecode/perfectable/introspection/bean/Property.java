@@ -205,7 +205,7 @@ public abstract class Property<CT, PT> {
 				return checkNotNull(firstParameterType);
 			}
 			else {
-				throw new RuntimeException("MethodProperty created without setter or getter, which is forbidden by constructor");
+				throw new AssertionError("MethodProperty created without setter or getter, which is forbidden by constructor");
 			}
 		}
 		

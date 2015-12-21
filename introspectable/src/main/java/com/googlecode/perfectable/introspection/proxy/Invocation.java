@@ -30,9 +30,6 @@ public final class Invocation<T> {
 		catch(InvocationTargetException e) {
 			throw e.getCause();
 		}
-		catch(IllegalAccessException | IllegalArgumentException e) {
-			throw new RuntimeException(e);
-		}
 	}
 	
 	public <X> Invocation<X> asSimilarTo(X similarInstance) throws NoSuchMethodException {
