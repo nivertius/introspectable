@@ -120,9 +120,9 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	private class ParametersMethodQuery extends FilteredMethodQuery {
 		private final Class<?>[] parameterTypes;
 		
-		public ParametersMethodQuery(MethodQuery parent, Class<?>[] parameterTypes) {
+		public ParametersMethodQuery(MethodQuery parent, Class<?>... parameterTypes) {
 			super(parent);
-			this.parameterTypes = parameterTypes;
+			this.parameterTypes = parameterTypes.clone();
 		}
 		
 		@Override

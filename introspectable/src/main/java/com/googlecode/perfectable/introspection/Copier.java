@@ -11,11 +11,11 @@ import com.googlecode.perfectable.introspection.bean.Bean;
 public final class Copier<T> implements UnaryOperator<T> {
 	private final Class<T> beanClass;
 	
-	public static final <X> Copier<X> forClass(Class<X> beanClass) {
+	public static <X> Copier<X> forClass(Class<X> beanClass) {
 		return new Copier<>(beanClass);
 	}
 	
-	public static final <X> X copy(X source) {
+	public static <X> X copy(X source) {
 		@SuppressWarnings("unchecked")
 		Class<X> sourceClass = checkNotNull((Class<X>) source.getClass());
 		return Copier.<X> forClass(sourceClass).perform(source);

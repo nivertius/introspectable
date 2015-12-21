@@ -41,7 +41,7 @@ public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 	public static JdkProxyBuilder<?> ofInterfaces(Class<?>... interfaces) {
 		checkArgument(interfaces.length > 0);
 		Stream.of(interfaces).forEach(JdkProxyBuilder::checkProxyableInterface);
-		ClassLoader classLoader = interfaces[0].getClassLoader();
+		ClassLoader classLoader = interfaces[0].getClassLoader(); // NOPMD we actually want first interface classloader here
 		checkClassloader(classLoader, interfaces);
 		Class<?> proxyClass = Proxy.getProxyClass(classLoader, interfaces);
 		return ofProxyClass(proxyClass);
@@ -99,7 +99,8 @@ public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		}
 		
 		@Override
-		public Object invoke(@Nullable Object proxy, @Nullable Method method, @Nullable Object[] args) throws Throwable {
+		public Object invoke(@Nullable Object proxy, @Nullable Method method, @Nullable Object[] args) throws Throwable { // NOPMD
+			// declaration uses array instead of varargs
 			checkNotNull(method);
 			checkNotNull(args);
 			@SuppressWarnings("unchecked")

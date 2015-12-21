@@ -8,18 +8,18 @@ import com.googlecode.perfectable.introspection.query.FieldQuery;
 
 public final class Bean<T> {
 	
-	private final T bean;
+	private final T instance;
 	
-	private Bean(T bean) {
-		this.bean = bean;
+	private Bean(T instance) {
+		this.instance = instance;
 	}
 	
-	public static <X> Bean<X> from(X entity) {
-		return new Bean<>(entity);
+	public static <X> Bean<X> from(X instance) {
+		return new Bean<>(instance);
 	}
 	
 	public T copy() {
-		return Copier.copy(this.bean);
+		return Copier.copy(this.instance);
 	}
 	
 	public Stream<?> related() {
@@ -29,18 +29,18 @@ public final class Bean<T> {
 	}
 	
 	public Stream<Property<T, ?>> fieldProperties() {
-		return FieldQuery.of(this.bean.getClass())
+		return FieldQuery.of(this.instance.getClass())
 				.excludingModifier(Modifier.STATIC)
 				.stream()
-				.map(field -> Property.<T> from(this.bean, field));
+				.map(field -> Property.<T> from(this.instance, field));
 	}
 	
 	public <X> Property<T, X> property(String name, Class<X> type) {
-		return Property.from(this.bean, name, type);
+		return Property.from(this.instance, name, type);
 	}
 	
 	public Property<T, Object> property(String name) {
-		return Property.raw(this.bean, name);
+		return Property.raw(this.instance, name);
 	}
 	
 }

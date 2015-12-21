@@ -5,7 +5,7 @@ import java.lang.reflect.Modifier;
 
 import javax.annotation.Nullable;
 
-public class Fields {
+public final class Fields {
 	
 	@Nullable
 	@Deprecated
@@ -31,4 +31,6 @@ public class Fields {
 		return Modifier.isStatic(field.getModifiers());
 	}
 	
+	private Fields() {
+	}
 }

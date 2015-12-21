@@ -47,14 +47,13 @@ public final class Classes {
 	}
 	
 	public static <T> T instantiate(String className, Class<T> expectedSuperclass) {
-		Class<?> loadedClass;
+		Class<? extends T> instanceClass;
 		try {
-			loadedClass = load(className);
+			instanceClass = load(className, expectedSuperclass);
 		}
 		catch(ClassNotFoundException e) {
 			throw Throwables.propagate(e);
 		}
-		Class<? extends T> instanceClass = loadedClass.asSubclass(expectedSuperclass);
 		return instantiate(instanceClass);
 	}
 	

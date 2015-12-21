@@ -36,7 +36,7 @@ public class GenericsQueryTest {
 	}
 	
 	@SuppressWarnings("unused")
-	static interface BoundedInterface<X extends Number> {
+	interface BoundedInterface<X extends Number> {
 		// test interface
 	}
 	

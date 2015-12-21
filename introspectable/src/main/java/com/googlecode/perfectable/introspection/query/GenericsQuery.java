@@ -10,7 +10,7 @@ import com.google.common.reflect.TypeToken;
 public final class GenericsQuery<X> {
 	private final Class<X> type;
 	
-	public static final <X> GenericsQuery<X> of(Class<X> type) {
+	public static <X> GenericsQuery<X> of(Class<X> type) {
 		return new GenericsQuery<>(type);
 	}
 	
@@ -23,11 +23,15 @@ public final class GenericsQuery<X> {
 		TypeVariable<Class<X>>[] typeParameters = this.type.getTypeParameters();
 		checkArgument(number < typeParameters.length);
 		TypeVariable<Class<X>> parameter = typeParameters[number];
-		return new Resolver<>(parameter);
+		return Resolver.of(parameter);
 	}
 	
 	public static class Resolver<X> {
 		private final Type resolved;
+		
+		static <X> Resolver<X> of(Type parameter) {
+			return new Resolver<>(parameter);
+		}
 		
 		private Resolver(Type resolved) {
 			this.resolved = resolved;

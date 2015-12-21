@@ -4,7 +4,7 @@ public interface ProxyBuilder<I> {
 	
 	I instantiate(InvocationHandler<I> handler);
 	
-	static ProxyBuilder<?> ofInterfaces(Class<?>[] interfaces) {
+	static ProxyBuilder<?> ofInterfaces(Class<?>... interfaces) {
 		return JdkProxyBuilder.ofInterfaces(interfaces);
 	}
 	

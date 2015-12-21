@@ -13,13 +13,13 @@ public final class Invocation<T> {
 	private final Method method;
 	private final Object[] arguments;
 	
-	public Invocation(Method method, Object[] arguments) {
-		this.method = method;
-		this.arguments = arguments;
+	public static Invocation<?> of(Method method, Object... arguments) {
+		return new Invocation<>(method, arguments);
 	}
 	
-	public static Invocation<?> of(Method method, Object[] arguments) {
-		return new Invocation<>(method, arguments);
+	private Invocation(Method method, Object... arguments) {
+		this.method = method;
+		this.arguments = arguments.clone();
 	}
 	
 	public Object invokeOn(@Nullable T receiver) throws Throwable {
@@ -49,12 +49,12 @@ public final class Invocation<T> {
 	public interface Decomposer {
 		void method(Method method);
 		
-		void arguments(Object[] arguments);
+		void arguments(Object... arguments);
 	}
 	
 	public void decompose(Decomposer decomposer) {
 		decomposer.method(this.method);
-		decomposer.arguments(this.arguments);
+		decomposer.arguments(this.arguments.clone());
 	}
 	
 }
