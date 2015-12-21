@@ -10,16 +10,18 @@ import com.googlecode.perfectable.introspection.Methods;
 
 public final class Invocation<T> {
 	
+	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
+	
 	private final Method method;
 	private final Object[] arguments;
 	
-	public static Invocation<?> of(Method method, Object... arguments) {
+	public static Invocation<?> of(Method method, @Nullable Object... arguments) {
 		return new Invocation<>(method, arguments);
 	}
 	
-	private Invocation(Method method, Object... arguments) {
+	private Invocation(Method method, @Nullable Object... arguments) {
 		this.method = method;
-		this.arguments = arguments.clone();
+		this.arguments = arguments == null ? EMPTY_ARGUMENTS : arguments.clone();
 	}
 	
 	public Object invokeOn(@Nullable T receiver) throws Throwable {

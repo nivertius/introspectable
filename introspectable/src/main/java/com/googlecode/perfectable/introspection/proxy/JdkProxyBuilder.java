@@ -102,7 +102,6 @@ public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		public Object invoke(@Nullable Object proxy, @Nullable Method method, @Nullable Object[] args) throws Throwable { // NOPMD
 			// declaration uses array instead of varargs
 			checkNotNull(method);
-			checkNotNull(args);
 			@SuppressWarnings("unchecked")
 			Invocation<Object> invocation = (Invocation<Object>) Invocation.of(method, args);
 			@SuppressWarnings("unchecked")
