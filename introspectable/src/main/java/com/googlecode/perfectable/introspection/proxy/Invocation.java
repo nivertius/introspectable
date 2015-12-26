@@ -1,5 +1,7 @@
 package com.googlecode.perfectable.introspection.proxy;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
@@ -24,7 +26,18 @@ public final class Invocation<T> {
 		this.arguments = arguments == null ? EMPTY_ARGUMENTS : arguments.clone();
 	}
 	
-	public Object invokeOn(@Nullable T receiver) throws Throwable {
+	public Object invokeAsStatic() throws Throwable {
+		try {
+			Object result = this.method.invoke(null, this.arguments);
+			return result;
+		}
+		catch(InvocationTargetException e) {
+			throw e.getCause();
+		}
+	}
+	
+	public Object invokeOn(T receiver) throws Throwable {
+		checkNotNull(receiver);
 		try {
 			Object result = this.method.invoke(receiver, this.arguments);
 			return result;
