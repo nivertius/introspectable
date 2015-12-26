@@ -7,52 +7,17 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.ObjectArrays;
-import com.googlecode.perfectable.introspection.Introspection;
-
-public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
+final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 	
-	public static <I> JdkProxyBuilder<I> ofInterfacesOf(Class<? extends I> implementingClass) {
-		Class<?>[] interfaces = Introspection.of(implementingClass).interfaces().stream()
-				.toArray(Class[]::new);
-		// MARK this is safe almost always?
-		@SuppressWarnings("unchecked")
-		final JdkProxyBuilder<I> builder = (JdkProxyBuilder<I>) ofInterfaces(interfaces);
-		return builder;
-	}
+	private final Class<I> proxyClass;
 	
-	public static <I> JdkProxyBuilder<I> sameAs(I sourceInstance) {
-		@SuppressWarnings("unchecked")
-		Class<? extends I> implementingClass = (Class<? extends I>) sourceInstance.getClass();
-		return ofInterfacesOf(implementingClass);
-	}
-	
-	public static <X> JdkProxyBuilder<X> ofInterfaces(Class<X> mainInterface, Class<?>... otherInterfaces) {
-		Class<?>[] usedInterfaces = ObjectArrays.concat(mainInterface, otherInterfaces);
-		@SuppressWarnings("unchecked")
-		JdkProxyBuilder<X> casted = (JdkProxyBuilder<X>) ofInterfaces(usedInterfaces);
-		return casted;
-	}
-	
-	public static JdkProxyBuilder<?> ofInterfaces(Class<?>... interfaces) {
-		checkArgument(interfaces.length > 0);
-		Stream.of(interfaces).forEach(JdkProxyBuilder::checkProxyableInterface);
-		ClassLoader classLoader = interfaces[0].getClassLoader(); // NOPMD we actually want first interface classloader here
-		checkClassloader(classLoader, interfaces);
-		Class<?> proxyClass = Proxy.getProxyClass(classLoader, interfaces);
-		return ofProxyClass(proxyClass);
-	}
-	
-	public static <X> JdkProxyBuilder<X> ofProxyClass(Class<X> proxyClass) {
+	static <X> JdkProxyBuilder<X> ofProxyClass(Class<X> proxyClass) {
 		checkArgument(Proxy.isProxyClass(proxyClass));
 		return new JdkProxyBuilder<>(proxyClass);
 	}
-	
-	private final Class<I> proxyClass;
 	
 	private JdkProxyBuilder(Class<I> proxyClass) {
 		this.proxyClass = proxyClass;
@@ -74,16 +39,6 @@ public final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		catch(InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new AssertionError("Proxy class constructor must be possible to call with invocation handler", e);
 		}
-	}
-	
-	private static void checkProxyableInterface(Class<?> testedInterface) {
-		checkArgument(testedInterface.isInterface());
-		checkArgument(!testedInterface.isPrimitive());
-	}
-	
-	private static void checkClassloader(final ClassLoader classLoader, Class<?>... otherInterfaces) {
-		Stream.of(otherInterfaces)
-				.forEach(i -> checkArgument(classLoader.equals(i.getClassLoader())));
 	}
 	
 	private static class JdkInvocationHandlerAdapter implements java.lang.reflect.InvocationHandler {
