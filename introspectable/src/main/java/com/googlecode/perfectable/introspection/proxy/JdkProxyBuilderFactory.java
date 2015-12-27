@@ -9,12 +9,7 @@ import com.google.common.collect.ObjectArrays;
 import com.googlecode.perfectable.introspection.Introspection;
 
 public final class JdkProxyBuilderFactory implements ProxyBuilderFactory {
-	public static final JdkProxyBuilderFactory INSTANCE = new JdkProxyBuilderFactory();
-	
-	private JdkProxyBuilderFactory() {
-		// singleton
-	}
-	
+
 	@Override
 	public boolean supportsFeature(Feature requestedFeature) {
 		switch(requestedFeature) {

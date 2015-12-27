@@ -10,6 +10,8 @@ import org.mockito.junit.MockitoRule;
 
 public class JdkProxyBuilderTest {
 	
+	private static final JdkProxyBuilderFactory FACTORY = new JdkProxyBuilderFactory();
+	
 	@Rule
 	public final MockitoRule rule = MockitoJUnit.rule();
 	
@@ -19,7 +21,7 @@ public class JdkProxyBuilderTest {
 	@Test
 	public void testSimple() {
 		ProxyBuilder<TestFirstInterface> proxyBuilder =
-				JdkProxyBuilderFactory.INSTANCE.ofInterfaces(TestFirstInterface.class);
+				FACTORY.ofInterfaces(TestFirstInterface.class);
 		TestFirstInterface proxy = proxyBuilder.instantiate(ForwardingHandler.of(this.firstMock));
 		this.firstMock.firstMethod();
 		proxy.firstMethod();
