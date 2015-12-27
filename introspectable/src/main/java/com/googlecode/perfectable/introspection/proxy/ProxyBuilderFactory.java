@@ -2,13 +2,28 @@ package com.googlecode.perfectable.introspection.proxy;
 
 import java.util.ServiceLoader;
 
+import com.google.common.collect.ObjectArrays;
+import com.googlecode.perfectable.introspection.Introspection;
+
 public interface ProxyBuilderFactory {
 	
 	ProxyBuilder<?> ofInterfaces(Class<?>... interfaces);
 	
-	<I> ProxyBuilder<I> ofInterfacesOf(Class<? extends I> implementingClass);
+	default <I> ProxyBuilder<I> ofInterfacesOf(Class<? extends I> implementingClass) {
+		Class<?>[] interfaces = Introspection.of(implementingClass).interfaces().stream()
+				.toArray(Class[]::new);
+		// MARK this is safe almost always?
+		@SuppressWarnings("unchecked")
+		ProxyBuilder<I> builder = (ProxyBuilder<I>) ofInterfaces(interfaces);
+		return builder;
+	}
 	
-	<I> ProxyBuilder<I> ofInterfaces(Class<I> mainInterface, Class<?>... otherInterfaces);
+	default <I> ProxyBuilder<I> ofInterfaces(Class<I> mainInterface, Class<?>... otherInterfaces) {
+		Class<?>[] usedInterfaces = ObjectArrays.concat(mainInterface, otherInterfaces);
+		@SuppressWarnings("unchecked")
+		ProxyBuilder<I> casted = (ProxyBuilder<I>) ofInterfaces(usedInterfaces);
+		return casted;
+	}
 	
 	<I> ProxyBuilder<I> sameAs(I sourceInstance);
 	

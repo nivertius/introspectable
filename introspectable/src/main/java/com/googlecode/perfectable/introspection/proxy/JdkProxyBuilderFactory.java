@@ -17,32 +17,14 @@ public final class JdkProxyBuilderFactory implements ProxyBuilderFactory {
 				throw new AssertionError("Unknown feature");
 		}
 	}
-	
-	@Override
-	public <I> JdkProxyBuilder<I> ofInterfacesOf(Class<? extends I> implementingClass) {
-		Class<?>[] interfaces = Introspection.of(implementingClass).interfaces().stream()
-				.toArray(Class[]::new);
-		// MARK this is safe almost always?
-		@SuppressWarnings("unchecked")
-		final JdkProxyBuilder<I> builder = (JdkProxyBuilder<I>) ofInterfaces(interfaces);
-		return builder;
-	}
-	
+
 	@Override
 	public <I> JdkProxyBuilder<I> sameAs(I sourceInstance) {
 		@SuppressWarnings("unchecked")
 		Class<? extends I> implementingClass = (Class<? extends I>) sourceInstance.getClass();
 		return ofInterfacesOf(implementingClass);
 	}
-	
-	@Override
-	public <X> JdkProxyBuilder<X> ofInterfaces(Class<X> mainInterface, Class<?>... otherInterfaces) {
-		Class<?>[] usedInterfaces = ObjectArrays.concat(mainInterface, otherInterfaces);
-		@SuppressWarnings("unchecked")
-		JdkProxyBuilder<X> casted = (JdkProxyBuilder<X>) ofInterfaces(usedInterfaces);
-		return casted;
-	}
-	
+
 	@Override
 	public JdkProxyBuilder<?> ofInterfaces(Class<?>... interfaces) {
 		checkArgument(interfaces.length > 0);
