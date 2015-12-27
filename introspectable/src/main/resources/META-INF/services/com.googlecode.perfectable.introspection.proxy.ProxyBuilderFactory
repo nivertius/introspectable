@@ -1,1 +1,2 @@
 com.googlecode.perfectable.introspection.proxy.JdkProxyBuilderFactory
+com.googlecode.perfectable.introspection.proxy.JavassistProxyBuilderFactory
