@@ -32,7 +32,7 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		catch(NoSuchMethodException | IllegalArgumentException e) {
 			throw new AssertionError("Proxy class must have constructor with InvocationHandler", e);
 		}
-		JdkInvocationHandlerAdapter adapterHandler = JdkInvocationHandlerAdapter.adapt(handler);
+		JdkInvocationHandlerAdapter<I> adapterHandler = JdkInvocationHandlerAdapter.adapt(handler);
 		try {
 			return constructor.newInstance(adapterHandler);
 		}
@@ -41,16 +41,16 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		}
 	}
 	
-	private static class JdkInvocationHandlerAdapter implements java.lang.reflect.InvocationHandler {
+	private static class JdkInvocationHandlerAdapter<I> implements java.lang.reflect.InvocationHandler {
 		
-		private final InvocationHandler<?> handler;
+		private final InvocationHandler<I> handler;
 		
-		public JdkInvocationHandlerAdapter(InvocationHandler<?> handler) {
+		public JdkInvocationHandlerAdapter(InvocationHandler<I> handler) {
 			this.handler = handler;
 		}
 		
-		public static JdkInvocationHandlerAdapter adapt(InvocationHandler<?> handler) {
-			return new JdkInvocationHandlerAdapter(handler);
+		public static <I> JdkInvocationHandlerAdapter<I> adapt(InvocationHandler<I> handler) {
+			return new JdkInvocationHandlerAdapter<>(handler);
 		}
 		
 		@Override
@@ -58,10 +58,8 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 			// declaration uses array instead of varargs
 			checkNotNull(method);
 			@SuppressWarnings("unchecked")
-			Invocation<Object> invocation = (Invocation<Object>) Invocation.of(method, args);
-			@SuppressWarnings("unchecked")
-			InvocationHandler<Object> castedHandler = (InvocationHandler<Object>) this.handler;
-			return castedHandler.handle(invocation);
+			Invocation<I> invocation = (Invocation<I>) Invocation.of(method, args);
+			return this.handler.handle(invocation);
 		}
 		
 	}
