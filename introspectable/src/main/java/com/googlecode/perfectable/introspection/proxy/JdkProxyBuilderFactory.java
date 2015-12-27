@@ -3,26 +3,17 @@ package com.googlecode.perfectable.introspection.proxy;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.lang.reflect.Proxy;
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.stream.Stream;
-
-import com.google.common.collect.ObjectArrays;
-import com.googlecode.perfectable.introspection.Introspection;
 
 public final class JdkProxyBuilderFactory implements ProxyBuilderFactory {
 
+	private static final Set<Feature> SUPPORTED_FEATURES = EnumSet.noneOf(Feature.class);
+	
 	@Override
 	public boolean supportsFeature(Feature requestedFeature) {
-		switch(requestedFeature) {
-			default:
-				throw new AssertionError("Unknown feature");
-		}
-	}
-
-	@Override
-	public <I> JdkProxyBuilder<I> sameAs(I sourceInstance) {
-		@SuppressWarnings("unchecked")
-		Class<? extends I> implementingClass = (Class<? extends I>) sourceInstance.getClass();
-		return ofInterfacesOf(implementingClass);
+		return SUPPORTED_FEATURES.contains(requestedFeature);
 	}
 
 	@Override
@@ -34,6 +25,11 @@ public final class JdkProxyBuilderFactory implements ProxyBuilderFactory {
 		checkClassloader(classLoader, interfaces);
 		Class<?> proxyClass = Proxy.getProxyClass(classLoader, interfaces);
 		return JdkProxyBuilder.ofProxyClass(proxyClass);
+	}
+	
+	@Override
+	public <I> ProxyBuilder<I> ofClass(Class<I> sourceClass) throws UnsupportedFeatureException {
+		throw new UnsupportedFeatureException("JDK proxy cannot be created for classes");
 	}
 	
 	private static void checkClassloader(final ClassLoader classLoader, Class<?>... otherInterfaces) {

@@ -25,7 +25,13 @@ public interface ProxyBuilderFactory {
 		return casted;
 	}
 	
-	<I> ProxyBuilder<I> sameAs(I sourceInstance);
+	<I> ProxyBuilder<I> ofClass(Class<I> sourceClass) throws UnsupportedFeatureException;
+	
+	default <I> ProxyBuilder<I> sameAs(I sourceInstance) throws UnsupportedFeatureException {
+		@SuppressWarnings("unchecked")
+		Class<I> sourceClass = (Class<I>) sourceInstance.getClass();
+		return ofClass(sourceClass);
+	}
 	
 	final class UnsupportedFeatureException extends RuntimeException {
 		private static final long serialVersionUID = -1958070420118962158L;
@@ -36,7 +42,7 @@ public interface ProxyBuilderFactory {
 	}
 	
 	enum Feature {
-		// MARK no features yet
+		SUPERCLASS
 	}
 	
 	boolean supportsFeature(ProxyBuilderFactory.Feature requestedFeature);
