@@ -25,6 +25,13 @@ public interface ProxyBuilderFactory {
 		return casted;
 	}
 	
+	default <I> ProxyBuilder<I> ofInterfaceOrClass(Class<I> interfaceOrClass) throws UnsupportedFeatureException {
+		if(interfaceOrClass.isInterface()) {
+			return ofInterfaces(interfaceOrClass);
+		}
+		return ofClass(interfaceOrClass);
+	}
+	
 	<I> ProxyBuilder<I> ofClass(Class<I> sourceClass) throws UnsupportedFeatureException;
 	
 	default <I> ProxyBuilder<I> sameAs(I sourceInstance) throws UnsupportedFeatureException {

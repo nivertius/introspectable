@@ -33,6 +33,9 @@ public class JavassistProxyBuilderFactory implements ProxyBuilderFactory {
 	
 	@Override
 	public <I> ProxyBuilder<I> ofClass(Class<I> sourceClass) {
+		if(ProxyFactory.isProxyClass(sourceClass)) {
+			return createFromProxyClass(sourceClass);
+		}
 		checkArgument(!Modifier.isFinal(sourceClass.getModifiers()));
 		ProxyFactory factory = new ProxyFactory();
 		factory.setSuperclass(sourceClass);
@@ -42,6 +45,10 @@ public class JavassistProxyBuilderFactory implements ProxyBuilderFactory {
 	private static <I> ProxyBuilder<I> createFromFactory(ProxyFactory factory) {
 		@SuppressWarnings("unchecked")
 		Class<I> proxyClass = factory.createClass();
+		return createFromProxyClass(proxyClass);
+	}
+	
+	private static <I> ProxyBuilder<I> createFromProxyClass(Class<I> proxyClass) {
 		ObjectInstantiator<I> instantiator = OBJENESIS.getInstantiatorOf(proxyClass);
 		return JavassistProxyBuilder.create(instantiator);
 	}
