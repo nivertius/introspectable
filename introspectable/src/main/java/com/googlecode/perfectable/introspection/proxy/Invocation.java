@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -64,12 +65,28 @@ public final class Invocation<T> {
 	public interface Decomposer {
 		void method(Method method);
 		
-		void arguments(Object... arguments);
+		<T> void argument(int index, Class<? super T> formal, T actual);
 	}
 	
 	public void decompose(Decomposer decomposer) {
 		decomposer.method(this.method);
-		decomposer.arguments(this.arguments.clone());
+		Parameter[] parameters = this.method.getParameters();
+		int i = 0;
+		for(Object argument : this.arguments) {
+			Class<?> formal;
+			if(i < parameters.length) {
+				formal = parameters[i].getType();
+			}
+			else {
+				Parameter lastParameter = parameters[parameters.length - 1];
+				formal = lastParameter.getType();
+			}
+			@SuppressWarnings("unchecked")
+			Class<? super Object> casted = (Class<? super Object>) formal;
+			decomposer.argument(i, casted, argument);
+			i++;
+		}
+		
 	}
 	
 }
