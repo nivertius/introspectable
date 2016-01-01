@@ -17,8 +17,8 @@ final class ForwardingHandler<T> implements InvocationHandler<T> {
 	}
 	
 	@Override
-	public Object handle(Invocation<T> invocation) throws Throwable {
-		return invocation.invokeOn(this.target);
+	public Object handle(BoundInvocation<T> invocation) throws Throwable {
+		return invocation.withReceiver(this.target).invoke();
 	}
 	
 }
