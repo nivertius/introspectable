@@ -12,6 +12,4 @@ public interface Invocation {
 		
 		<T> void argument(int index, Class<? super T> formal, T actual);
 	}
-	
-	void decompose(Decomposer decomposer);
 }
