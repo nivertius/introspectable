@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.Defaults;
 import com.googlecode.perfectable.introspection.proxy.BoundInvocation;
 import com.googlecode.perfectable.introspection.proxy.InvocationHandler;
 import com.googlecode.perfectable.introspection.proxy.MethodBoundInvocation;
@@ -85,7 +86,8 @@ public final class ReferenceExtractor<T> {
 			checkState(this.executedInvocable == null);
 			MethodBoundInvocation<T> methodInvocation = (MethodBoundInvocation<T>) invocation;
 			this.executedInvocable = methodInvocation.stripArguments().stripReceiver();
-			return null;
+			Class<?> expectedResultType = this.executedInvocable.expectedResultType();
+			return Defaults.defaultValue(expectedResultType);
 		}
 		
 	}

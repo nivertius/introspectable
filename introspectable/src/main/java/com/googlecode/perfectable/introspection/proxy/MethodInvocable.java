@@ -31,6 +31,11 @@ public final class MethodInvocable implements Invocable {
 				.method(this.method);
 	}
 	
+	@Override
+	public Class<?> expectedResultType() {
+		return this.method.getReturnType();
+	}
+	
 	public boolean isDeclaredBy(Class<?> candidateDeclaringClass) {
 		return this.method.getDeclaringClass().equals(candidateDeclaringClass);
 	}

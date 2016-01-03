@@ -8,4 +8,6 @@ public interface Invocable {
 	
 	PreparedInvocable prepare(Object... arguments);
 	
+	Class<?> expectedResultType();
+	
 }
