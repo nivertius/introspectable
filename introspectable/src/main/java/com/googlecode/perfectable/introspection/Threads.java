@@ -12,7 +12,7 @@ public final class Threads {
 				try {
 					code.run();
 				}
-				catch(Throwable e) {
+				catch(Throwable e) { // NOPMD throwable caught intentionally
 					Throwables.propagate(e);
 				}
 			};
