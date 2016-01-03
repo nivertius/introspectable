@@ -58,7 +58,7 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 			// declaration uses array instead of varargs
 			checkNotNull(method);
 			@SuppressWarnings("unchecked")
-			BoundInvocation<I> invocation = (BoundInvocation<I>) Invocable.of(method).prepare(args).bind(proxy);
+			BoundInvocation<I> invocation = (BoundInvocation<I>) MethodInvocable.of(method).prepare(args).bind(proxy);
 			return this.handler.handle(invocation);
 		}
 		
