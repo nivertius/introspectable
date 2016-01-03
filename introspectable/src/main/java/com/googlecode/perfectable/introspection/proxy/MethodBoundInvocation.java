@@ -32,6 +32,11 @@ public class MethodBoundInvocation<T> implements BoundInvocation<T> {
 	}
 	
 	@Override
+	public Object invokeAs(FunctionalInvocation<T> function)
+			throws Throwable {
+		return function.invoke(this.receiver, this.arguments);
+	}
+	
 	public void decompose(Decomposer decomposer) {
 		DecompositionHelper.start(decomposer)
 				.method(this.method)

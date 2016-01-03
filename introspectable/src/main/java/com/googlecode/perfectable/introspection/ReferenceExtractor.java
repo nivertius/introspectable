@@ -50,17 +50,20 @@ public final class ReferenceExtractor<T> {
 	}
 	
 	public MethodInvocable extractNone(NoArgumentMethodReference<T> procedure) {
-		GenericMethodReference<T> reference = (self, arguments) -> procedure.execute(self);
+		GenericMethodReference<T> reference =
+				(self, arguments) -> procedure.execute(self);
 		return extractGeneric(reference);
 	}
 	
-	public <A1> MethodInvocable extractSingle(SingleArgumentMethodReference<T, A1> procedure) {
-		GenericMethodReference<T> reference = (self, arguments) -> procedure.execute(self, null);
+	public <A1> MethodInvocable extractSingle(SingleArgumentMethodReference<? super T, A1> procedure) {
+		GenericMethodReference<T> reference =
+				(self, arguments) -> procedure.execute(self, null);
 		return extractGeneric(reference);
 	}
 	
 	public <A1, A2> MethodInvocable extractDouble(DoubleArgumentMethodReference<T, A1, A2> procedure) {
-		GenericMethodReference<T> reference = (self, arguments) -> procedure.execute(self, null, null);
+		GenericMethodReference<T> reference =
+				(self, arguments) -> procedure.execute(self, null, null);
 		return extractGeneric(reference);
 	}
 	
