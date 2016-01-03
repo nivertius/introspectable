@@ -23,8 +23,8 @@ public final class MethodPreparedInvocable implements PreparedInvocable {
 	}
 	
 	@Override
-	public StaticInvocation asStatic() {
-		return StaticInvocation.of(this.method, this.arguments);
+	public MethodStaticInvocation asStatic() {
+		return MethodStaticInvocation.of(this.method, this.arguments);
 	}
 	
 	@Override
