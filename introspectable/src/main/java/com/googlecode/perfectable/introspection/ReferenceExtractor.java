@@ -85,9 +85,9 @@ public final class ReferenceExtractor<T> {
 		}
 		
 		@Override
-		public Object handle(BoundInvocation<T> invocation) throws Throwable {
+		public Object handle(BoundInvocation<? extends T> invocation) throws Throwable {
 			checkState(this.executedInvocable == null);
-			MethodBoundInvocation<T> methodInvocation = (MethodBoundInvocation<T>) invocation;
+			MethodBoundInvocation<? extends T> methodInvocation = (MethodBoundInvocation<? extends T>) invocation;
 			this.executedInvocable = methodInvocation.stripArguments().stripReceiver();
 			Class<?> expectedResultType = this.executedInvocable.expectedResultType();
 			return Defaults.defaultValue(expectedResultType);

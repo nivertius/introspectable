@@ -99,7 +99,7 @@ public class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBui
 		}
 		
 		@Override
-		public Object handle(BoundInvocation<T> invocation) throws Throwable {
+		public Object handle(BoundInvocation<? extends T> invocation) throws Throwable {
 			Invocable invocable = invocation.stripReceiver().stripArguments();
 			InvocationHandler<T> handler = this.methods.get(invocable);
 			if(handler == null) {

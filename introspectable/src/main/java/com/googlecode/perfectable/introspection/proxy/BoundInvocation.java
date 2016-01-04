@@ -12,5 +12,5 @@ public interface BoundInvocation<T> extends Invocation {
 	
 	BoundInvocable<T> stripArguments();
 	
-	Object invokeAs(FunctionalInvocation<T> function) throws Throwable;
+	Object invokeAs(FunctionalInvocation<? super T> function) throws Throwable;
 }

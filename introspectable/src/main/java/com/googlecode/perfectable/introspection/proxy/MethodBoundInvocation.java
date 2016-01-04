@@ -32,7 +32,7 @@ public class MethodBoundInvocation<T> implements BoundInvocation<T> {
 	}
 	
 	@Override
-	public Object invokeAs(FunctionalInvocation<T> function)
+	public Object invokeAs(FunctionalInvocation<? super T> function)
 			throws Throwable {
 		return function.invoke(this.receiver, this.arguments);
 	}
