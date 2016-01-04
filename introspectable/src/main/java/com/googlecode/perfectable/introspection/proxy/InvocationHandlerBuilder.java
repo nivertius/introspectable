@@ -33,6 +33,16 @@ public interface InvocationHandlerBuilder<T> {
 	
 	<R, A1> Binder<T, SingleParameterFunction<T, R, A1>> bind(SingleParameterFunction<? super T, R, A1> registered);
 	
-	InvocationHandler<T> build();
+	InvocationHandler<T> build(InvocationHandler<? super T> fallback);
+	
+	default InvocationHandler<T> build() {
+		InvocationHandler<Object> throwingHandler = new InvocationHandler<Object>() {
+			@Override
+			public Object handle(BoundInvocation<?> invocation) throws Throwable {
+				throw new UnsupportedOperationException("Unimplemented : " + invocation);
+			}
+		};
+		return build(throwingHandler);
+	}
 	
 }

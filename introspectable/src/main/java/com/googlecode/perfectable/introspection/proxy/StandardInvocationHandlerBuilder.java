@@ -86,26 +86,29 @@ public class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBui
 	}
 	
 	@Override
-	public InvocationHandler<T> build() {
-		return new DispatchingInvocationHandler<>(this.methods);
+	public InvocationHandler<T> build(InvocationHandler<? super T> fallback) {
+		return new DispatchingInvocationHandler<>(this.methods, fallback);
 	}
 	
 	private static final class DispatchingInvocationHandler<T> implements InvocationHandler<T> {
 		
+		private final InvocationHandler<? super T> fallback;
 		private final ImmutableMap<Invocable, InvocationHandler<T>> methods;
 		
-		DispatchingInvocationHandler(ImmutableMap<Invocable, InvocationHandler<T>> methods) {
+		DispatchingInvocationHandler(ImmutableMap<Invocable, InvocationHandler<T>> methods,
+				InvocationHandler<? super T> fallback) {
 			this.methods = methods;
+			this.fallback = fallback;
 		}
 		
 		@Override
 		public Object handle(BoundInvocation<? extends T> invocation) throws Throwable {
 			Invocable invocable = invocation.stripReceiver().stripArguments();
 			InvocationHandler<T> handler = this.methods.get(invocable);
-			if(handler == null) {
-				throw new UnsupportedOperationException("Invocable " + invocable + " is not supported");
+			if(handler != null) {
+				return handler.handle(invocation);
 			}
-			return handler.handle(invocation);
+			return this.fallback.handle(invocation);
 		}
 		
 	}
