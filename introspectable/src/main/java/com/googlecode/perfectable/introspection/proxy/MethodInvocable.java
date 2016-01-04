@@ -5,6 +5,9 @@ import java.util.Objects;
 
 public final class MethodInvocable implements Invocable {
 	
+	public static final MethodInvocable OBJECT_EQUALS = extractObjectMethod("equals", Object.class);
+	public static final MethodInvocable OBJECT_TO_STRING = extractObjectMethod("toString");
+	
 	private final Method method;
 	
 	public static MethodInvocable of(Method method) {
@@ -60,4 +63,16 @@ public final class MethodInvocable implements Invocable {
 	public String toString() {
 		return "Invocable.of(" + this.method.toString() + ")";
 	}
+	
+	private static MethodInvocable extractObjectMethod(String name, Class<?>... parameterTypes) {
+		Method method;
+		try {
+			method = Object.class.getDeclaredMethod(name, parameterTypes);
+		}
+		catch(NoSuchMethodException | SecurityException e) {
+			throw new AssertionError("Object is missing standard method", e);
+		}
+		return MethodInvocable.of(method);
+	}
+	
 }

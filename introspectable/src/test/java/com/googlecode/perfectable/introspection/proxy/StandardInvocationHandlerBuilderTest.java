@@ -6,8 +6,6 @@ import javax.annotation.Nullable;
 
 import org.junit.Test;
 
-import com.googlecode.perfectable.introspection.proxy.InvocationHandlerBuilder.SingleParameterFunction;
-
 @SuppressWarnings("static-method")
 public class StandardInvocationHandlerBuilderTest {
 	
@@ -24,11 +22,7 @@ public class StandardInvocationHandlerBuilderTest {
 				StandardInvocationHandlerBuilder.start(TestEntity.class)
 						.bind(TestEntity::noArgumentNoResult)
 							.to(self -> marker.insert(self))
-						.bind(Object::toString)
-							.to(self -> "some string")
-						.bind((SingleParameterFunction<TestEntity, Boolean, Object>) Object::equals)
-							.to((self, other) -> self == other)
-						.build();
+						.build(StandardObjectInvocationHandler.INSTANCE);
 		//@formatter:on
 		TestEntity proxy = PROXY_BUILDER.instantiate(handler);
 		
