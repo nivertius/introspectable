@@ -21,47 +21,60 @@ public class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBui
 	}
 	
 	@Override
-	public StandardInvocationHandlerBuilder<T> withHandling(ParameterlessProcedure<? super T> registered,
-			ParameterlessProcedure<T> handled) {
+	public Binder<T, ParameterlessProcedure<T>> bind(ParameterlessProcedure<? super T> registered) {
 		Invocable invocable = this.referenceExtractor.extractNone(registered::execute);
-		FunctionalInvocation<T> function = (T receiver, Object... arguments) -> {
-			handled.execute(receiver);
-			return null;
+		return new Binder<T, ParameterlessProcedure<T>>() {
+			@Override
+			public StandardInvocationHandlerBuilder<T> to(ParameterlessProcedure<T> executed) {
+				FunctionalInvocation<T> function = (T receiver, Object... arguments) -> {
+					executed.execute(receiver);
+					return null;
+				};
+				return withHandling(invocable, function);
+			}
 		};
-		return withHandling(invocable, function);
 	}
 	
 	@Override
-	public <A1> StandardInvocationHandlerBuilder<T> withHandling(SingleParameterProcedure<? super T, A1> registered,
-			SingleParameterProcedure<T, A1> handled) {
+	public <A1> Binder<T, SingleParameterProcedure<T, A1>> bind(SingleParameterProcedure<? super T, A1> registered) {
 		Invocable invocable = this.referenceExtractor.extractSingle(registered::execute);
-		@SuppressWarnings("unchecked")
-		FunctionalInvocation<T> function = (T receiver, Object... arguments) -> {
-			handled.execute(receiver, (A1) arguments[0]);
-			return null;
+		return new Binder<T, SingleParameterProcedure<T, A1>>() {
+			@Override
+			public StandardInvocationHandlerBuilder<T> to(SingleParameterProcedure<T, A1> executed) {
+				@SuppressWarnings("unchecked")
+				FunctionalInvocation<T> function = (T receiver, Object... arguments) -> {
+					executed.execute(receiver, (A1) arguments[0]);
+					return null;
+				};
+				return withHandling(invocable, function);
+			}
 		};
-		return withHandling(invocable, function);
 	}
 	
 	@Override
-	public <R> StandardInvocationHandlerBuilder<T> withHandling(ParameterlessFunction<? super T, R> registered,
-			ParameterlessFunction<T, R> handled) {
+	public <R> Binder<T, ParameterlessFunction<T, R>> bind(ParameterlessFunction<? super T, R> registered) {
 		Invocable invocable = this.referenceExtractor.extractNone(registered::execute);
-		FunctionalInvocation<T> function = (T receiver, Object... arguments) -> {
-			return handled.execute(receiver);
+		return new Binder<T, ParameterlessFunction<T, R>>() {
+			@Override
+			public StandardInvocationHandlerBuilder<T> to(ParameterlessFunction<T, R> executed) {
+				FunctionalInvocation<T> function = (T receiver, Object... arguments) -> executed.execute(receiver);
+				return withHandling(invocable, function);
+			}
 		};
-		return withHandling(invocable, function);
 	}
 	
 	@Override
-	public <R, A1> StandardInvocationHandlerBuilder<T> withHandling(SingleParameterFunction<? super T, R, A1> registered,
-			SingleParameterFunction<T, R, A1> handled) {
+	public <R, A1> Binder<T, SingleParameterFunction<T, R, A1>> bind(SingleParameterFunction<? super T, R, A1> registered) {
 		Invocable invocable = this.referenceExtractor.extractSingle(registered::execute);
-		@SuppressWarnings("unchecked")
-		FunctionalInvocation<T> function = (T receiver, Object... arguments) -> {
-			return handled.execute(receiver, (A1) arguments[0]);
+		return new Binder<T, SingleParameterFunction<T, R, A1>>() {
+			@Override
+			public StandardInvocationHandlerBuilder<T> to(SingleParameterFunction<T, R, A1> executed) {
+				@SuppressWarnings("unchecked")
+				FunctionalInvocation<T> function =
+						(T receiver, Object... arguments) -> executed.execute(receiver, (A1) arguments[0]);
+				return withHandling(invocable, function);
+			}
 		};
-		return withHandling(invocable, function);
 	}
 	
 	private StandardInvocationHandlerBuilder<T> withHandling(Invocable invocable, FunctionalInvocation<T> function) {

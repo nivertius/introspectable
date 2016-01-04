@@ -1,6 +1,10 @@
 package com.googlecode.perfectable.introspection.proxy;
 
 public interface InvocationHandlerBuilder<T> {
+	interface Binder<T, B> {
+		InvocationHandlerBuilder<T> to(B executed);
+	}
+	
 	@FunctionalInterface
 	interface ParameterlessProcedure<T> {
 		void execute(T self);
@@ -21,17 +25,13 @@ public interface InvocationHandlerBuilder<T> {
 		R execute(T self, A1 argument);
 	}
 	
-	InvocationHandlerBuilder<T> withHandling(ParameterlessProcedure<? super T> registered,
-			ParameterlessProcedure<T> handled);
+	Binder<T, ParameterlessProcedure<T>> bind(ParameterlessProcedure<? super T> registered);
 	
-	<R> InvocationHandlerBuilder<T> withHandling(ParameterlessFunction<? super T, R> registered,
-			ParameterlessFunction<T, R> handled);
+	<R> Binder<T, ParameterlessFunction<T, R>> bind(ParameterlessFunction<? super T, R> registered);
 	
-	<A1> InvocationHandlerBuilder<T> withHandling(SingleParameterProcedure<? super T, A1> registered,
-			SingleParameterProcedure<T, A1> handled);
+	<A1> Binder<T, SingleParameterProcedure<T, A1>> bind(SingleParameterProcedure<? super T, A1> registered);
 	
-	<R, A1> InvocationHandlerBuilder<T> withHandling(SingleParameterFunction<? super T, R, A1> registered,
-			SingleParameterFunction<T, R, A1> handled);
+	<R, A1> Binder<T, SingleParameterFunction<T, R, A1>> bind(SingleParameterFunction<? super T, R, A1> registered);
 	
 	InvocationHandler<T> build();
 	
