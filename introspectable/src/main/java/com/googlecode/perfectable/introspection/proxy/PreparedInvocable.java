@@ -1,11 +1,16 @@
 package com.googlecode.perfectable.introspection.proxy;
 
-public interface PreparedInvocable {
+@FunctionalInterface
+public interface PreparedInvocable<T> {
 	
-	<T> BoundInvocation<T> bind(T receiver);
+	Object invoke(T receiver) throws Throwable;
 	
-	StaticInvocation asStatic();
+	default BoundInvocation<T> bind(T receiver) {
+		return () -> invoke(receiver);
+	}
 	
-	Invocable stripArguments();
-
+	default StaticInvocation asStatic() {
+		return () -> invoke(null); // MARK
+	}
+	
 }

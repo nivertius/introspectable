@@ -1,5 +1,6 @@
 package com.googlecode.perfectable.introspection.proxy;
 
+
 final class ForwardingHandler<T> implements InvocationHandler<T> {
 	
 	private T target;
@@ -18,7 +19,11 @@ final class ForwardingHandler<T> implements InvocationHandler<T> {
 	
 	@Override
 	public Object handle(BoundInvocation<? extends T> invocation) throws Throwable {
-		return ((BoundInvocation<T>) invocation).withReceiver(this.target).invoke(); // MARK unchecked
+		MethodBoundInvocation<? extends T> methodInvocation = (MethodBoundInvocation<? extends T>) invocation;
+		MethodBoundInvocationMappingDecomposer<T> decomposer =
+				MethodBoundInvocationMappingDecomposer.<T> identity().withReceiverTransformer(receiver -> this.target);
+		BoundInvocation<? extends Object> replaced = methodInvocation.decompose(decomposer);
+		return replaced.invoke();
 	}
 	
 }

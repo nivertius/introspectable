@@ -88,10 +88,12 @@ public final class ReferenceExtractor<T> {
 		public Object handle(BoundInvocation<? extends T> invocation) throws Throwable {
 			checkState(this.executedMethod == null);
 			MethodBoundInvocation<? extends T> methodInvocation = (MethodBoundInvocation<? extends T>) invocation;
-			final MethodBoundInvocation.Decomposer<T> decomposer = new MethodBoundInvocation.Decomposer<T>() {
+			final MethodBoundInvocation.Decomposer<Method, T> decomposer = new MethodBoundInvocation.Decomposer<Method, T>() {
+				private Method foundMethod;
+				
 				@Override
 				public void method(Method method) {
-					ProcedureTestingHandler.this.executedMethod = method;
+					this.foundMethod = method;
 				}
 				
 				@Override
@@ -103,8 +105,13 @@ public final class ReferenceExtractor<T> {
 				public <X> void argument(int index, Class<? super X> formal, X actual) {
 					// ignored
 				}
+				
+				@Override
+				public Method finish() {
+					return this.foundMethod;
+				}
 			};
-			methodInvocation.decompose(decomposer);
+			this.executedMethod = methodInvocation.decompose(decomposer);
 			Class<?> expectedResultType = this.executedMethod.getReturnType();
 			return Defaults.defaultValue(expectedResultType);
 		}

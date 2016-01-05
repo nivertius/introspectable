@@ -2,19 +2,20 @@ package com.googlecode.perfectable.introspection.proxy;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.annotation.Nullable;
 
-public final class MethodPreparedInvocable implements PreparedInvocable {
+public final class MethodPreparedInvocable<T> implements PreparedInvocable<T> {
 	
 	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
 	
 	private final Method method;
 	private final Object[] arguments;
 	
-	public static MethodPreparedInvocable of(Method method, @Nullable Object... arguments) {
-		return new MethodPreparedInvocable(method, arguments);
+	public static MethodPreparedInvocable<?> of(Method method, @Nullable Object... arguments) {
+		return new MethodPreparedInvocable<>(method, arguments);
 	}
 	
 	private MethodPreparedInvocable(Method method, @Nullable Object... arguments) {
@@ -23,30 +24,43 @@ public final class MethodPreparedInvocable implements PreparedInvocable {
 	}
 	
 	@Override
+	public Object invoke(T receiver) throws Throwable {
+		try {
+			return this.method.invoke(receiver, this.arguments);
+		}
+		catch(InvocationTargetException e) {
+			throw e.getCause();
+		}
+	}
+	
+	@Override
 	public MethodStaticInvocation asStatic() {
 		return MethodStaticInvocation.of(this.method, this.arguments);
 	}
 	
 	@Override
-	public <T> MethodBoundInvocation<T> bind(T receiver) {
+	public MethodBoundInvocation<T> bind(T receiver) {
 		checkNotNull(receiver);
 		return MethodBoundInvocation.of(this.method, receiver, this.arguments);
 	}
 	
-	public interface Decomposer {
+	public interface Decomposer<R> {
 		void method(Method method);
 		
 		<T> void argument(int index, Class<? super T> formal, T actual);
+		
+		R finish();
 	}
 	
-	public void decompose(Decomposer decomposer) {
+	public <R> R decompose(Decomposer<R> decomposer) {
 		decomposer.method(this.method);
 		DecompositionHelper.decomposeArguments(this.method, this.arguments, decomposer::argument);
+		return decomposer.finish();
 	}
 	
-	@Override
-	public Invocable stripArguments() {
-		Invocable safeInvocable = MethodInvocable.of(this.method);
+	@SuppressWarnings("unchecked")
+	public MethodInvocable<T> stripArguments() {
+		MethodInvocable<T> safeInvocable = (MethodInvocable<T>) MethodInvocable.of(this.method);
 		return safeInvocable;
 	}
 	

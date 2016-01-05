@@ -1,9 +1,12 @@
 package com.googlecode.perfectable.introspection.proxy;
 
+@FunctionalInterface
 public interface BoundInvocable<T> {
 	
-	BoundInvocation<T> prepare(Object... arguments);
+	Object invoke(Object... arguments) throws Throwable;
 	
-	Invocable stripReceiver();
+	default BoundInvocation<T> prepare(Object... arguments) {
+		return () -> invoke(arguments);
+	}
 	
 }

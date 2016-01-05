@@ -1,10 +1,11 @@
 package com.googlecode.perfectable.introspection.proxy;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.lang.reflect.Method;
 
 import com.google.common.collect.ImmutableMap;
 import com.googlecode.perfectable.introspection.ReferenceExtractor;
-import com.googlecode.perfectable.introspection.proxy.BoundInvocation.FunctionalInvocation;
 
 public class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBuilder<T> {
 	private final ReferenceExtractor<T> referenceExtractor;
@@ -28,7 +29,7 @@ public class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBui
 		return new Binder<T, ParameterlessProcedure<T>>() {
 			@Override
 			public StandardInvocationHandlerBuilder<T> to(ParameterlessProcedure<T> executed) {
-				FunctionalInvocation<T> function = (T receiver, Object... arguments) -> {
+				Invocable<T> function = (T receiver, Object... arguments) -> {
 					executed.execute(receiver);
 					return null;
 				};
@@ -44,7 +45,7 @@ public class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBui
 			@Override
 			public StandardInvocationHandlerBuilder<T> to(SingleParameterProcedure<T, A1> executed) {
 				@SuppressWarnings("unchecked")
-				FunctionalInvocation<T> function = (T receiver, Object... arguments) -> {
+				Invocable<T> function = (T receiver, Object... arguments) -> {
 					executed.execute(receiver, (A1) arguments[0]);
 					return null;
 				};
@@ -59,7 +60,7 @@ public class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBui
 		return new Binder<T, ParameterlessFunction<T, R>>() {
 			@Override
 			public StandardInvocationHandlerBuilder<T> to(ParameterlessFunction<T, R> executed) {
-				FunctionalInvocation<T> function = (T receiver, Object... arguments) -> executed.execute(receiver);
+				Invocable<T> function = (T receiver, Object... arguments) -> executed.execute(receiver);
 				return withHandling(method, function);
 			}
 		};
@@ -72,15 +73,24 @@ public class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBui
 			@Override
 			public StandardInvocationHandlerBuilder<T> to(SingleParameterFunction<T, R, A1> executed) {
 				@SuppressWarnings("unchecked")
-				FunctionalInvocation<T> function =
+				Invocable<T> function =
 						(T receiver, Object... arguments) -> executed.execute(receiver, (A1) arguments[0]);
 				return withHandling(method, function);
 			}
 		};
 	}
 	
-	private StandardInvocationHandlerBuilder<T> withHandling(Method invocable, FunctionalInvocation<T> function) {
-		InvocationHandler<T> handler = invocation -> invocation.invokeAs(function);
+	private StandardInvocationHandlerBuilder<T> withHandling(Method invocable, Invocable<T> replacement) {
+		MethodBoundInvocationMappingDecomposer<T> decomposer =
+				MethodBoundInvocationMappingDecomposer.<T> identity().withMethodTransformer(method -> replacement);
+		InvocationHandler<T> handler = new InvocationHandler<T>() {
+			@Override
+			public Object handle(BoundInvocation<? extends T> invocation) throws Throwable {
+				@SuppressWarnings("unchecked")
+				MethodBoundInvocation<T> methodInvocation = (MethodBoundInvocation<T>) invocation;
+				return methodInvocation.decompose(decomposer).invoke();
+			}
+		};
 		ImmutableMap<Method, InvocationHandler<? super T>> newMethods =
 				ImmutableMap.<Method, InvocationHandler<? super T>> builder().putAll(this.methods).put(invocable, handler)
 						.build();
@@ -94,7 +104,8 @@ public class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBui
 	
 	private static final class DispatchingInvocationHandler<T> implements InvocationHandler<T> {
 		
-		private final class MethodDispatchingDecomposer implements MethodBoundInvocation.Decomposer<T> {
+		private final class MethodDispatchingDecomposer implements
+				MethodBoundInvocation.Decomposer<InvocationHandler<? super T>, T> {
 			private InvocationHandler<? super T> handler;
 			
 			@Override
@@ -113,8 +124,10 @@ public class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBui
 				// ignored
 			}
 			
-			public Object dispatch(BoundInvocation<? extends T> invocation) throws Throwable {
-				return this.handler.handle(invocation);
+			@Override
+			public InvocationHandler<? super T> finish() {
+				checkNotNull(this.handler);
+				return this.handler;
 			}
 		}
 		
@@ -130,9 +143,8 @@ public class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBui
 		@Override
 		public Object handle(BoundInvocation<? extends T> invocation) throws Throwable {
 			MethodBoundInvocation<? extends T> methodInvocation = (MethodBoundInvocation<? extends T>) invocation;
-			final MethodDispatchingDecomposer decomposer = new MethodDispatchingDecomposer();
-			methodInvocation.decompose(decomposer);
-			return decomposer.dispatch(invocation);
+			InvocationHandler<? super T> handler = methodInvocation.decompose(new MethodDispatchingDecomposer());
+			return handler.handle(invocation);
 		}
 		
 	}

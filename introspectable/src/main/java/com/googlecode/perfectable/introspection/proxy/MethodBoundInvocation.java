@@ -31,37 +31,28 @@ public class MethodBoundInvocation<T> implements BoundInvocation<T> {
 		}
 	}
 	
-	@Override
-	public Object invokeAs(FunctionalInvocation<? super T> function)
-			throws Throwable {
-		return function.invoke(this.receiver, this.arguments);
-	}
-	
-	public interface Decomposer<T> {
+	public interface Decomposer<R, T> {
 		void method(Method method);
 		
 		void receiver(T receiver);
 		
 		<X> void argument(int index, Class<? super X> formal, X actual);
+		
+		R finish();
 	}
 	
-	public void decompose(Decomposer<? super T> decomposer) {
+	public <R> R decompose(Decomposer<R, ? super T> decomposer) {
 		decomposer.method(this.method);
 		decomposer.receiver(this.receiver);
 		DecompositionHelper.decomposeArguments(this.method, this.arguments, decomposer::argument);
+		return decomposer.finish();
 	}
 	
-	@Override
-	public MethodBoundInvocation<T> withReceiver(T newReceiver) {
-		return of(this.method, newReceiver, this.arguments);
+	@SuppressWarnings("unchecked")
+	public MethodPreparedInvocable<T> stripReceiver() {
+		return (MethodPreparedInvocable<T>) MethodPreparedInvocable.of(this.method, this.arguments);
 	}
 	
-	@Override
-	public MethodPreparedInvocable stripReceiver() {
-		return MethodPreparedInvocable.of(this.method, this.arguments);
-	}
-	
-	@Override
 	public MethodBoundInvocable<T> stripArguments() {
 		return MethodBoundInvocable.of(this.method, this.receiver);
 	}

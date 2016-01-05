@@ -16,15 +16,18 @@ public final class MethodStaticInvocation implements StaticInvocation {
 		this.arguments = arguments;
 	}
 	
-	public interface Decomposer {
+	public interface Decomposer<R> {
 		void method(Method method);
 		
 		<X> void argument(int index, Class<? super X> formal, X actual);
+		
+		R finish();
 	}
 	
-	public void decompose(Decomposer decomposer) {
+	public <R> R decompose(Decomposer<R> decomposer) {
 		decomposer.method(this.method);
 		DecompositionHelper.decomposeArguments(this.method, this.arguments, decomposer::argument);
+		return decomposer.finish();
 	}
 	
 	@Override
@@ -38,8 +41,7 @@ public final class MethodStaticInvocation implements StaticInvocation {
 		}
 	}
 	
-	@Override
-	public Invocable stripArguments() {
+	public MethodInvocable<?> stripArguments() {
 		return MethodInvocable.of(this.method);
 	}
 }

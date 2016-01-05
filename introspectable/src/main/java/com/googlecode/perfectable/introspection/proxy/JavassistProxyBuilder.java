@@ -43,7 +43,10 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 		public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable { // NOPMD
 			// declaration uses array instead of varargs
 			@SuppressWarnings("unchecked")
-			BoundInvocation<I> invocation = (BoundInvocation<I>) MethodInvocable.of(thisMethod).prepare(args).bind(self);
+			MethodInvocable<I> invocable = (MethodInvocable<I>) MethodInvocable.of(thisMethod);
+			@SuppressWarnings("unchecked")
+			final I castedSelf = (I) self;
+			BoundInvocation<I> invocation = invocable.prepare(args).bind(castedSelf);
 			return this.handler.handle(invocation);
 		}
 	}

@@ -1,5 +1,6 @@
 package com.googlecode.perfectable.introspection.proxy;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
@@ -17,24 +18,37 @@ public final class MethodBoundInvocable<T> implements BoundInvocable<T> {
 	}
 	
 	@Override
+	public Object invoke(Object... arguments) throws Throwable {
+		try {
+			return this.method.invoke(this.receiver, arguments);
+		}
+		catch(InvocationTargetException e) {
+			throw e.getCause();
+		}
+	}
+	
+	@Override
 	public MethodBoundInvocation<T> prepare(Object... arguments) {
 		return MethodBoundInvocation.of(this.method, this.receiver, arguments);
 	}
 	
-	@Override
-	public MethodInvocable stripReceiver() {
-		return MethodInvocable.of(this.method);
+	@SuppressWarnings("unchecked")
+	public MethodInvocable<T> stripReceiver() {
+		return (MethodInvocable<T>) MethodInvocable.of(this.method);
 	}
 	
-	public interface Decomposer<T> {
+	public interface Decomposer<R, T> {
 		void method(Method method);
 		
 		void receiver(T receiver);
+		
+		R finish();
 	}
 	
-	public void decompose(Decomposer<? super T> decomposer) {
+	public <R> R decompose(Decomposer<R, ? super T> decomposer) {
 		decomposer.method(this.method);
 		decomposer.receiver(this.receiver);
+		return decomposer.finish();
 	}
 	
 	@Override
