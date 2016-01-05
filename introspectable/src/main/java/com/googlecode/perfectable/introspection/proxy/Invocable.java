@@ -5,7 +5,4 @@ public interface Invocable {
 	<T> BoundInvocable<T> bind(T receiver);
 	
 	PreparedInvocable prepare(Object... arguments);
-	
-	Class<?> expectedResultType();
-	
 }

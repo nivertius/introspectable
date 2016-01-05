@@ -6,26 +6,23 @@ import java.lang.reflect.Method;
 
 import org.junit.Test;
 
-import com.googlecode.perfectable.introspection.proxy.Invocable;
-import com.googlecode.perfectable.introspection.proxy.MethodInvocable;
-
 @SuppressWarnings("static-method")
 public class ReferenceExtractorTest {
 	
 	interface TestInterface {
-		Invocable NO_RESULT_NO_ARGUMENT =
-				extractInvocable(TestInterface.class, "noResultNoArgument");
-		Invocable NO_RESULT_SINGLE_ARGUMENT =
-				extractInvocable(TestInterface.class, "noResultSingleArgument", Object.class);
-		Invocable NO_RESULT_DOUBLE_ARGUMENT =
-				extractInvocable(TestInterface.class, "noResultDoubleArgument", Object.class, Object.class);
+		Method NO_RESULT_NO_ARGUMENT =
+				extractMethod(TestInterface.class, "noResultNoArgument");
+		Method NO_RESULT_SINGLE_ARGUMENT =
+				extractMethod(TestInterface.class, "noResultSingleArgument", Object.class);
+		Method NO_RESULT_DOUBLE_ARGUMENT =
+				extractMethod(TestInterface.class, "noResultDoubleArgument", Object.class, Object.class);
 		
-		Invocable WITH_RESULT_NO_ARGUMENT =
-				extractInvocable(TestInterface.class, "withResultNoArgument");
-		Invocable WITH_RESULT_SINGLE_ARGUMENT =
-				extractInvocable(TestInterface.class, "withResultSingleArgument", Object.class);
-		Invocable WITH_RESULT_DOUBLE_ARGUMENT =
-				extractInvocable(TestInterface.class, "withResultDoubleArgument", Object.class, Object.class);
+		Method WITH_RESULT_NO_ARGUMENT =
+				extractMethod(TestInterface.class, "withResultNoArgument");
+		Method WITH_RESULT_SINGLE_ARGUMENT =
+				extractMethod(TestInterface.class, "withResultSingleArgument", Object.class);
+		Method WITH_RESULT_DOUBLE_ARGUMENT =
+				extractMethod(TestInterface.class, "withResultDoubleArgument", Object.class, Object.class);
 		
 		void noResultNoArgument();
 		
@@ -43,54 +40,52 @@ public class ReferenceExtractorTest {
 	
 	@Test
 	public void testNoResultNoArgument() {
-		Invocable extracted =
+		Method extracted =
 				ReferenceExtractor.of(TestInterface.class).extractNone(TestInterface::noResultNoArgument);
 		assertThat(extracted).isEqualTo(TestInterface.NO_RESULT_NO_ARGUMENT);
 	}
 	
 	@Test
 	public void testNoResultSingleArgument() {
-		Invocable extracted =
+		Method extracted =
 				ReferenceExtractor.of(TestInterface.class).extractSingle(TestInterface::noResultSingleArgument);
 		assertThat(extracted).isEqualTo(TestInterface.NO_RESULT_SINGLE_ARGUMENT);
 	}
 	
 	@Test
 	public void testNoResultDoubleArgument() {
-		Invocable extracted =
+		Method extracted =
 				ReferenceExtractor.of(TestInterface.class).extractDouble(TestInterface::noResultDoubleArgument);
 		assertThat(extracted).isEqualTo(TestInterface.NO_RESULT_DOUBLE_ARGUMENT);
 	}
 	
 	@Test
 	public void testWithResultNoArgument() {
-		Invocable extracted =
+		Method extracted =
 				ReferenceExtractor.of(TestInterface.class).extractNone(TestInterface::withResultNoArgument);
 		assertThat(extracted).isEqualTo(TestInterface.WITH_RESULT_NO_ARGUMENT);
 	}
 	
 	@Test
 	public void testWithResultSingleArgument() {
-		Invocable extracted =
+		Method extracted =
 				ReferenceExtractor.of(TestInterface.class).extractSingle(TestInterface::withResultSingleArgument);
 		assertThat(extracted).isEqualTo(TestInterface.WITH_RESULT_SINGLE_ARGUMENT);
 	}
 	
 	@Test
 	public void testWithResultDoubleArgument() {
-		Invocable extracted =
+		Method extracted =
 				ReferenceExtractor.of(TestInterface.class).extractDouble(TestInterface::withResultDoubleArgument);
 		assertThat(extracted).isEqualTo(TestInterface.WITH_RESULT_DOUBLE_ARGUMENT);
 	}
 	
-	private static Invocable extractInvocable(Class<?> declaringClass, String name, Class<?>... parameterTypes) {
-		Method method;
+	private static Method extractMethod(Class<?> declaringClass, String name, Class<?>... parameterTypes) {
 		try {
-			method = declaringClass.getDeclaredMethod(name, parameterTypes);
+			return declaringClass.getDeclaredMethod(name, parameterTypes);
 		}
 		catch(NoSuchMethodException | SecurityException e) {
 			throw new AssertionError(e);
 		}
-		return MethodInvocable.of(method);
 	}
 }
