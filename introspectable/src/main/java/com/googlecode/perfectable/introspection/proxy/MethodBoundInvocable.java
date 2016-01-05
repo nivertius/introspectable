@@ -26,10 +26,15 @@ public final class MethodBoundInvocable<T> implements BoundInvocable<T> {
 		return MethodInvocable.of(this.method);
 	}
 	
-	public void decompose(Invocation.Decomposer decomposer) {
-		DecompositionHelper.start(decomposer)
-				.method(this.method)
-				.receiver(this.receiver);
+	public interface Decomposer<T> {
+		void method(Method method);
+		
+		void receiver(T receiver);
+	}
+	
+	public void decompose(Decomposer<? super T> decomposer) {
+		decomposer.method(this.method);
+		decomposer.receiver(this.receiver);
 	}
 	
 	@Override

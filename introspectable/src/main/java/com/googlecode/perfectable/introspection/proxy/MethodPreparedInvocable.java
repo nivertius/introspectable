@@ -33,10 +33,15 @@ public final class MethodPreparedInvocable implements PreparedInvocable {
 		return MethodBoundInvocation.of(this.method, receiver, this.arguments);
 	}
 	
-	public void decompose(Invocation.Decomposer decomposer) {
-		DecompositionHelper.start(decomposer)
-				.method(this.method)
-				.arguments(this.arguments);
+	public interface Decomposer {
+		void method(Method method);
+		
+		<T> void argument(int index, Class<? super T> formal, T actual);
+	}
+	
+	public void decompose(Decomposer decomposer) {
+		decomposer.method(this.method);
+		DecompositionHelper.decomposeArguments(this.method, this.arguments, decomposer::argument);
 	}
 	
 	@Override

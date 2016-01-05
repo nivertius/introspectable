@@ -28,9 +28,12 @@ public final class MethodInvocable implements Invocable {
 		return MethodBoundInvocable.of(this.method, receiver);
 	}
 	
-	public void decompose(Invocation.Decomposer decomposer) {
-		DecompositionHelper.start(decomposer)
-				.method(this.method);
+	public interface Decomposer {
+		void method(Method method);
+	}
+	
+	public void decompose(Decomposer decomposer) {
+		decomposer.method(this.method);
 	}
 	
 	@Override

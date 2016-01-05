@@ -37,11 +37,18 @@ public class MethodBoundInvocation<T> implements BoundInvocation<T> {
 		return function.invoke(this.receiver, this.arguments);
 	}
 	
-	public void decompose(Decomposer decomposer) {
-		DecompositionHelper.start(decomposer)
-				.method(this.method)
-				.receiver(this.receiver)
-				.arguments(this.arguments);
+	public interface Decomposer<T> {
+		void method(Method method);
+		
+		void receiver(T receiver);
+		
+		<X> void argument(int index, Class<? super X> formal, X actual);
+	}
+	
+	public void decompose(Decomposer<? super T> decomposer) {
+		decomposer.method(this.method);
+		decomposer.receiver(this.receiver);
+		DecompositionHelper.decomposeArguments(this.method, this.arguments, decomposer::argument);
 	}
 	
 	@Override

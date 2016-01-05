@@ -16,10 +16,15 @@ public final class MethodStaticInvocation implements StaticInvocation {
 		this.arguments = arguments;
 	}
 	
-	public void decompose(Invocation.Decomposer decomposer) {
-		DecompositionHelper.start(decomposer)
-				.method(this.method)
-				.arguments(this.arguments);
+	public interface Decomposer {
+		void method(Method method);
+		
+		<X> void argument(int index, Class<? super X> formal, X actual);
+	}
+	
+	public void decompose(Decomposer decomposer) {
+		decomposer.method(this.method);
+		DecompositionHelper.decomposeArguments(this.method, this.arguments, decomposer::argument);
 	}
 	
 	@Override
