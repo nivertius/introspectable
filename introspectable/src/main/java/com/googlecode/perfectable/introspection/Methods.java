@@ -6,9 +6,9 @@ import java.util.Optional;
 
 public final class Methods {
 	
-	public static final Method OBJECT_EQUALS = extractObjectMethod("equals", Object.class);
-	public static final Method OBJECT_TO_STRING = extractObjectMethod("toString");
-	public static final Method OBJECT_FINALIZE = extractObjectMethod("finalize");
+	public static final Method OBJECT_EQUALS = safeExtract(Object.class, "equals", Object.class);
+	public static final Method OBJECT_TO_STRING = safeExtract(Object.class, "toString");
+	public static final Method OBJECT_FINALIZE = safeExtract(Object.class, "finalize");
 	
 	public static Optional<Method> similar(Class<?> sourceClass, Method otherClassMethod) {
 		final String methodName = otherClassMethod.getName();
@@ -17,6 +17,16 @@ public final class Methods {
 			throw new IllegalArgumentException();
 		}
 		return find(sourceClass, methodName, methodParameterTypes);
+	}
+	
+	public static Method safeExtract(Class<?> declaringClass, String name, Class<?>... parameterTypes)
+			throws AssertionError {
+		try {
+			return declaringClass.getDeclaredMethod(name, parameterTypes);
+		}
+		catch(NoSuchMethodException e) {
+			throw new AssertionError("Method which is expected to exist is missing", e);
+		}
 	}
 	
 	@Deprecated
@@ -62,15 +72,6 @@ public final class Methods {
 	
 	private static String capitalizeWithPrefix(String prefix, String name) {
 		return prefix + name.substring(0, 1).toUpperCase() + name.substring(1);
-	}
-	
-	private static Method extractObjectMethod(String name, Class<?>... parameterTypes) {
-		try {
-			return Object.class.getDeclaredMethod(name, parameterTypes);
-		}
-		catch(NoSuchMethodException | SecurityException e) {
-			throw new AssertionError("Object is missing standard method", e);
-		}
 	}
 	
 	private Methods() {

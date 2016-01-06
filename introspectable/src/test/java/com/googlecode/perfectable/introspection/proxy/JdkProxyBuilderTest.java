@@ -8,6 +8,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import com.googlecode.perfectable.introspection.Methods;
+
 public class JdkProxyBuilderTest {
 	
 	private static final JdkProxyBuilderFactory FACTORY = new JdkProxyBuilderFactory();
@@ -29,19 +31,10 @@ public class JdkProxyBuilderTest {
 	
 	interface TestFirstInterface {
 		
-		Method FIRST_METHOD = getMethodSafe(TestFirstInterface.class, "firstMethod");
+		Method FIRST_METHOD = Methods.safeExtract(TestFirstInterface.class, "firstMethod");
 		
 		void firstMethod();
 		
-	}
-	
-	public static Method getMethodSafe(Class<?> declaringClass, String methodName, Class<?>... parameterTypes) {
-		try {
-			return declaringClass.getDeclaredMethod(methodName, parameterTypes);
-		}
-		catch(NoSuchMethodException | SecurityException e) {
-			throw new AssertionError("Extracted method must exist", e);
-		}
 	}
 	
 }

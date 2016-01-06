@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import com.googlecode.perfectable.introspection.Methods;
+
 public class JavassistProxyBuilderTest {
 	
 	private static final JavassistProxyBuilderFactory FACTORY = new JavassistProxyBuilderFactory();
@@ -92,12 +94,7 @@ public class JavassistProxyBuilderTest {
 	}
 	
 	public static Method getMethodSafe(Class<?> declaringClass, String methodName, Class<?>... parameterTypes) {
-		try {
-			return declaringClass.getDeclaredMethod(methodName, parameterTypes);
-		}
-		catch(NoSuchMethodException | SecurityException e) {
-			throw new AssertionError("Extracted method must exist", e);
-		}
+		return Methods.safeExtract(declaringClass, methodName, parameterTypes);
 	}
 	
 }
