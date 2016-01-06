@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.lang.reflect.Modifier;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javassist.util.proxy.ProxyFactory;
 
@@ -26,19 +27,24 @@ public class JavassistProxyBuilderFactory implements ProxyBuilderFactory {
 	
 	@Override
 	public ProxyBuilder<?> ofInterfaces(Class<?>... interfaces) {
+		checkArgument(interfaces.length > 0);
+		Stream.of(interfaces).forEach(ProxyBuilderFactory::checkProxyableInterface);
 		ProxyFactory factory = new ProxyFactory();
 		factory.setInterfaces(interfaces);
 		return createFromFactory(factory);
 	}
 	
 	@Override
-	public <I> ProxyBuilder<I> ofClass(Class<I> sourceClass) {
-		if(ProxyFactory.isProxyClass(sourceClass)) {
+	public <I> ProxyBuilder<I> ofClass(Class<I> sourceClass, Class<?>... additionalInterfaces) {
+		checkArgument(!Modifier.isFinal(sourceClass.getModifiers()));
+		Stream.of(additionalInterfaces).forEach(ProxyBuilderFactory::checkProxyableInterface);
+		if(ProxyFactory.isProxyClass(sourceClass) &&
+				Stream.of(additionalInterfaces).allMatch(i -> i.isAssignableFrom(sourceClass))) {
 			return createFromProxyClass(sourceClass);
 		}
-		checkArgument(!Modifier.isFinal(sourceClass.getModifiers()));
 		ProxyFactory factory = new ProxyFactory();
 		factory.setSuperclass(sourceClass);
+		factory.setInterfaces(additionalInterfaces);
 		return createFromFactory(factory);
 	}
 	

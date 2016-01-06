@@ -1,6 +1,9 @@
 package com.googlecode.perfectable.introspection.proxy;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.ServiceLoader;
+import java.util.stream.Stream;
 
 import com.google.common.collect.ObjectArrays;
 import com.googlecode.perfectable.introspection.Introspection;
@@ -25,14 +28,16 @@ public interface ProxyBuilderFactory {
 		return casted;
 	}
 	
-	default <I> ProxyBuilder<I> ofType(Class<I> type) throws UnsupportedFeatureException {
+	default <I> ProxyBuilder<I> ofType(Class<I> type, Class<?>... additionalInterfaces)
+			throws UnsupportedFeatureException {
 		if(type.isInterface()) {
-			return ofInterfaces(type);
+			return ofInterfaces(type, additionalInterfaces);
 		}
-		return ofClass(type);
+		return ofClass(type, additionalInterfaces);
 	}
 	
-	<I> ProxyBuilder<I> ofClass(Class<I> sourceClass) throws UnsupportedFeatureException;
+	<I> ProxyBuilder<I> ofClass(Class<I> sourceClass, Class<?>... additionalInterfaces)
+			throws UnsupportedFeatureException;
 	
 	default <I> ProxyBuilder<I> sameAs(I sourceInstance) throws UnsupportedFeatureException {
 		@SuppressWarnings("unchecked")
@@ -76,6 +81,16 @@ public interface ProxyBuilderFactory {
 			}
 		}
 		throw new UnsupportedFeatureException("No proxy builder factory supports all requested features");
+	}
+	
+	static void checkClassloader(final ClassLoader referenceLoader, Class<?>... otherInterfaces) {
+		Stream.of(otherInterfaces)
+				.forEach(i -> checkArgument(referenceLoader.equals(i.getClassLoader())));
+	}
+	
+	static void checkProxyableInterface(Class<?> testedInterface) {
+		checkArgument(testedInterface.isInterface());
+		checkArgument(!testedInterface.isPrimitive());
 	}
 	
 }
