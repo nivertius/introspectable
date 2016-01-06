@@ -8,6 +8,7 @@ public final class Methods {
 	
 	public static final Method OBJECT_EQUALS = extractObjectMethod("equals", Object.class);
 	public static final Method OBJECT_TO_STRING = extractObjectMethod("toString");
+	public static final Method OBJECT_FINALIZE = extractObjectMethod("finalize");
 	
 	public static Optional<Method> similar(Class<?> sourceClass, Method otherClassMethod) {
 		final String methodName = otherClassMethod.getName();

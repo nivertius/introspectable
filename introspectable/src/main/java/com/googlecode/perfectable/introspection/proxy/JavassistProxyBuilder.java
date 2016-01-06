@@ -7,6 +7,8 @@ import javassist.util.proxy.Proxy;
 
 import org.objenesis.instantiator.ObjectInstantiator;
 
+import com.googlecode.perfectable.introspection.Methods;
+
 final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 	
 	private final ObjectInstantiator<I> instantiator;
@@ -42,6 +44,9 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 		@Override
 		public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable { // NOPMD
 			// declaration uses array instead of varargs
+			if(thisMethod.equals(Methods.OBJECT_FINALIZE)) {
+				return null; // ignore proxy finalization
+			}
 			@SuppressWarnings("unchecked")
 			MethodInvocable<I> invocable = (MethodInvocable<I>) MethodInvocable.of(thisMethod);
 			@SuppressWarnings("unchecked")

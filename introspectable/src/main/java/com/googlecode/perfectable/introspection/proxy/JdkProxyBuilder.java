@@ -10,6 +10,8 @@ import java.lang.reflect.Proxy;
 
 import javax.annotation.Nullable;
 
+import com.googlecode.perfectable.introspection.Methods;
+
 final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 	
 	private final Class<I> proxyClass;
@@ -56,6 +58,9 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		@Override
 		public Object invoke(@Nullable Object proxy, @Nullable Method method, @Nullable Object[] args) throws Throwable { // NOPMD
 			// declaration uses array instead of varargs
+			if(method.equals(Methods.OBJECT_FINALIZE)) {
+				return null; // ignore proxy finalization
+			}
 			checkNotNull(method);
 			@SuppressWarnings("unchecked")
 			MethodInvocable<I> invocable = (MethodInvocable<I>) MethodInvocable.of(method);
