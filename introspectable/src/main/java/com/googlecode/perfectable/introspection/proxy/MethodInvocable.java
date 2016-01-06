@@ -6,9 +6,6 @@ import java.util.Objects;
 
 public final class MethodInvocable<T> implements Invocable<T> {
 	
-	public static final MethodInvocable<Object> OBJECT_EQUALS = extractObjectMethod("equals", Object.class);
-	public static final MethodInvocable<Object> OBJECT_TO_STRING = extractObjectMethod("toString");
-	
 	private final Method method;
 	
 	public static MethodInvocable<?> of(Method method) {
@@ -75,19 +72,6 @@ public final class MethodInvocable<T> implements Invocable<T> {
 	@Override
 	public String toString() {
 		return "Invocable.of(" + this.method.toString() + ")";
-	}
-	
-	private static MethodInvocable<Object> extractObjectMethod(String name, Class<?>... parameterTypes) {
-		Method method;
-		try {
-			method = Object.class.getDeclaredMethod(name, parameterTypes);
-		}
-		catch(NoSuchMethodException | SecurityException e) {
-			throw new AssertionError("Object is missing standard method", e);
-		}
-		@SuppressWarnings("unchecked")
-		MethodInvocable<Object> casted = (MethodInvocable<Object>) MethodInvocable.of(method);
-		return casted;
 	}
 	
 }

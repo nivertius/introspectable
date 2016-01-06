@@ -2,6 +2,8 @@ package com.googlecode.perfectable.introspection.proxy;
 
 import java.lang.reflect.Method;
 
+import com.googlecode.perfectable.introspection.Methods;
+
 public class StandardObjectInvocationHandler implements InvocationHandler<Object> {
 	public static final StandardObjectInvocationHandler INSTANCE = new StandardObjectInvocationHandler();
 	
@@ -17,10 +19,10 @@ public class StandardObjectInvocationHandler implements InvocationHandler<Object
 	
 	@SuppressWarnings("boxing")
 	private static Invocable<Object> findInvocable(Method objectMethod) {
-		if(MethodInvocable.OBJECT_EQUALS.equals(MethodInvocable.of(objectMethod))) {
+		if(Methods.OBJECT_EQUALS.equals(objectMethod)) {
 			return (receiver, arguments) -> receiver == arguments[0];
 		}
-		if(MethodInvocable.OBJECT_TO_STRING.equals(MethodInvocable.of(objectMethod))) {
+		if(Methods.OBJECT_TO_STRING.equals(objectMethod)) {
 			return (receiver, arguments) -> "Proxy()";
 		}
 		throw new UnsupportedOperationException();

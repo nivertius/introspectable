@@ -6,6 +6,9 @@ import java.util.Optional;
 
 public final class Methods {
 	
+	public static final Method OBJECT_EQUALS = extractObjectMethod("equals", Object.class);
+	public static final Method OBJECT_TO_STRING = extractObjectMethod("toString");
+	
 	public static Optional<Method> similar(Class<?> sourceClass, Method otherClassMethod) {
 		final String methodName = otherClassMethod.getName();
 		final Class<?>[] methodParameterTypes = otherClassMethod.getParameterTypes();
@@ -58,6 +61,15 @@ public final class Methods {
 	
 	private static String capitalizeWithPrefix(String prefix, String name) {
 		return prefix + name.substring(0, 1).toUpperCase() + name.substring(1);
+	}
+	
+	private static Method extractObjectMethod(String name, Class<?>... parameterTypes) {
+		try {
+			return Object.class.getDeclaredMethod(name, parameterTypes);
+		}
+		catch(NoSuchMethodException | SecurityException e) {
+			throw new AssertionError("Object is missing standard method", e);
+		}
 	}
 	
 	private Methods() {
