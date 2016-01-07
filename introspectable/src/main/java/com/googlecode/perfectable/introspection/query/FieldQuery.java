@@ -144,8 +144,8 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 	
-	FieldQuery() {
-		// MARK
+	protected FieldQuery() {
+		// no default fields
 	}
 	
 }
