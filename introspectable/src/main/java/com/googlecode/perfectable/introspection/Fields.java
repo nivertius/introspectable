@@ -3,21 +3,7 @@ package com.googlecode.perfectable.introspection;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import javax.annotation.Nullable;
-
 public final class Fields {
-	
-	@Nullable
-	@Deprecated
-	public static Field find(Class<?> beanClass, String name, Class<?> type) {
-		return Introspection.of(beanClass).fields().named(name).typed(type).single();
-	}
-	
-	@Nullable
-	@Deprecated
-	public static Field find(Class<?> sourceClass, String name) {
-		return Introspection.of(sourceClass).fields().named(name).single();
-	}
 	
 	public static boolean isGettable(Field field) {
 		return field.isAccessible();

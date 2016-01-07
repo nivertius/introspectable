@@ -1,5 +1,7 @@
 package com.googlecode.perfectable.introspection;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
@@ -11,12 +13,13 @@ public final class Methods {
 	public static final Method OBJECT_FINALIZE = safeExtract(Object.class, "finalize");
 	
 	public static Optional<Method> similar(Class<?> sourceClass, Method otherClassMethod) {
+		checkArgument(sourceClass != null);
+		checkArgument(otherClassMethod != null);
 		final String methodName = otherClassMethod.getName();
 		final Class<?>[] methodParameterTypes = otherClassMethod.getParameterTypes();
-		if(methodName == null || methodParameterTypes == null) {
-			throw new IllegalArgumentException();
-		}
-		return find(sourceClass, methodName, methodParameterTypes);
+		return Introspection.of(sourceClass).methods()
+				.named(methodName).parameters(methodParameterTypes)
+				.option();
 	}
 	
 	public static Method safeExtract(Class<?> declaringClass, String name, Class<?>... parameterTypes)
@@ -27,11 +30,6 @@ public final class Methods {
 		catch(NoSuchMethodException e) {
 			throw new AssertionError("Method which is expected to exist is missing", e);
 		}
-	}
-	
-	@Deprecated
-	public static Optional<Method> find(Class<?> sourceClass, String name, Class<?>... parameterTypes) {
-		return Introspection.of(sourceClass).methods().named(name).parameters(parameterTypes).option();
 	}
 	
 	public static Optional<Method> findGetter(Class<?> beanClass, String name, Class<?> type) {
@@ -50,8 +48,8 @@ public final class Methods {
 		final boolean actuallyReturns = !Void.TYPE.equals(method.getReturnType());
 		final boolean hasNoParameters = method.getParameterTypes().length == 0;
 		final boolean startsWithAppropriatePrefix =
-				Boolean.class.equals(method.getReturnType()) && method.getName().startsWith("is") ||
-						!Boolean.class.equals(method.getReturnType()) && method.getName().startsWith("get");
+				Boolean.class.equals(method.getReturnType()) ?
+						method.getName().startsWith("is") : method.getName().startsWith("get");
 		return actuallyReturns && hasNoParameters && startsWithAppropriatePrefix;
 	}
 	
