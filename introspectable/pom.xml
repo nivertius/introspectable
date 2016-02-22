@@ -6,7 +6,7 @@
 	<name>Introspectable</name>
 
 	<parent>
-		<groupId>com.googlecode.perfectable</groupId>
+		<groupId>org.perfectable</groupId>
 		<artifactId>perfectable</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
