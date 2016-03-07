@@ -7,15 +7,17 @@ public final class Threads {
 	public interface ThrowingRunnable {
 		void run() throws Throwable;
 		
-		default Runnable asRunnablePropagated(ThrowingRunnable code) {
-			return () -> {
-				try {
-					code.run();
-				}
-				catch(Throwable e) { // NOPMD throwable caught intentionally
-					Throwables.propagate(e);
-				}
-			};
+		default void runSafe() {
+			try {
+				run();
+			}
+			catch(Throwable e) { // NOPMD throwable caught intentionally
+				Throwables.propagate(e);
+			}
+		}
+
+		default Runnable asSafeRunnable() {
+			return this::runSafe;
 		}
 	}
 	
@@ -30,7 +32,7 @@ public final class Threads {
 	}
 	
 	public static void addPropagatedShutdownHook(ThrowingRunnable code) {
-		addShutdownHook(code.asRunnablePropagated(code));
+		addShutdownHook(code.asSafeRunnable());
 	}
 	
 	private Threads() {
