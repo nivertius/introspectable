@@ -57,7 +57,12 @@ public final class LazyInitialization {
 				return (receiver, arguments) -> Optional.ofNullable(this.instance);
 			}
 			ensureInitialized();
-			return (Invocable<T>) MethodInvocable.of(method);
+			if(!method.getDeclaringClass().isAssignableFrom(this.instance.getClass())) {
+				throw new AssertionError("Method extracted is of incompatibilie class");
+			}
+			@SuppressWarnings("unchecked")
+			Invocable<T> result = (Invocable<T>) MethodInvocable.of(method);
+			return result;
 		}
 		
 		private void ensureInitialized() {
