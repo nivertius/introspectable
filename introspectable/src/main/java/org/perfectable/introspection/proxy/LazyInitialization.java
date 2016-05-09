@@ -32,7 +32,7 @@ public final class LazyInitialization {
 		private final Initializer<? extends T> initializer;
 		
 		@Nullable
-		private transient T instance;
+		private T instance;
 		
 		public static <T> LazyInitializationHandler<T> create(Initializer<? extends T> initializer) {
 			return new LazyInitializationHandler<>(initializer);
@@ -44,6 +44,7 @@ public final class LazyInitialization {
 		
 		@Override
 		public Object handle(BoundInvocation<? extends T> invocation) throws Throwable {
+			@SuppressWarnings("unchecked")
 			MethodBoundInvocation<? extends T> methodInvocation = (MethodBoundInvocation<? extends T>) invocation;
 			MethodBoundInvocationMappingDecomposer<T> transformer =
 					MethodBoundInvocationMappingDecomposer

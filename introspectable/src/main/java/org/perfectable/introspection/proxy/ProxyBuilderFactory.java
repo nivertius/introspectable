@@ -15,7 +15,7 @@ public interface ProxyBuilderFactory {
 	
 	default <I> ProxyBuilder<I> ofInterfacesOf(Class<? extends I> implementingClass) {
 		Class<?>[] interfaces = Introspection.of(implementingClass).interfaces().stream()
-				.toArray(Class[]::new);
+				.toArray(Class<?>[]::new);
 		// MARK this is safe almost always?
 		@SuppressWarnings("unchecked")
 		ProxyBuilder<I> builder = (ProxyBuilder<I>) ofInterfaces(interfaces);

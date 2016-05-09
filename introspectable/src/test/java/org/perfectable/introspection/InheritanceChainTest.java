@@ -6,16 +6,16 @@ import org.junit.Test;
 
 @SuppressWarnings("static-method")
 public class InheritanceChainTest {
-	
-	class Root {
+
+	private static class Root {
 		// test class
 	}
-	
-	class Branch extends Root {
+
+	private static class Branch extends Root {
 		// test class
 	}
-	
-	class Leaf extends Branch {
+
+	private static class Leaf extends Branch {
 		// test class
 	}
 	

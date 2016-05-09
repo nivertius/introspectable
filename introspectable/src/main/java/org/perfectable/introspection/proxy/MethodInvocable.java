@@ -71,7 +71,7 @@ public final class MethodInvocable<T> implements Invocable<T> {
 	
 	@Override
 	public String toString() {
-		return "Invocable.of(" + this.method.toString() + ")";
+		return "Invocable.of(" + this.method + ")";
 	}
 	
 }

@@ -47,9 +47,8 @@ public final class Methods {
 	public static boolean isGetter(Method method) {
 		boolean actuallyReturns = !Void.TYPE.equals(method.getReturnType());
 		boolean hasNoParameters = method.getParameterTypes().length == 0;
-		boolean startsWithAppropriatePrefix =
-				Boolean.class.equals(method.getReturnType()) ?
-						method.getName().startsWith("is") : method.getName().startsWith("get");
+		String appropriatePrefix = Boolean.class.equals(method.getReturnType()) ? "is" : "get";
+		boolean startsWithAppropriatePrefix = method.getName().startsWith(appropriatePrefix);
 		return actuallyReturns && hasNoParameters && startsWithAppropriatePrefix;
 	}
 	
