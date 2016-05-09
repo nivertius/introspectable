@@ -1,13 +1,13 @@
 package org.perfectable.introspection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -62,7 +62,9 @@ public abstract class MappingIterable<T> implements Iterable<T> {
 		
 		@Override
 		public T next() {
-			checkState(hasNext());
+			if(!hasNext()){
+				throw new NoSuchElementException();
+			}
 			T current = this.left.pop();
 			Collection<T> generated = map(current);
 			push(generated);

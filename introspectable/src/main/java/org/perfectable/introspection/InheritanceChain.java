@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -53,7 +54,9 @@ public final class InheritanceChain<T> implements Iterable<Class<? super T>> {
 		
 		@Override
 		public Class<? super T> next() {
-			checkState(hasNext());
+			if(!hasNext()) {
+				throw new NoSuchElementException();
+			}
 			checkState(this.currentClass != null);
 			Class<? super T> result = this.currentClass;
 			this.currentClass = result.getSuperclass();
