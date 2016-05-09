@@ -15,8 +15,8 @@ public final class Methods {
 	public static Optional<Method> similar(Class<?> sourceClass, Method otherClassMethod) {
 		checkArgument(sourceClass != null);
 		checkArgument(otherClassMethod != null);
-		final String methodName = otherClassMethod.getName();
-		final Class<?>[] methodParameterTypes = otherClassMethod.getParameterTypes();
+		String methodName = otherClassMethod.getName();
+		Class<?>[] methodParameterTypes = otherClassMethod.getParameterTypes();
 		return Introspection.of(sourceClass).methods()
 				.named(methodName).parameters(methodParameterTypes)
 				.option();
@@ -45,18 +45,18 @@ public final class Methods {
 	}
 	
 	public static boolean isGetter(Method method) {
-		final boolean actuallyReturns = !Void.TYPE.equals(method.getReturnType());
-		final boolean hasNoParameters = method.getParameterTypes().length == 0;
-		final boolean startsWithAppropriatePrefix =
+		boolean actuallyReturns = !Void.TYPE.equals(method.getReturnType());
+		boolean hasNoParameters = method.getParameterTypes().length == 0;
+		boolean startsWithAppropriatePrefix =
 				Boolean.class.equals(method.getReturnType()) ?
 						method.getName().startsWith("is") : method.getName().startsWith("get");
 		return actuallyReturns && hasNoParameters && startsWithAppropriatePrefix;
 	}
 	
 	public static boolean isSetter(Method method) {
-		final boolean doesntReturn = Void.TYPE.equals(method.getReturnType());
-		final boolean hasOneParameter = method.getParameterTypes().length == 1;
-		final boolean startsWithAppropriatePrefix = method.getName().startsWith("set");
+		boolean doesntReturn = Void.TYPE.equals(method.getReturnType());
+		boolean hasOneParameter = method.getParameterTypes().length == 1;
+		boolean startsWithAppropriatePrefix = method.getName().startsWith("set");
 		return doesntReturn && hasOneParameter && startsWithAppropriatePrefix;
 	}
 	

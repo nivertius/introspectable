@@ -89,7 +89,7 @@ public final class ReferenceExtractor<T> {
 		public Object handle(BoundInvocation<? extends T> invocation) throws Throwable {
 			checkState(this.executedMethod == null);
 			MethodBoundInvocation<? extends T> methodInvocation = (MethodBoundInvocation<? extends T>) invocation;
-			final MethodBoundInvocation.Decomposer<Method, T> decomposer = new MethodBoundInvocation.Decomposer<Method, T>() {
+			MethodBoundInvocation.Decomposer<Method, T> decomposer = new MethodBoundInvocation.Decomposer<Method, T>() {
 				private Method foundMethod;
 				
 				@Override

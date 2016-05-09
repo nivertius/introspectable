@@ -45,7 +45,7 @@ public final class GenericsQuery<X> {
 		
 		public Class<?> resolve(X instance) {
 			@SuppressWarnings("unchecked")
-			final Class<? extends X> safeClass = (Class<? extends X>) instance.getClass();
+			Class<? extends X> safeClass = (Class<? extends X>) instance.getClass();
 			return resolve(safeClass);
 		}
 	}

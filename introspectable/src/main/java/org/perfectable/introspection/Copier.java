@@ -36,7 +36,7 @@ public final class Copier<T> implements UnaryOperator<T> {
 	private T perform(T input) {
 		checkNotNull(input);
 		@SuppressWarnings("unchecked")
-		final Class<? extends T> inputClass = (Class<? extends T>) input.getClass();
+		Class<? extends T> inputClass = (Class<? extends T>) input.getClass();
 		T instance = Classes.instantiate(inputClass);
 		Bean<T> inputBean = Bean.from(input);
 		inputBean.fieldProperties()

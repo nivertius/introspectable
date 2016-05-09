@@ -34,14 +34,14 @@ public abstract class InjectionQuery<T, I> {
 	}
 	
 	private Stream<Injection<T>> fieldInjections(I injected) {
-		final FieldQuery fieldQuery = FieldQuery.of(injected.getClass());
+		FieldQuery fieldQuery = FieldQuery.of(injected.getClass());
 		return limit(fieldQuery)
 				.stream()
 				.map(field -> Injection.create(field, injected));
 	}
 	
 	private Stream<Injection<T>> methodInjections(I injected) {
-		final Function<Method, Injection<T>> i = method -> Injection.create(method, injected);
+		Function<Method, Injection<T>> i = method -> Injection.create(method, injected);
 		return limit(MethodQuery.of(injected.getClass()))
 				.stream()
 				.map(i);
@@ -95,7 +95,7 @@ public abstract class InjectionQuery<T, I> {
 		
 		@Override
 		protected <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limitConcrete(Q query) {
-			final SingleAnnotationFilter<Named> filter = AnnotationFilter.of(Named.class)
+			SingleAnnotationFilter<Named> filter = AnnotationFilter.of(Named.class)
 					.andMatching(annotation -> this.injectionName.equals(annotation.value()));
 			return query.annotatedWith(filter);
 		}

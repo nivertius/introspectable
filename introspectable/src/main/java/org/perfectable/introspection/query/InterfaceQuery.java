@@ -38,7 +38,7 @@ public final class InterfaceQuery<X> extends MappingIterable<Class<? super X>> i
 	
 	private static <X> Collection<Class<? super X>> safeGetInterfaces(Class<X> type) {
 		@SuppressWarnings("unchecked")
-		final Class<? super X>[] interfaceArray = (Class<? super X>[]) type.getInterfaces();
+		Class<? super X>[] interfaceArray = (Class<? super X>[]) type.getInterfaces();
 		return ImmutableList.copyOf(interfaceArray);
 	}
 	

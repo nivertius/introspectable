@@ -55,7 +55,7 @@ public class InheritanceChain<T> implements Iterable<Class<? super T>> {
 		public Class<? super T> next() {
 			checkState(hasNext());
 			checkState(this.currentClass != null);
-			final Class<? super T> result = this.currentClass;
+			Class<? super T> result = this.currentClass;
 			this.currentClass = result.getSuperclass();
 			return result;
 		}

@@ -65,7 +65,7 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 			@SuppressWarnings("unchecked")
 			MethodInvocable<I> invocable = (MethodInvocable<I>) MethodInvocable.of(method);
 			@SuppressWarnings("unchecked")
-			final I castedProxy = (I) proxy;
+			I castedProxy = (I) proxy;
 			BoundInvocation<I> invocation = invocable.prepare(args).bind(castedProxy);
 			return this.handler.handle(invocation);
 		}

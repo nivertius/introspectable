@@ -49,7 +49,7 @@ public abstract class Property<CT, PT> {
 	
 	public final PropertySlot<CT, PT> slot() {
 		@SuppressWarnings("unchecked")
-		final Class<? extends CT> beanClass = (Class<? extends CT>) this.bean.getClass();
+		Class<? extends CT> beanClass = (Class<? extends CT>) this.bean.getClass();
 		return PropertySlot.from(beanClass, this.name(), this.type());
 	}
 	
@@ -192,17 +192,17 @@ public abstract class Property<CT, PT> {
 		@Override
 		public Class<PT> type() {
 			if(this.getter.isPresent()) {
-				final Method getterMethod = this.getter.get();
+				Method getterMethod = this.getter.get();
 				@SuppressWarnings("unchecked")
-				final Class<PT> resultType = (Class<PT>) getterMethod.getReturnType();
+				Class<PT> resultType = (Class<PT>) getterMethod.getReturnType();
 				return checkNotNull(resultType);
 			}
 			else if(this.setter.isPresent()) {
-				final Method setterMethod = this.setter.get();
-				final Class<?>[] parameterTypes = setterMethod.getParameterTypes();
+				Method setterMethod = this.setter.get();
+				Class<?>[] parameterTypes = setterMethod.getParameterTypes();
 				@SuppressWarnings("unchecked")
 				// checked at construction
-				final Class<PT> firstParameterType = (Class<PT>) parameterTypes[0];
+				Class<PT> firstParameterType = (Class<PT>) parameterTypes[0];
 				return checkNotNull(firstParameterType);
 			}
 			else {
@@ -215,7 +215,7 @@ public abstract class Property<CT, PT> {
 			if(!this.getter.isPresent()) {
 				return false;
 			}
-			final Method getterMethod = this.getter.get();
+			Method getterMethod = this.getter.get();
 			return Methods.isCallable(getterMethod);
 		}
 		
@@ -224,7 +224,7 @@ public abstract class Property<CT, PT> {
 			if(!this.setter.isPresent()) {
 				return false;
 			}
-			final Method setterMethod = this.setter.get();
+			Method setterMethod = this.setter.get();
 			return Methods.isCallable(setterMethod);
 		}
 		

@@ -63,7 +63,7 @@ final class MethodBoundInvocationMappingDecomposer<T> implements
 	
 	@Override
 	public void receiver(T receiver) {
-		final T newReceiver = this.receiverTransformer.apply(receiver);
+		T newReceiver = this.receiverTransformer.apply(receiver);
 		this.boundInvocable = this.invocable.bind(newReceiver);
 	}
 	

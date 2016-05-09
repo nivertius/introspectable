@@ -32,15 +32,15 @@ public final class PropertySlot<CT, PT> {
 	}
 	
 	public static PropertySlot<?, ?> from(Field field) {
-		final Class<?> declaringClass = field.getDeclaringClass();
-		final Class<?> type = field.getType();
+		Class<?> declaringClass = field.getDeclaringClass();
+		Class<?> type = field.getType();
 		return from(declaringClass, field.getName(), type);
 	}
 	
 	public static PropertySlot<?, ?> from(Method setter) {
 		checkArgument(Methods.isSetter(setter));
-		final Class<?> declaringClass = setter.getDeclaringClass();
-		final Class<?> type = setter.getReturnType();
+		Class<?> declaringClass = setter.getDeclaringClass();
+		Class<?> type = setter.getReturnType();
 		// MARK name
 		return from(declaringClass, setter.getName(), type);
 	}

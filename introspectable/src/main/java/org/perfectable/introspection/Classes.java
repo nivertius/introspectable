@@ -60,7 +60,7 @@ public final class Classes {
 	public static <T> Class<? extends T> load(String className, Class<T> expectedSupertype)
 			throws ClassNotFoundException, ClassCastException {
 		Class<?> raw = load(className);
-		final Class<? extends T> casted = raw.asSubclass(expectedSupertype);
+		Class<? extends T> casted = raw.asSubclass(expectedSupertype);
 		return casted;
 	}
 	

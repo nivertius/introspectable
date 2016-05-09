@@ -73,7 +73,7 @@ public final class RelatedClassesIterable extends MappingIterable.Unique<Class<?
 	}
 	
 	private static Stream<Class<?>> extractEnclosingClasses(Class<?> current) {
-		final Class<?> enclosingClass = current.getEnclosingClass();
+		Class<?> enclosingClass = current.getEnclosingClass();
 		if(enclosingClass == null) {
 			return Stream.empty();
 		}

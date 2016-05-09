@@ -49,7 +49,7 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 			@SuppressWarnings("unchecked")
 			MethodInvocable<I> invocable = (MethodInvocable<I>) MethodInvocable.of(thisMethod);
 			@SuppressWarnings("unchecked")
-			final I castedSelf = (I) self;
+			I castedSelf = (I) self;
 			BoundInvocation<I> invocation = invocable.prepare(args).bind(castedSelf);
 			return this.handler.handle(invocation);
 		}

@@ -84,7 +84,7 @@ public interface ProxyBuilderFactory {
 		throw new UnsupportedFeatureException("No proxy builder factory supports all requested features");
 	}
 	
-	static void checkClassloader(final ClassLoader referenceLoader, Class<?>... otherInterfaces) {
+	static void checkClassloader(ClassLoader referenceLoader, Class<?>... otherInterfaces) {
 		Stream.of(otherInterfaces)
 				.forEach(i -> checkArgument(referenceLoader.equals(i.getClassLoader())));
 	}
