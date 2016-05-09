@@ -29,7 +29,7 @@ public abstract class InjectionQuery<T, I> {
 		Stream.Builder<Injection<T>> builder = Stream.builder();
 		fieldInjections(injected).forEach(builder::add);
 		methodInjections(injected).forEach(builder::add);
-		return builder.build().<CompositeInjection<T>> collect(Injection::createComposite, CompositeInjection::add,
+		return builder.build().collect(Injection::createComposite, CompositeInjection::add,
 				CompositeInjection::add);
 	}
 	

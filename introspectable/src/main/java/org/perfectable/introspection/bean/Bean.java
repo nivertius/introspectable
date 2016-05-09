@@ -32,7 +32,7 @@ public final class Bean<T> {
 		return FieldQuery.of(this.instance.getClass())
 				.excludingModifier(Modifier.STATIC)
 				.stream()
-				.map(field -> Property.<T> from(this.instance, field));
+				.map(field -> Property.from(this.instance, field));
 	}
 	
 	public <X> Property<T, X> property(String name, Class<X> type) {

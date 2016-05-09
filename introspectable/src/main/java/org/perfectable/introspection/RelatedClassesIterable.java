@@ -51,7 +51,7 @@ public final class RelatedClassesIterable extends MappingIterable.Unique<Class<?
 	
 	@Override
 	protected Collection<Class<?>> map(Class<?> current) {
-		Stream.Builder<Class<?>> resultBuilder = Stream.<Class<?>> builder();
+		Stream.Builder<Class<?>> resultBuilder = Stream.builder();
 		extractEnclosingClasses(current).filter(this.inclusionPredicate).forEach(resultBuilder::add);
 		extractNestedClasses(current).filter(this.inclusionPredicate).forEach(resultBuilder::add);
 		extractFieldClasses(current).filter(this.inclusionPredicate).forEach(resultBuilder::add);

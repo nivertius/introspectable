@@ -18,7 +18,7 @@ public final class Copier<T> implements UnaryOperator<T> {
 	public static <X> X copy(X source) {
 		@SuppressWarnings("unchecked")
 		Class<X> sourceClass = checkNotNull((Class<X>) source.getClass());
-		return Copier.<X> forClass(sourceClass).perform(source);
+		return Copier.forClass(sourceClass).perform(source);
 	}
 	
 	private Copier(Class<T> beanClass) {
