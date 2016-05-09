@@ -36,8 +36,8 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 			this.handler = handler;
 		}
 		
-		public static <I> JavassistProxyBuilder.JavassistInvocationHandlerAdapter<I> adapt(InvocationHandler<I> handler) {
-			return new JavassistProxyBuilder.JavassistInvocationHandlerAdapter<>(handler);
+		public static <I> JavassistInvocationHandlerAdapter<I> adapt(InvocationHandler<I> handler) {
+			return new JavassistInvocationHandlerAdapter<>(handler);
 		}
 		
 		@Override
