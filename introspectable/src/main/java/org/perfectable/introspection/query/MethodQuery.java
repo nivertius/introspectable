@@ -73,7 +73,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		}
 	}
 	
-	private static abstract class FilteredMethodQuery extends MethodQuery {
+	private abstract static class FilteredMethodQuery extends MethodQuery {
 		private final MethodQuery parent;
 		
 		public FilteredMethodQuery(MethodQuery parent) {

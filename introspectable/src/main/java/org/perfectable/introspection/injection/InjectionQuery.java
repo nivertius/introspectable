@@ -68,7 +68,7 @@ public abstract class InjectionQuery<T, I> {
 		}
 	}
 	
-	static abstract class FilteredInjectionQuery<T, I> extends InjectionQuery<T, I> {
+	abstract static class FilteredInjectionQuery<T, I> extends InjectionQuery<T, I> {
 		private final InjectionQuery<T, I> parent;
 		
 		public FilteredInjectionQuery(InjectionQuery<T, I> parent) {

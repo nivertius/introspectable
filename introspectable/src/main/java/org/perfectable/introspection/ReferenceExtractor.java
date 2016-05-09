@@ -73,7 +73,7 @@ public final class ReferenceExtractor<T> {
 		this.proxyBuilder = proxyBuilder;
 	}
 	
-	private final static class ProcedureTestingHandler<T> implements InvocationHandler<T> {
+	private static final class ProcedureTestingHandler<T> implements InvocationHandler<T> {
 		@Nullable
 		private Method executedMethod;
 		

@@ -74,7 +74,7 @@ public abstract class MappingIterable<T> implements Iterable<T> {
 		}
 	}
 	
-	public static abstract class Unique<T> extends MappingIterable<T> {
+	public abstract static class Unique<T> extends MappingIterable<T> {
 		@Override
 		public Iterator<T> iterator() {
 			return new UniqueMappingIterator();

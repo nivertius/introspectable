@@ -58,7 +58,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 	
-	private static abstract class FilteredFieldQuery extends FieldQuery {
+	private abstract static class FilteredFieldQuery extends FieldQuery {
 		private final FieldQuery parent;
 		
 		public FilteredFieldQuery(FieldQuery parent) {
@@ -102,7 +102,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 	
-	private class TypedFieldQuery extends FilteredFieldQuery {
+	private static class TypedFieldQuery extends FilteredFieldQuery {
 		private final Class<?> type;
 		
 		public TypedFieldQuery(FieldQuery parent, Class<?> type) {
