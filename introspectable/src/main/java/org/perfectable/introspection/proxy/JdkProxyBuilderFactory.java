@@ -17,7 +17,7 @@ public final class JdkProxyBuilderFactory implements ProxyBuilderFactory {
 	}
 
 	@Override
-	public JdkProxyBuilder<?> ofInterfaces(Class<?>... interfaces) {
+	public ProxyBuilder<?> ofInterfaces(Class<?>... interfaces) {
 		checkArgument(interfaces.length > 0);
 		Stream.of(interfaces).forEach(ProxyBuilderFactory::checkProxyableInterface);
 		ClassLoader classLoader = interfaces[0].getClassLoader(); // NOPMD we actually want first interface classloader
