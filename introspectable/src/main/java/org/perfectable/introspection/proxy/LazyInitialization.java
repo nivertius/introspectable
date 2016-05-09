@@ -26,7 +26,7 @@ public final class LazyInitialization {
 		return PROXY_BUILDER_FACTORY.ofType(resultClass, Proxy.class).instantiate(handler);
 	}
 	
-	private static class LazyInitializationHandler<T> implements InvocationHandler<T> {
+	private static final class LazyInitializationHandler<T> implements InvocationHandler<T> {
 		private final static Method EXTRACT_INSTANCE_METHOD = Methods.safeExtract(Proxy.class, "extractInstance");
 		
 		private final Initializer<? extends T> initializer;

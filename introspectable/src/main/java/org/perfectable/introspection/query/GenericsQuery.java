@@ -26,7 +26,7 @@ public final class GenericsQuery<X> {
 		return Resolver.of(parameter);
 	}
 	
-	public static class Resolver<X> {
+	public static final class Resolver<X> {
 		private final Type resolved;
 		
 		static <X> Resolver<X> of(Type parameter) {

@@ -9,7 +9,7 @@ import java.util.stream.StreamSupport;
 
 import javax.annotation.Nullable;
 
-public class InheritanceChain<T> implements Iterable<Class<? super T>> {
+public final class InheritanceChain<T> implements Iterable<Class<? super T>> {
 	
 	private final Class<T> startClass;
 	private final @Nullable Class<? super T> stopClass;
