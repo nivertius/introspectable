@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.function.Predicate;
 
+@FunctionalInterface
 public interface AnnotationFilter {
 	
 	final class SingleAnnotationFilter<A extends Annotation> implements AnnotationFilter {

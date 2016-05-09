@@ -16,6 +16,7 @@ public final class LazyInitialization {
 	private static final ProxyBuilderFactory PROXY_BUILDER_FACTORY =
 			ProxyBuilderFactory.withFeature(Feature.SUPERCLASS);
 	
+	@FunctionalInterface
 	public interface Initializer<T> {
 		T initialize();
 	}
