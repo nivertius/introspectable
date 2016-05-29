@@ -24,7 +24,8 @@ public abstract class InjectionQuery<T, I> {
 	public static <X> InjectionQuery<X, Object> create() {
 		return new CompleteInjectionQuery<>();
 	}
-	
+
+	// MARK name is not intuitive
 	public final Injection<T> push(I injected) {
 		Stream.Builder<Injection<T>> builder = Stream.builder();
 		fieldInjections(injected).forEach(builder::add);
