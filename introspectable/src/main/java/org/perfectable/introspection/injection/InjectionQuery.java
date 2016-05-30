@@ -21,8 +21,8 @@ import org.perfectable.introspection.query.AnnotationFilter.SingleAnnotationFilt
 
 public abstract class InjectionQuery<T, I> {
 	
-	public static <X> InjectionQuery<X, Object> create() {
-		return new CompleteInjectionQuery<>();
+	public static <X> InjectionQuery<X, Object> create(Class<X> targetClass) {
+		return new CompleteInjectionQuery<>(targetClass);
 	}
 
 	// MARK name is not intuitive
@@ -35,17 +35,15 @@ public abstract class InjectionQuery<T, I> {
 	}
 	
 	private Stream<Injection<T>> fieldInjections(I injected) {
-		FieldQuery fieldQuery = FieldQuery.of(injected.getClass());
-		return limit(fieldQuery)
+		return createFieldQuery()
 				.stream()
 				.map(field -> Injection.create(field, injected));
 	}
 	
 	private Stream<Injection<T>> methodInjections(I injected) {
-		Function<Method, Injection<T>> i = method -> Injection.create(method, injected);
-		return limit(MethodQuery.of(injected.getClass()))
+		return createMethodQuery()
 				.stream()
-				.map(i);
+				.map(method -> Injection.create(method, injected));
 	}
 	
 	public InjectionQuery<T, I> named(String injectionName) {
@@ -56,12 +54,30 @@ public abstract class InjectionQuery<T, I> {
 		return new TypedInjectionQuery<>(this, injectionClass);
 	}
 	
-	protected abstract <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limit(Q query);
-	
+	protected abstract MethodQuery createMethodQuery();
+	protected abstract FieldQuery createFieldQuery();
+
 	static final class CompleteInjectionQuery<T> extends InjectionQuery<T, Object> {
-		
+
+		private final Class<T> targetClass;
+
+		public CompleteInjectionQuery(Class<T> targetClass) {
+			this.targetClass = targetClass;
+		}
+
 		@Override
-		protected <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limit(Q query) {
+		protected FieldQuery createFieldQuery() {
+			FieldQuery initial = FieldQuery.of(targetClass);
+			return limit(initial);
+		}
+
+		@Override
+		protected MethodQuery createMethodQuery() {
+			MethodQuery initial = MethodQuery.of(targetClass);
+			return limit(initial);
+		}
+
+		private <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limit(Q query) {
 			return query
 					.annotatedWith(Inject.class)
 					.excludingModifier(Modifier.STATIC)
@@ -75,14 +91,20 @@ public abstract class InjectionQuery<T, I> {
 		public FilteredInjectionQuery(InjectionQuery<T, I> parent) {
 			this.parent = parent;
 		}
-		
-		protected abstract <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limitConcrete(
-				Q query);
-		
+
+		protected abstract  FieldQuery limitFieldsConcrete(FieldQuery query);
+		protected abstract  MethodQuery limitMethodsConcrete(MethodQuery query);
+
 		@Override
-		protected final <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limit(Q query) {
-			Q parentLimited = this.parent.limit(query);
-			return limitConcrete(parentLimited);
+		protected FieldQuery createFieldQuery() {
+			FieldQuery parentQuery = this.parent.createFieldQuery();
+			return limitFieldsConcrete(parentQuery);
+		}
+
+		@Override
+		protected MethodQuery createMethodQuery() {
+			MethodQuery parentQuery = this.parent.createMethodQuery();
+			return limitMethodsConcrete(parentQuery);
 		}
 	}
 	
@@ -93,9 +115,18 @@ public abstract class InjectionQuery<T, I> {
 			super(parent);
 			this.injectionName = checkNotNull(injectionName);
 		}
-		
+
 		@Override
-		protected <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limitConcrete(Q query) {
+		protected FieldQuery limitFieldsConcrete(FieldQuery query) {
+			return limitConcrete(query);
+		}
+
+		@Override
+		protected MethodQuery limitMethodsConcrete(MethodQuery query) {
+			return limitConcrete(query);
+		}
+
+		private <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limitConcrete(Q query) {
 			SingleAnnotationFilter<Named> filter = AnnotationFilter.of(Named.class)
 					.andMatching(annotation -> this.injectionName.equals(annotation.value()));
 			return query.annotatedWith(filter);
@@ -111,11 +142,20 @@ public abstract class InjectionQuery<T, I> {
 			this.parent = parent;
 			this.injectionClass = injectionClass;
 		}
-		
+
 		@Override
-		protected <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limit(Q query) {
-			Q parentLimited = this.parent.limit(query);
-			return parentLimited.typed(this.injectionClass);
+		protected FieldQuery createFieldQuery() {
+			FieldQuery parentQuery = this.parent.createFieldQuery();
+			return parentQuery
+					.typed(injectionClass);
+		}
+
+		@Override
+		protected MethodQuery createMethodQuery() {
+			MethodQuery parentQuery = this.parent.createMethodQuery();
+			return parentQuery
+					.parameters(injectionClass)
+					.returningVoid();
 		}
 		
 	}
