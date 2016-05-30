@@ -4,9 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
