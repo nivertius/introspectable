@@ -2,9 +2,9 @@ package org.perfectable.introspection.injection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 
+import com.google.common.collect.Lists;
 import org.perfectable.introspection.bean.Property;
 
 public abstract class Injection<T> {
@@ -58,7 +58,7 @@ public abstract class Injection<T> {
 		
 		@SafeVarargs
 		protected CompositeInjection(Injection<T>... injections) {
-			this.components = Arrays.asList(injections);
+			this.components = Lists.newArrayList(injections);
 		}
 		
 		@Override
