@@ -24,23 +24,28 @@ public final class Bean<T> {
 	
 	public Stream<?> related() {
 		return this.fieldProperties()
-				.map(Property::get)
+				.map(BoundProperty::get)
 				.filter(related -> related != null);
 	}
+
+	public Class<T> type() {
+		return (Class<T>) this.instance.getClass();
+	}
 	
-	public Stream<Property<T, ?>> fieldProperties() {
+	public Stream<BoundProperty<T, ?>> fieldProperties() {
+		Class<T> instanceClass = type();
 		return FieldQuery.of(this.instance.getClass())
 				.excludingModifier(Modifier.STATIC)
 				.stream()
-				.map(field -> Property.from(this.instance, field));
+				.map(field -> Property.fromField(instanceClass, field).bind(this.instance));
 	}
 	
-	public <X> Property<T, X> property(String name, Class<X> type) {
-		return Property.from(this.instance, name, type);
+	public <X> BoundProperty<T, X> property(String name, Class<X> type) {
+		return Property.from(type(), name, type).bind(this.instance);
 	}
 	
-	public Property<T, Object> property(String name) {
-		return Property.raw(this.instance, name);
+	public BoundProperty<T, Object> property(String name) {
+		return Property.raw(type(), name).bind(this.instance);
 	}
 	
 }

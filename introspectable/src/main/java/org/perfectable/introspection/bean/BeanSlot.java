@@ -18,11 +18,11 @@ public class BeanSlot<T> {
 		return Bean.from(element);
 	}
 	
-	public <X> PropertySlot<T, X> property(String name, Class<X> type) {
-		return PropertySlot.from(this.beanClass, name, type);
+	public <X> Property<T, X> property(String name, Class<X> type) {
+		return Property.from(this.beanClass, name, type);
 	}
 	
-	public PropertySlot<T, ?> property(String name) {
-		return PropertySlot.raw(this.beanClass, name);
+	public Property<T, ?> property(String name) {
+		return Property.raw(this.beanClass, name);
 	}
 }

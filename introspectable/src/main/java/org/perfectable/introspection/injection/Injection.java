@@ -5,30 +5,30 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.perfectable.introspection.bean.PropertySlot;
+import org.perfectable.introspection.bean.Property;
 
 public abstract class Injection<T> {
 	
 	static <TX> Injection<TX> create(Field field, Object value) {
 		@SuppressWarnings("unchecked")
-		PropertySlot<TX, Object> slot = (PropertySlot<TX, Object>) PropertySlot.from(field);
-		return create(slot, value);
+		Property<TX, Object> property = (Property<TX, Object>) Property.fromField(field);
+		return create(property, value);
 	}
 	
 	static <TX> Injection<TX> create(Method setter, Object value) {
 		@SuppressWarnings("unchecked")
-		PropertySlot<TX, Object> slot = (PropertySlot<TX, Object>) PropertySlot.from(setter);
-		return create(slot, value);
+		Property<TX, Object> property = (Property<TX, Object>) Property.fromSetter(setter);
+		return create(property, value);
 	}
 	
-	public static <TX, PX> Injection<TX> create(PropertySlot<TX, PX> slot, PX value) {
-		return new PropertyInjection<>(slot, value);
+	public static <TX, PX> Injection<TX> create(Property<TX, PX> property, PX value) {
+		return new PropertyInjection<>(property, value);
 	}
 	
 	public static <TX, PX> Injection<TX> create(Class<TX> beanType, String propertyName, Class<PX> propertyType,
 			PX value) {
-		PropertySlot<TX, PX> slot = PropertySlot.from(beanType, propertyName, propertyType);
-		return new PropertyInjection<>(slot, value);
+		Property<TX, PX> property = Property.from(beanType, propertyName, propertyType);
+		return new PropertyInjection<>(property, value);
 	}
 	
 	@SafeVarargs
@@ -39,17 +39,17 @@ public abstract class Injection<T> {
 	public abstract void perform(T target);
 	
 	private static class PropertyInjection<T, X> extends Injection<T> {
-		private final PropertySlot<T, X> slot;
+		private final Property<T, X> property;
 		private final X value;
 		
-		public PropertyInjection(PropertySlot<T, X> slot, X value) {
-			this.slot = slot;
+		public PropertyInjection(Property<T, X> property, X value) {
+			this.property = property;
 			this.value = value;
 		}
 		
 		@Override
 		public void perform(T target) {
-			this.slot.put(target).set(this.value);
+			this.property.bind(target).set(this.value);
 		}
 	}
 	

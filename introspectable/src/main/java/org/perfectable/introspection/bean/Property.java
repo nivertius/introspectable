@@ -19,88 +19,80 @@ import com.google.common.base.Throwables;
 
 public abstract class Property<CT, PT> {
 	
-	protected final CT bean;
-	
-	protected Property(CT bean) {
-		this.bean = bean;
-	}
-	
 	public abstract boolean isReadable();
 	
 	public abstract boolean isWriteable();
 	
 	@Nullable
-	public abstract PT get();
+	public abstract PT get(CT bean);
 	
-	public abstract void set(@Nullable PT value);
-	
-	public final Optional<PT> optional() {
-		return Optional.ofNullable(this.get());
-	}
+	public abstract void set(CT bean, @Nullable PT value);
 	
 	public abstract String name();
 	
 	public abstract Class<PT> type();
 	
-	public final void copy(CT other) {
-		PT current = this.get();
-		this.slot().put(other).set(current);
+	public BoundProperty<CT, PT> bind(CT bean) {
+		return new BoundProperty<>(this, bean);
 	}
 	
-	public final PropertySlot<CT, PT> slot() {
-		@SuppressWarnings("unchecked")
-		Class<? extends CT> beanClass = (Class<? extends CT>) this.bean.getClass();
-		return PropertySlot.from(beanClass, this.name(), this.type());
+	public static <CX> Property<CX, Object> raw(Class<CX> beanClass, String name) {
+		return from(beanClass, name, Object.class);
 	}
 	
-	public static <CX> Property<CX, Object> raw(CX bean, String name) {
-		return from(bean, name, Object.class);
-	}
-	
-	public static <CX, PX> Property<CX, PX> from(CX bean, String name, Class<PX> type) {
-		Class<?> beanClass = bean.getClass();
+	public static <CX, PX> Property<CX, PX> from(Class<CX> beanClass, String name, Class<PX> type) {
 		if(beanClass == null) {
 			throw new IllegalArgumentException();
 		}
 		Optional<Field> field = Introspection.of(beanClass).fields().named(name).typed(type).option();
 		if(field.isPresent()) {
-			return new FieldProperty<>(bean, field.get());
+			return new FieldProperty<>(field.get());
 		}
 		Optional<Method> getter = Methods.findGetter(beanClass, name, type);
 		Optional<Method> setter = Methods.findSetter(beanClass, name, type);
 		if(setter.isPresent() || getter.isPresent()) {
-			return new MethodProperty<>(bean, getter, setter);
+			return new MethodProperty<>(getter, setter);
 		}
 		throw new IllegalArgumentException("No property " + name + " for " + beanClass);
 	}
 	
-	public static <CX> Property<CX, ?> from(CX bean, Field field) {
+	public static Property<?, ?> fromField(Field field) {
 		checkNotNull(field);
-		checkArgument(field.getDeclaringClass().isAssignableFrom(bean.getClass()));
-		return new FieldProperty<>(bean, field);
+		return new FieldProperty<>(field);
 	}
 	
-	public static <CX, PX> Property<CX, PX> from(CX bean, Field field, Class<PX> type) {
+	public static <CX> Property<CX, ?> fromField(Class<CX> beanClass, Field field) {
 		checkNotNull(field);
-		checkArgument(field.getDeclaringClass().isAssignableFrom(bean.getClass()));
+		checkArgument(field.getDeclaringClass().isAssignableFrom(beanClass));
+		return new FieldProperty<>(field);
+	}
+	
+	public static <CX, PX> Property<CX, PX> fromField(Class<CX> beanClass, Field field, Class<PX> type) {
+		checkNotNull(field);
+		checkArgument(field.getDeclaringClass().isAssignableFrom(beanClass));
 		checkArgument(field.getType().equals(type));
 		checkArgument(!Fields.isStatic(field));
-		return new FieldProperty<>(bean, field);
+		return new FieldProperty<>(field);
+	}
+	
+	public static Property<?, ?> fromSetter(Method setter) {
+		checkNotNull(setter);
+		checkArgument(Methods.isSetter(setter));
+		return new MethodProperty<>(Optional.empty(), Optional.of(setter));
 	}
 	
 	private static class FieldProperty<CT, PT> extends Property<CT, PT> {
 		private final Field field;
 		
-		public FieldProperty(CT bean, Field field) {
-			super(bean);
+		public FieldProperty(Field field) {
 			this.field = field;
 			this.field.setAccessible(true);
 		}
 		
 		@Override
-		public void set(@Nullable PT value) {
+		public void set(CT bean, @Nullable PT value) {
 			try {
-				this.field.set(this.bean, value);
+				this.field.set(bean, value);
 			}
 			catch(IllegalArgumentException | IllegalAccessException e) {
 				throw Throwables.propagate(e);
@@ -111,9 +103,9 @@ public abstract class Property<CT, PT> {
 		@Override
 		@Nullable
 		@SuppressWarnings("unchecked")
-		public PT get() {
+		public PT get(CT bean) {
 			try {
-				return (PT) this.field.get(this.bean);
+				return (PT) this.field.get(bean);
 			}
 			catch(IllegalArgumentException | IllegalAccessException e) {
 				throw Throwables.propagate(e);
@@ -147,13 +139,8 @@ public abstract class Property<CT, PT> {
 		private final Optional<Method> getter;
 		private final Optional<Method> setter;
 		
-		public MethodProperty(CT bean, Optional<Method> getter, Optional<Method> setter) {
-			super(bean);
+		public MethodProperty(Optional<Method> getter, Optional<Method> setter) {
 			checkArgument(getter.isPresent() || setter.isPresent());
-			checkArgument(!getter.isPresent() ||
-					Methods.isGetter(getter.get()) && getter.get().getDeclaringClass().equals(bean.getClass()));
-			checkArgument(!setter.isPresent() ||
-					Methods.isSetter(setter.get()) && setter.get().getDeclaringClass().equals(bean.getClass()));
 			this.getter = getter;
 			this.setter = setter;
 		}
@@ -162,10 +149,10 @@ public abstract class Property<CT, PT> {
 		@SuppressWarnings("unchecked")
 		@Override
 		@Nullable
-		public PT get() {
+		public PT get(CT bean) {
 			checkState(this.getter.isPresent());
 			try {
-				return (PT) this.getter.get().invoke(this.bean);
+				return (PT) this.getter.get().invoke(bean);
 			}
 			catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				throw Throwables.propagate(e);
@@ -173,10 +160,10 @@ public abstract class Property<CT, PT> {
 		}
 		
 		@Override
-		public void set(@Nullable PT value) {
+		public void set(CT bean, @Nullable PT value) {
 			checkState(this.setter.isPresent());
 			try {
-				this.setter.get().invoke(this.bean, value);
+				this.setter.get().invoke(bean, value);
 			}
 			catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				throw Throwables.propagate(e);
@@ -186,6 +173,7 @@ public abstract class Property<CT, PT> {
 		@Override
 		public String name() {
 			String unformatted = this.getter.orElseGet(this.setter::get).getName();
+			// MARK boolean getter
 			return String.valueOf(unformatted.charAt(3)).toLowerCase() + unformatted.substring(4);
 		}
 		
