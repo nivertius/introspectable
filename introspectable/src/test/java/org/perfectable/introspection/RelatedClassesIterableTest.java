@@ -17,8 +17,7 @@ public class RelatedClassesIterableTest {
 				.contains(int.class)
 				.contains(void.class)
 				.contains(StringBuffer.class)
-				.contains(Charset.class)
-				.hasSize(659);
+				.contains(Charset.class);
 	}
 	
 	@Test
