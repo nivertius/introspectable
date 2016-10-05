@@ -32,6 +32,7 @@ public abstract class Injection<T> {
 	}
 	
 	@SafeVarargs
+	@SuppressWarnings("varargs")
 	public static <TX> CompositeInjection<TX> createComposite(Injection<TX>... injections) {
 		return new CompositeInjection<>(injections);
 	}
@@ -57,6 +58,7 @@ public abstract class Injection<T> {
 		private final Collection<Injection<T>> components;
 		
 		@SafeVarargs
+		@SuppressWarnings("varargs")
 		protected CompositeInjection(Injection<T>... injections) {
 			this.components = Lists.newArrayList(injections);
 		}
