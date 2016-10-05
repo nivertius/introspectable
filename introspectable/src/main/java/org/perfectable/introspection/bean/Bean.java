@@ -24,10 +24,11 @@ public final class Bean<T> {
 	
 	public Stream<?> related() {
 		return this.fieldProperties()
-				.map(BoundProperty::get)
+				.map(boundProperty -> boundProperty.get())
 				.filter(related -> related != null);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Class<T> type() {
 		return (Class<T>) this.instance.getClass();
 	}
