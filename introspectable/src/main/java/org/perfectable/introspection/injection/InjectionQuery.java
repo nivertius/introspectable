@@ -10,12 +10,11 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.perfectable.introspection.injection.Injection.CompositeInjection;
 import org.perfectable.introspection.query.AnnotationFilter;
+import org.perfectable.introspection.query.AnnotationFilter.SingleAnnotationFilter;
 import org.perfectable.introspection.query.FieldQuery;
 import org.perfectable.introspection.query.MemberQuery;
 import org.perfectable.introspection.query.MethodQuery;
-import org.perfectable.introspection.query.AnnotationFilter.SingleAnnotationFilter;
 
 public abstract class InjectionQuery<T, I> {
 	
@@ -28,8 +27,7 @@ public abstract class InjectionQuery<T, I> {
 		Stream.Builder<Injection<T>> builder = Stream.builder();
 		fieldInjections(injected).forEach(builder::add);
 		methodInjections(injected).forEach(builder::add);
-		return builder.build().collect(Injection::createComposite, CompositeInjection::add,
-				CompositeInjection::add);
+		return builder.build().collect(Injection::composite, Injection::andThen, Injection::andThen);
 	}
 	
 	private Stream<Injection<T>> fieldInjections(I injected) {
@@ -90,8 +88,8 @@ public abstract class InjectionQuery<T, I> {
 			this.parent = parent;
 		}
 
-		protected abstract  FieldQuery limitFieldsConcrete(FieldQuery query);
-		protected abstract  MethodQuery limitMethodsConcrete(MethodQuery query);
+		protected abstract FieldQuery limitFieldsConcrete(FieldQuery query);
+		protected abstract MethodQuery limitMethodsConcrete(MethodQuery query);
 
 		@Override
 		protected FieldQuery createFieldQuery() {
