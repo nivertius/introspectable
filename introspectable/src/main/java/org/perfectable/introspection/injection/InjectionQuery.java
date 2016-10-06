@@ -73,7 +73,7 @@ public abstract class InjectionQuery<T, I> {
 			return limit(initial);
 		}
 
-		private <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limit(Q query) {
+		private static <M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>> Q limit(Q query) {
 			return query
 					.annotatedWith(Inject.class)
 					.excludingModifier(Modifier.STATIC)

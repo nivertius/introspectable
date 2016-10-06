@@ -7,7 +7,7 @@ final class PropertyInjection<T, X> implements Injection<T> {
 	private final X value;
 
 	public static <T, X> PropertyInjection<T, X> create(Property<T, X> property, X value) {
-		return new PropertyInjection<T, X>(property, value);
+		return new PropertyInjection<>(property, value);
 	}
 
 	private PropertyInjection(Property<T, X> property, X value) {
