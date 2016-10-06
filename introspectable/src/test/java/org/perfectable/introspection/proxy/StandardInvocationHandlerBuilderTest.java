@@ -21,7 +21,7 @@ public class StandardInvocationHandlerBuilderTest {
 		InvocationHandler<TestEntity> handler =
 				StandardInvocationHandlerBuilder.start(TestEntity.class)
 						.bind(TestEntity::noArgumentNoResult)
-							.to(self -> marker.insert(self))
+							.to(marker::insert)
 						.build(StandardObjectInvocationHandler.INSTANCE);
 		//@formatter:on
 		TestEntity proxy = PROXY_BUILDER.instantiate(handler);

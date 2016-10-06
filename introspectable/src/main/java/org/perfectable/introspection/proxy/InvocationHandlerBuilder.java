@@ -36,11 +36,8 @@ public interface InvocationHandlerBuilder<T> {
 	InvocationHandler<T> build(InvocationHandler<? super T> fallback);
 	
 	default InvocationHandler<T> build() {
-		InvocationHandler<Object> throwingHandler = new InvocationHandler<Object>() {
-			@Override
-			public Object handle(BoundInvocation<?> invocation) throws Throwable {
-				throw new UnsupportedOperationException("Unimplemented : " + invocation);
-			}
+		InvocationHandler<Object> throwingHandler = invocation -> {
+			throw new UnsupportedOperationException("Unimplemented: " + invocation);
 		};
 		return build(throwingHandler);
 	}
