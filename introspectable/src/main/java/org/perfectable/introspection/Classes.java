@@ -14,6 +14,7 @@ public final class Classes {
 		return !type.isInterface(); // MARK abstract class, primitive, array...
 	}
 	
+	@FunctionalInterface
 	public interface ClassLoaderFunction<T> extends Function<String, Class<? extends T>> {
 		// renaming only
 	}
