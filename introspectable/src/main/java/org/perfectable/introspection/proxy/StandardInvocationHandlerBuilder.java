@@ -68,7 +68,8 @@ public final class StandardInvocationHandlerBuilder<T> implements InvocationHand
 	}
 	
 	@Override
-	public <R, A1> Binder<T, SingleParameterFunction<T, R, A1>> bind(SingleParameterFunction<? super T, R, A1> registered) {
+	public <R, A1> Binder<T, SingleParameterFunction<T, R, A1>> bind(
+			SingleParameterFunction<? super T, R, A1> registered) {
 		Method method = this.referenceExtractor.extractSingle(registered::execute);
 		return new Binder<T, SingleParameterFunction<T, R, A1>>() {
 			@Override

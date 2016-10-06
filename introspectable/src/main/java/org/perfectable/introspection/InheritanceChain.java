@@ -13,7 +13,8 @@ import javax.annotation.Nullable;
 public final class InheritanceChain<T> implements Iterable<Class<? super T>> {
 	
 	private final Class<T> startClass;
-	private final @Nullable Class<? super T> stopClass;
+	@Nullable
+	private final Class<? super T> stopClass;
 	
 	public static <T> InheritanceChain<T> startingAt(Class<T> startClass) {
 		checkNotNull(startClass);
@@ -45,7 +46,8 @@ public final class InheritanceChain<T> implements Iterable<Class<? super T>> {
 	}
 	
 	protected class InheritanceIterator implements Iterator<Class<? super T>> {
-		private @Nullable Class<? super T> currentClass = InheritanceChain.this.startClass;
+		@Nullable
+		private Class<? super T> currentClass = InheritanceChain.this.startClass;
 		
 		@Override
 		public boolean hasNext() {

@@ -26,7 +26,8 @@ public final class Copier<T> implements UnaryOperator<T> {
 	}
 	
 	@Override
-	public @Nullable T apply(@Nullable T input) {
+	@Nullable
+	public T apply(@Nullable T input) {
 		if(input == null) {
 			return null;
 		}
