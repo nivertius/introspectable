@@ -4,6 +4,7 @@ import com.google.common.base.Throwables;
 
 public final class Threads {
 	
+	@FunctionalInterface
 	public interface ThrowingRunnable {
 		void run() throws Throwable;
 		

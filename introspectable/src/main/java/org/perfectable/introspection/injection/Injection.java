@@ -5,6 +5,7 @@ import org.perfectable.introspection.bean.Property;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+@FunctionalInterface
 public interface Injection<T> {
 	
 	static <TX> Injection<TX> create(Field field, Object value) {
