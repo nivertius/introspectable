@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BugCollection version='3.0.1'>
+    <BugInstance abbrev='UW' category='MT_CORRECTNESS' priority='2' type='UW_UNCOND_WAIT'>
+        <LongMessage>Unconditional wait in org.perfectable.introspection.Threads.waitForInterrupt()</LongMessage>
+        <Class classname='org.perfectable.introspection.Threads' primary='true' />
+        <Method classname='org.perfectable.introspection.Threads' name='waitForInterrupt'
+                signature='()V'
+                primary='true' isStatic='true' />
+    </BugInstance>
+    <BugInstance abbrev='Wa' category='MT_CORRECTNESS' priority='2' type='WA_NOT_IN_LOOP'>
+        <LongMessage>Wait not in loop in org.perfectable.introspection.Threads.waitForInterrupt()</LongMessage>
+        <Class classname='org.perfectable.introspection.Threads' primary='true' />
+        <Method classname='org.perfectable.introspection.Threads' name='waitForInterrupt'
+                signature='()V'
+                primary='true' isStatic='true' />
+    </BugInstance>
+    <BugInstance abbrev='Dm' category='I18N' priority='3' type='DM_CONVERT_CASE'>
+        <LongMessage>Use of non-localized String.toUpperCase() or String.toLowerCase() in
+            org.perfectable.introspection.Methods.capitalizeWithPrefix(String, String)</LongMessage>
+        <Class classname='org.perfectable.introspection.Methods' primary='true' />
+        <Method classname='org.perfectable.introspection.Methods' name='capitalizeWithPrefix'
+                signature='(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;'
+                primary='true' isStatic='true' />
+    </BugInstance>
+    <BugInstance abbrev='Dm' category='I18N' priority='3' type='DM_CONVERT_CASE'>
+        <LongMessage>Use of non-localized String.toUpperCase() or String.toLowerCase() in
+            org.perfectable.introspection.bean.ReadOnlyMethodProperty.name()</LongMessage>
+        <Class classname='org.perfectable.introspection.bean.ReadOnlyMethodProperty' primary='true' />
+        <Method classname='org.perfectable.introspection.bean.ReadOnlyMethodProperty' name='name'
+                signature='()Ljava/lang/String;'
+                primary='true' isStatic='false' />
+    </BugInstance>
+    <BugInstance abbrev='Dm' category='I18N' priority='3' type='DM_CONVERT_CASE'>
+        <LongMessage>Use of non-localized String.toUpperCase() or String.toLowerCase() in
+            org.perfectable.introspection.bean.ReadWriteMethodProperty.name()</LongMessage>
+        <Class classname='org.perfectable.introspection.bean.ReadWriteMethodProperty' primary='true' />
+        <Method classname='org.perfectable.introspection.bean.ReadWriteMethodProperty' name='name'
+                signature='()Ljava/lang/String;'
+                primary='true' isStatic='false' />
+    </BugInstance>
+    <BugInstance abbrev='Dm' category='I18N' priority='3' type='DM_CONVERT_CASE'>
+        <LongMessage>Use of non-localized String.toUpperCase() or String.toLowerCase() in
+            org.perfectable.introspection.bean.WriteOnlyMethodProperty.name()
+        </LongMessage>
+        <Class classname='org.perfectable.introspection.bean.WriteOnlyMethodProperty' primary='true' />
+        <Method classname='org.perfectable.introspection.bean.WriteOnlyMethodProperty' name='name'
+                signature='()Ljava/lang/String;'
+                primary='true' isStatic='false' />
+    </BugInstance>
+</BugCollection>
