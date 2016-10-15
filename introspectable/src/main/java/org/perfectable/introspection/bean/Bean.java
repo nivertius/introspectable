@@ -3,7 +3,7 @@ package org.perfectable.introspection.bean;
 import java.lang.reflect.Modifier;
 import java.util.stream.Stream;
 
-import org.perfectable.introspection.Copier;
+import org.perfectable.introspection.Classes;
 import org.perfectable.introspection.query.FieldQuery;
 
 public final class Bean<T> {
@@ -19,9 +19,12 @@ public final class Bean<T> {
 	}
 	
 	public T copy() {
-		return Copier.copy(this.instance);
+		T duplicate = Classes.instantiate(type());
+		fieldProperties()
+				.forEach(property -> property.copy(duplicate));
+		return duplicate;
 	}
-	
+
 	public Stream<?> related() {
 		return this.fieldProperties()
 				.map(boundProperty -> boundProperty.get())
