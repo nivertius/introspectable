@@ -8,8 +8,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import javax.annotation.Nullable;
-
 import org.perfectable.introspection.Methods;
 
 final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
@@ -56,8 +54,7 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		}
 		
 		@Override
-		public Object invoke(
-				@Nullable Object proxy, @Nullable Method method, @Nullable Object[] args) throws Throwable { // NOPMD
+		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable { // NOPMD
 			// declaration uses array instead of varargs
 			checkNotNull(method);
 			if(method.equals(Methods.OBJECT_FINALIZE)) {
