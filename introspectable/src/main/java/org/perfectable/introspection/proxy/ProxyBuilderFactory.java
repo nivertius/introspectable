@@ -86,7 +86,7 @@ public interface ProxyBuilderFactory {
 	
 	static void checkClassloader(ClassLoader referenceLoader, Class<?>... otherInterfaces) {
 		Stream.of(otherInterfaces)
-				.forEach(i -> checkArgument(referenceLoader.equals(i.getClassLoader())));
+				.forEach(testedInterface -> checkArgument(referenceLoader.equals(testedInterface.getClassLoader())));
 	}
 	
 	static void checkProxyableInterface(Class<?> testedInterface) {

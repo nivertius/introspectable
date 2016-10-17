@@ -69,7 +69,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		@Override
 		public Stream<Method> stream() {
 			return this.chain.stream()
-					.flatMap(c -> Stream.of(c.getDeclaredMethods()));
+					.flatMap(testedClass -> Stream.of(testedClass.getDeclaredMethods()));
 		}
 	}
 	

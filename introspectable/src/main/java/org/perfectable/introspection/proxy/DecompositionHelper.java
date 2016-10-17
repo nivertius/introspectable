@@ -11,10 +11,10 @@ final class DecompositionHelper {
 	
 	public static void decomposeArguments(Method method, Object[] arguments, ArgumentConsumer argumentConsumer) {
 		Parameter[] parameters = method.getParameters();
-		int i = 0;
-		for(Object argument : arguments) {
+		for (int i = 0; i < arguments.length; i++) {
+			Object argument = arguments[i];
 			Class<?> formal;
-			if(i < parameters.length) {
+			if (i < parameters.length) {
 				formal = parameters[i].getType();
 			}
 			else {
@@ -24,7 +24,6 @@ final class DecompositionHelper {
 			@SuppressWarnings("unchecked")
 			Class<? super Object> casted = (Class<? super Object>) formal;
 			argumentConsumer.consume(i, casted, argument);
-			i++;
 		}
 	}
 	

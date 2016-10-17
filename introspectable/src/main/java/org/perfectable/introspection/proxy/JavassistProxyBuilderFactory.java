@@ -39,7 +39,8 @@ public class JavassistProxyBuilderFactory implements ProxyBuilderFactory {
 		checkArgument(!Modifier.isFinal(sourceClass.getModifiers()));
 		Stream.of(additionalInterfaces).forEach(ProxyBuilderFactory::checkProxyableInterface);
 		if(ProxyFactory.isProxyClass(sourceClass) &&
-				Stream.of(additionalInterfaces).allMatch(i -> i.isAssignableFrom(sourceClass))) {
+				Stream.of(additionalInterfaces)
+						.allMatch(testedInterface -> testedInterface.isAssignableFrom(sourceClass))) {
 			return createFromProxyClass(sourceClass);
 		}
 		ProxyFactory factory = new ProxyFactory();

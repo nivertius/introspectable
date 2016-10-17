@@ -54,7 +54,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		@Override
 		public Stream<Field> stream() {
 			return this.chain.stream()
-					.flatMap(c -> Stream.of(c.getDeclaredFields()));
+					.flatMap(testedClass -> Stream.of(testedClass.getDeclaredFields()));
 		}
 	}
 	
