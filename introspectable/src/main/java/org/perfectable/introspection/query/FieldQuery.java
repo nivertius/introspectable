@@ -47,7 +47,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	private static final class CompleteFieldQuery<X> extends FieldQuery {
 		private final InheritanceChain<X> chain;
 		
-		public CompleteFieldQuery(Class<X> type) {
+		CompleteFieldQuery(Class<X> type) {
 			this.chain = InheritanceChain.startingAt(type);
 		}
 		
@@ -61,7 +61,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	private abstract static class FilteredFieldQuery extends FieldQuery {
 		private final FieldQuery parent;
 		
-		public FilteredFieldQuery(FieldQuery parent) {
+		FilteredFieldQuery(FieldQuery parent) {
 			this.parent = parent;
 		}
 		
@@ -77,7 +77,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	private static final class NamedFieldQuery extends FilteredFieldQuery {
 		private final String name;
 		
-		public NamedFieldQuery(FieldQuery parent, String name) {
+		NamedFieldQuery(FieldQuery parent, String name) {
 			super(parent);
 			this.name = name;
 		}
@@ -91,7 +91,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	private static final class PredicatedFieldQuery extends FilteredFieldQuery {
 		private final Predicate<? super Field> filter;
 		
-		public PredicatedFieldQuery(FieldQuery parent, Predicate<? super Field> filter) {
+		PredicatedFieldQuery(FieldQuery parent, Predicate<? super Field> filter) {
 			super(parent);
 			this.filter = filter;
 		}
@@ -105,7 +105,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	private static final class TypedFieldQuery extends FilteredFieldQuery {
 		private final Class<?> type;
 		
-		public TypedFieldQuery(FieldQuery parent, Class<?> type) {
+		TypedFieldQuery(FieldQuery parent, Class<?> type) {
 			super(parent);
 			this.type = type;
 		}
@@ -119,7 +119,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	private static final class AnnotatedFieldQuery extends FilteredFieldQuery {
 		private final AnnotationFilter annotationFilter;
 		
-		public AnnotatedFieldQuery(FieldQuery parent, AnnotationFilter annotationFilter) {
+		AnnotatedFieldQuery(FieldQuery parent, AnnotationFilter annotationFilter) {
 			super(parent);
 			this.annotationFilter = annotationFilter;
 		}
@@ -133,7 +133,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	private static final class ExcludedModifierFieldQuery extends FilteredFieldQuery {
 		private final int excludedModifier;
 		
-		public ExcludedModifierFieldQuery(FieldQuery parent, int excludedModifier) {
+		ExcludedModifierFieldQuery(FieldQuery parent, int excludedModifier) {
 			super(parent);
 			this.excludedModifier = excludedModifier;
 		}

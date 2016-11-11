@@ -57,7 +57,7 @@ public abstract class InjectionQuery<T, I> {
 
 		private final Class<T> targetClass;
 
-		public CompleteInjectionQuery(Class<T> targetClass) {
+		CompleteInjectionQuery(Class<T> targetClass) {
 			this.targetClass = targetClass;
 		}
 
@@ -84,7 +84,7 @@ public abstract class InjectionQuery<T, I> {
 	abstract static class FilteredInjectionQuery<T, I> extends InjectionQuery<T, I> {
 		private final InjectionQuery<T, I> parent;
 		
-		public FilteredInjectionQuery(InjectionQuery<T, I> parent) {
+		FilteredInjectionQuery(InjectionQuery<T, I> parent) {
 			this.parent = parent;
 		}
 
@@ -107,7 +107,7 @@ public abstract class InjectionQuery<T, I> {
 	static final class NamedInjectionQuery<T, I> extends FilteredInjectionQuery<T, I> {
 		private final String injectionName;
 		
-		public NamedInjectionQuery(InjectionQuery<T, I> parent, String injectionName) {
+		NamedInjectionQuery(InjectionQuery<T, I> parent, String injectionName) {
 			super(parent);
 			this.injectionName = checkNotNull(injectionName);
 		}
@@ -134,7 +134,7 @@ public abstract class InjectionQuery<T, I> {
 		private final InjectionQuery<T, I> parent;
 		private final Class<J> injectionClass;
 		
-		public TypedInjectionQuery(InjectionQuery<T, I> parent, Class<J> injectionClass) {
+		TypedInjectionQuery(InjectionQuery<T, I> parent, Class<J> injectionClass) {
 			this.parent = parent;
 			this.injectionClass = injectionClass;
 		}

@@ -28,18 +28,18 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 		return proxy;
 	}
 	
-	private static class JavassistInvocationHandlerAdapter<I> implements MethodHandler {
+	private static final class JavassistInvocationHandlerAdapter<I> implements MethodHandler {
 		
 		private final InvocationHandler<I> handler;
-		
-		public JavassistInvocationHandlerAdapter(InvocationHandler<I> handler) {
-			this.handler = handler;
-		}
-		
-		public static <I> JavassistInvocationHandlerAdapter<I> adapt(InvocationHandler<I> handler) {
+
+		static <I> JavassistInvocationHandlerAdapter<I> adapt(InvocationHandler<I> handler) {
 			return new JavassistInvocationHandlerAdapter<>(handler);
 		}
-		
+
+		private JavassistInvocationHandlerAdapter(InvocationHandler<I> handler) {
+			this.handler = handler;
+		}
+
 		@Override
 		public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable { // NOPMD
 			// declaration uses array instead of varargs

@@ -62,7 +62,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	private static final class CompleteMethodQuery<X> extends MethodQuery {
 		private final InheritanceChain<X> chain;
 		
-		public CompleteMethodQuery(Class<X> type) {
+		CompleteMethodQuery(Class<X> type) {
 			this.chain = InheritanceChain.startingAt(type);
 		}
 		
@@ -76,7 +76,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	private abstract static class FilteredMethodQuery extends MethodQuery {
 		private final MethodQuery parent;
 		
-		public FilteredMethodQuery(MethodQuery parent) {
+		FilteredMethodQuery(MethodQuery parent) {
 			this.parent = parent;
 		}
 		
@@ -92,7 +92,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	private static final class PredicatedMethodQuery extends FilteredMethodQuery {
 		private final Predicate<? super Method> filter;
 		
-		public PredicatedMethodQuery(MethodQuery parent, Predicate<? super Method> filter) {
+		PredicatedMethodQuery(MethodQuery parent, Predicate<? super Method> filter) {
 			super(parent);
 			this.filter = filter;
 		}
@@ -106,7 +106,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	private static final class NamedMethodQuery extends FilteredMethodQuery {
 		private final String name;
 		
-		public NamedMethodQuery(MethodQuery parent, String name) {
+		NamedMethodQuery(MethodQuery parent, String name) {
 			super(parent);
 			this.name = name;
 		}
@@ -120,7 +120,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	private static final class ParametersMethodQuery extends FilteredMethodQuery {
 		private final Class<?>[] parameterTypes;
 		
-		public ParametersMethodQuery(MethodQuery parent, Class<?>... parameterTypes) {
+		ParametersMethodQuery(MethodQuery parent, Class<?>... parameterTypes) {
 			super(parent);
 			this.parameterTypes = parameterTypes.clone();
 		}
@@ -145,7 +145,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	private static final class ReturningMethodQuery extends FilteredMethodQuery {
 		private final Class<?> returnType;
 		
-		public ReturningMethodQuery(MethodQuery parent, Class<?> returnType) {
+		ReturningMethodQuery(MethodQuery parent, Class<?> returnType) {
 			super(parent);
 			this.returnType = returnType;
 		}
@@ -159,7 +159,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	private static final class AnnotatedMethodQuery extends FilteredMethodQuery {
 		private final AnnotationFilter annotationFilter;
 		
-		public AnnotatedMethodQuery(MethodQuery parent, AnnotationFilter annotationFilter) {
+		AnnotatedMethodQuery(MethodQuery parent, AnnotationFilter annotationFilter) {
 			super(parent);
 			this.annotationFilter = annotationFilter;
 		}
@@ -173,7 +173,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	private static final class ExcludedModifierMethodQuery extends FilteredMethodQuery {
 		private final int excludedModifier;
 		
-		public ExcludedModifierMethodQuery(MethodQuery parent, int excludedModifier) {
+		ExcludedModifierMethodQuery(MethodQuery parent, int excludedModifier) {
 			super(parent);
 			this.excludedModifier = excludedModifier;
 		}

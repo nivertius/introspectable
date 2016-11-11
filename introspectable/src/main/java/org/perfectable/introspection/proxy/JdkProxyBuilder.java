@@ -41,18 +41,18 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		}
 	}
 	
-	private static class JdkInvocationHandlerAdapter<I> implements java.lang.reflect.InvocationHandler {
+	private static final class JdkInvocationHandlerAdapter<I> implements java.lang.reflect.InvocationHandler {
 		
 		private final InvocationHandler<I> handler;
-		
-		public JdkInvocationHandlerAdapter(InvocationHandler<I> handler) {
-			this.handler = handler;
-		}
-		
-		public static <I> JdkInvocationHandlerAdapter<I> adapt(InvocationHandler<I> handler) {
+
+		static <I> JdkInvocationHandlerAdapter<I> adapt(InvocationHandler<I> handler) {
 			return new JdkInvocationHandlerAdapter<>(handler);
 		}
-		
+
+		private JdkInvocationHandlerAdapter(InvocationHandler<I> handler) {
+			this.handler = handler;
+		}
+
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable { // NOPMD
 			// declaration uses array instead of varargs
