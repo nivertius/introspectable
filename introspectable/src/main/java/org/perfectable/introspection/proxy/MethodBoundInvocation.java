@@ -59,7 +59,7 @@ public class MethodBoundInvocation<T> implements BoundInvocation<T> {
 	
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.method, this.receiver, this.arguments);
+		return Objects.hash(this.method, this.receiver,  Arrays.hashCode(this.arguments));
 	}
 	
 	@Override
