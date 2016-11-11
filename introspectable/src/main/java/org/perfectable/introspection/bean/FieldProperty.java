@@ -1,10 +1,11 @@
 package org.perfectable.introspection.bean;
 
-import com.google.common.base.Throwables;
 import org.perfectable.introspection.Fields;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
+import javax.annotation.Nullable;
+
+import com.google.common.base.Throwables;
 
 final class FieldProperty<CT, PT> implements Property<CT, PT> {
 	private final Field field;

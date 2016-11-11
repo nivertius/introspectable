@@ -1,10 +1,10 @@
 package org.perfectable.introspection.bean;
 
-import java.lang.reflect.Modifier;
-import java.util.stream.Stream;
-
 import org.perfectable.introspection.Classes;
 import org.perfectable.introspection.query.FieldQuery;
+
+import java.lang.reflect.Modifier;
+import java.util.stream.Stream;
 
 public final class Bean<T> {
 	

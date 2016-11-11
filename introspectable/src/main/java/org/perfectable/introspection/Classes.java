@@ -1,12 +1,12 @@
 package org.perfectable.introspection;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
 import com.google.common.base.Throwables;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Classes {
 	public static boolean instantiable(Class<?> type) {

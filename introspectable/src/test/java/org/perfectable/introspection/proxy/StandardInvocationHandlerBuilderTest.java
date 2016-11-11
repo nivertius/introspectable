@@ -1,10 +1,10 @@
 package org.perfectable.introspection.proxy;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.annotation.Nullable;
 
 import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("static-method")
 public class StandardInvocationHandlerBuilderTest {

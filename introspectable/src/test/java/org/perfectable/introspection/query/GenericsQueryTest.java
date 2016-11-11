@@ -1,9 +1,9 @@
 package org.perfectable.introspection.query;
 
+import org.junit.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import org.junit.Test;
 
 @SuppressWarnings("static-method")
 public class GenericsQueryTest {

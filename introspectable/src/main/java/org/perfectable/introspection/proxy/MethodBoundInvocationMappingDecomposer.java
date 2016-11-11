@@ -2,7 +2,6 @@ package org.perfectable.introspection.proxy;
 
 import java.lang.reflect.Method;
 import java.util.function.Function;
-
 import javax.annotation.Nullable;
 
 final class MethodBoundInvocationMappingDecomposer<T> implements

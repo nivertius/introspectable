@@ -1,7 +1,6 @@
 package org.perfectable.introspection;
 
 import java.io.InputStream;
-
 import javax.annotation.Nullable;
 
 public final class Resources {

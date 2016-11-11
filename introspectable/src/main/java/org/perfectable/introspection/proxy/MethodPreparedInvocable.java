@@ -1,11 +1,10 @@
 package org.perfectable.introspection.proxy;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import javax.annotation.Nullable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class MethodPreparedInvocable<T> implements PreparedInvocable<T> {
 	

@@ -1,13 +1,13 @@
 package org.perfectable.introspection.proxy;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import org.perfectable.introspection.Introspection;
 
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
-import org.perfectable.introspection.Introspection;
-
 import com.google.common.collect.ObjectArrays;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 public interface ProxyBuilderFactory {
 	

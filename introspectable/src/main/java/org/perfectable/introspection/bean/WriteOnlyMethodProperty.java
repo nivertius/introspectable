@@ -1,11 +1,12 @@
 package org.perfectable.introspection.bean;
 
-import com.google.common.base.Throwables;
 import org.perfectable.introspection.Methods;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import javax.annotation.Nullable;
+
+import com.google.common.base.Throwables;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;

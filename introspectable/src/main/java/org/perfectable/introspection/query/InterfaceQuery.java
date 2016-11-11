@@ -1,8 +1,8 @@
 package org.perfectable.introspection.query;
 
-import java.util.Collection;
-
 import org.perfectable.introspection.MappingIterable;
+
+import java.util.Collection;
 
 import com.google.common.collect.ImmutableList;
 

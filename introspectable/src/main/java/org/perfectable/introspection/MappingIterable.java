@@ -1,7 +1,5 @@
 package org.perfectable.introspection;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
@@ -17,6 +15,8 @@ import java.util.stream.StreamSupport;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class MappingIterable<T> implements Iterable<T> {
 	

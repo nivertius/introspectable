@@ -1,10 +1,10 @@
 package org.perfectable.introspection;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 public final class Methods {
 	

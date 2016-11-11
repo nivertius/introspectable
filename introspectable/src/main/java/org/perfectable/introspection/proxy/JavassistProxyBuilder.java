@@ -1,12 +1,12 @@
 package org.perfectable.introspection.proxy;
 
+import org.perfectable.introspection.Methods;
+
 import java.lang.reflect.Method;
 
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.Proxy;
-
 import org.objenesis.instantiator.ObjectInstantiator;
-import org.perfectable.introspection.Methods;
 
 final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 	

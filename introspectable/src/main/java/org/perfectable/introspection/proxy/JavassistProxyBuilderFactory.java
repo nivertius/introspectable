@@ -1,16 +1,15 @@
 package org.perfectable.introspection.proxy;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.lang.reflect.Modifier;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import javassist.util.proxy.ProxyFactory;
-
 import org.objenesis.ObjenesisStd;
 import org.objenesis.instantiator.ObjectInstantiator;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 public class JavassistProxyBuilderFactory implements ProxyBuilderFactory {
 	

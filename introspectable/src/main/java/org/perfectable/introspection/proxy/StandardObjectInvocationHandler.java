@@ -1,8 +1,8 @@
 package org.perfectable.introspection.proxy;
 
-import java.lang.reflect.Method;
-
 import org.perfectable.introspection.Methods;
+
+import java.lang.reflect.Method;
 
 public class StandardObjectInvocationHandler implements InvocationHandler<Object> {
 	public static final StandardObjectInvocationHandler INSTANCE = new StandardObjectInvocationHandler();

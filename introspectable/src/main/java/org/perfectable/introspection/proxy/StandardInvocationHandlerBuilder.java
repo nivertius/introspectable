@@ -1,12 +1,12 @@
 package org.perfectable.introspection.proxy;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.perfectable.introspection.ReferenceExtractor;
 
 import java.lang.reflect.Method;
 
-import org.perfectable.introspection.ReferenceExtractor;
-
 import com.google.common.collect.ImmutableMap;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @SuppressWarnings("FunctionalInterfaceClash")
 public final class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBuilder<T> {

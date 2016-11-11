@@ -1,12 +1,11 @@
 package org.perfectable.introspection.proxy;
 
-import java.lang.reflect.Method;
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-
 import org.perfectable.introspection.Methods;
 import org.perfectable.introspection.proxy.ProxyBuilderFactory.Feature;
+
+import java.lang.reflect.Method;
+import java.util.Optional;
+import javax.annotation.Nullable;
 
 public final class LazyInitialization {
 	public interface Proxy<T> {

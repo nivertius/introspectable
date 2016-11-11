@@ -1,13 +1,13 @@
 package org.perfectable.introspection;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class RelatedClassesIterable extends MappingIterable.Unique<Class<?>> {
 	private final Class<?> initial;

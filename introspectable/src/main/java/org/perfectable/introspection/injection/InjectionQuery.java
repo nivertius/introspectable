@@ -1,20 +1,19 @@
 package org.perfectable.introspection.injection;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-import java.lang.reflect.Modifier;
-import java.util.stream.Stream;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.perfectable.introspection.query.AnnotationFilter;
 import org.perfectable.introspection.query.AnnotationFilter.SingleAnnotationFilter;
 import org.perfectable.introspection.query.FieldQuery;
 import org.perfectable.introspection.query.MemberQuery;
 import org.perfectable.introspection.query.MethodQuery;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
+import java.lang.reflect.Modifier;
+import java.util.stream.Stream;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class InjectionQuery<T, I> {
 	

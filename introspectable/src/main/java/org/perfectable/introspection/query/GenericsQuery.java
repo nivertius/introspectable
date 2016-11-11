@@ -1,11 +1,11 @@
 package org.perfectable.introspection.query;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
 import com.google.common.reflect.TypeToken;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 public final class GenericsQuery<X> {
 	private final Class<X> type;

@@ -1,12 +1,12 @@
 package org.perfectable.introspection.query;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.perfectable.introspection.InheritanceChain;
 
 import java.lang.reflect.Method;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import org.perfectable.introspection.InheritanceChain;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	

@@ -1,11 +1,5 @@
 package org.perfectable.introspection;
 
-import static com.google.common.base.Preconditions.checkState;
-
-import java.lang.reflect.Method;
-
-import javax.annotation.Nullable;
-
 import org.perfectable.introspection.proxy.BoundInvocation;
 import org.perfectable.introspection.proxy.InvocationHandler;
 import org.perfectable.introspection.proxy.MethodBoundInvocation;
@@ -13,7 +7,12 @@ import org.perfectable.introspection.proxy.ProxyBuilder;
 import org.perfectable.introspection.proxy.ProxyBuilderFactory;
 import org.perfectable.introspection.proxy.ProxyBuilderFactory.Feature;
 
+import java.lang.reflect.Method;
+import javax.annotation.Nullable;
+
 import com.google.common.base.Defaults;
+
+import static com.google.common.base.Preconditions.checkState;
 
 public final class ReferenceExtractor<T> {
 	

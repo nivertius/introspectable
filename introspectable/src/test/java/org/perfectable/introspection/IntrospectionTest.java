@@ -1,12 +1,11 @@
 package org.perfectable.introspection;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.lang.reflect.Field;
 
+import com.google.common.base.Throwables;
 import org.junit.Test;
 
-import com.google.common.base.Throwables;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("static-method")
 public class IntrospectionTest {

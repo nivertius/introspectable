@@ -1,14 +1,14 @@
 package org.perfectable.introspection.proxy;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.perfectable.introspection.Methods;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import org.perfectable.introspection.Methods;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 	

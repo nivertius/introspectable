@@ -1,11 +1,11 @@
 package org.perfectable.introspection.proxy;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.lang.reflect.Proxy;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Stream;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 public final class JdkProxyBuilderFactory implements ProxyBuilderFactory {
 

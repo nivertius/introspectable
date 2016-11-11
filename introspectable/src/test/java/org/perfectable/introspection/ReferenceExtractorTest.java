@@ -1,10 +1,10 @@
 package org.perfectable.introspection;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.lang.reflect.Method;
 
 import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("static-method")
 public class ReferenceExtractorTest {

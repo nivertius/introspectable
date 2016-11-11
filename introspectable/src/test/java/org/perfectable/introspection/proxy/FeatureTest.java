@@ -1,9 +1,10 @@
 package org.perfectable.introspection.proxy;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.perfectable.introspection.proxy.ProxyBuilderFactory.Feature;
 
 import org.junit.Test;
-import org.perfectable.introspection.proxy.ProxyBuilderFactory.Feature;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("static-method")
 public class FeatureTest {

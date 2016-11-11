@@ -1,6 +1,6 @@
 package org.perfectable.introspection.proxy;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.perfectable.introspection.Methods;
 
 import java.lang.reflect.Method;
 
@@ -9,7 +9,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.perfectable.introspection.Methods;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JavassistProxyBuilderTest {
 	
