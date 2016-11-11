@@ -19,50 +19,50 @@ import com.google.common.collect.Sets;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class MappingIterable<T> implements Iterable<T> {
-	
+
 	@SafeVarargs
 	static <T> MappingIterable<T> create(Function<T, Stream<T>> mapper, T... seeds) {
 		return new MappingIterable<T>() {
-			
+
 			@Override
 			protected Collection<T> seed() {
 				return ImmutableList.copyOf(seeds);
 			}
-			
+
 			@Override
 			protected Collection<T> map(T current) {
 				@SuppressWarnings("null")
 				Stream<T> stream = checkNotNull(mapper.apply(current));
 				return stream.collect(Collectors.toList());
 			}
-			
+
 		};
 	}
-	
+
 	protected abstract Collection<T> seed();
-	
+
 	protected abstract Collection<T> map(T current);
-	
+
 	public Stream<T> stream() {
 		return StreamSupport.stream(spliterator(), false);
 	}
-	
+
 	@Override
 	public Iterator<T> iterator() {
 		return new MappingIterator();
 	}
-	
+
 	protected class MappingIterator implements Iterator<T> {
 		private final Deque<T> left = new LinkedList<>(seed());
-		
+
 		@Override
 		public boolean hasNext() {
 			return !this.left.isEmpty();
 		}
-		
+
 		@Override
 		public T next() {
-			if(!hasNext()){
+			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
 			T current = this.left.pop();
@@ -70,21 +70,21 @@ public abstract class MappingIterable<T> implements Iterable<T> {
 			push(generated);
 			return current;
 		}
-		
+
 		protected void push(Collection<T> generated) {
 			this.left.addAll(generated);
 		}
 	}
-	
+
 	public abstract static class Unique<T> extends MappingIterable<T> {
 		@Override
 		public Iterator<T> iterator() {
 			return new UniqueMappingIterator();
 		}
-		
+
 		class UniqueMappingIterator extends MappingIterator {
 			private final Set<T> processed = new HashSet<>(seed());
-			
+
 			@Override
 			protected void push(Collection<T> generated) {
 				super.push(Sets.difference(ImmutableSet.copyOf(generated), this.processed));
@@ -92,5 +92,5 @@ public abstract class MappingIterable<T> implements Iterable<T> {
 			}
 		}
 	}
-	
+
 }

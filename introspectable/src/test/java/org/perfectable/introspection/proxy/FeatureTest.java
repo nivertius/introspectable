@@ -8,21 +8,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("static-method")
 public class FeatureTest {
-	
+
 	@Test
 	public void testAny() {
 		ProxyBuilderFactory factory = ProxyBuilderFactory.any();
 		assertThat(factory)
 				.isInstanceOf(JdkProxyBuilderFactory.class);
 	}
-	
+
 	@Test
 	public void testEmptyFeatures() {
 		ProxyBuilderFactory factory = ProxyBuilderFactory.withFeature();
 		assertThat(factory)
 				.isNotNull();
 	}
-	
+
 	@Test
 	public void testSuperclass() {
 		ProxyBuilderFactory factory = ProxyBuilderFactory.withFeature(Feature.SUPERCLASS);

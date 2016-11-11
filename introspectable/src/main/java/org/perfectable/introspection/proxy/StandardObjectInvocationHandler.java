@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 
 public class StandardObjectInvocationHandler implements InvocationHandler<Object> {
 	public static final StandardObjectInvocationHandler INSTANCE = new StandardObjectInvocationHandler();
-	
+
 	@Override
 	public Object handle(BoundInvocation<?> invocation) throws Throwable {
 		MethodBoundInvocation<?> methodInvocation = (MethodBoundInvocation<?>) invocation;
@@ -16,13 +16,13 @@ public class StandardObjectInvocationHandler implements InvocationHandler<Object
 		BoundInvocation<?> replacedInvocable = methodInvocation.decompose(mappingDecomposer);
 		return replacedInvocable.invoke();
 	}
-	
+
 	@SuppressWarnings("boxing")
 	private static Invocable<Object> findInvocable(Method objectMethod) {
-		if(Methods.OBJECT_EQUALS.equals(objectMethod)) {
+		if (Methods.OBJECT_EQUALS.equals(objectMethod)) {
 			return (receiver, arguments) -> receiver == arguments[0];
 		}
-		if(Methods.OBJECT_TO_STRING.equals(objectMethod)) {
+		if (Methods.OBJECT_TO_STRING.equals(objectMethod)) {
 			return (receiver, arguments) -> "Proxy()";
 		}
 		throw new UnsupportedOperationException();

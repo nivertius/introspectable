@@ -7,17 +7,17 @@ import java.lang.reflect.Modifier;
 import java.util.stream.Stream;
 
 public final class Bean<T> {
-	
+
 	private final T instance;
-	
+
 	private Bean(T instance) {
 		this.instance = instance;
 	}
-	
+
 	public static <X> Bean<X> from(X instance) {
 		return new Bean<>(instance);
 	}
-	
+
 	public T copy() {
 		T duplicate = Classes.instantiate(type());
 		fieldProperties()
@@ -35,7 +35,7 @@ public final class Bean<T> {
 	public Class<T> type() {
 		return (Class<T>) this.instance.getClass();
 	}
-	
+
 	public Stream<BoundProperty<T, ?>> fieldProperties() {
 		Class<T> instanceClass = type();
 		return FieldQuery.of(this.instance.getClass())
@@ -43,13 +43,13 @@ public final class Bean<T> {
 				.stream()
 				.map(field -> Property.fromField(instanceClass, field).bind(this.instance));
 	}
-	
+
 	public <X> BoundProperty<T, X> property(String name, Class<X> type) {
 		return Property.from(type(), name, type).bind(this.instance);
 	}
-	
+
 	public BoundProperty<T, Object> property(String name) {
 		return Property.raw(type(), name).bind(this.instance);
 	}
-	
+
 }

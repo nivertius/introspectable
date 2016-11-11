@@ -13,20 +13,20 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public interface Property<CT, PT> {
-	
+
 	@Nullable
 	PT get(CT bean);
-	
+
 	void set(CT bean, @Nullable PT value);
-	
+
 	String name();
-	
+
 	Class<PT> type();
-	
+
 	boolean isReadable();
-	
+
 	boolean isWriteable();
-	
+
 	default BoundProperty<CT, PT> bind(CT bean) {
 		return new BoundProperty<>(this, bean);
 	}
@@ -54,18 +54,18 @@ public interface Property<CT, PT> {
 		}
 		throw new IllegalArgumentException("No property " + name + " for " + beanClass);
 	}
-	
+
 	static Property<?, ?> fromField(Field field) {
 		checkNotNull(field);
 		return FieldProperty.fromField(field);
 	}
-	
+
 	static <CX> Property<CX, ?> fromField(Class<CX> beanClass, Field field) {
 		checkNotNull(field);
 		checkArgument(field.getDeclaringClass().isAssignableFrom(beanClass));
 		return FieldProperty.fromField(field);
 	}
-	
+
 	static <CX, PX> Property<CX, PX> fromField(Class<CX> beanClass, Field field, Class<PX> type) {
 		checkNotNull(field);
 		checkArgument(field.getDeclaringClass().isAssignableFrom(beanClass));
@@ -73,9 +73,9 @@ public interface Property<CT, PT> {
 		checkArgument(!Fields.isStatic(field));
 		return FieldProperty.fromField(field);
 	}
-	
+
 	static Property<?, ?> fromSetter(Method setter) {
 		return WriteOnlyMethodProperty.forSetter(setter);
 	}
-	
+
 }

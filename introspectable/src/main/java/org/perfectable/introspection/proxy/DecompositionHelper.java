@@ -4,11 +4,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 final class DecompositionHelper {
-	
+
 	public interface ArgumentConsumer {
 		<X> void consume(int index, Class<? super X> formal, X actual);
 	}
-	
+
 	public static void decomposeArguments(Method method, Object[] arguments, ArgumentConsumer argumentConsumer) {
 		Parameter[] parameters = method.getParameters();
 		for (int i = 0; i < arguments.length; i++) {
@@ -26,9 +26,9 @@ final class DecompositionHelper {
 			argumentConsumer.consume(i, casted, argument);
 		}
 	}
-	
+
 	private DecompositionHelper() {
 		// utility class
 	}
-	
+
 }

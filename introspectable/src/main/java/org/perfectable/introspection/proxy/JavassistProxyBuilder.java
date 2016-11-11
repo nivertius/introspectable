@@ -9,17 +9,17 @@ import javassist.util.proxy.Proxy;
 import org.objenesis.instantiator.ObjectInstantiator;
 
 final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
-	
+
 	private final ObjectInstantiator<I> instantiator;
-	
+
 	public static <I> JavassistProxyBuilder<I> create(ObjectInstantiator<I> instantiator) {
 		return new JavassistProxyBuilder<>(instantiator);
 	}
-	
+
 	private JavassistProxyBuilder(ObjectInstantiator<I> instantiator) {
 		this.instantiator = instantiator;
 	}
-	
+
 	@Override
 	public I instantiate(InvocationHandler<I> handler) {
 		MethodHandler handlerAdapter = JavassistInvocationHandlerAdapter.adapt(handler);
@@ -27,9 +27,9 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 		((Proxy) proxy).setHandler(handlerAdapter);
 		return proxy;
 	}
-	
+
 	private static final class JavassistInvocationHandlerAdapter<I> implements MethodHandler {
-		
+
 		private final InvocationHandler<I> handler;
 
 		static <I> JavassistInvocationHandlerAdapter<I> adapt(InvocationHandler<I> handler) {
@@ -43,7 +43,7 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 		@Override
 		public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable { // NOPMD
 			// declaration uses array instead of varargs
-			if(thisMethod.equals(Methods.OBJECT_FINALIZE)) {
+			if (thisMethod.equals(Methods.OBJECT_FINALIZE)) {
 				return null; // ignore proxy finalization
 			}
 			@SuppressWarnings("unchecked")

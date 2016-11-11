@@ -16,7 +16,7 @@ import javax.inject.Named;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class InjectionQuery<T, I> {
-	
+
 	public static <X> InjectionQuery<X, Object> create(Class<X> targetClass) {
 		return new CompleteInjectionQuery<>(targetClass);
 	}
@@ -28,28 +28,29 @@ public abstract class InjectionQuery<T, I> {
 		methodInjections(injected).forEach(builder::add);
 		return builder.build().collect(CompositeInjection::create, Injection::andThen, Injection::andThen);
 	}
-	
+
 	private Stream<Injection<T>> fieldInjections(I injected) {
 		return createFieldQuery()
 				.stream()
 				.map(field -> Injection.create(field, injected));
 	}
-	
+
 	private Stream<Injection<T>> methodInjections(I injected) {
 		return createMethodQuery()
 				.stream()
 				.map(method -> Injection.create(method, injected));
 	}
-	
+
 	public InjectionQuery<T, I> named(String injectionName) {
 		return new NamedInjectionQuery<>(this, injectionName);
 	}
-	
+
 	public <X> InjectionQuery<T, X> typed(Class<X> injectionClass) {
 		return new TypedInjectionQuery<>(this, injectionClass);
 	}
-	
+
 	protected abstract MethodQuery createMethodQuery();
+
 	protected abstract FieldQuery createFieldQuery();
 
 	static final class CompleteInjectionQuery<T> extends InjectionQuery<T, Object> {
@@ -79,15 +80,16 @@ public abstract class InjectionQuery<T, I> {
 					.excludingModifier(Modifier.FINAL);
 		}
 	}
-	
+
 	abstract static class FilteredInjectionQuery<T, I> extends InjectionQuery<T, I> {
 		private final InjectionQuery<T, I> parent;
-		
+
 		FilteredInjectionQuery(InjectionQuery<T, I> parent) {
 			this.parent = parent;
 		}
 
 		protected abstract FieldQuery limitFieldsConcrete(FieldQuery query);
+
 		protected abstract MethodQuery limitMethodsConcrete(MethodQuery query);
 
 		@Override
@@ -102,10 +104,10 @@ public abstract class InjectionQuery<T, I> {
 			return limitMethodsConcrete(parentQuery);
 		}
 	}
-	
+
 	static final class NamedInjectionQuery<T, I> extends FilteredInjectionQuery<T, I> {
 		private final String injectionName;
-		
+
 		NamedInjectionQuery(InjectionQuery<T, I> parent, String injectionName) {
 			super(parent);
 			this.injectionName = checkNotNull(injectionName);
@@ -127,12 +129,12 @@ public abstract class InjectionQuery<T, I> {
 			return query.annotatedWith(filter);
 		}
 	}
-	
+
 	static final class TypedInjectionQuery<T, I, J> extends InjectionQuery<T, J> {
 		// this cannot inherit from FilteredInjectionQuery because of changed types
 		private final InjectionQuery<T, I> parent;
 		private final Class<J> injectionClass;
-		
+
 		TypedInjectionQuery(InjectionQuery<T, I> parent, Class<J> injectionClass) {
 			this.parent = parent;
 			this.injectionClass = injectionClass;
@@ -152,6 +154,6 @@ public abstract class InjectionQuery<T, I> {
 					.parameters(injectionClass)
 					.returningVoid();
 		}
-		
+
 	}
 }

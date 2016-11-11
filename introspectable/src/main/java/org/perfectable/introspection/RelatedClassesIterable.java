@@ -12,43 +12,43 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class RelatedClassesIterable extends MappingIterable.Unique<Class<?>> {
 	private final Class<?> initial;
 	private final Predicate<Class<?>> inclusionPredicate;
-	
+
 	public static RelatedClassesIterable of(Class<?> initial) {
 		return new RelatedClassesIterable(initial, tested -> true);
 	}
-	
+
 	private RelatedClassesIterable(Class<?> initial, Predicate<Class<?>> inclusionPredicate) {
 		this.initial = initial;
 		this.inclusionPredicate = inclusionPredicate;
 	}
-	
+
 	@Override
 	protected Collection<Class<?>> seed() {
 		return map(this.initial);
 	}
-	
+
 	public RelatedClassesIterable excludingPackage(Package newExcludedPackage) {
 		checkNotNull(newExcludedPackage);
 		return filter(tested -> !newExcludedPackage.equals(tested.getPackage()));
 	}
-	
+
 	public RelatedClassesIterable excludingPrimitives() {
 		return filter(tested -> !tested.isPrimitive());
 	}
-	
+
 	public RelatedClassesIterable excludingInterfaces() {
 		return filter(tested -> !tested.isInterface());
 	}
-	
+
 	public RelatedClassesIterable excluding(Class<?> excludedClass) {
 		checkNotNull(excludedClass);
 		return filter(tested -> !excludedClass.equals(tested));
 	}
-	
+
 	private RelatedClassesIterable filter(Predicate<Class<?>> additionalInclusionPredicate) {
 		return new RelatedClassesIterable(this.initial, this.inclusionPredicate.and(additionalInclusionPredicate));
 	}
-	
+
 	@Override
 	protected Collection<Class<?>> map(Class<?> current) {
 		Stream.Builder<Class<?>> resultBuilder = Stream.builder();
@@ -61,34 +61,34 @@ public final class RelatedClassesIterable extends MappingIterable.Unique<Class<?
 		Set<Class<?>> result = resultBuilder.build().collect(Collectors.toSet());
 		return result;
 	}
-	
+
 	private static Stream<Class<?>> extractSuperClasses(Class<?> current) {
 		// MARK this should work on generic superclass
 		Stream.Builder<Class<?>> resultBuilder = Stream.builder();
-		if(current.getSuperclass() != null) {
+		if (current.getSuperclass() != null) {
 			resultBuilder.add(current.getSuperclass());
 		}
 		Stream.of(current.getInterfaces()).forEach(resultBuilder::add);
 		return resultBuilder.build();
 	}
-	
+
 	private static Stream<Class<?>> extractEnclosingClasses(Class<?> current) {
 		Class<?> enclosingClass = current.getEnclosingClass();
-		if(enclosingClass == null) {
+		if (enclosingClass == null) {
 			return Stream.empty();
 		}
 		return Stream.of(enclosingClass);
 	}
-	
+
 	private static Stream<Class<?>> extractNestedClasses(Class<?> current) {
 		return Stream.of(current.getClasses());
 	}
-	
+
 	private static Stream<Class<?>> extractFieldClasses(Class<?> current) {
 		return Stream.of(current.getDeclaredFields())
 				.map(Field::getType);
 	}
-	
+
 	private static Stream<Class<?>> extractMethodClasses(Class<?> current) {
 		// MARK this should work on generic parameter and return types
 		return Stream.of(current.getDeclaredMethods())
@@ -100,12 +100,12 @@ public final class RelatedClassesIterable extends MappingIterable.Unique<Class<?
 						)
 				);
 	}
-	
+
 	private static Stream<Class<?>> extractParameterClasses(Class<?> current) {
 		return Stream.of(current.getTypeParameters())
 				.flatMap(variable -> Stream.of(variable.getBounds()))
 				.filter(type -> type instanceof Class)
 				.map(type -> (Class<?>) type);
 	}
-	
+
 }
