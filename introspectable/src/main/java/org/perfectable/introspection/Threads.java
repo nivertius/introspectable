@@ -43,11 +43,13 @@ public final class Threads {
 	public static void waitForInterrupt() {
 		Object monitor = new Object();
 		synchronized(monitor) {
-			try {
-				monitor.wait();
-			}
-			catch(InterruptedException e) {
-				// return
+			while(true) {
+				try {
+					monitor.wait();
+				}
+				catch(InterruptedException e) {
+					return;
+				}
 			}
 		}
 	}
