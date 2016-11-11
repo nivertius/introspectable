@@ -29,17 +29,11 @@ public interface Injection<T> {
 		Property<TX, PX> property = Property.from(beanType, propertyName, propertyType);
 		return PropertyInjection.create(property, value);
 	}
-	
-	@SafeVarargs
-	@SuppressWarnings("varargs")
-	static <TX> Injection<TX> composite(Injection<? super TX>... injections) {
-		return CompositeInjection.create(injections);
-	}
-	
+
 	void perform(T target);
 
-	default <X extends T> Injection<X> andThen(Injection<X> next) {
-		return composite(this, next);
+	default <X extends T> Injection<X> andThen(Injection<? super X> next) {
+		return CompositeInjection.create(this, next);
 	}
 	
 }

@@ -27,7 +27,7 @@ public abstract class InjectionQuery<T, I> {
 		Stream.Builder<Injection<T>> builder = Stream.builder();
 		fieldInjections(injected).forEach(builder::add);
 		methodInjections(injected).forEach(builder::add);
-		return builder.build().collect(Injection::composite, Injection::andThen, Injection::andThen);
+		return builder.build().collect(CompositeInjection::create, Injection::andThen, Injection::andThen);
 	}
 	
 	private Stream<Injection<T>> fieldInjections(I injected) {
