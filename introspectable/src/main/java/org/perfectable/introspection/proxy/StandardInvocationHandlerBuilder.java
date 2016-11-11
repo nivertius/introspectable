@@ -8,6 +8,7 @@ import org.perfectable.introspection.ReferenceExtractor;
 
 import com.google.common.collect.ImmutableMap;
 
+@SuppressWarnings("FunctionalInterfaceClash")
 public final class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBuilder<T> {
 	private final ReferenceExtractor<T> referenceExtractor;
 	private final ImmutableMap<Method, InvocationHandler<? super T>> methods;

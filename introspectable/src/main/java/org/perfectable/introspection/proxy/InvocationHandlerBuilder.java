@@ -1,5 +1,6 @@
 package org.perfectable.introspection.proxy;
 
+@SuppressWarnings("FunctionalInterfaceClash")
 public interface InvocationHandlerBuilder<T> {
 	interface Binder<T, B> {
 		InvocationHandlerBuilder<T> to(B executed);
