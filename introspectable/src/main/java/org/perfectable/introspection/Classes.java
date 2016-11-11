@@ -3,6 +3,7 @@ package org.perfectable.introspection;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 
 import com.google.common.base.Throwables;
@@ -32,10 +33,10 @@ public final class Classes {
 	public static <T> T instantiate(Class<? extends T> type) {
 		checkArgument(instantiable(type), "%s is not instantiable", type);
 		try {
-			T instance = type.newInstance();
+			T instance = type.getConstructor().newInstance();
 			return instance;
 		}
-		catch(InstantiationException | IllegalAccessException e) {
+		catch(InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
 			throw Throwables.propagate(e);
 		}
 	}
