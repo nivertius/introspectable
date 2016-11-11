@@ -89,7 +89,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		}
 	}
 	
-	private class PredicatedMethodQuery extends FilteredMethodQuery {
+	private static final class PredicatedMethodQuery extends FilteredMethodQuery {
 		private final Predicate<? super Method> filter;
 		
 		public PredicatedMethodQuery(MethodQuery parent, Predicate<? super Method> filter) {
@@ -103,7 +103,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		}
 	}
 	
-	private class NamedMethodQuery extends FilteredMethodQuery {
+	private static final class NamedMethodQuery extends FilteredMethodQuery {
 		private final String name;
 		
 		public NamedMethodQuery(MethodQuery parent, String name) {
@@ -117,7 +117,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		}
 	}
 	
-	private class ParametersMethodQuery extends FilteredMethodQuery {
+	private static final class ParametersMethodQuery extends FilteredMethodQuery {
 		private final Class<?>[] parameterTypes;
 		
 		public ParametersMethodQuery(MethodQuery parent, Class<?>... parameterTypes) {
@@ -142,7 +142,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		}
 	}
 	
-	private class ReturningMethodQuery extends FilteredMethodQuery {
+	private static final class ReturningMethodQuery extends FilteredMethodQuery {
 		private final Class<?> returnType;
 		
 		public ReturningMethodQuery(MethodQuery parent, Class<?> returnType) {
@@ -156,7 +156,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		}
 	}
 	
-	private class AnnotatedMethodQuery extends FilteredMethodQuery {
+	private static final class AnnotatedMethodQuery extends FilteredMethodQuery {
 		private final AnnotationFilter annotationFilter;
 		
 		public AnnotatedMethodQuery(MethodQuery parent, AnnotationFilter annotationFilter) {
@@ -170,7 +170,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		}
 	}
 	
-	private static class ExcludedModifierMethodQuery extends FilteredMethodQuery {
+	private static final class ExcludedModifierMethodQuery extends FilteredMethodQuery {
 		private final int excludedModifier;
 		
 		public ExcludedModifierMethodQuery(MethodQuery parent, int excludedModifier) {

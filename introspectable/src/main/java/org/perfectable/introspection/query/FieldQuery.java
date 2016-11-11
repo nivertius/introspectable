@@ -74,7 +74,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 	
-	private static class NamedFieldQuery extends FilteredFieldQuery {
+	private static final class NamedFieldQuery extends FilteredFieldQuery {
 		private final String name;
 		
 		public NamedFieldQuery(FieldQuery parent, String name) {
@@ -88,7 +88,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 	
-	private static class PredicatedFieldQuery extends FilteredFieldQuery {
+	private static final class PredicatedFieldQuery extends FilteredFieldQuery {
 		private final Predicate<? super Field> filter;
 		
 		public PredicatedFieldQuery(FieldQuery parent, Predicate<? super Field> filter) {
@@ -102,7 +102,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 	
-	private static class TypedFieldQuery extends FilteredFieldQuery {
+	private static final class TypedFieldQuery extends FilteredFieldQuery {
 		private final Class<?> type;
 		
 		public TypedFieldQuery(FieldQuery parent, Class<?> type) {
@@ -116,7 +116,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 	
-	private class AnnotatedFieldQuery extends FilteredFieldQuery {
+	private static final class AnnotatedFieldQuery extends FilteredFieldQuery {
 		private final AnnotationFilter annotationFilter;
 		
 		public AnnotatedFieldQuery(FieldQuery parent, AnnotationFilter annotationFilter) {
@@ -130,7 +130,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 	
-	private static class ExcludedModifierFieldQuery extends FilteredFieldQuery {
+	private static final class ExcludedModifierFieldQuery extends FilteredFieldQuery {
 		private final int excludedModifier;
 		
 		public ExcludedModifierFieldQuery(FieldQuery parent, int excludedModifier) {

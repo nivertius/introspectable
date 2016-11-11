@@ -52,7 +52,7 @@ public class LazyInitializationTest {
 		assertThat(initializedOption).contains(this.firstMock);
 	}
 	
-	private final class TestInitializer<T> implements Initializer<T> {
+	private static final class TestInitializer<T> implements Initializer<T> {
 		private final T target;
 		private boolean wasExecuted; // = false
 		
