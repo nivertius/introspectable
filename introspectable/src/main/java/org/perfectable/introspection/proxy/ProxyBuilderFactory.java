@@ -13,6 +13,13 @@ public interface ProxyBuilderFactory {
 
 	ProxyBuilder<?> ofInterfaces(Class<?>... interfaces);
 
+	default <I> ProxyBuilder<I> ofInterfaces(Class<I> mainInterface, Class<?>... otherInterfaces) {
+		Class<?>[] usedInterfaces = ObjectArrays.concat(mainInterface, otherInterfaces);
+		@SuppressWarnings("unchecked")
+		ProxyBuilder<I> casted = (ProxyBuilder<I>) ofInterfaces(usedInterfaces);
+		return casted;
+	}
+
 	default <I> ProxyBuilder<I> ofInterfacesOf(Class<? extends I> implementingClass) {
 		Class<?>[] interfaces = Introspection.of(implementingClass).interfaces().stream()
 				.toArray(Class<?>[]::new);
@@ -20,13 +27,6 @@ public interface ProxyBuilderFactory {
 		@SuppressWarnings("unchecked")
 		ProxyBuilder<I> builder = (ProxyBuilder<I>) ofInterfaces(interfaces);
 		return builder;
-	}
-
-	default <I> ProxyBuilder<I> ofInterfaces(Class<I> mainInterface, Class<?>... otherInterfaces) {
-		Class<?>[] usedInterfaces = ObjectArrays.concat(mainInterface, otherInterfaces);
-		@SuppressWarnings("unchecked")
-		ProxyBuilder<I> casted = (ProxyBuilder<I>) ofInterfaces(usedInterfaces);
-		return casted;
 	}
 
 	default <I> ProxyBuilder<I> ofType(Class<I> type, Class<?>... additionalInterfaces)
