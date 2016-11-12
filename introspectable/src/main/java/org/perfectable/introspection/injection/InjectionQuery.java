@@ -21,7 +21,7 @@ public abstract class InjectionQuery<T, I> {
 		return new CompleteInjectionQuery<>(targetClass);
 	}
 
-	// MARK name is not intuitive
+	// TODO name is not intuitive
 	public final Injection<T> push(I injected) {
 		Stream.Builder<Injection<T>> builder = Stream.builder();
 		fieldInjections(injected).forEach(builder::add);

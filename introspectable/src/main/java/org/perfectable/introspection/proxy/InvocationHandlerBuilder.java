@@ -1,5 +1,6 @@
 package org.perfectable.introspection.proxy;
 
+// SUPPRESS NEXT SuppressWarnings
 @SuppressWarnings("FunctionalInterfaceClash")
 public interface InvocationHandlerBuilder<T> {
 	interface Binder<T, B> {

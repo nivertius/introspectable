@@ -1,6 +1,7 @@
 package org.perfectable.introspection;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
 import com.google.common.base.Throwables;
@@ -10,7 +11,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Classes {
 	public static boolean instantiable(Class<?> type) {
-		return !type.isInterface(); // MARK abstract class, primitive, array...
+		// SUPPRESS NEXT BooleanExpressionComplexity
+		return !type.isInterface()
+				&& !type.isArray()
+				&& (type.getModifiers() & Modifier.ABSTRACT) == 0
+				&& !type.isPrimitive();
 	}
 
 	@FunctionalInterface

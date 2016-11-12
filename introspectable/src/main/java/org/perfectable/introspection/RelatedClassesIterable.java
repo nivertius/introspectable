@@ -63,7 +63,7 @@ public final class RelatedClassesIterable extends MappingIterable.Unique<Class<?
 	}
 
 	private static Stream<Class<?>> extractSuperClasses(Class<?> current) {
-		// MARK this should work on generic superclass
+		// TODO this should work on generic superclass
 		Stream.Builder<Class<?>> resultBuilder = Stream.builder();
 		if (current.getSuperclass() != null) {
 			resultBuilder.add(current.getSuperclass());
@@ -90,7 +90,7 @@ public final class RelatedClassesIterable extends MappingIterable.Unique<Class<?
 	}
 
 	private static Stream<Class<?>> extractMethodClasses(Class<?> current) {
-		// MARK this should work on generic parameter and return types
+		// TODO this should work on generic parameter and return types
 		return Stream.of(current.getDeclaredMethods())
 				.flatMap(method -> Stream.concat(
 						Stream.concat(

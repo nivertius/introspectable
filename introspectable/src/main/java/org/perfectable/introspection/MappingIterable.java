@@ -31,7 +31,6 @@ public abstract class MappingIterable<T> implements Iterable<T> {
 
 			@Override
 			protected Collection<T> map(T current) {
-				@SuppressWarnings("null")
 				Stream<T> stream = checkNotNull(mapper.apply(current));
 				return stream.collect(Collectors.toList());
 			}

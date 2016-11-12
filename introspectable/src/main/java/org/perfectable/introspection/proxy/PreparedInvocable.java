@@ -10,7 +10,7 @@ public interface PreparedInvocable<T> {
 	}
 
 	default StaticInvocation asStatic() {
-		return () -> invoke(null); // MARK
+		return () -> invoke(null);
 	}
 
 }

@@ -42,7 +42,7 @@ final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 	@Override
 	public String name() {
 		String unformatted = this.getter.getName();
-		// MARK boolean getter
+		// TODO boolean getter
 		return String.valueOf(unformatted.charAt(3)).toLowerCase() + unformatted.substring(4);
 	}
 

@@ -17,7 +17,7 @@ final class ReadWriteMethodProperty<CT, PT> implements Property<CT, PT> {
 	public static <CX, PX> ReadWriteMethodProperty<CX, PX> forGetterSetter(Method getter, Method setter) {
 		checkNotNull(getter);
 		checkNotNull(setter);
-		// MARK check getter and setter compatibility
+		// TODO check getter and setter compatibility
 		return new ReadWriteMethodProperty<>(getter, setter);
 	}
 
@@ -52,7 +52,7 @@ final class ReadWriteMethodProperty<CT, PT> implements Property<CT, PT> {
 	@Override
 	public String name() {
 		String unformatted = this.getter.getName();
-		// MARK boolean getter
+		// TODO boolean getter
 		return String.valueOf(unformatted.charAt(3)).toLowerCase() + unformatted.substring(4);
 	}
 
