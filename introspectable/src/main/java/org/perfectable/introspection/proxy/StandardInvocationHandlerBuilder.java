@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+// SUPPRESS NEXT SuppressWarnings
 @SuppressWarnings("FunctionalInterfaceClash")
 public final class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBuilder<T> {
 	private final ReferenceExtractor<T> referenceExtractor;

@@ -1,8 +1,8 @@
 package org.perfectable.introspection.proxy;
 
-@FunctionalInterface
+// SUPPRESS NEXT SuppressWarnings - parameter is unused
 @SuppressWarnings("unused")
-// parameter is unused
+@FunctionalInterface
 public interface BoundInvocation<T> extends Invocation {
 	// marker interface
 }

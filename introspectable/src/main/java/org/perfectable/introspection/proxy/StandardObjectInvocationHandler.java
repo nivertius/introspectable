@@ -17,7 +17,6 @@ public class StandardObjectInvocationHandler implements InvocationHandler<Object
 		return replacedInvocable.invoke();
 	}
 
-	@SuppressWarnings("boxing")
 	private static Invocable<Object> findInvocable(Method objectMethod) {
 		if (Methods.OBJECT_EQUALS.equals(objectMethod)) {
 			return (receiver, arguments) -> receiver == arguments[0];
