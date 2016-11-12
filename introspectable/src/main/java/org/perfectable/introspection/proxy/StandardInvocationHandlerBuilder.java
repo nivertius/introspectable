@@ -80,7 +80,9 @@ public final class StandardInvocationHandlerBuilder<T> implements InvocationHand
 			return methodInvocation.decompose(decomposer).invoke();
 		};
 		ImmutableMap<Method, InvocationHandler<? super T>> newMethods =
-				ImmutableMap.<Method, InvocationHandler<? super T>>builder().putAll(this.methods).put(invocable, handler)
+				ImmutableMap.<Method, InvocationHandler<? super T>>builder()
+						.putAll(this.methods)
+						.put(invocable, handler)
 						.build();
 		return new StandardInvocationHandlerBuilder<>(this.referenceExtractor, newMethods);
 	}

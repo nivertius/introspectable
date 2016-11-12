@@ -36,7 +36,8 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		try {
 			return constructor.newInstance(adapterHandler);
 		}
-		catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException e) {
 			throw new AssertionError("Proxy class constructor must be possible to call with invocation handler", e);
 		}
 	}

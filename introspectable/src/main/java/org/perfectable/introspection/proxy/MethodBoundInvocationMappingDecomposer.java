@@ -17,7 +17,8 @@ final class MethodBoundInvocationMappingDecomposer<T> implements
 				return actual;
 			}
 		};
-		return new MethodBoundInvocationMappingDecomposer<>(methodTransformer, receiverTransformer, argumentTransformer);
+		return new MethodBoundInvocationMappingDecomposer<>(methodTransformer,
+				receiverTransformer, argumentTransformer);
 	}
 
 	public MethodBoundInvocationMappingDecomposer<T> withMethodTransformer(
@@ -33,7 +34,7 @@ final class MethodBoundInvocationMappingDecomposer<T> implements
 	}
 
 	private MethodBoundInvocationMappingDecomposer(Function<Method, Invocable<T>> methodTransformer,
-												   Function<T, ? extends T> receiverTransformer, ArgumentTransformer argumentTransformer) {
+			Function<T, ? extends T> receiverTransformer, ArgumentTransformer argumentTransformer) {
 		this.methodTransformer = methodTransformer;
 		this.receiverTransformer = receiverTransformer;
 		this.argumentTransformer = argumentTransformer;
