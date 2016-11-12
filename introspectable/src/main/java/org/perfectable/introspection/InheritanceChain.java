@@ -20,14 +20,14 @@ public final class InheritanceChain<T> implements Iterable<Class<? super T>> {
 		return new InheritanceChain<>(startClass, null);
 	}
 
-	public InheritanceChain<T> upToExcluding(@SuppressWarnings("hiding") Class<? super T> stopClass) {
-		checkNotNull(stopClass);
-		return new InheritanceChain<>(this.startClass, stopClass);
+	public InheritanceChain<T> upToExcluding(@SuppressWarnings("hiding") Class<? super T> newStopClass) {
+		checkNotNull(newStopClass);
+		return new InheritanceChain<>(this.startClass, newStopClass);
 	}
 
-	public InheritanceChain<T> upToIncluding(@SuppressWarnings("hiding") Class<? super T> stopClass) {
-		checkNotNull(stopClass);
-		return new InheritanceChain<>(this.startClass, stopClass.getSuperclass());
+	public InheritanceChain<T> upToIncluding(@SuppressWarnings("hiding") Class<? super T> newStopClass) {
+		checkNotNull(newStopClass);
+		return new InheritanceChain<>(this.startClass, newStopClass.getSuperclass());
 	}
 
 	private InheritanceChain(Class<T> startClass, @Nullable Class<? super T> stopClass) {
