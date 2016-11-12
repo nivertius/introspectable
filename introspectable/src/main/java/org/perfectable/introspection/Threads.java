@@ -6,13 +6,13 @@ public final class Threads {
 
 	@FunctionalInterface
 	public interface ThrowingRunnable {
-		void run() throws Throwable;
+		void run() throws Throwable; // SUPPRESS IllegalThrows - throwable thrown intentionally
 
 		default void runSafe() {
 			try {
 				run();
 			}
-			catch (Throwable e) { // NOPMD throwable caught intentionally
+			catch (Throwable e) { // SUPPRESS IllegalCatch - throwable caught intentionally
 				Throwables.propagate(e);
 			}
 		}

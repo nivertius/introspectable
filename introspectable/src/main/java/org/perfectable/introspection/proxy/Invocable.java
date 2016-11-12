@@ -3,6 +3,7 @@ package org.perfectable.introspection.proxy;
 @FunctionalInterface
 public interface Invocable<T> {
 
+	// SUPPRESS NEXT IllegalThrows generic exception is actually thrown
 	Object invoke(T receiver, Object... arguments) throws Throwable;
 
 	default BoundInvocable<T> bind(T receiver) {
