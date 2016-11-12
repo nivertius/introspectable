@@ -24,27 +24,18 @@
     </BugInstance>
     <BugInstance abbrev='Dm' category='I18N' priority='3' type='DM_CONVERT_CASE'>
         <LongMessage>Use of non-localized String.toUpperCase() or String.toLowerCase() in
-            org.perfectable.introspection.bean.ReadOnlyMethodProperty.name()</LongMessage>
-        <Class classname='org.perfectable.introspection.bean.ReadOnlyMethodProperty' primary='true' />
-        <Method classname='org.perfectable.introspection.bean.ReadOnlyMethodProperty' name='name'
-                signature='()Ljava/lang/String;'
+            org.perfectable.introspection.Methods.propertyNameFromGetter(Method)</LongMessage>
+        <Class classname='org.perfectable.introspection.Methods' primary='true' />
+        <Method classname='org.perfectable.introspection.Methods' name='propertyNameFromGetter'
+                signature='(Ljava/lang/reflect/Method;)Ljava/lang/String;'
                 primary='true' isStatic='false' />
     </BugInstance>
     <BugInstance abbrev='Dm' category='I18N' priority='3' type='DM_CONVERT_CASE'>
         <LongMessage>Use of non-localized String.toUpperCase() or String.toLowerCase() in
-            org.perfectable.introspection.bean.ReadWriteMethodProperty.name()</LongMessage>
-        <Class classname='org.perfectable.introspection.bean.ReadWriteMethodProperty' primary='true' />
-        <Method classname='org.perfectable.introspection.bean.ReadWriteMethodProperty' name='name'
-                signature='()Ljava/lang/String;'
-                primary='true' isStatic='false' />
-    </BugInstance>
-    <BugInstance abbrev='Dm' category='I18N' priority='3' type='DM_CONVERT_CASE'>
-        <LongMessage>Use of non-localized String.toUpperCase() or String.toLowerCase() in
-            org.perfectable.introspection.bean.WriteOnlyMethodProperty.name()
-        </LongMessage>
-        <Class classname='org.perfectable.introspection.bean.WriteOnlyMethodProperty' primary='true' />
-        <Method classname='org.perfectable.introspection.bean.WriteOnlyMethodProperty' name='name'
-                signature='()Ljava/lang/String;'
+            org.perfectable.introspection.Methods.propertyNameFromSetter(Method)</LongMessage>
+        <Class classname='org.perfectable.introspection.Methods' primary='true' />
+        <Method classname='org.perfectable.introspection.Methods' name='propertyNameFromSetter'
+                signature='(Ljava/lang/reflect/Method;)Ljava/lang/String;'
                 primary='true' isStatic='false' />
     </BugInstance>
 </BugCollection>

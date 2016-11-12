@@ -51,9 +51,7 @@ final class ReadWriteMethodProperty<CT, PT> implements Property<CT, PT> {
 
 	@Override
 	public String name() {
-		String unformatted = this.getter.getName();
-		// TODO boolean getter
-		return String.valueOf(unformatted.charAt(3)).toLowerCase() + unformatted.substring(4);
+		return Methods.propertyNameFromGetter(this.getter);
 	}
 
 	@Override

@@ -44,15 +44,14 @@ final class WriteOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 
 	@Override
 	public String name() {
-		String unformatted = this.setter.getName();
-		return String.valueOf(unformatted.charAt(3)).toLowerCase() + unformatted.substring(4);
+		return Methods.propertyNameFromSetter(this.setter);
 	}
 
 	@Override
 	public Class<PT> type() {
 		Class<?>[] parameterTypes = this.setter.getParameterTypes();
 		@SuppressWarnings("unchecked") // checked at construction
-				Class<PT> firstParameterType = (Class<PT>) parameterTypes[0];
+		Class<PT> firstParameterType = (Class<PT>) parameterTypes[0];
 		return checkNotNull(firstParameterType);
 	}
 
