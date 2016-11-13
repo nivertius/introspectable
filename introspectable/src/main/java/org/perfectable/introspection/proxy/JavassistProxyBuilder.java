@@ -41,8 +41,8 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 		}
 
 		@Override
-		public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable { // NOPMD
-			// declaration uses array instead of varargs
+		public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) // SUPPRESS
+				throws Throwable { // SUPPRESS throwble is actually thrown here
 			if (thisMethod.equals(Methods.OBJECT_FINALIZE)) {
 				return null; // ignore proxy finalization
 			}
