@@ -5,8 +5,6 @@ import org.perfectable.introspection.Fields;
 import java.lang.reflect.Field;
 import javax.annotation.Nullable;
 
-import com.google.common.base.Throwables;
-
 final class FieldProperty<CT, PT> implements Property<CT, PT> {
 	private final Field field;
 
@@ -25,7 +23,7 @@ final class FieldProperty<CT, PT> implements Property<CT, PT> {
 			this.field.set(bean, value);
 		}
 		catch (IllegalArgumentException | IllegalAccessException e) {
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e); // SUPPRESS no better exception here
 		}
 	}
 
@@ -38,7 +36,7 @@ final class FieldProperty<CT, PT> implements Property<CT, PT> {
 			return (PT) this.field.get(bean);
 		}
 		catch (IllegalArgumentException | IllegalAccessException e) {
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e); // SUPPRESS no better exception here
 		}
 	}
 

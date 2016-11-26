@@ -6,8 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 
-import com.google.common.base.Throwables;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -38,7 +36,7 @@ final class WriteOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 			this.setter.invoke(bean, value);
 		}
 		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e); // SUPPRESS no better exception here
 		}
 	}
 

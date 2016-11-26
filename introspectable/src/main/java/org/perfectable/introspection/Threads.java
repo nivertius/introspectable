@@ -1,6 +1,6 @@
 package org.perfectable.introspection;
 
-import com.google.common.base.Throwables;
+import static com.google.common.base.Throwables.throwIfUnchecked;
 
 public final class Threads {
 
@@ -13,7 +13,8 @@ public final class Threads {
 				run();
 			}
 			catch (Throwable e) { // SUPPRESS IllegalCatch - throwable caught intentionally
-				Throwables.propagate(e);
+				throwIfUnchecked(e);
+				throw new RuntimeException(e); // SUPPRESS no better exception here
 			}
 		}
 

@@ -6,8 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 
-import com.google.common.base.Throwables;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
@@ -30,7 +28,7 @@ final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 			return (PT) this.getter.invoke(bean);
 		}
 		catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e); // SUPPRESS no better exception here
 		}
 	}
 

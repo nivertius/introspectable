@@ -4,8 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.function.Function;
 
-import com.google.common.base.Throwables;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -30,7 +28,7 @@ public final class Classes {
 				return load(input, expectedSupertype);
 			}
 			catch (ClassNotFoundException e) {
-				throw Throwables.propagate(e);
+				throw new RuntimeException(e); // SUPPRESS no better exception here
 			}
 		};
 	}
@@ -42,7 +40,7 @@ public final class Classes {
 			return instance;
 		}
 		catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e); // SUPPRESS no better exception here
 		}
 	}
 
@@ -52,7 +50,7 @@ public final class Classes {
 			instanceClass = load(className, expectedSuperclass);
 		}
 		catch (ClassNotFoundException e) {
-			throw Throwables.propagate(e);
+			throw new RuntimeException(e); // SUPPRESS no better exception here
 		}
 		return instantiate(instanceClass);
 	}

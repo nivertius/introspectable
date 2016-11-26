@@ -2,7 +2,6 @@ package org.perfectable.introspection;
 
 import java.lang.reflect.Field;
 
-import com.google.common.base.Throwables;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,7 +28,7 @@ public class IntrospectionTest {
 			return beanClass.getDeclaredField(fieldName);
 		}
 		catch (NoSuchFieldException | SecurityException e) {
-			throw Throwables.propagate(e);
+			throw new AssertionError(e);
 		}
 	}
 
