@@ -2,7 +2,7 @@ package org.perfectable.introspection.proxy;
 
 import org.perfectable.introspection.proxy.ProxyBuilderFactory.Feature;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

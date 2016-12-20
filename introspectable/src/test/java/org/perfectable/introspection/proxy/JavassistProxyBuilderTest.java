@@ -1,23 +1,20 @@
 package org.perfectable.introspection.proxy;
 
 import org.perfectable.introspection.Methods;
+import org.perfectable.testable.mockito.MockitoExtension;
 
 import java.lang.reflect.Method;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(MockitoExtension.class)
 public class JavassistProxyBuilderTest {
 
 	private static final JavassistProxyBuilderFactory FACTORY = new JavassistProxyBuilderFactory();
-
-	@Rule
-	public final MockitoRule rule = MockitoJUnit.rule();
 
 	@Mock
 	private TestFirstInterface firstMock;
