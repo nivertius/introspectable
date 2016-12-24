@@ -4,10 +4,5 @@ package org.perfectable.introspection.proxy;
 public interface InvocationHandler<T> {
 
 	// SUPPRESS NEXT IllegalThrows generic exception is actually thrown
-	Object handle(BoundInvocation<? extends T> invocation) throws Throwable;
-
-	static <T> InvocationHandlerBuilder<T> builder(Class<T> sourceClass) {
-		return StandardInvocationHandlerBuilder.start(sourceClass);
-	}
-
+	Object handle(Invocation<T> invocation) throws Throwable;
 }

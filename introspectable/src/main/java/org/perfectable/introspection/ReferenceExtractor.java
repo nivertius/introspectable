@@ -1,8 +1,8 @@
 package org.perfectable.introspection;
 
-import org.perfectable.introspection.proxy.BoundInvocation;
+import org.perfectable.introspection.proxy.Invocation;
 import org.perfectable.introspection.proxy.InvocationHandler;
-import org.perfectable.introspection.proxy.MethodBoundInvocation;
+import org.perfectable.introspection.proxy.MethodInvocation;
 import org.perfectable.introspection.proxy.ProxyBuilder;
 import org.perfectable.introspection.proxy.ProxyBuilderFactory;
 import org.perfectable.introspection.proxy.ProxyBuilderFactory.Feature;
@@ -209,35 +209,14 @@ public final class ReferenceExtractor<T> {
 		}
 
 		@Override
-		public Object handle(BoundInvocation<? extends T> invocation) throws Throwable {
+		public Object handle(Invocation<T> invocation) throws Throwable {
 			checkState(this.executedMethod == null);
-			MethodBoundInvocation<? extends T> methodInvocation = (MethodBoundInvocation<? extends T>) invocation;
-			MethodBoundInvocation.Decomposer<Method, T> decomposer = new MethodBoundInvocation.Decomposer<Method, T>() {
-				private Method foundMethod;
-
-				@Override
-				public void method(Method method) {
-					this.foundMethod = method;
-				}
-
-				@Override
-				public void receiver(T receiver) {
-					// ignored
-				}
-
-				@Override
-				public <X> void argument(int index, Class<? super X> formal, X actual) {
-					// ignored
-				}
-
-				@Override
-				public Method finish() {
-					return this.foundMethod;
-				}
-			};
-			this.executedMethod = methodInvocation.decompose(decomposer);
-			Class<?> expectedResultType = this.executedMethod.getReturnType();
-			return Defaults.defaultValue(expectedResultType);
+			MethodInvocation<? extends T> methodInvocation = (MethodInvocation<? extends T>) invocation;
+			return methodInvocation.proceed((method, receiver, arguments) -> {
+				this.executedMethod = method;
+				Class<?> expectedResultType = this.executedMethod.getReturnType();
+				return Defaults.defaultValue(expectedResultType);
+			});
 		}
 
 	}

@@ -44,35 +44,20 @@ public final class LazyInitialization {
 		}
 
 		@Override
-		public Object handle(BoundInvocation<? extends T> invocation) throws Throwable {
-			@SuppressWarnings("unchecked")
-			MethodBoundInvocation<? extends T> methodInvocation = (MethodBoundInvocation<? extends T>) invocation;
-			MethodBoundInvocationMappingDecomposer<T> transformer =
-					MethodBoundInvocationMappingDecomposer
-							.<T>identity()
-							.withMethodTransformer(this::methodSelector)
-							.withReceiverTransformer(receiver -> this.instance);
-			return methodInvocation.decompose(transformer).invoke();
-		}
-
-		private Invocable<T> methodSelector(Method method) {
-			if (EXTRACT_INSTANCE_METHOD.equals(method)) {
-				return (receiver, arguments) -> Optional.ofNullable(this.instance);
-			}
-			ensureInitialized();
-			if (!method.getDeclaringClass().isAssignableFrom(this.instance.getClass())) {
-				throw new AssertionError("Method extracted is of incompatibilie class");
-			}
-			@SuppressWarnings("unchecked")
-			Invocable<T> result = (Invocable<T>) MethodInvocable.of(method);
-			return result;
-		}
-
-		private void ensureInitialized() {
-			if (this.instance != null) {
-				return;
-			}
-			this.instance = this.initializer.initialize();
+		public Object handle(Invocation<T> invocation) throws Throwable {
+			MethodInvocation<T> methodInvocation = (MethodInvocation<T>) invocation;
+			return methodInvocation.proceed((method, receiver, arguments) -> {
+				if (EXTRACT_INSTANCE_METHOD.equals(method)) {
+					return Optional.ofNullable(this.instance);
+				}
+				if (this.instance == null) {
+					this.instance = this.initializer.initialize();
+				}
+				if (!method.getDeclaringClass().isAssignableFrom(this.instance.getClass())) {
+					throw new AssertionError("Method extracted is of incompatibilie class");
+				}
+				return methodInvocation.replaceReceiver(this.instance).invoke();
+			});
 		}
 	}
 

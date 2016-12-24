@@ -1,8 +1,7 @@
 package org.perfectable.introspection.proxy;
 
+public interface Invocation<T> {
 
-@FunctionalInterface
-public interface Invocation {
-	// SUPPRESS NEXT IllegalThrows generic exception is actually thrown
+	// SUPPRESS NEXT IllegalThrows
 	Object invoke() throws Throwable;
 }

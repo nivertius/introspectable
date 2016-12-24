@@ -18,13 +18,10 @@ public final class ForwardingHandler<T> implements InvocationHandler<T> {
 	}
 
 	@Override
-	public Object handle(BoundInvocation<? extends T> invocation) throws Throwable {
+	public Object handle(Invocation<T> invocation) throws Throwable {
 		@SuppressWarnings("unchecked")
-		MethodBoundInvocation<? extends T> methodInvocation = (MethodBoundInvocation<? extends T>) invocation;
-		MethodBoundInvocationMappingDecomposer<T> decomposer =
-				MethodBoundInvocationMappingDecomposer.<T>identity().withReceiverTransformer(receiver -> this.target);
-		BoundInvocation<?> replaced = methodInvocation.decompose(decomposer);
-		return replaced.invoke();
+		MethodInvocation<T> methodInvocation = (MethodInvocation<T>) invocation;
+		return methodInvocation.replaceReceiver(this.target).invoke();
 	}
 
 }

@@ -6,13 +6,15 @@ import java.lang.reflect.Method;
 
 import com.google.common.collect.ImmutableMap;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 // SUPPRESS NEXT SuppressWarnings
 @SuppressWarnings("FunctionalInterfaceClash")
 public final class StandardInvocationHandlerBuilder<T> implements InvocationHandlerBuilder<T> {
 	private final ReferenceExtractor<T> referenceExtractor;
 	private final ImmutableMap<Method, InvocationHandler<? super T>> methods;
+
+	private interface Invocable<T> {
+		Object invoke(T receiver, Object... arguments);
+	}
 
 	static <T> StandardInvocationHandlerBuilder<T> start(Class<T> sourceClass) {
 		ReferenceExtractor<T> referenceExtractor = ReferenceExtractor.of(sourceClass);
@@ -73,12 +75,9 @@ public final class StandardInvocationHandlerBuilder<T> implements InvocationHand
 	}
 
 	private StandardInvocationHandlerBuilder<T> withHandling(Method invocable, Invocable<T> replacement) {
-		MethodBoundInvocationMappingDecomposer<T> decomposer =
-				MethodBoundInvocationMappingDecomposer.<T>identity().withMethodTransformer(method -> replacement);
-		InvocationHandler<T> handler = invocation -> {
-			@SuppressWarnings("unchecked")
-			MethodBoundInvocation<T> methodInvocation = (MethodBoundInvocation<T>) invocation;
-			return methodInvocation.decompose(decomposer).invoke();
+		InvocationHandler<? super T> handler = (invocation) -> {
+			MethodInvocation<T> methodInvocation = (MethodInvocation<T>) invocation;
+			return methodInvocation.proceed((method, receiver, arguments) -> replacement.invoke(receiver, arguments));
 		};
 		ImmutableMap<Method, InvocationHandler<? super T>> newMethods =
 				ImmutableMap.<Method, InvocationHandler<? super T>>builder()
@@ -94,34 +93,6 @@ public final class StandardInvocationHandlerBuilder<T> implements InvocationHand
 	}
 
 	private static final class DispatchingInvocationHandler<T> implements InvocationHandler<T> {
-
-		private final class MethodDispatchingDecomposer implements
-				MethodBoundInvocation.Decomposer<InvocationHandler<? super T>, T> {
-			private InvocationHandler<? super T> handler;
-
-			@Override
-			public void method(Method method) {
-				this.handler = DispatchingInvocationHandler.this.methods.getOrDefault(method,
-						DispatchingInvocationHandler.this.fallback);
-			}
-
-			@Override
-			public void receiver(T receiver) {
-				// ignored
-			}
-
-			@Override
-			public <X> void argument(int index, Class<? super X> formal, X actual) {
-				// ignored
-			}
-
-			@Override
-			public InvocationHandler<? super T> finish() {
-				checkNotNull(this.handler);
-				return this.handler;
-			}
-		}
-
 		private final InvocationHandler<? super T> fallback;
 		private final ImmutableMap<Method, InvocationHandler<? super T>> methods;
 
@@ -132,10 +103,13 @@ public final class StandardInvocationHandlerBuilder<T> implements InvocationHand
 		}
 
 		@Override
-		public Object handle(BoundInvocation<? extends T> invocation) throws Throwable {
-			MethodBoundInvocation<? extends T> methodInvocation = (MethodBoundInvocation<? extends T>) invocation;
-			InvocationHandler<? super T> handler = methodInvocation.decompose(new MethodDispatchingDecomposer());
-			return handler.handle(invocation);
+		public Object handle(Invocation<T> invocation) throws Throwable {
+			MethodInvocation<T> methodInvocation = (MethodInvocation<T>) invocation;
+			return methodInvocation.proceed((method, receiver, arguments) -> {
+				@SuppressWarnings("unchecked")
+				InvocationHandler<T> handler = (InvocationHandler<T>) methods.getOrDefault(method, this.fallback);
+				return handler.handle(invocation);
+			});
 		}
 
 	}
