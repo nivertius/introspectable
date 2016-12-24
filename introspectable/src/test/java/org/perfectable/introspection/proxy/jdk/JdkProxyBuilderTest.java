@@ -1,5 +1,7 @@
-package org.perfectable.introspection.proxy;
+package org.perfectable.introspection.proxy.jdk;
 
+import org.perfectable.introspection.proxy.ForwardingHandler;
+import org.perfectable.introspection.proxy.ProxyBuilder;
 import org.perfectable.testable.mockito.MockitoExtension;
 
 import java.lang.reflect.Method;
@@ -27,7 +29,7 @@ public class JdkProxyBuilderTest {
 		proxy.firstMethod();
 	}
 
-	interface TestFirstInterface {
+	public interface TestFirstInterface {
 
 		Method FIRST_METHOD = introspect(TestFirstInterface.class).methods().named("firstMethod").parameters().single();
 

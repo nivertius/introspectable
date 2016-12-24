@@ -1,4 +1,7 @@
-package org.perfectable.introspection.proxy;
+package org.perfectable.introspection.proxy.javassist;
+
+import org.perfectable.introspection.proxy.ProxyBuilder;
+import org.perfectable.introspection.proxy.ProxyBuilderFactory;
 
 import java.lang.reflect.Modifier;
 import java.util.EnumSet;

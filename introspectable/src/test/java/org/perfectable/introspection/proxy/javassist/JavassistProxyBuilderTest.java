@@ -1,5 +1,7 @@
-package org.perfectable.introspection.proxy;
+package org.perfectable.introspection.proxy.javassist;
 
+import org.perfectable.introspection.proxy.ForwardingHandler;
+import org.perfectable.introspection.proxy.ProxyBuilder;
 import org.perfectable.testable.mockito.MockitoExtension;
 
 import java.lang.reflect.Method;
@@ -68,7 +70,7 @@ public class JavassistProxyBuilderTest {
 
 	}
 
-	interface TestFirstInterface {
+	public interface TestFirstInterface {
 
 		Method FIRST_METHOD = introspect(TestFirstInterface.class).methods().named("firstMethod").parameters().single();
 
@@ -76,14 +78,14 @@ public class JavassistProxyBuilderTest {
 
 	}
 
-	static class TestClass {
+	public static class TestClass {
 		@SuppressWarnings("static-method")
 		public void classMethod() {
 			throw new AssertionError("Actual method should not be called");
 		}
 	}
 
-	static class TestClassMixed extends TestClass implements TestFirstInterface {
+	public static class TestClassMixed extends TestClass implements TestFirstInterface {
 		@Override
 		public void firstMethod() {
 			throw new AssertionError("Actual method should not be called");

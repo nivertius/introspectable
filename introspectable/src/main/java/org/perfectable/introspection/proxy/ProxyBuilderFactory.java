@@ -69,7 +69,7 @@ public interface ProxyBuilderFactory {
 	}
 
 	static ProxyBuilderFactory any() {
-		return new JdkProxyBuilderFactory();
+		return new org.perfectable.introspection.proxy.jdk.JdkProxyBuilderFactory();
 	}
 
 	static ProxyBuilderFactory withFeature(ProxyBuilderFactory.Feature... requestedFeatures)

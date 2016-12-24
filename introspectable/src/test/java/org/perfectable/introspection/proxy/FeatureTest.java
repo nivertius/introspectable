@@ -13,7 +13,7 @@ public class FeatureTest {
 	public void testAny() {
 		ProxyBuilderFactory factory = ProxyBuilderFactory.any();
 		assertThat(factory)
-				.isInstanceOf(JdkProxyBuilderFactory.class);
+				.isInstanceOf(org.perfectable.introspection.proxy.jdk.JdkProxyBuilderFactory.class);
 	}
 
 	@Test

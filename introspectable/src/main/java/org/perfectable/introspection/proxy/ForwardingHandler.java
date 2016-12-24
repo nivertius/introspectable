@@ -1,11 +1,11 @@
 package org.perfectable.introspection.proxy;
 
 
-final class ForwardingHandler<T> implements InvocationHandler<T> {
+public final class ForwardingHandler<T> implements InvocationHandler<T> {
 
 	private T target;
 
-	static <T> ForwardingHandler<T> of(T target) {
+	public static <T> ForwardingHandler<T> of(T target) {
 		return new ForwardingHandler<>(target);
 	}
 

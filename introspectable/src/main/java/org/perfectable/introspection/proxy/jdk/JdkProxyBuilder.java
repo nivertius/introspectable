@@ -1,6 +1,10 @@
-package org.perfectable.introspection.proxy;
+package org.perfectable.introspection.proxy.jdk;
 
 import org.perfectable.introspection.Methods;
+import org.perfectable.introspection.proxy.BoundInvocation;
+import org.perfectable.introspection.proxy.InvocationHandler;
+import org.perfectable.introspection.proxy.MethodInvocable;
+import org.perfectable.introspection.proxy.ProxyBuilder;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
