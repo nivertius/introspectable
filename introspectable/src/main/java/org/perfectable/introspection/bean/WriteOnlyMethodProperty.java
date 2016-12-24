@@ -1,7 +1,5 @@
 package org.perfectable.introspection.bean;
 
-import org.perfectable.introspection.Methods;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
@@ -65,7 +63,7 @@ final class WriteOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 
 	@Override
 	public boolean isWriteable() {
-		return Methods.isCallable(this.setter);
+		return introspect(this.setter).isCallable();
 	}
 
 	static <CX, PX> Optional<Method> findSetter(Class<CX> beanClass, String name, Class<PX> type) {

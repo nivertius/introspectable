@@ -1,12 +1,11 @@
 package org.perfectable.introspection.bean;
 
-import org.perfectable.introspection.Methods;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.perfectable.introspection.Introspections.introspect;
 import static org.perfectable.introspection.bean.ReadOnlyMethodProperty.propertyNameFromGetter;
 
 final class ReadWriteMethodProperty<CT, PT> implements Property<CT, PT> {
@@ -62,12 +61,12 @@ final class ReadWriteMethodProperty<CT, PT> implements Property<CT, PT> {
 
 	@Override
 	public boolean isReadable() {
-		return Methods.isCallable(getter);
+		return introspect(getter).isCallable();
 	}
 
 	@Override
 	public boolean isWriteable() {
-		return Methods.isCallable(setter);
+		return introspect(setter).isCallable();
 	}
 
 }

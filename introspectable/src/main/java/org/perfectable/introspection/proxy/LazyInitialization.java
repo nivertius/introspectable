@@ -1,11 +1,12 @@
 package org.perfectable.introspection.proxy;
 
-import org.perfectable.introspection.Methods;
 import org.perfectable.introspection.proxy.ProxyBuilderFactory.Feature;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
 import javax.annotation.Nullable;
+
+import static org.perfectable.introspection.Introspections.introspect;
 
 public final class LazyInitialization {
 	public interface Proxy<T> {
@@ -26,7 +27,8 @@ public final class LazyInitialization {
 	}
 
 	private static final class LazyInitializationHandler<T> implements InvocationHandler<T> {
-		private static final Method EXTRACT_INSTANCE_METHOD = Methods.safeExtract(Proxy.class, "extractInstance");
+		private static final Method EXTRACT_INSTANCE_METHOD =
+				introspect(Proxy.class).methods().named("extractInstance").parameters().single();
 
 		private final Initializer<? extends T> initializer;
 

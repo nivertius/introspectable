@@ -1,7 +1,5 @@
 package org.perfectable.introspection.bean;
 
-import org.perfectable.introspection.Methods;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
@@ -56,7 +54,7 @@ final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 
 	@Override
 	public boolean isReadable() {
-		return Methods.isCallable(getter);
+		return introspect(getter).isCallable();
 	}
 
 	@Override
