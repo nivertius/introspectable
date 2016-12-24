@@ -5,10 +5,12 @@ import org.perfectable.introspection.query.GenericsQuery;
 import org.perfectable.introspection.query.InterfaceQuery;
 import org.perfectable.introspection.query.MethodQuery;
 
-public final class Introspection<X> {
-	public static <X> Introspection<X> of(Class<X> type) {
-		return new Introspection<>(type);
+public final class ClassIntrospection<X> {
+	static <X> ClassIntrospection<X> of(Class<X> type) {
+		return new ClassIntrospection<>(type);
 	}
+
+	private final Class<X> type;
 
 	public FieldQuery fields() {
 		return FieldQuery.of(this.type);
@@ -30,9 +32,8 @@ public final class Introspection<X> {
 		return RelatedClassesIterable.of(this.type);
 	}
 
-	private final Class<X> type;
-
-	private Introspection(Class<X> type) {
+	private ClassIntrospection(Class<X> type) {
 		this.type = type;
 	}
+
 }

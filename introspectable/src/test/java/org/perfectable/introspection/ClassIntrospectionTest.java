@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("static-method")
-public class IntrospectionTest {
+public class ClassIntrospectionTest {
 
 	@SuppressWarnings("unused")
 	private static class TestBean {
@@ -18,7 +18,7 @@ public class IntrospectionTest {
 
 	@Test
 	public void testFieldQuery() {
-		Iterable<Field> fields = Introspection.of(TestBean.class).fields().named("privateStringField");
+		Iterable<Field> fields = ClassIntrospection.of(TestBean.class).fields().named("privateStringField");
 
 		assertThat(fields).containsExactly(PRIVATE_STRING_FIELD);
 	}

@@ -1,7 +1,5 @@
 package org.perfectable.introspection.bean;
 
-import org.perfectable.introspection.Introspection;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -10,6 +8,7 @@ import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.perfectable.introspection.Introspections.introspect;
 
 public interface Property<CT, PT> {
 
@@ -36,7 +35,7 @@ public interface Property<CT, PT> {
 
 	static <CX, PX> Property<CX, PX> from(Class<CX> beanClass, String name, Class<PX> type) {
 		checkArgument(beanClass != null);
-		Optional<Field> field = Introspection.of(beanClass).fields().named(name).typed(type).option();
+		Optional<Field> field = introspect(beanClass).fields().named(name).typed(type).option();
 		if (field.isPresent()) {
 			return FieldProperty.fromField(field.get());
 		}

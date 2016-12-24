@@ -1,6 +1,5 @@
 package org.perfectable.introspection.proxy;
 
-import org.perfectable.introspection.Methods;
 import org.perfectable.testable.mockito.MockitoExtension;
 
 import java.lang.reflect.Method;
@@ -8,6 +7,8 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+
+import static org.perfectable.introspection.Introspections.introspect;
 
 @ExtendWith(MockitoExtension.class)
 public class JdkProxyBuilderTest {
@@ -28,7 +29,7 @@ public class JdkProxyBuilderTest {
 
 	interface TestFirstInterface {
 
-		Method FIRST_METHOD = Methods.safeExtract(TestFirstInterface.class, "firstMethod");
+		Method FIRST_METHOD = introspect(TestFirstInterface.class).methods().named("firstMethod").parameters().single();
 
 		void firstMethod();
 

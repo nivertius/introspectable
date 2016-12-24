@@ -1,6 +1,5 @@
 package org.perfectable.introspection.proxy;
 
-import org.perfectable.introspection.Methods;
 import org.perfectable.testable.mockito.MockitoExtension;
 
 import java.lang.reflect.Method;
@@ -10,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.perfectable.introspection.Introspections.introspect;
 
 @ExtendWith(MockitoExtension.class)
 public class JavassistProxyBuilderTest {
@@ -70,7 +70,7 @@ public class JavassistProxyBuilderTest {
 
 	interface TestFirstInterface {
 
-		Method FIRST_METHOD = getMethodSafe(TestFirstInterface.class, "firstMethod");
+		Method FIRST_METHOD = introspect(TestFirstInterface.class).methods().named("firstMethod").parameters().single();
 
 		void firstMethod();
 
@@ -88,10 +88,6 @@ public class JavassistProxyBuilderTest {
 		public void firstMethod() {
 			throw new AssertionError("Actual method should not be called");
 		}
-	}
-
-	public static Method getMethodSafe(Class<?> declaringClass, String methodName, Class<?>... parameterTypes) {
-		return Methods.safeExtract(declaringClass, methodName, parameterTypes);
 	}
 
 }

@@ -1,6 +1,5 @@
 package org.perfectable.introspection.bean;
 
-import org.perfectable.introspection.Introspection;
 import org.perfectable.introspection.Methods;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +9,7 @@ import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.perfectable.introspection.Introspections.introspect;
 
 final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 	private static final String BOOLEAN_GETTER_PREFIX = "is";
@@ -97,7 +97,7 @@ final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 	}
 
 	public static <CX, PX> Optional<Method> findGetter(Class<CX> beanClass, String name, Class<PX> type) {
-		return Introspection.of(beanClass).methods()
+		return introspect(beanClass).methods()
 				.named(getterName(name, type))
 				.parameters()
 				.returning(type)

@@ -1,6 +1,5 @@
 package org.perfectable.introspection.bean;
 
-import org.perfectable.introspection.Introspection;
 import org.perfectable.introspection.Methods;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +9,7 @@ import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.perfectable.introspection.Introspections.introspect;
 import static org.perfectable.introspection.bean.ReadOnlyMethodProperty.capitalizeWithPrefix;
 
 final class WriteOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
@@ -69,7 +69,7 @@ final class WriteOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 	}
 
 	static <CX, PX> Optional<Method> findSetter(Class<CX> beanClass, String name, Class<PX> type) {
-		return Introspection.of(beanClass).methods()
+		return introspect(beanClass).methods()
 				.named(setterName(name))
 				.parameters(type)
 				.returningVoid()

@@ -1,13 +1,12 @@
 package org.perfectable.introspection.proxy;
 
-import org.perfectable.introspection.Introspection;
-
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ObjectArrays;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static org.perfectable.introspection.Introspections.introspect;
 
 public interface ProxyBuilderFactory {
 
@@ -21,7 +20,7 @@ public interface ProxyBuilderFactory {
 	}
 
 	default <I> ProxyBuilder<I> ofInterfacesOf(Class<? extends I> implementingClass) {
-		Class<?>[] interfaces = Introspection.of(implementingClass).interfaces().stream()
+		Class<?>[] interfaces = introspect(implementingClass).interfaces().stream()
 				.toArray(Class<?>[]::new);
 		// this is safe almost always?
 		@SuppressWarnings("unchecked")
