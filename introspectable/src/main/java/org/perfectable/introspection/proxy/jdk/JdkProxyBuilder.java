@@ -1,8 +1,8 @@
 package org.perfectable.introspection.proxy.jdk;
 
 import org.perfectable.introspection.Methods;
+import org.perfectable.introspection.proxy.Invocation;
 import org.perfectable.introspection.proxy.InvocationHandler;
-import org.perfectable.introspection.proxy.MethodInvocation;
 import org.perfectable.introspection.proxy.ProxyBuilder;
 
 import java.lang.reflect.Constructor;
@@ -66,8 +66,9 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 			}
 			@SuppressWarnings("unchecked")
 			I castedProxy = (I) proxy;
+			Object[] actualArguments = args == null ? new Object[0] : args;
 			@SuppressWarnings("unchecked")
-			MethodInvocation<I> invocation = MethodInvocation.of(method, castedProxy, args);
+			Invocation<I> invocation = Invocation.of(method, castedProxy, actualArguments);
 			return this.handler.handle(invocation);
 		}
 

@@ -45,8 +45,7 @@ public final class LazyInitialization {
 
 		@Override
 		public Object handle(Invocation<T> invocation) throws Throwable {
-			MethodInvocation<T> methodInvocation = (MethodInvocation<T>) invocation;
-			return methodInvocation.proceed((method, receiver, arguments) -> {
+			return invocation.proceed((method, receiver, arguments) -> {
 				if (EXTRACT_INSTANCE_METHOD.equals(method)) {
 					return Optional.ofNullable(this.instance);
 				}
@@ -56,7 +55,7 @@ public final class LazyInitialization {
 				if (!method.getDeclaringClass().isAssignableFrom(this.instance.getClass())) {
 					throw new AssertionError("Method extracted is of incompatibilie class");
 				}
-				return methodInvocation.replaceReceiver(this.instance).invoke();
+				return Invocation.of(method, this.instance, arguments).invoke();
 			});
 		}
 	}

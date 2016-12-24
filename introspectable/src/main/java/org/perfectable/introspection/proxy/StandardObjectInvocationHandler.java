@@ -7,8 +7,7 @@ public class StandardObjectInvocationHandler implements InvocationHandler<Object
 
 	@Override
 	public Object handle(Invocation<Object> invocation) throws Throwable {
-		MethodInvocation<?> methodInvocation = (MethodInvocation<?>) invocation;
-		return methodInvocation.proceed((method, receiver, arguments) -> {
+		return invocation.proceed((method, receiver, arguments) -> {
 			if (Methods.OBJECT_EQUALS.equals(method)) {
 				return receiver == arguments[0];
 			}

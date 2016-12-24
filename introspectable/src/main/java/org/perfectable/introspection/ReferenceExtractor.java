@@ -2,7 +2,6 @@ package org.perfectable.introspection;
 
 import org.perfectable.introspection.proxy.Invocation;
 import org.perfectable.introspection.proxy.InvocationHandler;
-import org.perfectable.introspection.proxy.MethodInvocation;
 import org.perfectable.introspection.proxy.ProxyBuilder;
 import org.perfectable.introspection.proxy.ProxyBuilderFactory;
 import org.perfectable.introspection.proxy.ProxyBuilderFactory.Feature;
@@ -211,8 +210,7 @@ public final class ReferenceExtractor<T> {
 		@Override
 		public Object handle(Invocation<T> invocation) throws Throwable {
 			checkState(this.executedMethod == null);
-			MethodInvocation<? extends T> methodInvocation = (MethodInvocation<? extends T>) invocation;
-			return methodInvocation.proceed((method, receiver, arguments) -> {
+			return invocation.proceed((method, receiver, arguments) -> {
 				this.executedMethod = method;
 				Class<?> expectedResultType = this.executedMethod.getReturnType();
 				return Defaults.defaultValue(expectedResultType);

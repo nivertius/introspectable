@@ -76,8 +76,7 @@ public final class StandardInvocationHandlerBuilder<T> implements InvocationHand
 
 	private StandardInvocationHandlerBuilder<T> withHandling(Method invocable, Invocable<T> replacement) {
 		InvocationHandler<? super T> handler = (invocation) -> {
-			MethodInvocation<T> methodInvocation = (MethodInvocation<T>) invocation;
-			return methodInvocation.proceed((method, receiver, arguments) -> replacement.invoke(receiver, arguments));
+			return invocation.proceed((method, receiver, arguments) -> replacement.invoke(receiver, arguments));
 		};
 		ImmutableMap<Method, InvocationHandler<? super T>> newMethods =
 				ImmutableMap.<Method, InvocationHandler<? super T>>builder()
@@ -104,8 +103,7 @@ public final class StandardInvocationHandlerBuilder<T> implements InvocationHand
 
 		@Override
 		public Object handle(Invocation<T> invocation) throws Throwable {
-			MethodInvocation<T> methodInvocation = (MethodInvocation<T>) invocation;
-			return methodInvocation.proceed((method, receiver, arguments) -> {
+			return invocation.proceed((method, receiver, arguments) -> {
 				@SuppressWarnings("unchecked")
 				InvocationHandler<T> handler = (InvocationHandler<T>) methods.getOrDefault(method, this.fallback);
 				return handler.handle(invocation);

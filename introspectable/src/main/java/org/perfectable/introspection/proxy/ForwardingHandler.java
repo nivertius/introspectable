@@ -19,9 +19,9 @@ public final class ForwardingHandler<T> implements InvocationHandler<T> {
 
 	@Override
 	public Object handle(Invocation<T> invocation) throws Throwable {
-		@SuppressWarnings("unchecked")
-		MethodInvocation<T> methodInvocation = (MethodInvocation<T>) invocation;
-		return methodInvocation.replaceReceiver(this.target).invoke();
+		Invocation<T> replacedReceiver =
+				invocation.decompose((method, receiver, arguments) -> Invocation.of(method, this.target, arguments));
+		return replacedReceiver.invoke();
 	}
 
 }
