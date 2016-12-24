@@ -14,26 +14,64 @@ import com.google.common.base.Defaults;
 
 import static com.google.common.base.Preconditions.checkState;
 
+// SUPPRESS NEXT MethodCount
 public final class ReferenceExtractor<T> {
 
 	@FunctionalInterface
-	public interface GenericMethodReference<T> {
+	private interface MethodReference<T> {
 		void execute(T self, Object... arguments);
 	}
 
 	@FunctionalInterface
-	public interface NoArgumentMethodReference<T> {
+	public interface ProcedureNone<T> {
 		void execute(T self);
 	}
 
 	@FunctionalInterface
-	public interface SingleArgumentMethodReference<T, A1> {
+	public interface ProcedureSingle<T, A1> {
 		void execute(T self, A1 argument1);
 	}
 
 	@FunctionalInterface
-	public interface DoubleArgumentMethodReference<T, A1, A2> {
+	public interface ProcedureDouble<T, A1, A2> {
 		void execute(T self, A1 argument1, A2 argument2);
+	}
+
+	@FunctionalInterface
+	public interface ProcedureTriple<T, A1, A2, A3> {
+		void execute(T self, A1 argument1, A2 argument2, A3 argument3);
+	}
+
+	@FunctionalInterface
+	public interface ProcedureVarargs<T, A> {
+		@SuppressWarnings("unchecked")
+		void execute(T self, A... arguments);
+	}
+
+	@FunctionalInterface
+	public interface FunctionNone<T, R> {
+		R execute(T self);
+	}
+
+	@FunctionalInterface
+	public interface FunctionSingle<T, R, A1> {
+		R execute(T self, A1 argument1);
+	}
+
+	@FunctionalInterface
+	public interface FunctionDouble<T, R, A1, A2> {
+		R execute(T self, A1 argument1, A2 argument2);
+	}
+
+	@FunctionalInterface
+	public interface FunctionTriple<T, R, A1, A2, A3> {
+		R execute(T self, A1 argument1, A2 argument2, A3 argument3);
+	}
+
+	@FunctionalInterface
+	public interface FunctionVarargs<T, R, A> {
+		@SuppressWarnings("unchecked")
+		R execute(T self, A... arguments);
 	}
 
 	private final ProxyBuilder<T> proxyBuilder;
@@ -43,29 +81,115 @@ public final class ReferenceExtractor<T> {
 		return new ReferenceExtractor<>(proxyBuilder);
 	}
 
-	public Method extractGeneric(GenericMethodReference<T> method) {
-		ProcedureTestingHandler<T> handler = ProcedureTestingHandler.create();
-		T proxy = this.proxyBuilder.instantiate(handler);
-		method.execute(proxy);
-		return handler.extract();
+	public Method extract(ProcedureNone<? super T> procedure) {
+		return extractNone(procedure);
 	}
 
-	public Method extractNone(NoArgumentMethodReference<T> procedure) {
-		GenericMethodReference<T> reference =
+	public <A1> Method extract(ProcedureSingle<? super T, A1> procedure) {
+		return extractSingle(procedure);
+	}
+
+	public <A1, A2> Method extract(ProcedureDouble<? super T, A1, A2> procedure) {
+		return extractDouble(procedure);
+	}
+
+	public <A1, A2, A3> Method extract(ProcedureTriple<? super T, A1, A2, A3> procedure) {
+		return extractTriple(procedure);
+	}
+
+	public <A> Method extract(ProcedureVarargs<? super T, A> procedure) {
+		return extractVarargs(procedure);
+	}
+
+	public <R> Method extractFunction(FunctionNone<? super T, R> procedure) {
+		return extractNoneFunction(procedure);
+	}
+
+	public <R, A1> Method extractFunction(FunctionSingle<? super T, R, A1> procedure) {
+		return extractSingleFunction(procedure);
+	}
+
+	public <R, A1, A2> Method extractFunction(FunctionDouble<? super T, R, A1, A2> procedure) {
+		return extractDoubleFunction(procedure);
+	}
+
+	public <R, A1, A2, A3> Method extractFunction(FunctionTriple<? super T, R, A1, A2, A3> procedure) {
+		return extractTripleFunction(procedure);
+	}
+
+	public <A, R> Method extractFunction(FunctionVarargs<? super T, R, A> procedure) {
+		return extractVarargsFunction(procedure);
+	}
+
+	public Method extractNone(ProcedureNone<? super T> procedure) {
+		MethodReference<? super T> reference =
 				(self, arguments) -> procedure.execute(self);
 		return extractGeneric(reference);
 	}
 
-	public <A1> Method extractSingle(SingleArgumentMethodReference<? super T, A1> procedure) {
-		GenericMethodReference<T> reference =
+	public <R> Method extractNoneFunction(FunctionNone<? super T, R> procedure) {
+		MethodReference<? super T> reference =
+				(self, arguments) -> procedure.execute(self);
+		return extractGeneric(reference);
+	}
+
+	public <A1> Method extractSingle(ProcedureSingle<? super T, A1> procedure) {
+		MethodReference<T> reference =
 				(self, arguments) -> procedure.execute(self, null);
 		return extractGeneric(reference);
 	}
 
-	public <A1, A2> Method extractDouble(DoubleArgumentMethodReference<T, A1, A2> procedure) {
-		GenericMethodReference<T> reference =
+	public <A1, R> Method extractSingleFunction(FunctionSingle<? super T, R, A1> procedure) {
+		MethodReference<T> reference =
+				(self, arguments) -> procedure.execute(self, null);
+		return extractGeneric(reference);
+	}
+
+	public <A1, A2> Method extractDouble(ProcedureDouble<? super T, A1, A2> procedure) {
+		MethodReference<T> reference =
 				(self, arguments) -> procedure.execute(self, null, null);
 		return extractGeneric(reference);
+	}
+
+	public <R, A1, A2> Method extractDoubleFunction(FunctionDouble<? super T, R, A1, A2> procedure) {
+		MethodReference<T> reference =
+				(self, arguments) -> procedure.execute(self, null, null);
+		return extractGeneric(reference);
+	}
+
+	public <A1, A2, A3> Method extractTriple(
+			ProcedureTriple<? super T, A1, A2, A3> procedure) {
+		MethodReference<T> reference =
+				(self, arguments) -> procedure.execute(self, null, null, null);
+		return extractGeneric(reference);
+	}
+
+	public <R, A1, A2, A3> Method extractTripleFunction(
+			FunctionTriple<? super T, R, A1, A2, A3> procedure) {
+		MethodReference<T> reference =
+				(self, arguments) -> procedure.execute(self, null, null, null);
+		return extractGeneric(reference);
+	}
+
+	public <A> Method extractVarargs(ProcedureVarargs<? super T, A> procedure) {
+		@SuppressWarnings("unchecked")
+		MethodReference<T> reference =
+				(self, arguments) -> procedure.execute(self);
+		return extractGeneric(reference);
+	}
+
+	public <R, A> Method extractVarargsFunction(FunctionVarargs<? super T, R, A> procedure) {
+		@SuppressWarnings("unchecked")
+		MethodReference<T> reference =
+				(self, arguments) -> procedure.execute(self);
+		return extractGeneric(reference);
+	}
+
+	private Method extractGeneric(MethodReference<? super T> method) {
+		ProcedureTestingHandler<T> handler = ProcedureTestingHandler.create();
+		T proxy = this.proxyBuilder.instantiate(handler);
+		method.execute(proxy);
+		return handler.extract();
 	}
 
 	private ReferenceExtractor(ProxyBuilder<T> proxyBuilder) {

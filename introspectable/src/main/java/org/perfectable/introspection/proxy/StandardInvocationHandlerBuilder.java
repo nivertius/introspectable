@@ -28,7 +28,7 @@ public final class StandardInvocationHandlerBuilder<T> implements InvocationHand
 
 	@Override
 	public Binder<T, ParameterlessProcedure<T>> bind(ParameterlessProcedure<? super T> registered) {
-		Method method = this.referenceExtractor.extractNone(registered::execute);
+		Method method = this.referenceExtractor.extract(registered::execute);
 		return executed -> {
 			Invocable<T> function = (T receiver, Object... arguments) -> {
 				executed.execute(receiver);
@@ -40,7 +40,7 @@ public final class StandardInvocationHandlerBuilder<T> implements InvocationHand
 
 	@Override
 	public <A1> Binder<T, SingleParameterProcedure<T, A1>> bind(SingleParameterProcedure<? super T, A1> registered) {
-		Method method = this.referenceExtractor.extractSingle(registered::execute);
+		Method method = this.referenceExtractor.extract(registered::execute);
 		return executed -> {
 			@SuppressWarnings("unchecked")
 			Invocable<T> function = (T receiver, Object... arguments) -> {
@@ -53,7 +53,7 @@ public final class StandardInvocationHandlerBuilder<T> implements InvocationHand
 
 	@Override
 	public <R> Binder<T, ParameterlessFunction<T, R>> bind(ParameterlessFunction<? super T, R> registered) {
-		Method method = this.referenceExtractor.extractNone(registered::execute);
+		Method method = this.referenceExtractor.extract(registered::execute);
 		return executed -> {
 			Invocable<T> function = (T receiver, Object... arguments) -> executed.execute(receiver);
 			return withHandling(method, function);
@@ -63,7 +63,7 @@ public final class StandardInvocationHandlerBuilder<T> implements InvocationHand
 	@Override
 	public <R, A1> Binder<T, SingleParameterFunction<T, R, A1>> bind(
 			SingleParameterFunction<? super T, R, A1> registered) {
-		Method method = this.referenceExtractor.extractSingle(registered::execute);
+		Method method = this.referenceExtractor.extract(registered::execute);
 		return executed -> {
 			@SuppressWarnings("unchecked")
 			Invocable<T> function =

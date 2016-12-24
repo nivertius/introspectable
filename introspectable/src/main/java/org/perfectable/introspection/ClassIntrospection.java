@@ -33,6 +33,10 @@ public final class ClassIntrospection<X> {
 		return GenericsQuery.of(this.type);
 	}
 
+	public ReferenceExtractor<X> references() {
+		return ReferenceExtractor.of(type);
+	}
+
 	public RelatedClassesIterable related() {
 		return RelatedClassesIterable.of(this.type);
 	}
