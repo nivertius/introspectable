@@ -1,10 +1,11 @@
 package org.perfectable.introspection.bean;
 
-import org.perfectable.introspection.Classes;
 import org.perfectable.introspection.query.FieldQuery;
 
 import java.lang.reflect.Modifier;
 import java.util.stream.Stream;
+
+import static org.perfectable.introspection.Introspections.introspect;
 
 public final class Bean<T> {
 
@@ -19,7 +20,7 @@ public final class Bean<T> {
 	}
 
 	public T copy() {
-		T duplicate = Classes.instantiate(type());
+		T duplicate = introspect(type()).instantiate();
 		fieldProperties()
 				.forEach(property -> property.copy(duplicate));
 		return duplicate;
