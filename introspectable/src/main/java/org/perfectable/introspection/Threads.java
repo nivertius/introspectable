@@ -23,12 +23,6 @@ public final class Threads {
 		}
 	}
 
-	public static void startDaemon(Runnable code) {
-		Thread thread = new Thread(code);
-		thread.setDaemon(true);
-		thread.start();
-	}
-
 	public static void addShutdownHook(Runnable code) {
 		Runtime.getRuntime().addShutdownHook(new Thread(code));
 	}
