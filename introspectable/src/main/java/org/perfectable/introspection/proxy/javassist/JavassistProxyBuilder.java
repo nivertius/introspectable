@@ -1,6 +1,5 @@
 package org.perfectable.introspection.proxy.javassist;
 
-import org.perfectable.introspection.Methods;
 import org.perfectable.introspection.proxy.Invocation;
 import org.perfectable.introspection.proxy.InvocationHandler;
 import org.perfectable.introspection.proxy.ProxyBuilder;
@@ -10,6 +9,8 @@ import java.lang.reflect.Method;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.Proxy;
 import org.objenesis.instantiator.ObjectInstantiator;
+
+import static org.perfectable.introspection.Introspections.introspect;
 
 final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 
@@ -32,6 +33,8 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 	}
 
 	private static final class JavassistInvocationHandlerAdapter<I> implements MethodHandler {
+		private static final Method OBJECT_FINALIZE =
+				introspect(Object.class).methods().named("finalize").parameters().single();
 
 		private final InvocationHandler<I> handler;
 
@@ -46,7 +49,7 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 		@Override
 		public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) // SUPPRESS
 				throws Throwable { // SUPPRESS IllegalThrows throwble is actually thrown here
-			if (thisMethod.equals(Methods.OBJECT_FINALIZE)) {
+			if (thisMethod.equals(OBJECT_FINALIZE)) {
 				return null; // ignore proxy finalization
 			}
 			@SuppressWarnings("unchecked")

@@ -1,6 +1,5 @@
 package org.perfectable.introspection.proxy.jdk;
 
-import org.perfectable.introspection.Methods;
 import org.perfectable.introspection.proxy.Invocation;
 import org.perfectable.introspection.proxy.InvocationHandler;
 import org.perfectable.introspection.proxy.ProxyBuilder;
@@ -12,6 +11,7 @@ import java.lang.reflect.Proxy;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.perfectable.introspection.Introspections.introspect;
 
 final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 
@@ -47,6 +47,9 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 
 	private static final class JdkInvocationHandlerAdapter<I> implements java.lang.reflect.InvocationHandler {
 
+		private static final Method OBJECT_FINALIZE =
+				introspect(Object.class).methods().named("finalize").parameters().single();
+
 		private final InvocationHandler<I> handler;
 
 		static <I> JdkInvocationHandlerAdapter<I> adapt(InvocationHandler<I> handler) {
@@ -61,7 +64,7 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		public Object invoke(Object proxy, Method method, Object[] args) // SUPPRESS declaration uses array not varargs
 				throws Throwable { // SUPPRESS throwable is actually thrown here
 			checkNotNull(method);
-			if (method.equals(Methods.OBJECT_FINALIZE)) {
+			if (method.equals(OBJECT_FINALIZE)) {
 				return null; // ignore proxy finalization
 			}
 			@SuppressWarnings("unchecked")
