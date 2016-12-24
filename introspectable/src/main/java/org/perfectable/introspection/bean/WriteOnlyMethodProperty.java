@@ -1,20 +1,25 @@
 package org.perfectable.introspection.bean;
 
+import org.perfectable.introspection.Introspection;
 import org.perfectable.introspection.Methods;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.perfectable.introspection.bean.ReadOnlyMethodProperty.capitalizeWithPrefix;
 
 final class WriteOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
+	private static final String SETTER_PREFIX = "set";
+
 	private final Method setter;
 
 	public static <CX, PX> WriteOnlyMethodProperty<CX, PX> forSetter(Method setter) {
 		checkNotNull(setter);
-		checkArgument(Methods.isSetter(setter));
+		checkArgument(isSetter(setter));
 		return new WriteOnlyMethodProperty<>(setter);
 	}
 
@@ -42,7 +47,7 @@ final class WriteOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 
 	@Override
 	public String name() {
-		return Methods.propertyNameFromSetter(this.setter);
+		return propertyNameFromSetter(this.setter);
 	}
 
 	@Override
@@ -62,4 +67,32 @@ final class WriteOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 	public boolean isWriteable() {
 		return Methods.isCallable(this.setter);
 	}
+
+	static <CX, PX> Optional<Method> findSetter(Class<CX> beanClass, String name, Class<PX> type) {
+		return Introspection.of(beanClass).methods()
+				.named(setterName(name))
+				.parameters(type)
+				.returningVoid()
+				.option();
+	}
+
+	private static boolean isSetter(Method method) {
+		boolean doesntReturn = Void.TYPE.equals(method.getReturnType());
+		boolean hasOneParameter = method.getParameterTypes().length == 1;
+		boolean startsWithAppropriatePrefix = method.getName().startsWith(SETTER_PREFIX);
+		return doesntReturn && hasOneParameter && startsWithAppropriatePrefix;
+	}
+
+	private static String propertyNameFromSetter(Method setter) {
+		checkArgument(isSetter(setter));
+		String unformatted = setter.getName();
+		int prefixLength = SETTER_PREFIX.length();
+		return String.valueOf(unformatted.charAt(prefixLength)).toLowerCase()
+				+ unformatted.substring(prefixLength + 1);
+	}
+
+	public static String setterName(String name) {
+		return capitalizeWithPrefix(SETTER_PREFIX, name);
+	}
+
 }

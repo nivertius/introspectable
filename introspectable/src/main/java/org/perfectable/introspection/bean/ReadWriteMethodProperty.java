@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.perfectable.introspection.bean.ReadOnlyMethodProperty.propertyNameFromGetter;
 
 final class ReadWriteMethodProperty<CT, PT> implements Property<CT, PT> {
 	private final Method getter;
@@ -49,7 +50,7 @@ final class ReadWriteMethodProperty<CT, PT> implements Property<CT, PT> {
 
 	@Override
 	public String name() {
-		return Methods.propertyNameFromGetter(this.getter);
+		return propertyNameFromGetter(this.getter);
 	}
 
 	@Override

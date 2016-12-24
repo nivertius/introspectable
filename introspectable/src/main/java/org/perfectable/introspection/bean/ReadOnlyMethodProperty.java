@@ -1,14 +1,19 @@
 package org.perfectable.introspection.bean;
 
+import org.perfectable.introspection.Introspection;
 import org.perfectable.introspection.Methods;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import javax.annotation.Nullable;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
+	private static final String BOOLEAN_GETTER_PREFIX = "is";
+	private static final String STANDARD_GETTER_PREFIX = "get";
 	private final Method getter;
 
 	public static <CX, PX> ReadOnlyMethodProperty<CX, PX> forGetter(Method getter) {
@@ -39,7 +44,7 @@ final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 
 	@Override
 	public String name() {
-		return Methods.propertyNameFromGetter(this.getter);
+		return propertyNameFromGetter(this.getter);
 	}
 
 	@Override
@@ -57,5 +62,45 @@ final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 	@Override
 	public boolean isWriteable() {
 		return false;
+	}
+
+
+	private static boolean isGetter(Method method) {
+		boolean actuallyReturns = !Void.TYPE.equals(method.getReturnType());
+		boolean hasNoParameters = method.getParameterTypes().length == 0;
+		String appropriatePrefix = getterPrefix(method.getReturnType());
+		boolean startsWithAppropriatePrefix = method.getName().startsWith(appropriatePrefix);
+		return actuallyReturns && hasNoParameters && startsWithAppropriatePrefix;
+	}
+
+	private static String getterPrefix(Class<?> returnType) {
+		boolean returnsBoolean = Boolean.class.equals(returnType)
+				|| boolean.class.equals(returnType);
+		return returnsBoolean ? BOOLEAN_GETTER_PREFIX : STANDARD_GETTER_PREFIX;
+	}
+
+	static String propertyNameFromGetter(Method getter) {
+		checkArgument(isGetter(getter));
+		String unformatted = getter.getName();
+		int prefixLength = getterPrefix(getter.getReturnType()).length();
+		return String.valueOf(unformatted.charAt(prefixLength)).toLowerCase()
+				+ unformatted.substring(prefixLength + 1);
+	}
+
+	private static String getterName(String name, Class<?> type) {
+		String prefix = getterPrefix(type);
+		return capitalizeWithPrefix(prefix, name);
+	}
+
+	static String capitalizeWithPrefix(String prefix, String name) {
+		return prefix + name.substring(0, 1).toUpperCase() + name.substring(1);
+	}
+
+	public static <CX, PX> Optional<Method> findGetter(Class<CX> beanClass, String name, Class<PX> type) {
+		return Introspection.of(beanClass).methods()
+				.named(getterName(name, type))
+				.parameters()
+				.returning(type)
+				.option();
 	}
 }

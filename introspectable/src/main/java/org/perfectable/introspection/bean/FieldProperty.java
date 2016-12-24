@@ -1,8 +1,7 @@
 package org.perfectable.introspection.bean;
 
-import org.perfectable.introspection.Fields;
-
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import javax.annotation.Nullable;
 
 final class FieldProperty<CT, PT> implements Property<CT, PT> {
@@ -54,11 +53,11 @@ final class FieldProperty<CT, PT> implements Property<CT, PT> {
 
 	@Override
 	public boolean isReadable() {
-		return Fields.isGettable(this.field);
+		return this.field.isAccessible();
 	}
 
 	@Override
 	public boolean isWriteable() {
-		return Fields.isSettable(this.field);
+		return this.field.isAccessible() && !Modifier.isFinal(this.field.getModifiers());
 	}
 }

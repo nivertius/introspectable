@@ -1,11 +1,10 @@
 package org.perfectable.introspection.bean;
 
-import org.perfectable.introspection.Fields;
 import org.perfectable.introspection.Introspection;
-import org.perfectable.introspection.Methods;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
@@ -41,8 +40,8 @@ public interface Property<CT, PT> {
 		if (field.isPresent()) {
 			return FieldProperty.fromField(field.get());
 		}
-		Optional<Method> getter = Methods.findGetter(beanClass, name, type);
-		Optional<Method> setter = Methods.findSetter(beanClass, name, type);
+		Optional<Method> getter = ReadOnlyMethodProperty.findGetter(beanClass, name, type);
+		Optional<Method> setter = WriteOnlyMethodProperty.findSetter(beanClass, name, type);
 		if (setter.isPresent() && getter.isPresent()) {
 			return ReadWriteMethodProperty.forGetterSetter(getter.get(), setter.get());
 		}
@@ -70,7 +69,7 @@ public interface Property<CT, PT> {
 		checkNotNull(field);
 		checkArgument(field.getDeclaringClass().isAssignableFrom(beanClass));
 		checkArgument(field.getType().equals(type));
-		checkArgument(!Fields.isStatic(field));
+		checkArgument(!Modifier.isStatic(field.getModifiers()));
 		return FieldProperty.fromField(field);
 	}
 
