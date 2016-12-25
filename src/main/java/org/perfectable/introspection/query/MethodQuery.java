@@ -162,7 +162,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 
 		@Override
 		protected boolean matches(Method candidate) {
-			return this.annotationFilter.appliesOn(candidate);
+			return this.annotationFilter.matches(candidate);
 		}
 	}
 

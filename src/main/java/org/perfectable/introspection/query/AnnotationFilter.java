@@ -7,6 +7,12 @@ import java.util.function.Predicate;
 @FunctionalInterface
 public interface AnnotationFilter {
 
+	static <A extends Annotation> SingleAnnotationFilter<A> of(Class<A> annotationClass) {
+		return SingleAnnotationFilter.create(annotationClass);
+	}
+
+	boolean matches(AnnotatedElement element);
+
 	final class SingleAnnotationFilter<A extends Annotation> implements AnnotationFilter {
 
 		private final Class<A> annotationClass;
@@ -26,16 +32,10 @@ public interface AnnotationFilter {
 		}
 
 		@Override
-		public boolean appliesOn(AnnotatedElement element) {
+		public boolean matches(AnnotatedElement element) {
 			A annotation = element.getAnnotation(this.annotationClass);
 			return this.predicate.test(annotation);
 		}
 
 	}
-
-	static <A extends Annotation> SingleAnnotationFilter<A> of(Class<A> annotationClass) {
-		return SingleAnnotationFilter.create(annotationClass);
-	}
-
-	boolean appliesOn(AnnotatedElement element);
 }

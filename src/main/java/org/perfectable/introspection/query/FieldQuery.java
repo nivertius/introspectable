@@ -126,7 +126,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 
 		@Override
 		protected boolean matches(Field candidate) {
-			return this.annotationFilter.appliesOn(candidate);
+			return this.annotationFilter.matches(candidate);
 		}
 	}
 
