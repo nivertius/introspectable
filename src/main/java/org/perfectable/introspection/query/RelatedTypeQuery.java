@@ -62,7 +62,7 @@ public abstract class RelatedTypeQuery extends AbstractQuery<Class<?>, RelatedTy
 		}
 	}
 
-	protected static Stream<Class<?>> extractRelated(Class<?> current) {
+	private static Stream<Class<?>> extractRelated(Class<?> current) {
 		Stream.Builder<Class<?>> resultBuilder = Stream.builder();
 		extractEnclosingClasses(current).forEach(resultBuilder::add);
 		extractNestedClasses(current).forEach(resultBuilder::add);

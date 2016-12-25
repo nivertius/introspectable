@@ -89,7 +89,7 @@ final class WriteOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 				+ unformatted.substring(prefixLength + 1);
 	}
 
-	public static String setterName(String name) {
+	private static String setterName(String name) {
 		return capitalizeWithPrefix(SETTER_PREFIX, name);
 	}
 

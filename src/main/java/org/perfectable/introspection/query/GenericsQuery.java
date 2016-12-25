@@ -14,7 +14,7 @@ public final class GenericsQuery<X> {
 		return new GenericsQuery<>(type);
 	}
 
-	public GenericsQuery(Class<X> type) {
+	private GenericsQuery(Class<X> type) {
 		this.type = type;
 	}
 

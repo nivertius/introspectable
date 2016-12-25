@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 final class FieldProperty<CT, PT> implements Property<CT, PT> {
 	private final Field field;
 
-	public static <CX, PX> FieldProperty<CX, PX> fromField(Field field) {
+	static <CX, PX> FieldProperty<CX, PX> fromField(Field field) {
 		return new FieldProperty<>(field);
 	}
 

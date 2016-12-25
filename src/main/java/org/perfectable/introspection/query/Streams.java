@@ -10,26 +10,26 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 final class Streams {
-	public static <E> Stream<E> generate(Stream<E> initial,
+	static <E> Stream<E> generate(Stream<E> initial,
 			Function<? super E, ? extends Stream<? extends E>> mutator) {
 		Spliterator<E> wrappedSpliterator = GeneratorSpliterator.wrap(initial.spliterator(), mutator);
 		return StreamSupport.stream(wrappedSpliterator, false);
 	}
 
-	private static class GeneratorSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
+	private static final class GeneratorSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
 
 		private static final int ADDITIONAL_CHARACTERISTICS = 0;
 
 		private final Spliterator<? extends T> wrapped;
 		private final Function<? super T, ? extends Stream<? extends T>> mutator;
-		private final Deque<T> buffer = new LinkedList<T>();
+		private final Deque<T> buffer = new LinkedList<>();
 
 		public static <T> GeneratorSpliterator<T> wrap(Spliterator<? extends T> wrapped,
 													   Function<? super T, ? extends Stream<? extends T>> mutator) {
-			return new GeneratorSpliterator<T>(wrapped, mutator);
+			return new GeneratorSpliterator<>(wrapped, mutator);
 		}
 
-		protected GeneratorSpliterator(Spliterator<? extends T> wrapped,
+		private GeneratorSpliterator(Spliterator<? extends T> wrapped,
 									   Function<? super T, ? extends Stream<? extends T>> mutator) {
 			super(Long.MAX_VALUE, ADDITIONAL_CHARACTERISTICS);
 			this.wrapped = wrapped;

@@ -142,7 +142,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 
-	protected FieldQuery() {
+	FieldQuery() {
 		// no default fields
 	}
 
