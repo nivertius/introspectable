@@ -33,7 +33,7 @@ public class InheritanceQueryTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testStringOnlyIntefaces() {
+	public void testStringOnlyInterfaces() {
 		InheritanceQuery<String> chain = InheritanceQuery.of(String.class).onlyInterfaces();
 
 		assertThat(chain)

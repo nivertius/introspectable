@@ -34,7 +34,7 @@ public interface Property<CT, PT> {
 	}
 
 	static <CX, PX> Property<CX, PX> from(Class<CX> beanClass, String name, Class<PX> type) {
-		checkArgument(beanClass != null);
+		checkNotNull(beanClass);
 		Optional<Field> field = introspect(beanClass).fields().named(name).typed(type).option();
 		if (field.isPresent()) {
 			return FieldProperty.fromField(field.get());

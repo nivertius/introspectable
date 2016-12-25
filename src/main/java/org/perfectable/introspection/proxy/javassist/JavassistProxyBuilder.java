@@ -48,7 +48,7 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 
 		@Override
 		public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) // SUPPRESS
-				throws Throwable { // SUPPRESS IllegalThrows throwble is actually thrown here
+				throws Throwable { // SUPPRESS IllegalThrows throwable is actually thrown here
 			if (thisMethod.equals(OBJECT_FINALIZE)) {
 				return null; // ignore proxy finalization
 			}

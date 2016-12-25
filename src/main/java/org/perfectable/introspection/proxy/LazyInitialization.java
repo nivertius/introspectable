@@ -53,7 +53,7 @@ public final class LazyInitialization {
 					this.instance = this.initializer.initialize();
 				}
 				if (!method.getDeclaringClass().isAssignableFrom(this.instance.getClass())) {
-					throw new AssertionError("Method extracted is of incompatibilie class");
+					throw new AssertionError("Method extracted is of incompatible class");
 				}
 				return Invocation.of(method, this.instance, arguments).invoke();
 			});

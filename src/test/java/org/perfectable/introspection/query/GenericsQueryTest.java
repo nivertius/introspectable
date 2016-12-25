@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class GenericsQueryTest {
 
 	@Test
-	public void testNongeneric() {
+	public void testNonGeneric() {
 		GenericsQuery<String> query = GenericsQuery.of(String.class);
 
 		assertThatThrownBy(() -> query.parameter(0))
