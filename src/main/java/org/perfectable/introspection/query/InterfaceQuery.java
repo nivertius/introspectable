@@ -1,45 +1,89 @@
 package org.perfectable.introspection.query;
 
-import org.perfectable.introspection.MappingIterable;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
-import java.util.Collection;
-
-import com.google.common.collect.ImmutableList;
-
-public final class InterfaceQuery<X> extends MappingIterable<Class<? super X>> implements Iterable<Class<? super X>> {
+public abstract class InterfaceQuery<X> extends AbstractQuery<Class<? super X>, InterfaceQuery<X>> {
 	public static <X> InterfaceQuery<X> of(Class<X> type) {
-		ImmutableList<Class<? super X>> initial;
 		if (type.isInterface()) {
-			initial = ImmutableList.of(type);
+			return new InterfaceInterfaceQuery<>(type);
 		}
 		else {
-			initial = ImmutableList.copyOf(safeGetInterfaces(type));
+			return new ClassInterfaceQuery<>(type);
 		}
-		return new InterfaceQuery<>(initial);
-	}
-
-	private final ImmutableList<Class<? super X>> initial;
-
-	public InterfaceQuery(ImmutableList<Class<? super X>> initial) {
-		this.initial = initial;
 	}
 
 	@Override
-	protected Collection<Class<? super X>> seed() {
-		return this.initial;
+	public InterfaceQuery<X> matching(Predicate<? super Class<? super X>> filter) {
+		return new PredicatedInterfaceQuery<>(this, filter);
 	}
 
-	@Override
-	protected Collection<Class<? super X>> map(Class<? super X> current) {
-		@SuppressWarnings("unchecked")
-		Class<X> castedCurrent = (Class<X>) current;
-		return safeGetInterfaces(castedCurrent);
+	private abstract static class FilteredInterfaceQuery<X> extends InterfaceQuery<X> {
+
+		private final InterfaceQuery<X> parent;
+
+		FilteredInterfaceQuery(InterfaceQuery<X> parent) {
+			this.parent = parent;
+		}
+
+		protected abstract boolean matches(Class<? super X> candidate);
+
+		@Override
+		public Stream<Class<? super X>> stream() {
+			return this.parent.stream()
+					.filter(this::matches);
+		}
+
 	}
 
-	private static <X> Collection<Class<? super X>> safeGetInterfaces(Class<X> type) {
+	private static final class PredicatedInterfaceQuery<X> extends FilteredInterfaceQuery<X> {
+
+		private final Predicate<? super Class<? super X>> filter;
+
+		PredicatedInterfaceQuery(InterfaceQuery<X> parent, Predicate<? super Class<? super X>> filter) {
+			super(parent);
+			this.filter = filter;
+		}
+
+		@Override
+		protected boolean matches(Class<? super X> candidate) {
+			return filter.test(candidate);
+		}
+	}
+
+	private static class InterfaceInterfaceQuery<X> extends InterfaceQuery<X> {
+
+		private final Class<X> initialInterface;
+
+		InterfaceInterfaceQuery(Class<X> initialInterface) {
+			this.initialInterface = initialInterface;
+		}
+
+		@Override
+		public Stream<Class<? super X>> stream() {
+			return Stream.<Class<? super X>>of(initialInterface)
+					.flatMap(element -> Stream.concat(Stream.of(element), InterfaceQuery.safeGetInterfaces(element)));
+		}
+	}
+
+	private static class ClassInterfaceQuery<X> extends InterfaceQuery<X> {
+
+		private final Class<X> initialClass;
+
+		ClassInterfaceQuery(Class<X> initialClass) {
+			this.initialClass = initialClass;
+		}
+
+		@Override
+		public Stream<Class<? super X>> stream() {
+			return InterfaceQuery.safeGetInterfaces(initialClass)
+					.flatMap(element -> Stream.concat(Stream.of(element), InterfaceQuery.safeGetInterfaces(element)));
+		}
+	}
+
+	private static <X> Stream<Class<? super X>> safeGetInterfaces(Class<? super X> type) {
 		@SuppressWarnings("unchecked")
 		Class<? super X>[] interfaceArray = (Class<? super X>[]) type.getInterfaces();
-		return ImmutableList.copyOf(interfaceArray);
+		return Stream.of(interfaceArray);
 	}
-
 }
