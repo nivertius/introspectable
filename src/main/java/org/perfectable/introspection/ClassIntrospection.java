@@ -5,6 +5,7 @@ import org.perfectable.introspection.query.FieldQuery;
 import org.perfectable.introspection.query.GenericsQuery;
 import org.perfectable.introspection.query.InterfaceQuery;
 import org.perfectable.introspection.query.MethodQuery;
+import org.perfectable.introspection.query.RelatedTypeQuery;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -43,8 +44,8 @@ public final class ClassIntrospection<X> {
 		return ReferenceExtractor.of(type);
 	}
 
-	public RelatedClassesIterable related() {
-		return RelatedClassesIterable.of(this.type);
+	public RelatedTypeQuery related() {
+		return RelatedTypeQuery.of(this.type);
 	}
 
 	public boolean isInstantiable() {
