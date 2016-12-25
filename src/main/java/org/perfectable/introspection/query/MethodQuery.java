@@ -22,7 +22,7 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	}
 
 	@Override
-	public MethodQuery matching(Predicate<? super Method> filter) {
+	public MethodQuery filter(Predicate<? super Method> filter) {
 		checkNotNull(filter);
 		return new PredicatedMethodQuery(this, filter);
 	}

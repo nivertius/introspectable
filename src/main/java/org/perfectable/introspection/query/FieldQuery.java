@@ -22,7 +22,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	}
 
 	@Override
-	public FieldQuery matching(Predicate<? super Field> filter) {
+	public FieldQuery filter(Predicate<? super Field> filter) {
 		checkNotNull(filter);
 		return new PredicatedFieldQuery(this, filter);
 	}

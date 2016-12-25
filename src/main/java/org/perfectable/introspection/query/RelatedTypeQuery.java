@@ -12,7 +12,7 @@ public abstract class RelatedTypeQuery extends AbstractQuery<Class<?>, RelatedTy
 	}
 
 	@Override
-	public RelatedTypeQuery matching(Predicate<? super Class<?>> filter) {
+	public RelatedTypeQuery filter(Predicate<? super Class<?>> filter) {
 		checkNotNull(filter);
 		return new PredicatedRelatedTypeQuery(this, filter);
 	}

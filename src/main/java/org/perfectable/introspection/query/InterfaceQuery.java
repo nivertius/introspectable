@@ -14,7 +14,7 @@ public abstract class InterfaceQuery<X> extends AbstractQuery<Class<? super X>, 
 	}
 
 	@Override
-	public InterfaceQuery<X> matching(Predicate<? super Class<? super X>> filter) {
+	public InterfaceQuery<X> filter(Predicate<? super Class<? super X>> filter) {
 		return new PredicatedInterfaceQuery<>(this, filter);
 	}
 

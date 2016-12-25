@@ -9,7 +9,7 @@ import com.google.common.collect.Iterators;
 
 public abstract class AbstractQuery<E, Q extends AbstractQuery<E, ? extends Q>> implements Iterable<E> {
 
-	public abstract Q matching(Predicate<? super E> filter);
+	public abstract Q filter(Predicate<? super E> filter);
 
 	public abstract Stream<E> stream();
 

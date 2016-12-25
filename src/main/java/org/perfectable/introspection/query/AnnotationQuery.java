@@ -26,7 +26,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 	}
 
 	@Override
-	public AnnotationQuery<A> matching(Predicate<? super A> filter) {
+	public AnnotationQuery<A> filter(Predicate<? super A> filter) {
 		checkNotNull(filter);
 		return new PredicatedAnnotationQuery<>(this, filter);
 	}
@@ -112,7 +112,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 		}
 
 		@Override
-		public EmptyAnnotationQuery matching(Predicate<? super Annotation> filter) {
+		public EmptyAnnotationQuery filter(Predicate<? super Annotation> filter) {
 			return EmptyAnnotationQuery.INSTANCE;
 		}
 
