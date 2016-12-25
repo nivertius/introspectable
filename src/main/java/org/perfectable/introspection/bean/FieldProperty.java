@@ -57,7 +57,7 @@ final class FieldProperty<CT, PT> implements Property<CT, PT> {
 	}
 
 	@Override
-	public boolean isWriteable() {
+	public boolean isWritable() {
 		return this.field.isAccessible() && !Modifier.isFinal(this.field.getModifiers());
 	}
 }

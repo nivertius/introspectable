@@ -23,7 +23,7 @@ public interface Property<CT, PT> {
 
 	boolean isReadable();
 
-	boolean isWriteable();
+	boolean isWritable();
 
 	default BoundProperty<CT, PT> bind(CT bean) {
 		return BoundProperty.of(bean, this);

@@ -37,7 +37,7 @@ final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 
 	@Override
 	public void set(CT bean, @Nullable PT value) {
-		throw new IllegalStateException("Property is not writeable");
+		throw new IllegalStateException("Property is not writable");
 	}
 
 	@Override
@@ -58,7 +58,7 @@ final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 	}
 
 	@Override
-	public boolean isWriteable() {
+	public boolean isWritable() {
 		return false;
 	}
 

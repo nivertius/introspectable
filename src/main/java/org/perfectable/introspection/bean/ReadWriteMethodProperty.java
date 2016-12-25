@@ -65,7 +65,7 @@ final class ReadWriteMethodProperty<CT, PT> implements Property<CT, PT> {
 	}
 
 	@Override
-	public boolean isWriteable() {
+	public boolean isWritable() {
 		return introspect(setter).isCallable();
 	}
 
