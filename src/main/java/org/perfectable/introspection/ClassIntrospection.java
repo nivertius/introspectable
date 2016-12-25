@@ -48,10 +48,6 @@ public final class ClassIntrospection<X> {
 		return AnnotationQuery.of(this.type);
 	}
 
-	public ReferenceExtractor<X> references() {
-		return ReferenceExtractor.of(type);
-	}
-
 	public RelatedTypeQuery related() {
 		return RelatedTypeQuery.of(this.type);
 	}
