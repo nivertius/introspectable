@@ -48,7 +48,7 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 	private static final class JdkInvocationHandlerAdapter<I> implements java.lang.reflect.InvocationHandler {
 
 		private static final Method OBJECT_FINALIZE =
-				introspect(Object.class).methods().named("finalize").parameters().single();
+				introspect(Object.class).methods().named("finalize").parameters().unique();
 
 		private final InvocationHandler<I> handler;
 

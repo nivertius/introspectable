@@ -28,7 +28,7 @@ public final class LazyInitialization {
 
 	private static final class LazyInitializationHandler<T> implements InvocationHandler<T> {
 		private static final Method EXTRACT_INSTANCE_METHOD =
-				introspect(Proxy.class).methods().named("extractInstance").parameters().single();
+				introspect(Proxy.class).methods().named("extractInstance").parameters().unique();
 
 		private final Initializer<? extends T> initializer;
 

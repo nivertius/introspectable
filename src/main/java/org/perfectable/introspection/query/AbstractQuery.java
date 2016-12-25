@@ -18,7 +18,7 @@ public abstract class AbstractQuery<E, Q extends AbstractQuery<E, ? extends Q>> 
 		return stream().iterator();
 	}
 
-	public final E single() {
+	public final E unique() {
 		return Iterators.getOnlyElement(iterator());
 	}
 

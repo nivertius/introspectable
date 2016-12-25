@@ -31,7 +31,7 @@ public class JdkProxyBuilderTest {
 
 	public interface TestFirstInterface {
 
-		Method FIRST_METHOD = introspect(TestFirstInterface.class).methods().named("firstMethod").parameters().single();
+		Method FIRST_METHOD = introspect(TestFirstInterface.class).methods().named("firstMethod").parameters().unique();
 
 		void firstMethod();
 

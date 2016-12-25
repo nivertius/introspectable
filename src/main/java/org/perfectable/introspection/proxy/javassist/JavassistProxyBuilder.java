@@ -34,7 +34,7 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 
 	private static final class JavassistInvocationHandlerAdapter<I> implements MethodHandler {
 		private static final Method OBJECT_FINALIZE =
-				introspect(Object.class).methods().named("finalize").parameters().single();
+				introspect(Object.class).methods().named("finalize").parameters().unique();
 
 		private final InvocationHandler<I> handler;
 

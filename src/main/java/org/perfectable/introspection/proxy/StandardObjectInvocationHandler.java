@@ -8,9 +8,9 @@ public class StandardObjectInvocationHandler implements InvocationHandler<Object
 	public static final StandardObjectInvocationHandler INSTANCE = new StandardObjectInvocationHandler();
 
 	private static final Method OBJECT_EQUALS =
-			introspect(Object.class).methods().named("equals").parameters(Object.class).single();
+			introspect(Object.class).methods().named("equals").parameters(Object.class).unique();
 	private static final Method OBJECT_TO_STRING =
-			introspect(Object.class).methods().named("toString").parameters().single();
+			introspect(Object.class).methods().named("toString").parameters().unique();
 
 	@Override
 	public Object handle(Invocation<Object> invocation) throws Throwable {
