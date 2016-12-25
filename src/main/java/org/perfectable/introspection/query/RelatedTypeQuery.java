@@ -8,19 +8,19 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class RelatedTypeQuery extends AbstractQuery<Class<?>, RelatedTypeQuery> {
 	public static RelatedTypeQuery of(Class<?> initial) {
-		return new CompleteRelatedTypeQuery(initial);
+		return new Complete(initial);
 	}
 
 	@Override
 	public RelatedTypeQuery filter(Predicate<? super Class<?>> filter) {
 		checkNotNull(filter);
-		return new PredicatedRelatedTypeQuery(this, filter);
+		return new Predicated(this, filter);
 	}
 
-	private static class CompleteRelatedTypeQuery extends RelatedTypeQuery {
+	private static class Complete extends RelatedTypeQuery {
 		private final Class<?> type;
 
-		CompleteRelatedTypeQuery(Class<?> type) {
+		Complete(Class<?> type) {
 			this.type = type;
 		}
 
@@ -31,11 +31,11 @@ public abstract class RelatedTypeQuery extends AbstractQuery<Class<?>, RelatedTy
 		}
 	}
 
-	private abstract static class FilteredRelatedTypeQuery extends RelatedTypeQuery {
+	private abstract static class Filtered extends RelatedTypeQuery {
 
 		private final RelatedTypeQuery parent;
 
-		FilteredRelatedTypeQuery(RelatedTypeQuery parent) {
+		Filtered(RelatedTypeQuery parent) {
 			this.parent = parent;
 		}
 
@@ -48,11 +48,11 @@ public abstract class RelatedTypeQuery extends AbstractQuery<Class<?>, RelatedTy
 		}
 	}
 
-	private static final class PredicatedRelatedTypeQuery extends FilteredRelatedTypeQuery {
+	private static final class Predicated extends Filtered {
 
 		private final Predicate<? super Class<?>> filter;
 
-		PredicatedRelatedTypeQuery(RelatedTypeQuery parent, Predicate<? super Class<?>> filter) {
+		Predicated(RelatedTypeQuery parent, Predicate<? super Class<?>> filter) {
 			super(parent);
 			this.filter = filter;
 		}

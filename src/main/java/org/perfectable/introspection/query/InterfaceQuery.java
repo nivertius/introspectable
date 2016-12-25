@@ -6,23 +6,23 @@ import java.util.stream.Stream;
 public abstract class InterfaceQuery<X> extends AbstractQuery<Class<? super X>, InterfaceQuery<X>> {
 	public static <X> InterfaceQuery<X> of(Class<X> type) {
 		if (type.isInterface()) {
-			return new InterfaceInterfaceQuery<>(type);
+			return new OfInterface<>(type);
 		}
 		else {
-			return new ClassInterfaceQuery<>(type);
+			return new OfClass<>(type);
 		}
 	}
 
 	@Override
 	public InterfaceQuery<X> filter(Predicate<? super Class<? super X>> filter) {
-		return new PredicatedInterfaceQuery<>(this, filter);
+		return new Predicated<>(this, filter);
 	}
 
-	private abstract static class FilteredInterfaceQuery<X> extends InterfaceQuery<X> {
+	private abstract static class Filtered<X> extends InterfaceQuery<X> {
 
 		private final InterfaceQuery<X> parent;
 
-		FilteredInterfaceQuery(InterfaceQuery<X> parent) {
+		Filtered(InterfaceQuery<X> parent) {
 			this.parent = parent;
 		}
 
@@ -36,11 +36,11 @@ public abstract class InterfaceQuery<X> extends AbstractQuery<Class<? super X>, 
 
 	}
 
-	private static final class PredicatedInterfaceQuery<X> extends FilteredInterfaceQuery<X> {
+	private static final class Predicated<X> extends Filtered<X> {
 
 		private final Predicate<? super Class<? super X>> filter;
 
-		PredicatedInterfaceQuery(InterfaceQuery<X> parent, Predicate<? super Class<? super X>> filter) {
+		Predicated(InterfaceQuery<X> parent, Predicate<? super Class<? super X>> filter) {
 			super(parent);
 			this.filter = filter;
 		}
@@ -51,11 +51,11 @@ public abstract class InterfaceQuery<X> extends AbstractQuery<Class<? super X>, 
 		}
 	}
 
-	private static class InterfaceInterfaceQuery<X> extends InterfaceQuery<X> {
+	private static class OfInterface<X> extends InterfaceQuery<X> {
 
 		private final Class<X> initialInterface;
 
-		InterfaceInterfaceQuery(Class<X> initialInterface) {
+		OfInterface(Class<X> initialInterface) {
 			this.initialInterface = initialInterface;
 		}
 
@@ -66,11 +66,11 @@ public abstract class InterfaceQuery<X> extends AbstractQuery<Class<? super X>, 
 		}
 	}
 
-	private static class ClassInterfaceQuery<X> extends InterfaceQuery<X> {
+	private static class OfClass<X> extends InterfaceQuery<X> {
 
 		private final Class<X> initialClass;
 
-		ClassInterfaceQuery(Class<X> initialClass) {
+		OfClass(Class<X> initialClass) {
 			this.initialClass = initialClass;
 		}
 

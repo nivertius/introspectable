@@ -12,42 +12,42 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 
 	public static <X> FieldQuery of(Class<X> type) {
 		checkNotNull(type);
-		return new CompleteFieldQuery<>(type);
+		return new Complete<>(type);
 	}
 
 	@Override
 	public FieldQuery named(String name) {
 		checkNotNull(name);
-		return new NamedFieldQuery(this, name);
+		return new Named(this, name);
 	}
 
 	@Override
 	public FieldQuery filter(Predicate<? super Field> filter) {
 		checkNotNull(filter);
-		return new PredicatedFieldQuery(this, filter);
+		return new Predicated(this, filter);
 	}
 
 	@Override
 	public FieldQuery typed(Class<?> type) {
 		checkNotNull(type);
-		return new TypedFieldQuery(this, type);
+		return new Typed(this, type);
 	}
 
 	@Override
 	public FieldQuery annotatedWith(AnnotationFilter annotationFilter) {
 		checkNotNull(annotationFilter);
-		return new AnnotatedFieldQuery(this, annotationFilter);
+		return new Annotated(this, annotationFilter);
 	}
 
 	@Override
 	public FieldQuery excludingModifier(int excludedModifier) {
-		return new ExcludedModifierFieldQuery(this, excludedModifier);
+		return new ExcludingModifier(this, excludedModifier);
 	}
 
-	private static final class CompleteFieldQuery<X> extends FieldQuery {
+	private static final class Complete<X> extends FieldQuery {
 		private final InheritanceChain<X> chain;
 
-		CompleteFieldQuery(Class<X> type) {
+		Complete(Class<X> type) {
 			this.chain = InheritanceChain.startingAt(type);
 		}
 
@@ -58,10 +58,10 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 
-	private abstract static class FilteredFieldQuery extends FieldQuery {
+	private abstract static class Filtered extends FieldQuery {
 		private final FieldQuery parent;
 
-		FilteredFieldQuery(FieldQuery parent) {
+		Filtered(FieldQuery parent) {
 			this.parent = parent;
 		}
 
@@ -74,10 +74,10 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 
-	private static final class NamedFieldQuery extends FilteredFieldQuery {
+	private static final class Named extends Filtered {
 		private final String name;
 
-		NamedFieldQuery(FieldQuery parent, String name) {
+		Named(FieldQuery parent, String name) {
 			super(parent);
 			this.name = name;
 		}
@@ -88,10 +88,10 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 
-	private static final class PredicatedFieldQuery extends FilteredFieldQuery {
+	private static final class Predicated extends Filtered {
 		private final Predicate<? super Field> filter;
 
-		PredicatedFieldQuery(FieldQuery parent, Predicate<? super Field> filter) {
+		Predicated(FieldQuery parent, Predicate<? super Field> filter) {
 			super(parent);
 			this.filter = filter;
 		}
@@ -102,10 +102,10 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 
-	private static final class TypedFieldQuery extends FilteredFieldQuery {
+	private static final class Typed extends Filtered {
 		private final Class<?> type;
 
-		TypedFieldQuery(FieldQuery parent, Class<?> type) {
+		Typed(FieldQuery parent, Class<?> type) {
 			super(parent);
 			this.type = type;
 		}
@@ -116,10 +116,10 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 
-	private static final class AnnotatedFieldQuery extends FilteredFieldQuery {
+	private static final class Annotated extends Filtered {
 		private final AnnotationFilter annotationFilter;
 
-		AnnotatedFieldQuery(FieldQuery parent, AnnotationFilter annotationFilter) {
+		Annotated(FieldQuery parent, AnnotationFilter annotationFilter) {
 			super(parent);
 			this.annotationFilter = annotationFilter;
 		}
@@ -130,10 +130,10 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 
-	private static final class ExcludedModifierFieldQuery extends FilteredFieldQuery {
+	private static final class ExcludingModifier extends Filtered {
 		private final int excludedModifier;
 
-		ExcludedModifierFieldQuery(FieldQuery parent, int excludedModifier) {
+		ExcludingModifier(FieldQuery parent, int excludedModifier) {
 			super(parent);
 			this.excludedModifier = excludedModifier;
 		}
