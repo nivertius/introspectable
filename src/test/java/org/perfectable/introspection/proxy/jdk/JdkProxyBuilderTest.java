@@ -1,8 +1,8 @@
 package org.perfectable.introspection.proxy.jdk;
 
+import org.perfectable.introspection.MockitoExtension;
 import org.perfectable.introspection.proxy.ForwardingHandler;
 import org.perfectable.introspection.proxy.ProxyBuilder;
-import org.perfectable.testable.mockito.MockitoExtension;
 
 import java.lang.reflect.Method;
 

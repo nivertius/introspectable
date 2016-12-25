@@ -1,7 +1,7 @@
 package org.perfectable.introspection.proxy;
 
+import org.perfectable.introspection.MockitoExtension;
 import org.perfectable.introspection.proxy.LazyInitialization.Initializer;
-import org.perfectable.testable.mockito.MockitoExtension;
 
 import java.util.Optional;
 
