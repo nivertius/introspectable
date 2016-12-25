@@ -3,6 +3,7 @@ package org.perfectable.introspection.query;
 import org.perfectable.introspection.InheritanceChain;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -27,9 +28,14 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		return new Predicated(this, filter);
 	}
 
+	public MethodQuery parameters(ParametersFilter parametersFilter) {
+		checkNotNull(parametersFilter);
+		return new Parameters(this, parametersFilter);
+	}
+
 	public MethodQuery parameters(Class<?>... parameterTypes) {
 		checkNotNull(parameterTypes);
-		return new Parameters(this, parameterTypes);
+		return parameters(ParametersFilter.types(parameterTypes));
 	}
 
 	// only implements super
@@ -118,27 +124,17 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	}
 
 	private static final class Parameters extends Filtered {
-		private final Class<?>[] parameterTypes;
+		private final ParametersFilter parametersFilter;
 
-		Parameters(MethodQuery parent, Class<?>... parameterTypes) {
+		Parameters(MethodQuery parent, ParametersFilter parametersFilter) {
 			super(parent);
-			this.parameterTypes = parameterTypes.clone();
+			this.parametersFilter = parametersFilter;
 		}
 
 		@Override
 		protected boolean matches(Method candidate) {
-			Class<?>[] actualParameterTypes = candidate.getParameterTypes();
-			if (this.parameterTypes.length != actualParameterTypes.length) {
-				return false;
-			}
-			for (int i = 0; i < this.parameterTypes.length; i++) {
-				Class<?> expectedParameterType = this.parameterTypes[i];
-				Class<?> actualParameterType = actualParameterTypes[i];
-				if (!expectedParameterType.isAssignableFrom(actualParameterType)) {
-					return false;
-				}
-			}
-			return true;
+			Parameter[] parameters = candidate.getParameters();
+			return parametersFilter.matches(parameters);
 		}
 	}
 
