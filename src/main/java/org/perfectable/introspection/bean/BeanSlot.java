@@ -2,15 +2,15 @@ package org.perfectable.introspection.bean;
 
 import static com.google.common.base.Preconditions.checkState;
 
-public class BeanSlot<T> {
+public final class BeanSlot<T> {
 	private final Class<T> beanClass;
-
-	public BeanSlot(Class<T> beanClass) {
-		this.beanClass = beanClass;
-	}
 
 	public static <X> BeanSlot<X> from(Class<X> beanClass) {
 		return new BeanSlot<>(beanClass);
+	}
+
+	private BeanSlot(Class<T> beanClass) {
+		this.beanClass = beanClass;
 	}
 
 	public Bean<T> put(T element) {

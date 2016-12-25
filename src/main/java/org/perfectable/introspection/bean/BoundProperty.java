@@ -1,12 +1,16 @@
 package org.perfectable.introspection.bean;
 
-public class BoundProperty<CT, PT> {
-	private final Property<CT, PT> property;
+public final class BoundProperty<CT, PT> {
 	private final CT bean;
+	private final Property<CT, PT> property;
 
-	public BoundProperty(Property<CT, PT> property, CT bean) {
-		this.property = property;
+	public static <CT, PT> BoundProperty<CT, PT> of(CT bean, Property<CT, PT> property) {
+		return new BoundProperty<CT, PT>(bean, property);
+	}
+
+	private BoundProperty(CT bean, Property<CT, PT> property) {
 		this.bean = bean;
+		this.property = property;
 	}
 
 	public PT get() {

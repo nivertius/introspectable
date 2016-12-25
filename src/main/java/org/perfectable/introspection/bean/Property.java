@@ -26,7 +26,7 @@ public interface Property<CT, PT> {
 	boolean isWriteable();
 
 	default BoundProperty<CT, PT> bind(CT bean) {
-		return new BoundProperty<>(this, bean);
+		return BoundProperty.of(bean, this);
 	}
 
 	static <CX> Property<CX, Object> raw(Class<CX> beanClass, String name) {
