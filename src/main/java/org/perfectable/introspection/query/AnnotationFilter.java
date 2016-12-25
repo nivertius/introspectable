@@ -2,6 +2,7 @@ package org.perfectable.introspection.query;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 @FunctionalInterface
@@ -19,7 +20,7 @@ public interface AnnotationFilter {
 		private final Predicate<A> predicate;
 
 		public static <A extends Annotation> SingleAnnotationFilter<A> create(Class<A> annotationClass) {
-			return new SingleAnnotationFilter<>(annotationClass, annotation -> annotation != null);
+			return new SingleAnnotationFilter<>(annotationClass, Objects::nonNull);
 		}
 
 		private SingleAnnotationFilter(Class<A> annotationClass, Predicate<A> predicate) {

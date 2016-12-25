@@ -3,6 +3,7 @@ package org.perfectable.introspection.bean;
 import org.perfectable.introspection.query.FieldQuery;
 
 import java.lang.reflect.Modifier;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.perfectable.introspection.Introspections.introspect;
@@ -28,8 +29,8 @@ public final class Bean<T> {
 
 	public Stream<?> related() {
 		return this.fieldProperties()
-				.map(boundProperty -> boundProperty.get())
-				.filter(related -> related != null);
+				.map(BoundProperty::get)
+				.filter(Objects::nonNull);
 	}
 
 	@SuppressWarnings("unchecked")

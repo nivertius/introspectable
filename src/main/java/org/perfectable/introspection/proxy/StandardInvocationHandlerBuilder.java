@@ -75,9 +75,9 @@ public final class StandardInvocationHandlerBuilder<T> implements InvocationHand
 	}
 
 	private StandardInvocationHandlerBuilder<T> withHandling(Method invocable, Invocable<T> replacement) {
-		InvocationHandler<? super T> handler = (invocation) -> {
-			return invocation.proceed((method, receiver, arguments) -> replacement.invoke(receiver, arguments));
-		};
+		InvocationHandler<? super T> handler = invocation ->
+				invocation.proceed((method, receiver, arguments) ->
+						replacement.invoke(receiver, arguments));
 		ImmutableMap<Method, InvocationHandler<? super T>> newMethods =
 				ImmutableMap.<Method, InvocationHandler<? super T>>builder()
 						.putAll(this.methods)

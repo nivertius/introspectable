@@ -141,7 +141,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 
 		@Override
 		public Stream<A> stream() {
-			return components.stream().flatMap(component -> component.stream());
+			return components.stream().flatMap(AbstractQuery::stream);
 		}
 
 		@Override
