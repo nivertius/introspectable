@@ -1,7 +1,5 @@
 package org.perfectable.introspection.query;
 
-import org.perfectable.introspection.InheritanceChain;
-
 import java.lang.reflect.Field;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -45,10 +43,10 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	}
 
 	private static final class Complete<X> extends FieldQuery {
-		private final InheritanceChain<X> chain;
+		private final InheritanceQuery<X> chain;
 
 		Complete(Class<X> type) {
-			this.chain = InheritanceChain.startingAt(type);
+			this.chain = InheritanceQuery.of(type);
 		}
 
 		@Override

@@ -26,8 +26,7 @@ public abstract class RelatedTypeQuery extends AbstractQuery<Class<?>, RelatedTy
 
 		@Override
 		public Stream<Class<?>> stream() {
-			return Stream.of(type)
-					.flatMap(element -> Stream.concat(Stream.of(element), extractRelated(element)));
+			return Streams.generate(Stream.of(type), RelatedTypeQuery::extractRelated);
 		}
 	}
 

@@ -1,7 +1,5 @@
 package org.perfectable.introspection.query;
 
-import org.perfectable.introspection.InheritanceChain;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.function.Predicate;
@@ -66,10 +64,10 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 	}
 
 	private static final class Complete<X> extends MethodQuery {
-		private final InheritanceChain<X> chain;
+		private final InheritanceQuery<X> chain;
 
 		Complete(Class<X> type) {
-			this.chain = InheritanceChain.startingAt(type);
+			this.chain = InheritanceQuery.of(type);
 		}
 
 		@Override
