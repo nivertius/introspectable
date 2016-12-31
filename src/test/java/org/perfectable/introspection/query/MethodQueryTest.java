@@ -1,7 +1,8 @@
 package org.perfectable.introspection.query;
 
-import org.perfectable.introspection.Methods;
+import org.perfectable.introspection.SimpleReflections;
 import org.perfectable.introspection.Subject;
+import org.perfectable.introspection.SubjectReflection;
 
 import javax.annotation.Nullable;
 
@@ -16,7 +17,7 @@ class MethodQueryTest {
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).named("noResultNoArgument");
 
-		assertThat(extracted).containsExactly(Subject.NO_RESULT_NO_ARGUMENT);
+		assertThat(extracted).containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT);
 	}
 
 	@Test
@@ -25,9 +26,9 @@ class MethodQueryTest {
 				MethodQuery.of(Subject.class).filter(method -> method.getParameterCount() == 1);
 
 		assertThat(extracted)
-				.containsExactlyInAnyOrder(Subject.NO_RESULT_SINGLE_ARGUMENT, Subject.WITH_RESULT_SINGLE_ARGUMENT,
-						Subject.NO_RESULT_VARARGS_ARGUMENT, Subject.WITH_RESULT_VARARGS_ARGUMENT,
-						Methods.OBJECT_WAIT_TIMEOUT, Methods.OBJECT_EQUALS);
+				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+						SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+						SimpleReflections.OBJECT_WAIT_TIMEOUT, SimpleReflections.OBJECT_EQUALS);
 	}
 
 	@Test
@@ -36,9 +37,9 @@ class MethodQueryTest {
 				MethodQuery.of(Subject.class).parameters(parameters -> parameters.length == 1);
 
 		assertThat(extracted)
-				.containsExactlyInAnyOrder(Subject.NO_RESULT_SINGLE_ARGUMENT, Subject.WITH_RESULT_SINGLE_ARGUMENT,
-						Subject.NO_RESULT_VARARGS_ARGUMENT, Subject.WITH_RESULT_VARARGS_ARGUMENT,
-						Methods.OBJECT_WAIT_TIMEOUT, Methods.OBJECT_EQUALS);
+				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+						SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+						SimpleReflections.OBJECT_WAIT_TIMEOUT, SimpleReflections.OBJECT_EQUALS);
 	}
 
 	@Test
@@ -47,7 +48,7 @@ class MethodQueryTest {
 				MethodQuery.of(Subject.class).parameters(long.class);
 
 		assertThat(extracted)
-				.containsExactlyInAnyOrder(Methods.OBJECT_WAIT_TIMEOUT);
+				.containsExactlyInAnyOrder(SimpleReflections.OBJECT_WAIT_TIMEOUT);
 	}
 
 	@Test
@@ -56,12 +57,12 @@ class MethodQueryTest {
 				MethodQuery.of(Subject.class).filter(method -> Object.class.equals(method.getDeclaringClass()));
 
 		assertThat(extracted)
-				.containsExactlyInAnyOrder(Methods.OBJECT_HASH_CODE, Methods.OBJECT_EQUALS,
-						Methods.OBJECT_FINALIZE,
-						Methods.OBJECT_NOTIFY, Methods.OBJECT_NOTIFY_ALL,
-						Methods.OBJECT_WAIT, Methods.OBJECT_WAIT_TIMEOUT, Methods.OBJECT_WAIT_NANOSECONDS,
-						Methods.OBJECT_GET_CLASS, Methods.OBJECT_CLONE, Methods.OBJECT_TO_STRING,
-						Methods.OBJECT_REGISTER_NATIVES);
+				.containsExactlyInAnyOrder(SimpleReflections.OBJECT_HASH_CODE, SimpleReflections.OBJECT_EQUALS,
+						SimpleReflections.OBJECT_FINALIZE,
+						SimpleReflections.OBJECT_NOTIFY, SimpleReflections.OBJECT_NOTIFY_ALL,
+						SimpleReflections.OBJECT_WAIT, SimpleReflections.OBJECT_WAIT_TIMEOUT, SimpleReflections.OBJECT_WAIT_NANOSECONDS,
+						SimpleReflections.OBJECT_GET_CLASS, SimpleReflections.OBJECT_CLONE, SimpleReflections.OBJECT_TO_STRING,
+						SimpleReflections.OBJECT_REGISTER_NATIVES);
 	}
 
 	@Test
@@ -72,10 +73,10 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 				.containsExactlyInAnyOrder(
-						Subject.WITH_RESULT_NO_ARGUMENT, Subject.WITH_RESULT_SINGLE_ARGUMENT,
-						Subject.WITH_RESULT_DOUBLE_ARGUMENT, Subject.WITH_RESULT_TRIPLE_ARGUMENT,
-						Subject.WITH_RESULT_VARARGS_ARGUMENT, Subject.ANNOTATED_WITH_NULLABLE,
-						Methods.OBJECT_CLONE
+						SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+						SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
+						SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
+						SimpleReflections.OBJECT_CLONE
 				);
 	}
 
@@ -86,10 +87,10 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 				.containsExactlyInAnyOrder(
-						Subject.WITH_RESULT_NO_ARGUMENT, Subject.WITH_RESULT_SINGLE_ARGUMENT,
-						Subject.WITH_RESULT_DOUBLE_ARGUMENT, Subject.WITH_RESULT_TRIPLE_ARGUMENT,
-						Subject.WITH_RESULT_VARARGS_ARGUMENT, Subject.ANNOTATED_WITH_NULLABLE,
-						Methods.OBJECT_CLONE
+						SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+						SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
+						SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
+						SimpleReflections.OBJECT_CLONE
 				);
 	}
 
@@ -99,7 +100,7 @@ class MethodQueryTest {
 				MethodQuery.of(Subject.class).returning(boolean.class);
 
 		assertThat(extracted)
-				.containsExactlyInAnyOrder(Methods.OBJECT_EQUALS);
+				.containsExactlyInAnyOrder(SimpleReflections.OBJECT_EQUALS);
 	}
 
 	@Test
@@ -108,12 +109,12 @@ class MethodQueryTest {
 				MethodQuery.of(Subject.class).returningVoid();
 
 		assertThat(extracted)
-				.containsExactlyInAnyOrder(Subject.NO_RESULT_NO_ARGUMENT, Subject.NO_RESULT_SINGLE_ARGUMENT,
-						Subject.NO_RESULT_DOUBLE_ARGUMENT, Subject.NO_RESULT_TRIPLE_ARGUMENT,
-						Subject.NO_RESULT_VARARGS_ARGUMENT, Subject.METHOD_PROTECTED,
-						Methods.OBJECT_WAIT, Methods.OBJECT_WAIT_TIMEOUT, Methods.OBJECT_WAIT_NANOSECONDS,
-						Methods.OBJECT_FINALIZE, Methods.OBJECT_REGISTER_NATIVES, Methods.OBJECT_NOTIFY,
-						Methods.OBJECT_NOTIFY_ALL);
+				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_NO_ARGUMENT, SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
+						SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
+						SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.METHOD_PROTECTED,
+						SimpleReflections.OBJECT_WAIT, SimpleReflections.OBJECT_WAIT_TIMEOUT, SimpleReflections.OBJECT_WAIT_NANOSECONDS,
+						SimpleReflections.OBJECT_FINALIZE, SimpleReflections.OBJECT_REGISTER_NATIVES, SimpleReflections.OBJECT_NOTIFY,
+						SimpleReflections.OBJECT_NOTIFY_ALL);
 	}
 
 	@Test
@@ -122,7 +123,7 @@ class MethodQueryTest {
 				MethodQuery.of(Subject.class).annotatedWith(Nullable.class);
 
 		assertThat(extracted)
-				.containsExactlyInAnyOrder(Subject.ANNOTATED_WITH_NULLABLE);
+				.containsExactlyInAnyOrder(SubjectReflection.ANNOTATED_WITH_NULLABLE);
 	}
 
 	@Test
@@ -131,7 +132,7 @@ class MethodQueryTest {
 				MethodQuery.of(Subject.class).annotatedWith(AnnotationFilter.of(Nullable.class));
 
 		assertThat(extracted)
-				.containsExactlyInAnyOrder(Subject.ANNOTATED_WITH_NULLABLE);
+				.containsExactlyInAnyOrder(SubjectReflection.ANNOTATED_WITH_NULLABLE);
 	}
 
 	@Test
@@ -140,7 +141,7 @@ class MethodQueryTest {
 				MethodQuery.of(Subject.class).excludingModifier(Modifier.PUBLIC);
 
 		assertThat(extracted)
-				.containsExactlyInAnyOrder(Methods.OBJECT_FINALIZE, Methods.OBJECT_CLONE,
-						Methods.OBJECT_REGISTER_NATIVES, Subject.METHOD_PROTECTED);
+				.containsExactlyInAnyOrder(SimpleReflections.OBJECT_FINALIZE, SimpleReflections.OBJECT_CLONE,
+						SimpleReflections.OBJECT_REGISTER_NATIVES, SubjectReflection.METHOD_PROTECTED);
 	}
 }
