@@ -2,7 +2,6 @@ package org.perfectable.introspection.query;
 
 import java.io.Serializable;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,13 +48,23 @@ public class InheritanceQueryTest {
 				.containsExactly(String.class, Object.class);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testFilter() {
+		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class)
+				.filter(c -> c.getPackage().getName().startsWith("org.perfectable"));
+
+		assertThat(chain)
+				.containsExactly(Leaf.class, Branch.class, Root.class);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testLeaf() {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class);
 
-		assertThat(ImmutableList.copyOf(chain)).containsExactly(Leaf.class, Branch.class, Root.class, Object.class);
+		assertThat(chain)
+				.containsExactly(Leaf.class, Branch.class, Root.class, Object.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -63,7 +72,8 @@ public class InheritanceQueryTest {
 	public void testExcludingRoot() {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class).upToExcluding(Root.class);
 
-		assertThat(chain).containsExactly(Leaf.class, Branch.class);
+		assertThat(chain)
+				.containsExactly(Leaf.class, Branch.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -71,6 +81,7 @@ public class InheritanceQueryTest {
 	public void testIncludingRoot() {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class).upToIncluding(Root.class);
 
-		assertThat(chain).containsExactly(Leaf.class, Branch.class, Root.class);
+		assertThat(chain)
+				.containsExactly(Leaf.class, Branch.class, Root.class);
 	}
 }
