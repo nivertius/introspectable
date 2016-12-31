@@ -1,6 +1,7 @@
 package org.perfectable.introspection.query;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -26,7 +27,9 @@ public abstract class RelatedTypeQuery extends AbstractQuery<Class<?>, RelatedTy
 
 		@Override
 		public Stream<Class<?>> stream() {
-			return Streams.generate(Stream.of(type), RelatedTypeQuery::extractRelated);
+			HashSet<Class<?>> seen = new HashSet<>();
+			seen.add(type);
+			return Streams.generate(Stream.of(type), RelatedTypeQuery::extractRelated, seen::add);
 		}
 	}
 
