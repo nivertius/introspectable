@@ -21,7 +21,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 	}
 
 	@SuppressWarnings("unchecked")
-	public AnnotationQuery<A> join(AnnotationQuery<? extends A> other) {
+	public AnnotationQuery<Annotation> join(AnnotationQuery<?> other) {
 		return Composite.composite(this, other);
 	}
 
@@ -145,11 +145,11 @@ public abstract class AnnotationQuery<A extends Annotation>
 		}
 
 		@Override
-		public AnnotationQuery<A> join(AnnotationQuery<? extends A> other) {
-			ImmutableList<AnnotationQuery<? extends A>> newComponents =
-					ImmutableList.<AnnotationQuery<? extends A>>builder()
+		public AnnotationQuery<Annotation> join(AnnotationQuery<?> other) {
+			ImmutableList<AnnotationQuery<?>> newComponents =
+					ImmutableList.<AnnotationQuery<?>>builder()
 						.addAll(components).add(other).build();
-			return new Composite<>(newComponents);
+			return new Composite<Annotation>(newComponents);
 		}
 	}
 }

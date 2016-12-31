@@ -1,12 +1,25 @@
 package org.perfectable.introspection;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
-
 import javax.annotation.Nullable;
 
 import static org.perfectable.introspection.Methods.get;
 
+@Subject.Special
+@Subject.OtherAnnotation
 public class Subject {
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface Special {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface OtherAnnotation {
+
+	}
+
 	public static final Method NO_RESULT_NO_ARGUMENT =
 			get(Subject.class, "noResultNoArgument");
 	public static final Method NO_RESULT_SINGLE_ARGUMENT =
