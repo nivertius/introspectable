@@ -27,9 +27,27 @@ public class GenericsQueryTest {
 	}
 
 	@Test
+	public void testGenericWithoutBoundInstance() {
+		Class<?> result = GenericsQuery.of(BoundedInterface.class).parameter(0)
+				.resolve(new UnboundedImplementation<>());
+
+		assertThat(result)
+				.isEqualTo(Number.class);
+	}
+
+	@Test
 	public void testGenericWithBound() {
 		Class<?> result = GenericsQuery.of(BoundedInterface.class).parameter(0)
 				.resolve(BoundedImplementation.class);
+
+		assertThat(result)
+				.isEqualTo(Long.class);
+	}
+
+	@Test
+	public void testGenericWithBoundInstance() {
+		Class<?> result = GenericsQuery.of(BoundedInterface.class).parameter(0)
+				.resolve(new BoundedImplementation());
 
 		assertThat(result)
 				.isEqualTo(Long.class);
