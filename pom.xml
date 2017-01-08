@@ -11,10 +11,6 @@
 	<name>Introspectable</name>
 	<version>1.0.0-SNAPSHOT</version>
 
-	<properties>
-		<testable.version>0.1.0-SNAPSHOT</testable.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.google.guava</groupId>
