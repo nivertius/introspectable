@@ -28,13 +28,13 @@ public final class Invocation<T> {
 		this.arguments = arguments;
 	}
 
-	// SUPPRESS NEXT IllegalThrows
-	public Object invoke() throws Throwable {
+	@Nullable
+	public Object invoke() throws Throwable { // SUPPRESS IllegalThrows
 		return proceed(Method::invoke);
 	}
 
-	// SUPPRESS NEXT IllegalThrows
-	public Object proceed(Invoker<? super T> invoker) throws Throwable {
+	@Nullable
+	public Object proceed(Invoker<? super T> invoker) throws Throwable { // SUPPRESS IllegalThrows
 		try {
 			return invoker.process(method, receiver, arguments);
 		}
