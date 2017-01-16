@@ -5,9 +5,6 @@ import org.perfectable.introspection.Subject;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import java.math.BigDecimal;
-import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
