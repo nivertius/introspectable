@@ -5,7 +5,7 @@ public final class BoundProperty<CT, PT> {
 	private final Property<CT, PT> property;
 
 	public static <CT, PT> BoundProperty<CT, PT> of(CT bean, Property<CT, PT> property) {
-		return new BoundProperty<CT, PT>(bean, property);
+		return new BoundProperty<>(bean, property);
 	}
 
 	private BoundProperty(CT bean, Property<CT, PT> property) {
