@@ -42,6 +42,10 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		return new ExcludingModifier(this, excludedModifier);
 	}
 
+	FieldQuery() {
+		// package extension only
+	}
+
 	private static final class Complete<X> extends FieldQuery {
 		private final InheritanceQuery<X> chain;
 
@@ -140,10 +144,6 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		protected boolean matches(Field candidate) {
 			return (candidate.getModifiers() & this.excludedModifier) == 0;
 		}
-	}
-
-	FieldQuery() {
-		// no default fields
 	}
 
 }

@@ -37,4 +37,5 @@ public final class JdkProxyBuilderFactory implements ProxyBuilderFactory {
 		throw new UnsupportedFeatureException("JDK proxy cannot be created for classes");
 	}
 
+	// constructor must be public, this class is instantiated from ServiceLoader
 }

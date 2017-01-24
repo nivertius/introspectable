@@ -14,11 +14,9 @@ import org.objenesis.instantiator.ObjectInstantiator;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class JavassistProxyBuilderFactory implements ProxyBuilderFactory {
+public final class JavassistProxyBuilderFactory implements ProxyBuilderFactory {
 
 	private static final ObjenesisStd OBJENESIS = new ObjenesisStd();
-
-	public static final JavassistProxyBuilderFactory INSTANCE = new JavassistProxyBuilderFactory();
 
 	private static final Set<Feature> SUPPORTED_FEATURES = EnumSet.of(Feature.SUPERCLASS);
 
@@ -61,4 +59,6 @@ public class JavassistProxyBuilderFactory implements ProxyBuilderFactory {
 		ObjectInstantiator<I> instantiator = OBJENESIS.getInstantiatorOf(proxyClass);
 		return JavassistProxyBuilder.create(instantiator);
 	}
+
+	// constructor must be public, this class is instantiated from ServiceLoader
 }

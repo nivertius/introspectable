@@ -29,6 +29,10 @@ public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>
 		return new ClassesOnly<>(this);
 	}
 
+	InheritanceQuery() {
+		// package extension only
+	}
+
 	private static class Complete<X> extends InheritanceQuery<X> {
 
 		private final Class<X> initial;

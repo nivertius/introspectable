@@ -18,6 +18,10 @@ public abstract class RelatedTypeQuery extends AbstractQuery<Class<?>, RelatedTy
 		return new Predicated(this, filter);
 	}
 
+	RelatedTypeQuery() {
+		// package extension only
+	}
+
 	private static class Complete extends RelatedTypeQuery {
 		private final Class<?> type;
 

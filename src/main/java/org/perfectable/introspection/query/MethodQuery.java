@@ -63,6 +63,10 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		return new ExcludingModifier(this, excludedModifier);
 	}
 
+	MethodQuery() {
+		// package extension only
+	}
+
 	private static final class Complete<X> extends MethodQuery {
 		private final InheritanceQuery<X> chain;
 

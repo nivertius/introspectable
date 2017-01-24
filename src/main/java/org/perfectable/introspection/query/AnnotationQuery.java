@@ -98,7 +98,6 @@ public abstract class AnnotationQuery<A extends Annotation>
 		}
 	}
 
-
 	AnnotationQuery() {
 		// package extension only
 	}
