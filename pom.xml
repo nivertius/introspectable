@@ -135,6 +135,29 @@
 					</rules>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.4</version>
+				<configuration>
+					<nodeprecatedlist>true</nodeprecatedlist>
+					<nohelp>true</nohelp>
+					<groups>
+						<group>
+							<title>Beans</title>
+							<packages>org.perfectable.introspection.bean*</packages>
+						</group>
+						<group>
+							<title>Proxy</title>
+							<packages>org.perfectable.introspection.proxy*</packages>
+						</group>
+						<group>
+							<title>Introspections</title>
+							<packages>org.perfectable.introspection.query*:org.perfectable.introspection</packages>
+						</group>
+					</groups>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
