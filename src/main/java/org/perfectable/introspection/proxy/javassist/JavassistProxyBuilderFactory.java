@@ -1,7 +1,7 @@
 package org.perfectable.introspection.proxy.javassist;
 
+import org.perfectable.introspection.proxy.AbstractProxyBuilderFactory;
 import org.perfectable.introspection.proxy.ProxyBuilder;
-import org.perfectable.introspection.proxy.ProxyBuilderFactory;
 
 import java.lang.reflect.Modifier;
 import java.util.EnumSet;
@@ -14,30 +14,28 @@ import org.objenesis.instantiator.ObjectInstantiator;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public final class JavassistProxyBuilderFactory implements ProxyBuilderFactory {
+public final class JavassistProxyBuilderFactory extends AbstractProxyBuilderFactory {
 
 	private static final ObjenesisStd OBJENESIS = new ObjenesisStd();
 
 	private static final Set<Feature> SUPPORTED_FEATURES = EnumSet.of(Feature.SUPERCLASS);
 
-	@Override
-	public boolean supportsFeature(Feature requestedFeature) {
-		return SUPPORTED_FEATURES.contains(requestedFeature);
+	public JavassistProxyBuilderFactory() {
+		// constructor must be public, this class is instantiated from ServiceLoader
+		super(SUPPORTED_FEATURES);
 	}
 
 	@Override
-	public ProxyBuilder<?> ofInterfaces(Class<?>... interfaces) {
-		checkArgument(interfaces.length > 0);
-		Stream.of(interfaces).forEach(ProxyBuilderFactory::checkProxyableInterface);
+	public ProxyBuilder<?> ofInterfacesSafe(ClassLoader classLoader, Class<?>... interfaces) {
 		ProxyFactory factory = new ProxyFactory();
 		factory.setInterfaces(interfaces);
 		return createFromFactory(factory);
 	}
 
 	@Override
-	public <I> ProxyBuilder<I> ofClass(Class<I> sourceClass, Class<?>... additionalInterfaces) {
+	public <I> ProxyBuilder<I> ofClassSafe(ClassLoader classLoader,
+										   Class<I> sourceClass, Class<?>... additionalInterfaces) {
 		checkArgument(!Modifier.isFinal(sourceClass.getModifiers()));
-		Stream.of(additionalInterfaces).forEach(ProxyBuilderFactory::checkProxyableInterface);
 		if (ProxyFactory.isProxyClass(sourceClass)
 				&& Stream.of(additionalInterfaces)
 						.allMatch(testedInterface -> testedInterface.isAssignableFrom(sourceClass))) {
@@ -59,6 +57,4 @@ public final class JavassistProxyBuilderFactory implements ProxyBuilderFactory {
 		ObjectInstantiator<I> instantiator = OBJENESIS.getInstantiatorOf(proxyClass);
 		return JavassistProxyBuilder.create(instantiator);
 	}
-
-	// constructor must be public, this class is instantiated from ServiceLoader
 }

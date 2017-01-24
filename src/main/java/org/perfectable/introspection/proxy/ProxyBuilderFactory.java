@@ -3,47 +3,21 @@ package org.perfectable.introspection.proxy;
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
-import com.google.common.collect.ObjectArrays;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static org.perfectable.introspection.Introspections.introspect;
-
 public interface ProxyBuilderFactory {
 
 	ProxyBuilder<?> ofInterfaces(Class<?>... interfaces);
 
-	default <I> ProxyBuilder<I> ofInterfaces(Class<I> mainInterface, Class<?>... otherInterfaces) {
-		Class<?>[] usedInterfaces = ObjectArrays.concat(mainInterface, otherInterfaces);
-		@SuppressWarnings("unchecked")
-		ProxyBuilder<I> casted = (ProxyBuilder<I>) ofInterfaces(usedInterfaces);
-		return casted;
-	}
+	<I> ProxyBuilder<I> ofInterfaces(Class<I> mainInterface, Class<?>... otherInterfaces);
 
-	default <I> ProxyBuilder<I> ofInterfacesOf(Class<? extends I> implementingClass) {
-		Class<?>[] interfaces = introspect(implementingClass).interfaces().stream()
-				.toArray(Class<?>[]::new);
-		// this is safe almost always?
-		@SuppressWarnings("unchecked")
-		ProxyBuilder<I> builder = (ProxyBuilder<I>) ofInterfaces(interfaces);
-		return builder;
-	}
+	<I> ProxyBuilder<I> ofInterfacesOf(Class<? extends I> implementingClass, Class<?>... otherInterfaces);
 
-	default <I> ProxyBuilder<I> ofType(Class<I> type, Class<?>... additionalInterfaces)
-			throws UnsupportedFeatureException {
-		if (type.isInterface()) {
-			return ofInterfaces(type, additionalInterfaces);
-		}
-		return ofClass(type, additionalInterfaces);
-	}
+	<I> ProxyBuilder<I> ofType(Class<I> type, Class<?>... additionalInterfaces);
 
 	<I> ProxyBuilder<I> ofClass(Class<I> sourceClass, Class<?>... additionalInterfaces)
 			throws UnsupportedFeatureException;
 
-	default <I> ProxyBuilder<I> sameAs(I sourceInstance) throws UnsupportedFeatureException {
-		@SuppressWarnings("unchecked")
-		Class<I> sourceClass = (Class<I>) sourceInstance.getClass();
-		return ofClass(sourceClass);
-	}
+	<I> ProxyBuilder<I> sameAs(I sourceInstance)
+			throws UnsupportedFeatureException;
 
 	final class UnsupportedFeatureException extends RuntimeException {
 		private static final long serialVersionUID = -1958070420118962158L;
@@ -60,12 +34,7 @@ public interface ProxyBuilderFactory {
 	boolean supportsFeature(ProxyBuilderFactory.Feature requestedFeature);
 
 	default boolean supportsAllFeatures(ProxyBuilderFactory.Feature... requestedFeatures) {
-		for (ProxyBuilderFactory.Feature requestedFeature : requestedFeatures) {
-			if (!supportsFeature(requestedFeature)) {
-				return false;
-			}
-		}
-		return true;
+		return Stream.of(requestedFeatures).allMatch(this::supportsFeature);
 	}
 
 	static ProxyBuilderFactory any() {
@@ -81,16 +50,6 @@ public interface ProxyBuilderFactory {
 			}
 		}
 		throw new UnsupportedFeatureException("No proxy builder factory supports all requested features");
-	}
-
-	static void checkClassloader(ClassLoader referenceLoader, Class<?>... otherInterfaces) {
-		Stream.of(otherInterfaces)
-				.forEach(testedInterface -> checkArgument(referenceLoader.equals(testedInterface.getClassLoader())));
-	}
-
-	static void checkProxyableInterface(Class<?> testedInterface) {
-		checkArgument(testedInterface.isInterface());
-		checkArgument(!testedInterface.isPrimitive());
 	}
 
 }
