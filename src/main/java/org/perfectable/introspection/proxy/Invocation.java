@@ -47,11 +47,13 @@ public final class Invocation<T> {
 		return decomposer.decompose(method, receiver, arguments);
 	}
 
+	@FunctionalInterface
 	public interface Invoker<T> {
 		// SUPPRESS NEXT IllegalThrows
 		Object process(Method method, @Nullable T receiver, Object... arguments) throws Throwable;
 	}
 
+	@FunctionalInterface
 	public interface Decomposer<T, R> {
 		R decompose(Method method, @Nullable T receiver, Object... arguments);
 	}
