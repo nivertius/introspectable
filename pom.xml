@@ -8,8 +8,35 @@
 	</parent>
 
 	<artifactId>introspectable</artifactId>
-	<name>Introspectable</name>
 	<version>1.0.0-SNAPSHOT</version>
+
+	<name>Introspectable</name>
+	<description>Easier java reflections</description>
+	<url>https://perfectable.org/</url>
+	<inceptionYear>2016</inceptionYear>
+	<licenses>
+		<license>
+			<name>GNU General Public License</name>
+			<url>http://www.gnu.org/licenses/gpl.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>nivertius</id>
+			<email>nivertius@gmail.com</email>
+			<name>Paweł Płazieński</name>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<scm>
+		<connection>scm:git:https://source.perfectable.org/nivertius/introspectable.git</connection>
+		<developerConnection>scm:git:git@source.perfectable.org:nivertius/introspectable.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 
 	<dependencies>
 		<dependency>
