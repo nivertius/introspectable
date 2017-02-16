@@ -27,7 +27,7 @@ public interface Injection<T> {
 	static <TX, PX> Injection<TX> create(Class<TX> beanType, String propertyName, Class<PX> propertyType,
 										 PX value) {
 		Property<TX, PX> property = Property.from(beanType, propertyName, propertyType);
-		return PropertyInjection.create(property, value);
+		return create(property, value);
 	}
 
 	void perform(T target);

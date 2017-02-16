@@ -54,7 +54,7 @@ public class LazyInitializationTest {
 		private final T target;
 		private boolean wasExecuted; // = false
 
-		public TestInitializer(T target) {
+		TestInitializer(T target) {
 			this.target = target;
 		}
 
@@ -64,11 +64,11 @@ public class LazyInitializationTest {
 			return this.target;
 		}
 
-		public void assertNotExecuted() {
+		void assertNotExecuted() {
 			assertThat(this.wasExecuted).isFalse();
 		}
 
-		public void assertExecuted() {
+		void assertExecuted() {
 			assertThat(this.wasExecuted).isTrue();
 		}
 	}
