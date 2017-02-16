@@ -13,6 +13,7 @@ public final class SimpleReflections {
 
 	public static final Method OBJECT_NOTIFY = getMethod(Object.class, "notify");
 	public static final Method OBJECT_NOTIFY_ALL = getMethod(Object.class, "notifyAll");
+	// SUPPRESS NEXT 3 MultipleStringLiterals
 	public static final Method OBJECT_WAIT = getMethod(Object.class, "wait");
 	public static final Method OBJECT_WAIT_TIMEOUT = getMethod(Object.class, "wait", long.class);
 	public static final Method OBJECT_WAIT_NANOSECONDS = getMethod(Object.class, "wait", long.class, int.class);

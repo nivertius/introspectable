@@ -10,6 +10,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RelatedTypeQueryTest {
 
+	private static final String MAIN_PACKAGE = "org.perfectable";
+
 	@Test
 	public void testString() {
 		RelatedTypeQuery related = RelatedTypeQuery.of(String.class);
@@ -30,7 +32,7 @@ public class RelatedTypeQueryTest {
 				.doesNotHaveDuplicates();
 		assertThat(related)
 				.filteredOn(c -> c.getPackage() != null)
-				.filteredOn(c -> c.getPackage().getName().startsWith("org.perfectable"))
+				.filteredOn(c -> c.getPackage().getName().startsWith(MAIN_PACKAGE))
 				.containsExactlyInAnyOrder(Subject.class, Subject.Special.class, Subject.OtherAnnotation.class);
 	}
 
@@ -38,7 +40,7 @@ public class RelatedTypeQueryTest {
 	public void testSubjectFiltered() {
 		RelatedTypeQuery related = RelatedTypeQuery.of(Subject.Special.class)
 				.filter(c -> c.getPackage() != null)
-				.filter(c -> c.getPackage().getName().startsWith("org.perfectable"));
+				.filter(c -> c.getPackage().getName().startsWith(MAIN_PACKAGE));
 
 		assertThat(related)
 				.doesNotHaveDuplicates();

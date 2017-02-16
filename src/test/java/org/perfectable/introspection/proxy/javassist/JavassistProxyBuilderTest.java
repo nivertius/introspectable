@@ -17,6 +17,7 @@ import static org.perfectable.introspection.Introspections.introspect;
 public class JavassistProxyBuilderTest {
 
 	private static final JavassistProxyBuilderFactory FACTORY = new JavassistProxyBuilderFactory();
+	private static final String MESSAGE_METHOD_CALLED = "Actual method should not be called";
 
 	@Mock
 	private TestFirstInterface firstMock;
@@ -80,14 +81,14 @@ public class JavassistProxyBuilderTest {
 
 	public static class TestClass {
 		public void classMethod() {
-			throw new AssertionError("Actual method should not be called");
+			throw new AssertionError(MESSAGE_METHOD_CALLED);
 		}
 	}
 
 	public static class TestClassMixed extends TestClass implements TestFirstInterface {
 		@Override
 		public void firstMethod() {
-			throw new AssertionError("Actual method should not be called");
+			throw new AssertionError(MESSAGE_METHOD_CALLED);
 		}
 	}
 

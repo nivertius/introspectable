@@ -6,7 +6,9 @@ import java.lang.reflect.Method;
 import static org.perfectable.introspection.SimpleReflections.getField;
 import static org.perfectable.introspection.SimpleReflections.getMethod;
 
-public class SubjectReflection {
+public final class SubjectReflection {
+	static final String MESSAGE_METHOD_CALLED = "Test method should not be called";
+
 	public static final Field STRING_FIELD =
 			getField(Subject.class, "stringField");
 	public static final Field OBJECT_FIELD =
@@ -42,4 +44,8 @@ public class SubjectReflection {
 			getMethod(Subject.class, "methodProtected");
 	public static final Method ANNOTATED_WITH_NULLABLE =
 			getMethod(Subject.class, "annotatedWithNullable");
+
+	private SubjectReflection() {
+		// utility class
+	}
 }
