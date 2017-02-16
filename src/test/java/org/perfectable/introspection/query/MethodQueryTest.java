@@ -35,7 +35,8 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
+						SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 						SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
 						SimpleReflections.OBJECT_WAIT_TIMEOUT, SimpleReflections.OBJECT_EQUALS);
 	}
@@ -47,7 +48,8 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
+						SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 						SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
 						SimpleReflections.OBJECT_WAIT_TIMEOUT, SimpleReflections.OBJECT_EQUALS);
 	}
@@ -72,8 +74,10 @@ class MethodQueryTest {
 				.containsExactlyInAnyOrder(SimpleReflections.OBJECT_HASH_CODE, SimpleReflections.OBJECT_EQUALS,
 						SimpleReflections.OBJECT_FINALIZE,
 						SimpleReflections.OBJECT_NOTIFY, SimpleReflections.OBJECT_NOTIFY_ALL,
-						SimpleReflections.OBJECT_WAIT, SimpleReflections.OBJECT_WAIT_TIMEOUT, SimpleReflections.OBJECT_WAIT_NANOSECONDS,
-						SimpleReflections.OBJECT_GET_CLASS, SimpleReflections.OBJECT_CLONE, SimpleReflections.OBJECT_TO_STRING,
+						SimpleReflections.OBJECT_WAIT, SimpleReflections.OBJECT_WAIT_TIMEOUT,
+						SimpleReflections.OBJECT_WAIT_NANOSECONDS,
+						SimpleReflections.OBJECT_GET_CLASS, SimpleReflections.OBJECT_CLONE,
+						SimpleReflections.OBJECT_TO_STRING,
 						SimpleReflections.OBJECT_REGISTER_NATIVES);
 	}
 
@@ -89,8 +93,7 @@ class MethodQueryTest {
 						SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 						SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 						SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
-						SimpleReflections.OBJECT_CLONE
-				);
+						SimpleReflections.OBJECT_CLONE);
 	}
 
 	@Test
@@ -104,8 +107,7 @@ class MethodQueryTest {
 						SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 						SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 						SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
-						SimpleReflections.OBJECT_CLONE
-				);
+						SimpleReflections.OBJECT_CLONE);
 	}
 
 	@Test
@@ -125,11 +127,14 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_NO_ARGUMENT, SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
+				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_NO_ARGUMENT,
+						SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 						SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
 						SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.METHOD_PROTECTED,
-						SimpleReflections.OBJECT_WAIT, SimpleReflections.OBJECT_WAIT_TIMEOUT, SimpleReflections.OBJECT_WAIT_NANOSECONDS,
-						SimpleReflections.OBJECT_FINALIZE, SimpleReflections.OBJECT_REGISTER_NATIVES, SimpleReflections.OBJECT_NOTIFY,
+						SimpleReflections.OBJECT_WAIT, SimpleReflections.OBJECT_WAIT_TIMEOUT,
+						SimpleReflections.OBJECT_WAIT_NANOSECONDS,
+						SimpleReflections.OBJECT_FINALIZE, SimpleReflections.OBJECT_REGISTER_NATIVES,
+						SimpleReflections.OBJECT_NOTIFY,
 						SimpleReflections.OBJECT_NOTIFY_ALL);
 	}
 

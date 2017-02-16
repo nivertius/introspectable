@@ -34,7 +34,8 @@ public class AnnotationQueryTest {
 
 	@Test
 	public void testEmptyFilter() {
-		AnnotationQuery<?> chain = AnnotationQuery.empty().filter(a -> a.toString().equals("None"));
+		AnnotationQuery<?> chain = AnnotationQuery.empty()
+				.filter(annotation -> annotation.toString().equals("None"));
 
 		assertThat(chain)
 				.containsExactly();
