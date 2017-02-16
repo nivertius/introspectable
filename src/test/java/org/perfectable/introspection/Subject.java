@@ -20,15 +20,15 @@ public class Subject {
 
 	}
 
-	private String stringField;
+	private String stringField; // SUPPRESS used for testing
 
 	@Nullable
-	private Object objectField;
+	private Object objectField; // SUPPRESS used for testing
 
-	protected final Number protectedNumberField = 191;
+	protected final Number protectedNumberField = 191; // SUPPRESS used for testing
 
 	@Nullable
-	public static Subject STATIC_FIELD;
+	public static Subject STATIC_FIELD; // SUPPRESS VisibilityModifier used for testing
 
 	public void noResultNoArgument() {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);

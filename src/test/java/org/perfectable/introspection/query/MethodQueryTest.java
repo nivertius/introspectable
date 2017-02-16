@@ -79,6 +79,7 @@ class MethodQueryTest {
 
 	@Test
 	public void testTyped() {
+		@SuppressWarnings("deprecation") // SUPPRESS SuppressWarnings need to test the method
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).typed(Object.class);
 
