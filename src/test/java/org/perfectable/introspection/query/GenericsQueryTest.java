@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SuppressWarnings("static-method")
 public class GenericsQueryTest {
 
 	@Test
@@ -53,7 +52,6 @@ public class GenericsQueryTest {
 				.isEqualTo(Long.class);
 	}
 
-	@SuppressWarnings("unused")
 	interface BoundedInterface<X extends Number> {
 		// test interface
 	}

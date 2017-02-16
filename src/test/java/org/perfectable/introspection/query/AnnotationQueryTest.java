@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SuppressWarnings({"static-method", "unchecked"})
 public class AnnotationQueryTest {
 
 	private static class Root {
@@ -25,7 +24,6 @@ public class AnnotationQueryTest {
 		// test class
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testEmpty() {
 		AnnotationQuery<?> chain = AnnotationQuery.empty();
@@ -34,7 +32,6 @@ public class AnnotationQueryTest {
 				.containsExactly();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testEmptyFilter() {
 		AnnotationQuery<?> chain = AnnotationQuery.empty().filter(a -> a.toString().equals("None"));
@@ -43,7 +40,6 @@ public class AnnotationQueryTest {
 				.containsExactly();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void testString() {
 		AnnotationQuery<?> chain = AnnotationQuery.of(String.class);

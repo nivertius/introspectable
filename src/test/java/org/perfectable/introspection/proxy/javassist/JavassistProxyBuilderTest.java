@@ -79,7 +79,6 @@ public class JavassistProxyBuilderTest {
 	}
 
 	public static class TestClass {
-		@SuppressWarnings("static-method")
 		public void classMethod() {
 			throw new AssertionError("Actual method should not be called");
 		}
