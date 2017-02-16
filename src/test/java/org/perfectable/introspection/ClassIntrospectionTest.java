@@ -8,27 +8,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClassIntrospectionTest {
 
-	@SuppressWarnings("unused")
-	private static class TestBean {
-		private String privateStringField;
-	}
-
-	private static final Field PRIVATE_STRING_FIELD = extractField(TestBean.class, "privateStringField");
-
 	@Test
 	public void testFieldQuery() {
-		Iterable<Field> fields = ClassIntrospection.of(TestBean.class).fields().named("privateStringField");
+		Iterable<Field> fields = ClassIntrospection.of(Subject.class).fields()
+				.named(SubjectReflection.STATIC_FIELD.getName());
 
-		assertThat(fields).containsExactly(PRIVATE_STRING_FIELD);
-	}
-
-	private static Field extractField(Class<?> beanClass, String fieldName) {
-		try {
-			return beanClass.getDeclaredField(fieldName);
-		}
-		catch (NoSuchFieldException | SecurityException e) {
-			throw new AssertionError(e);
-		}
+		assertThat(fields).containsExactly(SubjectReflection.STATIC_FIELD);
 	}
 
 }
