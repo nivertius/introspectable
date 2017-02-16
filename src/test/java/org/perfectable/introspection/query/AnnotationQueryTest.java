@@ -52,7 +52,7 @@ public class AnnotationQueryTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSubjectUnrestricted() {
-		AnnotationQuery<?> chain = AnnotationQuery.of(Subject.class);
+		AnnotationQuery<Annotation> chain = AnnotationQuery.of(Subject.class);
 
 		assertThat(chain)
 				.extracting(Annotation::annotationType)
@@ -85,16 +85,18 @@ public class AnnotationQueryTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testJoin() {
-		AnnotationQuery<Subject.Special> typed = AnnotationQuery.of(Subject.class)
-				.typed(Subject.Special.class);
-		AnnotationQuery<Annotation> chain = typed
-				.join(AnnotationQuery.of(Retention.class).typed(Documented.class));
+		AnnotationQuery<Subject.Special> first =
+				AnnotationQuery.of(Subject.class).typed(Subject.Special.class);
+		AnnotationQuery<Documented> second =
+				AnnotationQuery.of(Retention.class).typed(Documented.class);
+		AnnotationQuery<Annotation> chain = first.join(second);
 
 		assertThat(chain)
 				.extracting(Annotation::annotationType)
 				.containsExactlyInAnyOrder(Subject.Special.class, Documented.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testJoinMultiple() {
 		AnnotationQuery<Annotation> chain = AnnotationQuery.empty()
