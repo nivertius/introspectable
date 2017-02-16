@@ -97,8 +97,6 @@ public class AnnotationQueryTest {
 
 	@Test
 	public void testJoinMultiple() {
-		AnnotationQuery<Subject.Special> typed = AnnotationQuery.of(Subject.class)
-				.typed(Subject.Special.class);
 		AnnotationQuery<Annotation> chain = AnnotationQuery.empty()
 				.join(AnnotationQuery.of(Retention.class).typed(Documented.class))
 				.join(AnnotationQuery.of(Subject.class).typed(Subject.Special.class))

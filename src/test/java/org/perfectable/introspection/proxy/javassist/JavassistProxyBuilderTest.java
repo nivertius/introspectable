@@ -4,14 +4,11 @@ import org.perfectable.introspection.MockitoExtension;
 import org.perfectable.introspection.proxy.ForwardingHandler;
 import org.perfectable.introspection.proxy.ProxyBuilder;
 
-import java.lang.reflect.Method;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.perfectable.introspection.Introspections.introspect;
 
 @ExtendWith(MockitoExtension.class)
 public class JavassistProxyBuilderTest {
@@ -72,9 +69,6 @@ public class JavassistProxyBuilderTest {
 	}
 
 	public interface TestFirstInterface {
-
-		Method FIRST_METHOD = introspect(TestFirstInterface.class).methods().named("firstMethod").parameters().unique();
-
 		void firstMethod();
 
 	}
