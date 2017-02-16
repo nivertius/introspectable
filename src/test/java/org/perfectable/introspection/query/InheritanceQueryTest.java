@@ -47,7 +47,7 @@ public class InheritanceQueryTest {
 	@Test
 	public void testFilter() {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class)
-				.filter(c -> c.getPackage().getName().startsWith("org.perfectable"));
+				.filter(type -> type.getPackage().getName().startsWith("org.perfectable"));
 
 		assertThat(chain)
 				.containsExactly(Leaf.class, Branch.class, Root.class);

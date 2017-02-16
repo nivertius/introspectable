@@ -31,16 +31,16 @@ public class RelatedTypeQueryTest {
 		assertThat(related)
 				.doesNotHaveDuplicates();
 		assertThat(related)
-				.filteredOn(c -> c.getPackage() != null)
-				.filteredOn(c -> c.getPackage().getName().startsWith(MAIN_PACKAGE))
+				.filteredOn(type -> type.getPackage() != null)
+				.filteredOn(type -> type.getPackage().getName().startsWith(MAIN_PACKAGE))
 				.containsExactlyInAnyOrder(Subject.class, Subject.Special.class, Subject.OtherAnnotation.class);
 	}
 
 	@Test
 	public void testSubjectFiltered() {
 		RelatedTypeQuery related = RelatedTypeQuery.of(Subject.Special.class)
-				.filter(c -> c.getPackage() != null)
-				.filter(c -> c.getPackage().getName().startsWith(MAIN_PACKAGE));
+				.filter(type -> type.getPackage() != null)
+				.filter(type -> type.getPackage().getName().startsWith(MAIN_PACKAGE));
 
 		assertThat(related)
 				.doesNotHaveDuplicates();

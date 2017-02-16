@@ -74,7 +74,7 @@ public class AnnotationQueryTest {
 	@Test
 	public void testPredicated() {
 		AnnotationQuery<?> chain = AnnotationQuery.of(Subject.class)
-				.filter(a -> a.annotationType().getSimpleName().startsWith("O"));
+				.filter(annotation -> annotation.annotationType().getSimpleName().charAt(0) == 'O');
 
 		assertThat(chain)
 				.extracting(Annotation::annotationType)
