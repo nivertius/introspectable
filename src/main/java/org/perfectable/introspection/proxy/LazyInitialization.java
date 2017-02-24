@@ -43,6 +43,7 @@ public final class LazyInitialization {
 			this.initializer = initializer;
 		}
 
+		@Nullable
 		@Override
 		public Object handle(Invocation<T> invocation) throws Throwable {
 			return invocation.proceed((method, receiver, arguments) -> {
