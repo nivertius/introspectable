@@ -2,6 +2,7 @@ package org.perfectable.introspection.bean;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Locale;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
@@ -85,7 +86,7 @@ final class WriteOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 		checkArgument(isSetter(setter));
 		String unformatted = setter.getName();
 		int prefixLength = SETTER_PREFIX.length();
-		return String.valueOf(unformatted.charAt(prefixLength)).toLowerCase()
+		return String.valueOf(unformatted.charAt(prefixLength)).toLowerCase(Locale.ROOT)
 				+ unformatted.substring(prefixLength + 1);
 	}
 

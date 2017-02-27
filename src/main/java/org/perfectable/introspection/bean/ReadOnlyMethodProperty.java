@@ -2,6 +2,7 @@ package org.perfectable.introspection.bean;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Locale;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
@@ -81,7 +82,7 @@ final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 		checkArgument(isGetter(getter));
 		String unformatted = getter.getName();
 		int prefixLength = getterPrefix(getter.getReturnType()).length();
-		return String.valueOf(unformatted.charAt(prefixLength)).toLowerCase()
+		return String.valueOf(unformatted.charAt(prefixLength)).toLowerCase(Locale.ROOT)
 				+ unformatted.substring(prefixLength + 1);
 	}
 
@@ -91,7 +92,7 @@ final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 	}
 
 	static String capitalizeWithPrefix(String prefix, String name) {
-		return prefix + name.substring(0, 1).toUpperCase() + name.substring(1);
+		return prefix + name.substring(0, 1).toUpperCase(Locale.ROOT) + name.substring(1);
 	}
 
 	public static <CX, PX> Optional<Method> findGetter(Class<CX> beanClass, String name, Class<PX> type) {

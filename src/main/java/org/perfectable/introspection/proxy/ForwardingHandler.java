@@ -1,6 +1,8 @@
 package org.perfectable.introspection.proxy;
 
 
+import javax.annotation.Nullable;
+
 public final class ForwardingHandler<T> implements InvocationHandler<T> {
 
 	private T target;
@@ -17,6 +19,7 @@ public final class ForwardingHandler<T> implements InvocationHandler<T> {
 		this.target = newTarget;
 	}
 
+	@Nullable
 	@Override
 	public Object handle(Invocation<T> invocation) throws Throwable {
 		Invocation<T> replacedReceiver =

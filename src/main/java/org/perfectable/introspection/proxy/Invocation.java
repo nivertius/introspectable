@@ -49,7 +49,8 @@ public final class Invocation<T> {
 
 	@FunctionalInterface
 	public interface Invoker<T> {
-		// SUPPRESS NEXT IllegalThrows
+		// SUPPRESS NEXT 2 IllegalThrows
+		@Nullable
 		Object process(Method method, @Nullable T receiver, Object... arguments) throws Throwable;
 	}
 
