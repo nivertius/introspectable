@@ -27,6 +27,7 @@ public class Subject {
 
 	protected final Number protectedNumberField = 191; // SUPPRESS used for testing
 
+	// SUPPRESS NEXT 2 StaticVariableName used for testing
 	@Nullable
 	public static Subject STATIC_FIELD; // SUPPRESS VisibilityModifier used for testing
 

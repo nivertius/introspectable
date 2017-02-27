@@ -38,4 +38,11 @@
                 signature='(Ljava/lang/reflect/Method;)Ljava/lang/String;'
                 primary='true' isStatic='false' />
     </BugInstance>
+    <BugInstance abbrev='MS' category='MALICIOUS_CODE' priority='3' type='MS_SHOULD_BE_FINAL'>
+        <ShortMessage>Field isn't final but should be</ShortMessage>
+        <LongMessage>org.perfectable.introspection.Subject.STATIC_FIELD isn't final but should be</LongMessage>
+        <Class classname='org.perfectable.introspection.Subject' primary='true' />
+        <Field classname='org.perfectable.introspection.Subject' name='STATIC_FIELD'
+               signature='Lorg/perfectable/introspection/Subject;' primary='true' isStatic='true' />
+    </BugInstance>
 </BugCollection>
