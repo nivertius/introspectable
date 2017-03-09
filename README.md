@@ -27,6 +27,48 @@ Stream<Field> injectedMocks =
         .stream();
 ```
 
+#### Example: Remoting library 
+
+To create remote proxy, it needs to know all the interfaces implemented by provided class, that extend 
+<code>Remote</code> interface, but excluding remote, and their name ends with <code>Rpc</code>.
+
+```java
+Iterable<? extends Class<?>> interfaces = 
+    introspect(proxiedClass)
+        .interfaces()
+        .filter(candidate -> candidate.getSimpleName().endsWith("Rpc"))
+        .upToExcluding(Remote.class)
+        .filter(Remote.class::isAssignableFrom);
+```
+
+#### Example: Form binding
+
+To clear form, binding library needs to know all single-parameter void non-static method that are named 
+<code>apply</code>: 
+
+```java
+Stream<Method> appliers = 
+    introspect(target.getClass())
+        .methods()
+        .named("apply")
+        .parameters(parameters -> parameters.length == 1)
+        .returningVoid()
+        .excludingModifier(Modifier.STATIC)
+        .stream();
+```
+
+#### Example: Messaging
+
+To convert an incoming message to an appropriate object, messaging needs to know actual type parameter for consumer:  
+
+```java
+Class<?> targetClass = 
+    introspect(Consumer.class)
+        .generics()
+        .parameter(0)
+        .resolve(messageConsumer);
+```
+
 ## How to use
 
 Add as dependency:
