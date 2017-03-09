@@ -9,6 +9,24 @@ when creating frameworks. Java has somewhat complicated and verbose ways to do r
 
 Introspectable comes to rescue. This library has few methods that eases common reflection tasks.
 
+### Queries
+
+Queries allow simpler access to reflections objects from their source: a class.  
+
+#### Example: Test framework 
+
+To inject created mocks, it needs to find all non-static fields in test object, that have annotation <code>@Mock</code> 
+present.
+
+```java
+Stream<Field> injectedMocks = 
+    introspect(testObject.getClass())
+        .fields()
+        .excludingModifier(Modifier.STATIC)
+        .annotatedWith(Mock.class)
+        .stream();
+```
+
 ## How to use
 
 Add as dependency:
