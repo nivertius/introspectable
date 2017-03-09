@@ -69,6 +69,30 @@ Class<?> targetClass =
         .resolve(messageConsumer);
 ```
 
+### Proxies
+
+Introspectable adds simple facade for creating proxies. Natively, it supports standard JDK proxies and 
+javassist + objenesis.
+
+Proxies are built from <code>ProxyBuilder</code> which in turn is created from <code>ProxyBuilderFactory</code>.
+Then, proxies for specific objects can be created by providing <code>InvocationHandler</code>:
+
+#### Example: Remoting
+
+Remoting library needs to replace method call on proxy with message transmission:
+
+```java
+Object proxy = 
+    ProxyBuilderFactory.withFeature(Feature.SUPERCLASS)
+        .ofType(stubClass, Remote.class)
+        .instantiate(invocation -> {
+                invocation.decompose((method, target, parameters) -> {
+                    channel.transmit(method.getName(), proxyName, serialize(parameters));
+                };
+                return channel.readReplay();
+            });
+```
+
 ## How to use
 
 Add as dependency:
