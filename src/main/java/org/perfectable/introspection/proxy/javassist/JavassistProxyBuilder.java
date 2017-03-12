@@ -6,10 +6,13 @@ import org.perfectable.introspection.proxy.ProxyBuilder;
 
 import java.lang.reflect.Method;
 
+import javax.annotation.Nullable;
+
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.Proxy;
 import org.objenesis.instantiator.ObjectInstantiator;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.perfectable.introspection.Introspections.introspect;
 
 final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
@@ -46,9 +49,12 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 			this.handler = handler;
 		}
 
+		@Nullable
 		@Override
-		public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) // SUPPRESS
+		public Object invoke(@Nullable Object self, Method thisMethod, Method proceed,
+							 @Nullable Object[] args) // SUPPRESS
 				throws Throwable { // SUPPRESS IllegalThrows throwable is actually thrown here
+			checkNotNull(thisMethod);
 			if (thisMethod.equals(OBJECT_FINALIZE)) {
 				return null; // ignore proxy finalization
 			}

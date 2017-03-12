@@ -1,5 +1,7 @@
 package org.perfectable.introspection.bean;
 
+import javax.annotation.Nullable;
+
 public final class BoundProperty<CT, PT> {
 	private final CT bean;
 	private final Property<CT, PT> property;
@@ -13,11 +15,12 @@ public final class BoundProperty<CT, PT> {
 		this.property = property;
 	}
 
+	@Nullable
 	public PT get() {
 		return property.get(this.bean);
 	}
 
-	public void set(PT value) {
+	public void set(@Nullable PT value) {
 		property.set(bean, value);
 	}
 

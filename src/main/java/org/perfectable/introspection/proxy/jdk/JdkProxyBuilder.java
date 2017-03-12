@@ -9,6 +9,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import javax.annotation.Nullable;
+
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.perfectable.introspection.Introspections.introspect;
@@ -60,8 +62,10 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 			this.handler = handler;
 		}
 
+		@Nullable
 		@Override
-		public Object invoke(Object proxy, Method method, Object[] args) // SUPPRESS declaration uses array not varargs
+		public Object invoke(@Nullable Object proxy, Method method,
+							 @Nullable Object[] args) // SUPPRESS declaration uses array not varargs
 				throws Throwable { // SUPPRESS throwable is actually thrown here
 			checkNotNull(method);
 			if (method.equals(OBJECT_FINALIZE)) {
