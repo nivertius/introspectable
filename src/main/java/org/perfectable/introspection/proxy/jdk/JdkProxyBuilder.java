@@ -52,6 +52,8 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		private static final Method OBJECT_FINALIZE =
 				introspect(Object.class).methods().named("finalize").parameters().unique();
 
+		private static final Object[] EMPTY_ARGUMENTS = new Object[0];
+
 		private final InvocationHandler<I> handler;
 
 		static <I> JdkInvocationHandlerAdapter<I> adapt(InvocationHandler<I> handler) {
@@ -73,7 +75,7 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 			}
 			@SuppressWarnings("unchecked")
 			I castedProxy = (I) proxy;
-			Object[] actualArguments = args == null ? new Object[0] : args;
+			Object[] actualArguments = args == null ? EMPTY_ARGUMENTS : args;
 			@SuppressWarnings("unchecked")
 			Invocation<I> invocation = Invocation.of(method, castedProxy, actualArguments);
 			return this.handler.handle(invocation);
