@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
+public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 
 	public static <X> MethodQuery of(Class<X> type) {
 		checkNotNull(type);
@@ -26,14 +26,10 @@ public abstract class MethodQuery extends MemberQuery<Method, MethodQuery> {
 		return new Predicated(this, filter);
 	}
 
+	@Override
 	public MethodQuery parameters(ParametersFilter parametersFilter) {
 		checkNotNull(parametersFilter);
 		return new Parameters(this, parametersFilter);
-	}
-
-	public MethodQuery parameters(Class<?>... parameterTypes) {
-		checkNotNull(parameterTypes);
-		return parameters(ParametersFilter.types(parameterTypes));
 	}
 
 	// only implements super
