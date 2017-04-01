@@ -8,6 +8,7 @@ import org.perfectable.introspection.query.MethodQuery;
 import org.perfectable.introspection.query.RelatedTypeQuery;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
@@ -63,9 +64,9 @@ public final class ClassIntrospection<X> {
 	public X instantiate() {
 		checkState(isInstantiable(), "%s is not isInstantiable", type);
 		try {
-			return type.getConstructor().newInstance();
+			return defaultConstructor().newInstance();
 		}
-		catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+		catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e); // SUPPRESS no better exception here
 		}
 	}
@@ -79,4 +80,14 @@ public final class ClassIntrospection<X> {
 		this.type = type;
 	}
 
+	public Constructor<X> defaultConstructor() {
+		try {
+			Constructor<X> constructor = type.getDeclaredConstructor();
+			constructor.setAccessible(true);
+			return constructor;
+		}
+		catch (NoSuchMethodException e) {
+			throw new RuntimeException(e); // SUPPRESS no better exception here
+		}
+	}
 }
