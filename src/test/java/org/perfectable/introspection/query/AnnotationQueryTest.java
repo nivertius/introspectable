@@ -81,6 +81,16 @@ public class AnnotationQueryTest {
 				.containsExactlyInAnyOrder(Subject.OtherAnnotation.class);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testAnnotatedWith() {
+		AnnotationQuery<Annotation> chain = AnnotationQuery.empty()
+				.join(AnnotationQuery.of(Subject.class).annotatedWith(Retention.class));
+
+		assertThat(chain)
+				.extracting(Annotation::annotationType)
+				.containsExactlyInAnyOrder(Subject.Special.class, Subject.OtherAnnotation.class);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Test

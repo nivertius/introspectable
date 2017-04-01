@@ -31,6 +31,11 @@ public abstract class AnnotationQuery<A extends Annotation>
 		return new Predicated<>(this, filter);
 	}
 
+	public AnnotationQuery<A> annotatedWith(Class<? extends Annotation> metaAnnotation) {
+		checkNotNull(metaAnnotation);
+		return new Annotated<>(this, metaAnnotation);
+	}
+
 	public <X extends A> AnnotationQuery<X> typed(Class<X> annotationClass) {
 		checkNotNull(annotationClass);
 		return new Typed<>(this, annotationClass);
@@ -78,6 +83,21 @@ public abstract class AnnotationQuery<A extends Annotation>
 		@Override
 		protected boolean matches(A candidate) {
 			return filter.test(candidate);
+		}
+	}
+
+	private static final class Annotated<A extends Annotation>
+			extends Filtered<A> {
+		private final Class<? extends Annotation> metaAnnotation;
+
+		Annotated(AnnotationQuery<A> parent, Class<? extends Annotation> metaAnnotation) {
+			super(parent);
+			this.metaAnnotation = metaAnnotation;
+		}
+
+		@Override
+		protected boolean matches(A candidate) {
+			return candidate.annotationType().isAnnotationPresent(metaAnnotation);
 		}
 	}
 
