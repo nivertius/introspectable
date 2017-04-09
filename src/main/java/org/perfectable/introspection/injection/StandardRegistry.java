@@ -37,11 +37,7 @@ public class StandardRegistry implements Registry {
 	}
 
 	@Override
-	public <T> T fetch(Class<T> targetClass) {
-		return fetchInternal(targetClass);
-	}
-
-	private <T> T fetchInternal(Class<T> targetClass, Annotation... qualifiers) {
+	public <T> T fetch(Class<T> targetClass, Annotation... qualifiers) {
 		for (RegisteredSingleton<?> singleton : singletons) {
 			if (singleton.matches(targetClass, qualifiers)) {
 				@SuppressWarnings("unchecked")
@@ -94,7 +90,7 @@ public class StandardRegistry implements Registry {
 
 	private void injectField(Field field, Object targetObject) {
 		Annotation[] annotations = findQualifiers(field);
-		Object injection = fetchInternal(field.getType(), annotations);
+		Object injection = fetch(field.getType(), annotations);
 		try {
 			field.set(targetObject, injection);
 		}
@@ -129,7 +125,7 @@ public class StandardRegistry implements Registry {
 		int counter = 0;
 		for (Parameter parameter : executable.getParameters()) {
 			Annotation[] qualifiers = findQualifiers(parameter);
-			arguments[counter] = fetchInternal(parameter.getType(), qualifiers);
+			arguments[counter] = fetch(parameter.getType(), qualifiers);
 		}
 		return arguments;
 	}
