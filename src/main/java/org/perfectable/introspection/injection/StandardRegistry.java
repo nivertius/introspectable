@@ -18,9 +18,6 @@ import javax.inject.Inject;
 import javax.inject.Qualifier;
 import javax.inject.Singleton;
 
-import com.google.common.collect.ImmutableList;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 import static org.perfectable.introspection.Introspections.introspect;
 
 public class StandardRegistry implements Registry {
@@ -135,36 +132,5 @@ public class StandardRegistry implements Registry {
 		return AnnotationQuery.of(element)
 				.annotatedWith(Qualifier.class)
 				.stream().toArray(Annotation[]::new);
-	}
-
-	private static class RegisteredSingleton<T> {
-		private final T singleton;
-
-		RegisteredSingleton(T singleton) {
-			this.singleton = singleton;
-		}
-
-		public static <T> RegisteredSingleton<T> create(T singleton) {
-			checkNotNull(singleton);
-			return new RegisteredSingleton<>(singleton);
-		}
-
-		public T asInjectable() {
-			return singleton;
-		}
-
-		public boolean matches(Class<?> type, Annotation... qualifiers) {
-			if (!type.isInstance(singleton)) {
-				return false;
-			}
-			ImmutableList<Annotation> annotationsList = ImmutableList.copyOf(qualifiers);
-			if (!introspect(singleton.getClass()).annotations() // SUPPRESSS SimplifyBooleanReturns
-					.stream().allMatch(annotationsList::contains)) {
-
-
-				return false;
-			}
-			return true;
-		}
 	}
 }
