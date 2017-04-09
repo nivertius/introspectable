@@ -1,6 +1,7 @@
 package org.perfectable.introspection.query;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -13,6 +14,10 @@ public abstract class GenericsQuery<X> {
 
 	public static <X> GenericsQuery<X> of(Class<X> type) {
 		return new OfClass<>(type);
+	}
+
+	public static GenericsQuery<Object> of(Method method) {
+		return new OfMethod(method);
 	}
 
 	public static GenericsQuery<Object> of(Field field) {
@@ -85,4 +90,20 @@ public abstract class GenericsQuery<X> {
 		}
 	}
 
+	public static final class OfMethod extends GenericsQuery<Object> {
+		private final Method method;
+
+		OfMethod(Method method) {
+			this.method = method;
+		}
+
+		@Override
+		public Resolver<Object> parameter(int number) {
+			TypeVariable<?>[] typeParameters = method.getTypeParameters();
+			checkArgument(number >= 0);
+			checkArgument(number < typeParameters.length);
+			TypeVariable<?> parameter = typeParameters[number];
+			return Resolver.of(parameter);
+		}
+	}
 }
