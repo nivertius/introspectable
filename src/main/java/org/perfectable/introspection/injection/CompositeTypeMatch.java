@@ -5,10 +5,10 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-public class CompositeTypeMatch implements TypeMatch {
+final class CompositeTypeMatch implements TypeMatch {
 	private final List<TypeMatch> components;
 
-	public CompositeTypeMatch(List<TypeMatch> components) {
+	private CompositeTypeMatch(List<TypeMatch> components) {
 		this.components = components;
 	}
 

@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-class RegisteredSingleton<T> implements Construction<T>, Configuration.Registrator<T> {
+final class RegisteredSingleton<T> implements Construction<T>, Configuration.Registrator<T> {
 	private final T singleton;
 	private final CompositeTypeMatch typeMatch;
 
@@ -14,7 +14,7 @@ class RegisteredSingleton<T> implements Construction<T>, Configuration.Registrat
 		return new RegisteredSingleton<>(singleton, typeMatch);
 	}
 
-	RegisteredSingleton(T singleton, CompositeTypeMatch typeMatch) {
+	private RegisteredSingleton(T singleton, CompositeTypeMatch typeMatch) {
 		this.singleton = singleton;
 		this.typeMatch = typeMatch;
 	}

@@ -12,11 +12,11 @@ import com.google.common.collect.Sets;
 
 import static org.perfectable.introspection.Introspections.introspect;
 
-class SimpleTypeMatch<T> implements TypeMatch {
+final class SimpleTypeMatch<T> implements TypeMatch {
 	private final Class<T> targetClass;
 	private final Set<Annotation> annotations;
 
-	SimpleTypeMatch(Class<T> targetClass, Set<Annotation> annotations) {
+	private SimpleTypeMatch(Class<T> targetClass, Set<Annotation> annotations) {
 		this.targetClass = targetClass;
 		this.annotations = annotations;
 	}
