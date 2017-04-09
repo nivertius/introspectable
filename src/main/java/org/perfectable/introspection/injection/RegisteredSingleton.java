@@ -2,21 +2,21 @@ package org.perfectable.introspection.injection;
 
 import java.lang.annotation.Annotation;
 
-import com.google.common.collect.ImmutableList;
-
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.perfectable.introspection.Introspections.introspect;
 
 class RegisteredSingleton<T> {
 	private final T singleton;
+	private final CompositeTypeMatch typeMatch;
 
-	public static <T> RegisteredSingleton<T> create(T singleton) {
+	public static <T> RegisteredSingleton<T> create(T singleton, Annotation... qualifiers) {
 		checkNotNull(singleton);
-		return new RegisteredSingleton<>(singleton);
+		CompositeTypeMatch typeMatch = CompositeTypeMatch.create(singleton.getClass(), qualifiers);
+		return new RegisteredSingleton<>(singleton, typeMatch);
 	}
 
-	RegisteredSingleton(T singleton) {
+	RegisteredSingleton(T singleton, CompositeTypeMatch typeMatch) {
 		this.singleton = singleton;
+		this.typeMatch = typeMatch;
 	}
 
 	public T asInjectable() {
@@ -24,14 +24,6 @@ class RegisteredSingleton<T> {
 	}
 
 	public boolean matches(Class<?> type, Annotation... qualifiers) {
-		if (!type.isInstance(singleton)) {
-			return false;
-		}
-		ImmutableList<Annotation> annotationsList = ImmutableList.copyOf(qualifiers);
-		if (!introspect(singleton.getClass()).annotations() // SUPPRESSS SimplifyBooleanReturns
-				.stream().allMatch(annotationsList::contains)) {
-			return false;
-		}
-		return true;
+		return typeMatch.matches(type, qualifiers);
 	}
 }
