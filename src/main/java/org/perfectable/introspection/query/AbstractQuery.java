@@ -22,6 +22,10 @@ public abstract class AbstractQuery<E, Q extends AbstractQuery<E, ? extends Q>> 
 		return Iterators.getOnlyElement(iterator());
 	}
 
+	public boolean isPresent() {
+		return iterator().hasNext();
+	}
+
 	public final Optional<E> option() {
 		Iterator<E> iterator = iterator();
 		if (iterator.hasNext()) {
