@@ -107,6 +107,7 @@ final class RegistryProvider<T> implements Provider<T> {
 				.stream().toArray(Annotation[]::new);
 	}
 
+	@FunctionalInterface
 	private interface Injection {
 		void perform(Object targetObject);
 	}
