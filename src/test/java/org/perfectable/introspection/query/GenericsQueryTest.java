@@ -168,6 +168,67 @@ public class GenericsQueryTest { // SUPPRESS TestClassWithoutTestCases nested te
 	}
 
 
+	@Nested
+	static class OfParameterTest {
+
+		@Test
+		void simple() {
+			GenericsQuery<?> query = GenericsQuery.of(Unbounded.SIMPLE_METHOD.getParameters()[0]);
+
+			assertThatThrownBy(() -> query.parameter(0))
+					.hasNoCause()
+					.isInstanceOf(IllegalArgumentException.class);
+		}
+
+		@Test
+		void bound() {
+			GenericsQuery<?> query = GenericsQuery.of(Unbounded.TYPE_PARAMETER_METHOD.getParameters()[0]);
+
+			assertThatThrownBy(() -> query.parameter(0))
+					.hasNoCause()
+					.isInstanceOf(IllegalArgumentException.class);
+		}
+
+		@Test
+		void genericWithParameter() {
+			GenericsQuery<?> query = GenericsQuery.of(Unbounded.OWN_PARAMETER_METHOD.getParameters()[0]);
+
+			assertThatThrownBy(() -> query.parameter(0))
+					.hasNoCause()
+					.isInstanceOf(IllegalArgumentException.class);
+		}
+
+		@Test
+		void genericWithConstant() {
+			Class<?> result = GenericsQuery.of(Unbounded.GENERIC_CONSTANT_METHOD.getParameters()[0])
+					.parameter(0)
+					.resolve(Bounded.class);
+
+			assertThat(result)
+					.isEqualTo(String.class);
+		}
+
+		@Test
+		void genericTypeParameter() {
+			Class<?> result = GenericsQuery.of(Unbounded.GENERIC_TYPE_PARAMETER_METHOD.getParameters()[0])
+					.parameter(0)
+					.resolve(Bounded.class);
+
+			assertThat(result)
+					.isEqualTo(Number.class);
+		}
+
+		@Test
+		void genericOwnParameter() {
+			Class<?> result = GenericsQuery.of(Unbounded.GENERIC_OWN_PARAMETER_METHOD.getParameters()[0])
+					.parameter(0)
+					.resolve(Bounded.class);
+
+			assertThat(result)
+					.isEqualTo(CharSequence.class);
+		}
+	}
+
 	interface Root<X extends Number> {
 		// test interface
 	}
