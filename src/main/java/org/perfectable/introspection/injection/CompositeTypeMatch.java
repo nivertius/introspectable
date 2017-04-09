@@ -21,4 +21,9 @@ public class CompositeTypeMatch implements TypeMatch {
 	public boolean matches(Class<?> type, Annotation... qualifiers) {
 		return components.stream().anyMatch(component -> component.matches(type, qualifiers));
 	}
+
+	public void add(Class<?> injectableClass, Annotation... qualifiers) {
+		SimpleTypeMatch<?> newComponent = SimpleTypeMatch.create(injectableClass, qualifiers);
+		components.add(newComponent);
+	}
 }

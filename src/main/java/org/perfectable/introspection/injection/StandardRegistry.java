@@ -6,29 +6,31 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Provider;
 
-public class StandardRegistry implements Registry {
+public class StandardRegistry implements Registry, Configuration {
 	private final Set<Construction<?>> preparedConstructions = new HashSet<>();
 
 	public static StandardRegistry create() {
 		return new StandardRegistry();
 	}
 
-	public final <T> StandardRegistry register(T singleton, Annotation... qualifiers) {
+	@Override
+	public final <T> Registrator<T> register(T singleton, Annotation... qualifiers) {
 		RegisteredSingleton<T> registeredSingleton = RegisteredSingleton.create(singleton, qualifiers);
 		preparedConstructions.add(registeredSingleton);
-		return this;
+		return registeredSingleton;
 	}
 
-	public final <T> StandardRegistry register(Class<T> createdClass, Annotation... qualifiers) {
+	@Override
+	public final <T> Registrator<T> register(Class<T> createdClass, Annotation... qualifiers) {
 		Provider<T> provider = RegistryProvider.of(createdClass, this);
-		register(createdClass, provider);
-		return this;
+		return register(createdClass, provider);
 	}
 
-	public <T> StandardRegistry register(Class<T> createdClass, Provider<T> provider, Annotation... qualifiers) {
+	@Override
+	public <T> Registrator<T> register(Class<T> createdClass, Provider<T> provider, Annotation... qualifiers) {
 		PreparedConstruction<T> injection = PreparedConstruction.create(createdClass, provider, qualifiers);
 		preparedConstructions.add(injection);
-		return this;
+		return injection;
 	}
 
 	@Override

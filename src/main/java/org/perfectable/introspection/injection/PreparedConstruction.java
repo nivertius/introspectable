@@ -7,7 +7,7 @@ import javax.inject.Singleton;
 
 import static org.perfectable.introspection.Introspections.introspect;
 
-abstract class PreparedConstruction<T> implements Construction<T> {
+abstract class PreparedConstruction<T> implements Construction<T>, Configuration.Registrator<T> {
 	public static <T> PreparedConstruction<T> create(Class<T> createdClass,
 													 Provider<T> provider, Annotation... qualifiers) {
 		CompositeTypeMatch typeMatch = CompositeTypeMatch.create(createdClass, qualifiers);
@@ -35,6 +35,11 @@ abstract class PreparedConstruction<T> implements Construction<T> {
 	@Override
 	public boolean matches(Class<?> type, Annotation... qualifiers) {
 		return typeMatch.matches(type, qualifiers);
+	}
+
+	@Override
+	public void as(Class<? super T> injectableClass, Annotation... qualifiers) {
+		typeMatch.add(injectableClass, qualifiers);
 	}
 
 	private static class PrototypeConstruction<T> extends PreparedConstruction<T> {

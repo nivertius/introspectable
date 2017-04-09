@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-class RegisteredSingleton<T> implements Construction<T> {
+class RegisteredSingleton<T> implements Construction<T>, Configuration.Registrator<T> {
 	private final T singleton;
 	private final CompositeTypeMatch typeMatch;
 
@@ -27,5 +27,10 @@ class RegisteredSingleton<T> implements Construction<T> {
 	@Override
 	public boolean matches(Class<?> type, Annotation... qualifiers) {
 		return typeMatch.matches(type, qualifiers);
+	}
+
+	@Override
+	public void as(Class<? super T> injectableClass, Annotation... qualifiers) {
+		typeMatch.add(injectableClass, qualifiers);
 	}
 }
