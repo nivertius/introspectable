@@ -1,5 +1,7 @@
 package org.perfectable.introspection.query;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
@@ -7,24 +9,17 @@ import com.google.common.reflect.TypeToken;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public final class GenericsQuery<X> {
-	private final Class<X> type;
+public abstract class GenericsQuery<X> {
 
 	public static <X> GenericsQuery<X> of(Class<X> type) {
-		return new GenericsQuery<>(type);
+		return new OfClass<>(type);
 	}
 
-	private GenericsQuery(Class<X> type) {
-		this.type = type;
+	public static GenericsQuery<Object> of(Field field) {
+		return new OfField(field);
 	}
 
-	public Resolver<X> parameter(int number) {
-		checkArgument(number >= 0);
-		TypeVariable<Class<X>>[] typeParameters = this.type.getTypeParameters();
-		checkArgument(number < typeParameters.length);
-		TypeVariable<Class<X>> parameter = typeParameters[number];
-		return Resolver.of(parameter);
-	}
+	public abstract Resolver<X> parameter(int number);
 
 	public static final class Resolver<X> {
 		private final Type resolved;
@@ -47,6 +42,46 @@ public final class GenericsQuery<X> {
 			@SuppressWarnings("unchecked")
 			Class<? extends X> safeClass = (Class<? extends X>) instance.getClass();
 			return resolve(safeClass);
+		}
+
+		static Resolver<Object> createFromParameterizedType(ParameterizedType parameterizedType, int number) {
+			checkArgument(number >= 0);
+			Type[] typeArguments = parameterizedType.getActualTypeArguments();
+			checkArgument(number < typeArguments.length);
+			return of(typeArguments[number]);
+		}
+
+	}
+
+	public static final class OfClass<X> extends GenericsQuery<X> {
+		private final Class<X> type;
+
+		OfClass(Class<X> type) {
+			this.type = type;
+		}
+
+		@Override
+		public Resolver<X> parameter(int number) {
+			TypeVariable<Class<X>>[] typeParameters = type.getTypeParameters();
+			checkArgument(number >= 0);
+			checkArgument(number < typeParameters.length);
+			TypeVariable<Class<X>> parameter = typeParameters[number];
+			return Resolver.of(parameter);
+		}
+	}
+
+	public static final class OfField extends GenericsQuery<Object> {
+		private final Field field;
+
+		OfField(Field field) {
+			this.field = field;
+		}
+
+		@Override
+		public Resolver<Object> parameter(int number) {
+			Type parameterizedType = field.getGenericType();
+			checkArgument(parameterizedType instanceof ParameterizedType);
+			return Resolver.createFromParameterizedType((ParameterizedType) parameterizedType, number);
 		}
 	}
 

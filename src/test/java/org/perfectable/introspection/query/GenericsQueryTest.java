@@ -1,66 +1,131 @@
 package org.perfectable.introspection.query;
 
+import java.lang.reflect.Field;
+import java.util.function.Supplier;
+
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.perfectable.introspection.SimpleReflections.getField;
 
-public class GenericsQueryTest {
+public class GenericsQueryTest { // SUPPRESS TestClassWithoutTestCases nested tests only
 
-	@Test
-	public void testNonGeneric() {
-		GenericsQuery<String> query = GenericsQuery.of(String.class);
+	@Nested
+	static class OfClassTest {
 
-		assertThatThrownBy(() -> query.parameter(0))
-				.hasNoCause()
-				.isInstanceOf(IllegalArgumentException.class);
+		@Test
+		void nonGeneric() {
+			GenericsQuery<String> query = GenericsQuery.of(String.class);
+
+			assertThatThrownBy(() -> query.parameter(0))
+					.hasNoCause()
+					.isInstanceOf(IllegalArgumentException.class);
+		}
+
+		@Test
+		void genericWithoutBounds() {
+			Class<?> result = GenericsQuery.of(Root.class).parameter(0)
+					.resolve(Unbounded.class);
+
+			assertThat(result)
+					.isEqualTo(Number.class);
+		}
+
+		@Test
+		void genericWithBound() {
+			Class<?> result = GenericsQuery.of(Root.class).parameter(0)
+					.resolve(Bounded.class);
+
+			assertThat(result)
+					.isEqualTo(Long.class);
+		}
 	}
 
-	@Test
-	public void testGenericWithoutBound() {
-		Class<?> result = GenericsQuery.of(BoundedInterface.class).parameter(0)
-				.resolve(UnboundedImplementation.class);
+	@Nested
+	static class OfFieldTest {
 
-		assertThat(result)
-				.isEqualTo(Number.class);
+		@Test
+		void simple() {
+			GenericsQuery<?> query = GenericsQuery.of(Unbounded.SIMPLE_FIELD);
+
+			assertThatThrownBy(() -> query.parameter(0))
+					.hasNoCause()
+					.isInstanceOf(IllegalArgumentException.class);
+		}
+
+		@Test
+		void bound() {
+			GenericsQuery<?> query = GenericsQuery.of(Unbounded.BOUND_FIELD);
+
+			assertThatThrownBy(() -> query.parameter(0))
+					.hasNoCause()
+					.isInstanceOf(IllegalArgumentException.class);
+		}
+
+		@Test
+		void genericWithConstantField() {
+			Class<?> result = GenericsQuery.of(Unbounded.GENERIC_WITH_CONSTANT_FIELD)
+					.parameter(0)
+					.resolve(Unbounded.class);
+
+			assertThat(result)
+					.isEqualTo(String.class);
+		}
+
+		@Test
+		void genericWithTypeParameterField() {
+			Class<?> result = GenericsQuery.of(Unbounded.GENERIC_WITH_PARAMETER_FIELD)
+					.parameter(0)
+					.resolve(Unbounded.class);
+
+			assertThat(result)
+					.isEqualTo(Number.class);
+		}
+
+		@Test
+		void genericWithConstantFieldInBoundedSubclass() {
+			Class<?> result = GenericsQuery.of(Unbounded.GENERIC_WITH_CONSTANT_FIELD)
+					.parameter(0)
+					.resolve(Bounded.class);
+
+			assertThat(result)
+					.isEqualTo(String.class);
+		}
+
+		@Test
+		void genericWithTypeParameterFieldInBoundedSubclass() {
+			Class<?> result = GenericsQuery.of(Unbounded.GENERIC_WITH_PARAMETER_FIELD)
+					.parameter(0)
+					.resolve(Bounded.class);
+
+			assertThat(result)
+					.isEqualTo(Number.class); // this is Number anyway
+		}
 	}
 
-	@Test
-	public void testGenericWithoutBoundInstance() {
-		Class<?> result = GenericsQuery.of(BoundedInterface.class).parameter(0)
-				.resolve(new UnboundedImplementation<>());
-
-		assertThat(result)
-				.isEqualTo(Number.class);
-	}
-
-	@Test
-	public void testGenericWithBound() {
-		Class<?> result = GenericsQuery.of(BoundedInterface.class).parameter(0)
-				.resolve(BoundedImplementation.class);
-
-		assertThat(result)
-				.isEqualTo(Long.class);
-	}
-
-	@Test
-	public void testGenericWithBoundInstance() {
-		Class<?> result = GenericsQuery.of(BoundedInterface.class).parameter(0)
-				.resolve(new BoundedImplementation());
-
-		assertThat(result)
-				.isEqualTo(Long.class);
-	}
-
-	interface BoundedInterface<X extends Number> {
+	interface Root<X extends Number> {
 		// test interface
 	}
 
-	static class UnboundedImplementation<X extends Number> implements BoundedInterface<X> {
-		// test interface
+	abstract static class Unbounded<X extends Number> implements Root<X> {
+
+		static final Field SIMPLE_FIELD = getField(Unbounded.class, "simpleField");
+		static final Field BOUND_FIELD = getField(Unbounded.class, "boundField");
+		static final Field GENERIC_WITH_CONSTANT_FIELD = getField(Unbounded.class, "genericWithConstantField");
+		static final Field GENERIC_WITH_PARAMETER_FIELD = getField(Unbounded.class, "genericWithParameterField");
+
+		String simpleField; // SUPPRESS VisibilityModifier test only
+
+		X boundField; // SUPPRESS VisibilityModifier test only
+
+		Supplier<String> genericWithConstantField; // SUPPRESS VisibilityModifier test only
+
+		Supplier<X> genericWithParameterField; // SUPPRESS VisibilityModifier test only
 	}
 
-	static class BoundedImplementation implements BoundedInterface<Long> {
+	abstract static class Bounded implements Root<Long> {
 		// test interface
 	}
 
