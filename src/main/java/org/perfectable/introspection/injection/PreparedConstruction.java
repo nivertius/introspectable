@@ -11,12 +11,9 @@ abstract class PreparedConstruction<T> implements Construction<T>, Configuration
 	public static <T> PreparedConstruction<T> create(Class<T> createdClass,
 													 Provider<T> provider, Annotation... qualifiers) {
 		CompositeTypeMatch typeMatch = CompositeTypeMatch.create(createdClass, qualifiers);
-		if (introspect(createdClass).annotations().typed(Singleton.class).isPresent()) {
-			return new SingletonConstruction<T>(provider, typeMatch);
-		}
-		else {
-			return new PrototypeConstruction<T>(provider, typeMatch);
-		}
+		boolean isSingleton = introspect(createdClass).annotations().typed(Singleton.class).isPresent();
+		return isSingleton ? new SingletonConstruction<>(provider, typeMatch)
+				: new PrototypeConstruction<>(provider, typeMatch);
 	}
 
 	private final CompositeTypeMatch typeMatch;
@@ -29,7 +26,6 @@ abstract class PreparedConstruction<T> implements Construction<T>, Configuration
 
 	protected final T construct(Class<T> targetClass) {
 		return targetClass.cast(provider.get());
-
 	}
 
 	@Override
