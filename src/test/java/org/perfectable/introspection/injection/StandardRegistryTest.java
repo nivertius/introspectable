@@ -10,7 +10,8 @@ public class StandardRegistryTest {
 
 	@Test
 	public void testEmpty() {
-		StandardRegistry registry = StandardRegistry.create();
+		StandardRegistry registry = StandardRegistry.create()
+				.register(EmptyService.class);
 
 		EmptyService service = registry.fetch(EmptyService.class);
 		assertThat(service)
@@ -19,7 +20,9 @@ public class StandardRegistryTest {
 
 	@Test
 	public void testConstructorSimple() {
-		StandardRegistry registry = StandardRegistry.create();
+		StandardRegistry registry = StandardRegistry.create()
+				.register(EmptyService.class)
+				.register(ConstructorService.class);
 
 		ConstructorService service = registry.fetch(ConstructorService.class);
 
