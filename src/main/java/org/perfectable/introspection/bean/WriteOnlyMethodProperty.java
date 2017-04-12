@@ -7,7 +7,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
 import static org.perfectable.introspection.bean.ReadOnlyMethodProperty.capitalizeWithPrefix;
 
@@ -17,13 +17,13 @@ final class WriteOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 	private final Method setter;
 
 	public static <CX, PX> WriteOnlyMethodProperty<CX, PX> forSetter(Method setter) {
-		checkNotNull(setter);
+		requireNonNull(setter);
 		checkArgument(isSetter(setter));
 		return new WriteOnlyMethodProperty<>(setter);
 	}
 
 	private WriteOnlyMethodProperty(Method setter) {
-		this.setter = checkNotNull(setter);
+		this.setter = requireNonNull(setter);
 	}
 
 	// checked at construction
@@ -54,7 +54,7 @@ final class WriteOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 		Class<?>[] parameterTypes = this.setter.getParameterTypes();
 		@SuppressWarnings("unchecked") // checked at construction
 		Class<PT> firstParameterType = (Class<PT>) parameterTypes[0];
-		return checkNotNull(firstParameterType);
+		return requireNonNull(firstParameterType);
 	}
 
 	@Override

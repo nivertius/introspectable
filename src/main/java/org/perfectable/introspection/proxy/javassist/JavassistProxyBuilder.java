@@ -12,7 +12,7 @@ import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.Proxy;
 import org.objenesis.instantiator.ObjectInstantiator;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
 
 final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
@@ -56,7 +56,7 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 		public Object invoke(@Nullable Object self, Method thisMethod, Method proceed,
 							 @Nullable Object[] args) // SUPPRESS
 				throws Throwable { // SUPPRESS IllegalThrows throwable is actually thrown here
-			checkNotNull(thisMethod);
+			requireNonNull(thisMethod);
 			if (thisMethod.equals(OBJECT_FINALIZE)) {
 				return null; // ignore proxy finalization
 			}

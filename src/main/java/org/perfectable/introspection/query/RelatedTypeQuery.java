@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 public abstract class RelatedTypeQuery extends AbstractQuery<Class<?>, RelatedTypeQuery> {
 	public static RelatedTypeQuery of(Class<?> initial) {
@@ -14,7 +14,7 @@ public abstract class RelatedTypeQuery extends AbstractQuery<Class<?>, RelatedTy
 
 	@Override
 	public RelatedTypeQuery filter(Predicate<? super Class<?>> filter) {
-		checkNotNull(filter);
+		requireNonNull(filter);
 		return new Predicated(this, filter);
 	}
 

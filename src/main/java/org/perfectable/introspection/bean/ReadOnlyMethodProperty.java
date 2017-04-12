@@ -7,7 +7,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
 
 final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
@@ -20,7 +20,7 @@ final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 	}
 
 	private ReadOnlyMethodProperty(Method getter) {
-		this.getter = checkNotNull(getter);
+		this.getter = requireNonNull(getter);
 	}
 
 	// checked at construction
@@ -50,7 +50,7 @@ final class ReadOnlyMethodProperty<CT, PT> implements Property<CT, PT> {
 	public Class<PT> type() {
 		@SuppressWarnings("unchecked")
 		Class<PT> resultType = (Class<PT>) this.getter.getReturnType();
-		return checkNotNull(resultType);
+		return requireNonNull(resultType);
 	}
 
 	@Override

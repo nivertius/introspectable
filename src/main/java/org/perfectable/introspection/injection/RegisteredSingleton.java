@@ -2,14 +2,14 @@ package org.perfectable.introspection.injection;
 
 import java.lang.annotation.Annotation;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 final class RegisteredSingleton<T> implements Construction<T>, Configuration.Registrator<T> {
 	private final T singleton;
 	private final CompositeTypeMatch typeMatch;
 
 	public static <T> RegisteredSingleton<T> create(T singleton, Annotation... qualifiers) {
-		checkNotNull(singleton);
+		requireNonNull(singleton);
 		CompositeTypeMatch typeMatch = CompositeTypeMatch.create(singleton.getClass(), qualifiers);
 		return new RegisteredSingleton<>(singleton, typeMatch);
 	}

@@ -5,30 +5,30 @@ import java.lang.reflect.Parameter;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 
 	public static <X> MethodQuery of(Class<X> type) {
-		checkNotNull(type);
+		requireNonNull(type);
 		return new Complete<>(type);
 	}
 
 	@Override
 	public MethodQuery named(String name) {
-		checkNotNull(name);
+		requireNonNull(name);
 		return new Named(this, name);
 	}
 
 	@Override
 	public MethodQuery filter(Predicate<? super Method> filter) {
-		checkNotNull(filter);
+		requireNonNull(filter);
 		return new Predicated(this, filter);
 	}
 
 	@Override
 	public MethodQuery parameters(ParametersFilter parametersFilter) {
-		checkNotNull(parametersFilter);
+		requireNonNull(parametersFilter);
 		return new Parameters(this, parametersFilter);
 	}
 
@@ -40,7 +40,7 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 	}
 
 	public MethodQuery returning(Class<?> type) {
-		checkNotNull(type);
+		requireNonNull(type);
 		return new Returning(this, type);
 	}
 
@@ -50,7 +50,7 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 
 	@Override
 	public MethodQuery annotatedWith(AnnotationFilter annotationFilter) {
-		checkNotNull(annotationFilter);
+		requireNonNull(annotationFilter);
 		return new Annotated(this, annotationFilter);
 	}
 

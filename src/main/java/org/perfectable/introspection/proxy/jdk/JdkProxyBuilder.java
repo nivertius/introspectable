@@ -12,7 +12,7 @@ import java.lang.reflect.Proxy;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
 
 final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
@@ -69,7 +69,7 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		public Object invoke(@Nullable Object proxy, Method method,
 							 @Nullable Object[] args) // SUPPRESS declaration uses array not varargs
 				throws Throwable { // SUPPRESS throwable is actually thrown here
-			checkNotNull(method);
+			requireNonNull(method);
 			if (method.equals(OBJECT_FINALIZE)) {
 				return null; // ignore proxy finalization
 			}

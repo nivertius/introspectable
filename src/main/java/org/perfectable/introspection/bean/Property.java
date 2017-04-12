@@ -7,7 +7,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
 
 public interface Property<CT, PT> {
@@ -34,7 +34,7 @@ public interface Property<CT, PT> {
 	}
 
 	static <CX, PX> Property<CX, PX> from(Class<CX> beanClass, String name, Class<PX> type) {
-		checkNotNull(beanClass);
+		requireNonNull(beanClass);
 		Optional<Field> field = introspect(beanClass).fields().named(name).typed(type).option();
 		if (field.isPresent()) {
 			return FieldProperty.fromField(field.get());
@@ -54,18 +54,18 @@ public interface Property<CT, PT> {
 	}
 
 	static Property<?, ?> fromField(Field field) {
-		checkNotNull(field);
+		requireNonNull(field);
 		return FieldProperty.fromField(field);
 	}
 
 	static <CX> Property<CX, ?> fromField(Class<CX> beanClass, Field field) {
-		checkNotNull(field);
+		requireNonNull(field);
 		checkArgument(field.getDeclaringClass().isAssignableFrom(beanClass));
 		return FieldProperty.fromField(field);
 	}
 
 	static <CX, PX> Property<CX, PX> fromField(Class<CX> beanClass, Field field, Class<PX> type) {
-		checkNotNull(field);
+		requireNonNull(field);
 		checkArgument(field.getDeclaringClass().isAssignableFrom(beanClass));
 		checkArgument(field.getType().equals(type));
 		checkArgument(!Modifier.isStatic(field.getModifiers()));

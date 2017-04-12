@@ -6,42 +6,42 @@ import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>, ConstructorQuery<X>> {
 
 	public static <X> ConstructorQuery<X> of(Class<X> type) {
-		checkNotNull(type);
+		requireNonNull(type);
 		return new Complete<>(type);
 	}
 
 	@Override
 	public ConstructorQuery<X> named(String name) {
-		checkNotNull(name);
+		requireNonNull(name);
 		return new Named<>(this, name);
 	}
 
 	@Override
 	public ConstructorQuery<X> filter(Predicate<? super Constructor<X>> filter) {
-		checkNotNull(filter);
+		requireNonNull(filter);
 		return new Predicated<>(this, filter);
 	}
 
 	@Override
 	public ConstructorQuery<X> parameters(ParametersFilter parametersFilter) {
-		checkNotNull(parametersFilter);
+		requireNonNull(parametersFilter);
 		return new Parameters<>(this, parametersFilter);
 	}
 
 	@Override
 	public ConstructorQuery<X> typed(Class<?> type) {
-		checkNotNull(type);
+		requireNonNull(type);
 		return new Typed<>(this, type);
 	}
 
 	@Override
 	public ConstructorQuery<X> annotatedWith(AnnotationFilter annotationFilter) {
-		checkNotNull(annotationFilter);
+		requireNonNull(annotationFilter);
 		return new Annotated<>(this, annotationFilter);
 	}
 

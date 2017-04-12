@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
 import static org.perfectable.introspection.bean.ReadOnlyMethodProperty.propertyNameFromGetter;
 
@@ -13,8 +13,8 @@ final class ReadWriteMethodProperty<CT, PT> implements Property<CT, PT> {
 	private final Method setter;
 
 	public static <CX, PX> ReadWriteMethodProperty<CX, PX> forGetterSetter(Method getter, Method setter) {
-		checkNotNull(getter);
-		checkNotNull(setter);
+		requireNonNull(getter);
+		requireNonNull(setter);
 		// TODO check getter and setter compatibility
 		return new ReadWriteMethodProperty<>(getter, setter);
 	}
@@ -56,7 +56,7 @@ final class ReadWriteMethodProperty<CT, PT> implements Property<CT, PT> {
 	public Class<PT> type() {
 		@SuppressWarnings("unchecked")
 		Class<PT> resultType = (Class<PT>) this.getter.getReturnType();
-		return checkNotNull(resultType);
+		return requireNonNull(resultType);
 	}
 
 	@Override

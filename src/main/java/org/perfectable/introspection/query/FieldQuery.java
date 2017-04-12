@@ -4,36 +4,36 @@ import java.lang.reflect.Field;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 
 	public static <X> FieldQuery of(Class<X> type) {
-		checkNotNull(type);
+		requireNonNull(type);
 		return new Complete<>(type);
 	}
 
 	@Override
 	public FieldQuery named(String name) {
-		checkNotNull(name);
+		requireNonNull(name);
 		return new Named(this, name);
 	}
 
 	@Override
 	public FieldQuery filter(Predicate<? super Field> filter) {
-		checkNotNull(filter);
+		requireNonNull(filter);
 		return new Predicated(this, filter);
 	}
 
 	@Override
 	public FieldQuery typed(Class<?> type) {
-		checkNotNull(type);
+		requireNonNull(type);
 		return new Typed(this, type);
 	}
 
 	@Override
 	public FieldQuery annotatedWith(AnnotationFilter annotationFilter) {
-		checkNotNull(annotationFilter);
+		requireNonNull(annotationFilter);
 		return new Annotated(this, annotationFilter);
 	}
 

@@ -7,7 +7,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 public final class Invocation<T> {
 	private final Method method;
@@ -15,9 +15,9 @@ public final class Invocation<T> {
 	private final Object[] arguments;
 
 	public static <T> Invocation<T> of(Method method, @Nullable T receiver, Object... arguments) {
-		checkNotNull(method);
+		requireNonNull(method);
 		// receiver might be null
-		checkNotNull(arguments);
+		requireNonNull(arguments);
 		verifyCallability(method, receiver, arguments);
 		return new Invocation<>(method, receiver, arguments);
 	}

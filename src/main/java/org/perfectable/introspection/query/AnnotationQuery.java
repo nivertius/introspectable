@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 public abstract class AnnotationQuery<A extends Annotation>
 		extends AbstractQuery<A, AnnotationQuery<A>> {
@@ -27,17 +27,17 @@ public abstract class AnnotationQuery<A extends Annotation>
 
 	@Override
 	public AnnotationQuery<A> filter(Predicate<? super A> filter) {
-		checkNotNull(filter);
+		requireNonNull(filter);
 		return new Predicated<>(this, filter);
 	}
 
 	public AnnotationQuery<A> annotatedWith(Class<? extends Annotation> metaAnnotation) {
-		checkNotNull(metaAnnotation);
+		requireNonNull(metaAnnotation);
 		return new Annotated<>(this, metaAnnotation);
 	}
 
 	public <X extends A> AnnotationQuery<X> typed(Class<X> annotationClass) {
-		checkNotNull(annotationClass);
+		requireNonNull(annotationClass);
 		return new Typed<>(this, annotationClass);
 	}
 
