@@ -33,7 +33,7 @@ public abstract class RelatedTypeQuery extends AbstractQuery<Class<?>, RelatedTy
 		public Stream<Class<?>> stream() {
 			HashSet<Class<?>> seen = new HashSet<>();
 			seen.add(type);
-			return Streams.generate(Stream.of(type), RelatedTypeQuery::extractRelated, seen::add);
+			return Streams.generateSingleConditional(type, RelatedTypeQuery::extractRelated, seen::add);
 		}
 	}
 

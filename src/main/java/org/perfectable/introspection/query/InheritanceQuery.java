@@ -43,7 +43,7 @@ public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>
 
 		@Override
 		public Stream<Class<? super X>> stream() {
-			return Streams.generate(Stream.of(initial), InheritanceQuery::safeGetSupertypes);
+			return Streams.generateSingle(initial, InheritanceQuery::safeGetSupertypes);
 		}
 	}
 

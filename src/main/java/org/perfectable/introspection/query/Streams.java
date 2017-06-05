@@ -11,14 +11,20 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 final class Streams {
-	static <E> Stream<E> generate(Stream<E> initial,
-			Function<? super E, ? extends Stream<? extends E>> mutator) {
-		return generate(initial, mutator, element -> true);
+	static <E> Stream<E> generateSingle(E initial,
+								  Function<? super E, ? extends Stream<? extends E>> mutator) {
+		return generate(Stream.of(initial), mutator, element -> true);
 	}
 
-	static <E> Stream<E> generate(Stream<E> initial,
+	static <E> Stream<E> generateSingleConditional(E initial,
 								  Function<? super E, ? extends Stream<? extends E>> mutator,
 								  Predicate<? super E> condition) {
+		return generate(Stream.of(initial), mutator, condition);
+	}
+
+	private static <E> Stream<E> generate(Stream<E> initial,
+										  Function<? super E, ? extends Stream<? extends E>> mutator,
+										  Predicate<? super E> condition) {
 		Spliterator<E> wrappedSpliterator =
 				GeneratorSpliterator.wrap(initial.spliterator(), mutator, condition);
 		return StreamSupport.stream(wrappedSpliterator, false);
@@ -49,9 +55,9 @@ final class Streams {
 		}
 
 		@Override
-		public boolean tryAdvance(Consumer<? super T> action) {
+		public boolean tryAdvance(Consumer<? super T> consumer) {
 			Consumer<? super T> wrappedAction = element -> {
-				action.accept(element);
+				consumer.accept(element);
 				mutator.apply(element).filter(condition).forEach(buffer::add);
 			};
 			if (buffer.isEmpty()) {
