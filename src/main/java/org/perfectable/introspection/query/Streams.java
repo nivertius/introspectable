@@ -1,7 +1,9 @@
 package org.perfectable.introspection.query;
 
 import java.util.Deque;
+import java.util.Enumeration;
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
@@ -12,13 +14,13 @@ import java.util.stream.StreamSupport;
 
 final class Streams {
 	static <E> Stream<E> generateSingle(E initial,
-								  Function<? super E, ? extends Stream<? extends E>> mutator) {
+										Function<? super E, ? extends Stream<? extends E>> mutator) {
 		return generate(Stream.of(initial), mutator, element -> true);
 	}
 
 	static <E> Stream<E> generateSingleConditional(E initial,
-								  Function<? super E, ? extends Stream<? extends E>> mutator,
-								  Predicate<? super E> condition) {
+												   Function<? super E, ? extends Stream<? extends E>> mutator,
+												   Predicate<? super E> condition) {
 		return generate(Stream.of(initial), mutator, condition);
 	}
 
@@ -26,8 +28,18 @@ final class Streams {
 										  Function<? super E, ? extends Stream<? extends E>> mutator,
 										  Predicate<? super E> condition) {
 		Spliterator<E> wrappedSpliterator =
-				GeneratorSpliterator.wrap(initial.spliterator(), mutator, condition);
+			GeneratorSpliterator.wrap(initial.spliterator(), mutator, condition);
 		return StreamSupport.stream(wrappedSpliterator, false);
+	}
+
+	public static <E> Stream<E> from(Enumeration<E> enumeration) {
+		Spliterator<E> spliterator = EnumerationSpliterator.create(enumeration);
+		return StreamSupport.stream(spliterator, false);
+	}
+
+
+	public static <X> Stream<X> presentInstances(Optional<X> optional) {
+		return optional.map(Stream::of).orElseGet(Stream::of);
 	}
 
 	private static final class GeneratorSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
@@ -68,6 +80,31 @@ final class Streams {
 				wrappedAction.accept(generated);
 				return true;
 			}
+		}
+	}
+
+	private static final class EnumerationSpliterator<E> extends Spliterators.AbstractSpliterator<E> {
+		private static final int ADDITIONAL_CHARACTERISTICS = 0;
+
+		private final Enumeration<E> enumeration;
+
+		private EnumerationSpliterator(Enumeration<E> enumeration) {
+			super(Long.MAX_VALUE, ADDITIONAL_CHARACTERISTICS);
+			this.enumeration = enumeration;
+		}
+
+		public static <X> Spliterator<X> create(Enumeration<X> enumeration) {
+			return new EnumerationSpliterator<X>(enumeration);
+		}
+
+		@Override
+		public boolean tryAdvance(Consumer<? super E> consumer) {
+			if (!enumeration.hasMoreElements()) {
+				return false;
+			}
+			E nextElement = enumeration.nextElement();
+			consumer.accept(nextElement);
+			return true;
 		}
 	}
 
