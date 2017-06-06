@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 
+import org.assertj.core.api.iterable.Extractor;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,16 +30,16 @@ public class AnnotationQueryTest {
 		AnnotationQuery<?> chain = AnnotationQuery.empty();
 
 		assertThat(chain)
-				.containsExactly();
+			.containsExactly();
 	}
 
 	@Test
 	public void testEmptyFilter() {
 		AnnotationQuery<?> chain = AnnotationQuery.empty()
-				.filter(annotation -> annotation.toString().equals("None"));
+			.filter(annotation -> annotation.toString().equals("None"));
 
 		assertThat(chain)
-				.containsExactly();
+			.containsExactly();
 	}
 
 	@Test
@@ -46,7 +47,7 @@ public class AnnotationQueryTest {
 		AnnotationQuery<?> chain = AnnotationQuery.of(String.class);
 
 		assertThat(chain)
-				.containsExactly();
+			.containsExactly();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -55,68 +56,68 @@ public class AnnotationQueryTest {
 		AnnotationQuery<Annotation> chain = AnnotationQuery.of(Subject.class);
 
 		assertThat(chain)
-				.extracting(Annotation::annotationType)
-				.containsExactlyInAnyOrder(Subject.Special.class, Subject.OtherAnnotation.class);
+			.extracting((Extractor<Annotation, Class<? extends Annotation>>) Annotation::annotationType)
+			.containsExactlyInAnyOrder(Subject.Special.class, Subject.OtherAnnotation.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSubjectTyped() {
 		AnnotationQuery<?> chain = AnnotationQuery.of(Subject.class)
-				.typed(Subject.Special.class);
+			.typed(Subject.Special.class);
 
 		assertThat(chain)
-				.extracting(Annotation::annotationType)
-				.containsExactlyInAnyOrder(Subject.Special.class);
+			.extracting((Extractor<Annotation, Class<? extends Annotation>>) Annotation::annotationType)
+			.containsExactlyInAnyOrder(Subject.Special.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testPredicated() {
 		AnnotationQuery<?> chain = AnnotationQuery.of(Subject.class)
-				.filter(annotation -> annotation.annotationType().getSimpleName().charAt(0) == 'O');
+			.filter(annotation -> annotation.annotationType().getSimpleName().charAt(0) == 'O');
 
 		assertThat(chain)
-				.extracting(Annotation::annotationType)
-				.containsExactlyInAnyOrder(Subject.OtherAnnotation.class);
+			.extracting((Extractor<Annotation, Class<? extends Annotation>>) Annotation::annotationType)
+			.containsExactlyInAnyOrder(Subject.OtherAnnotation.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testAnnotatedWith() {
 		AnnotationQuery<Annotation> chain = AnnotationQuery.empty()
-				.join(AnnotationQuery.of(Subject.class).annotatedWith(Retention.class));
+			.join(AnnotationQuery.of(Subject.class).annotatedWith(Retention.class));
 
 		assertThat(chain)
-				.extracting(Annotation::annotationType)
-				.containsExactlyInAnyOrder(Subject.Special.class, Subject.OtherAnnotation.class);
+			.extracting((Extractor<Annotation, Class<? extends Annotation>>) Annotation::annotationType)
+			.containsExactlyInAnyOrder(Subject.Special.class, Subject.OtherAnnotation.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testJoin() {
 		AnnotationQuery<Subject.Special> first =
-				AnnotationQuery.of(Subject.class).typed(Subject.Special.class);
+			AnnotationQuery.of(Subject.class).typed(Subject.Special.class);
 		AnnotationQuery<Documented> second =
-				AnnotationQuery.of(Retention.class).typed(Documented.class);
+			AnnotationQuery.of(Retention.class).typed(Documented.class);
 		AnnotationQuery<Annotation> chain = first.join(second);
 
 		assertThat(chain)
-				.extracting(Annotation::annotationType)
-				.containsExactlyInAnyOrder(Subject.Special.class, Documented.class);
+			.extracting((Extractor<Annotation, Class<? extends Annotation>>) Annotation::annotationType)
+			.containsExactlyInAnyOrder(Subject.Special.class, Documented.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testJoinMultiple() {
 		AnnotationQuery<Annotation> chain = AnnotationQuery.empty()
-				.join(AnnotationQuery.of(Retention.class).typed(Documented.class))
-				.join(AnnotationQuery.of(Subject.class).typed(Subject.Special.class))
-				.join(AnnotationQuery.of(Documented.class).typed(Documented.class));
+			.join(AnnotationQuery.of(Retention.class).typed(Documented.class))
+			.join(AnnotationQuery.of(Subject.class).typed(Subject.Special.class))
+			.join(AnnotationQuery.of(Documented.class).typed(Documented.class));
 
 		assertThat(chain)
-				.extracting(Annotation::annotationType)
-				.containsExactlyInAnyOrder(Subject.Special.class, Documented.class, Documented.class);
+			.extracting((Extractor<Annotation, Class<? extends Annotation>>) Annotation::annotationType)
+			.containsExactlyInAnyOrder(Subject.Special.class, Documented.class, Documented.class);
 	}
 
 }
