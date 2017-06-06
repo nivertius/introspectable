@@ -25,8 +25,8 @@ final class RegisteredSingleton<T> implements Construction<T>, Configuration.Reg
 	}
 
 	@Override
-	public boolean matches(Class<?> type, Annotation... qualifiers) {
-		return typeMatch.matches(type, qualifiers);
+	public boolean matches(Query<?> query) {
+		return typeMatch.matches(query);
 	}
 
 	@Override

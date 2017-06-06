@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.perfectable.introspection.injection.Query.typed;
 
 public class StandardRegistryTest {
 
@@ -13,7 +14,7 @@ public class StandardRegistryTest {
 		StandardRegistry registry = StandardRegistry.create();
 		registry.register(EmptyService.class);
 
-		EmptyService service = registry.fetch(EmptyService.class);
+		EmptyService service = registry.fetch(typed(EmptyService.class));
 		assertThat(service)
 				.isNotNull();
 	}
@@ -24,7 +25,7 @@ public class StandardRegistryTest {
 		registry.register(EmptyService.class);
 		registry.register(ConstructorService.class);
 
-		ConstructorService service = registry.fetch(ConstructorService.class);
+		ConstructorService service = registry.fetch(typed(ConstructorService.class));
 
 		assertThat(service)
 				.isNotNull();

@@ -93,13 +93,21 @@ final class RegistryProvider<T> implements Provider<T> {
 		for (Parameter parameter : executable.getParameters()) {
 			Annotation[] qualifiers = findQualifiers(parameter);
 			Class<?> type = parameter.getType();
-			Object argument = registry.fetch(type, qualifiers);
+			Query<?> query = createQuery(type, qualifiers);
+			Object argument = registry.fetch(query);
 			arguments[counter] = argument;
 			counter++;
 		}
 		return arguments;
 	}
 
+	private static Query<?> createQuery(Class<?> type, Annotation... qualifiers) {
+		Query<?> query = Query.typed(type);
+		for (Annotation qualifier : qualifiers) {
+			query.qualifiedWith(qualifier);
+		}
+		return query;
+	}
 
 	static Annotation[] findQualifiers(AnnotatedElement element) {
 		return AnnotationQuery.of(element)
@@ -129,7 +137,8 @@ final class RegistryProvider<T> implements Provider<T> {
 		public void perform(Object targetObject) {
 			Class<?> fieldType = field.getType();
 			Annotation[] qualifiers = findQualifiers(field);
-			Object injection = registry.fetch(fieldType, qualifiers);
+			Query<?> query = createQuery(fieldType, qualifiers);
+			Object injection = registry.fetch(query);
 			try {
 				field.set(targetObject, injection);
 			}

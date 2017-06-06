@@ -18,8 +18,8 @@ final class CompositeTypeMatch implements TypeMatch {
 	}
 
 	@Override
-	public boolean matches(Class<?> type, Annotation... qualifiers) {
-		return components.stream().anyMatch(component -> component.matches(type, qualifiers));
+	public boolean matches(Query<?> query) {
+		return components.stream().anyMatch(component -> component.matches(query));
 	}
 
 	public void add(Class<?> injectableClass, Annotation... qualifiers) {

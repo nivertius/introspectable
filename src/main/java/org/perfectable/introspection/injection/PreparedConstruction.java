@@ -29,8 +29,8 @@ abstract class PreparedConstruction<T> implements Construction<T>, Configuration
 	}
 
 	@Override
-	public boolean matches(Class<?> type, Annotation... qualifiers) {
-		return typeMatch.matches(type, qualifiers);
+	public boolean matches(Query<?> query) {
+		return typeMatch.matches(query);
 	}
 
 	@Override

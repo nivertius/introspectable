@@ -1,7 +1,6 @@
 package org.perfectable.introspection.injection;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Provider;
@@ -34,15 +33,14 @@ public class StandardRegistry implements Registry, Configuration {
 	}
 
 	@Override
-	public <T> T fetch(Class<T> targetClass, Annotation... qualifiers) {
+	public <T> T fetch(Query<T> query) {
 		for (Construction<?> construction : preparedConstructions) {
-			if (construction.matches(targetClass, qualifiers)) {
+			if (construction.matches(query)) {
 				@SuppressWarnings("unchecked")
 				T casted = ((Construction<T>) construction).construct();
 				return casted;
 			}
 		}
-		throw new IllegalArgumentException("Don't know how to create " + targetClass
-				+ " with qualifiers " + Arrays.toString(qualifiers));
+		throw new IllegalArgumentException("No construction matches " + query);
 	}
 }

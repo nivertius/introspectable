@@ -5,10 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.inject.Qualifier;
-
-import com.google.common.collect.Sets;
 
 import static org.perfectable.introspection.Introspections.introspect;
 
@@ -30,8 +27,7 @@ final class SimpleTypeMatch<T> implements TypeMatch {
 	}
 
 	@Override
-	public boolean matches(Class<?> type, Annotation... qualifiers) {
-		return type.isAssignableFrom(targetClass)
-				&& Sets.newHashSet(qualifiers).equals(annotations);
+	public boolean matches(Query<?> query) {
+		return query.matches(targetClass, annotations);
 	}
 }
