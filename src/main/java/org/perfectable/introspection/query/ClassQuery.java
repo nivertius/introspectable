@@ -2,6 +2,7 @@ package org.perfectable.introspection.query; // SUPPRESS FileLength
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -50,6 +51,14 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 	@Override
 	public ClassQuery<C> filter(Predicate<? super Class<? extends C>> filter) {
 		return new Predicated<>(this, filter);
+	}
+
+	public final ClassQuery<C> annotatedWith(Class<? extends Annotation> annotation) {
+		return annotatedWith(AnnotationFilter.of(annotation));
+	}
+
+	public ClassQuery<C> annotatedWith(AnnotationFilter annotationFilter) {
+		return new Annotated<>(this, annotationFilter);
 	}
 
 	private static final class OfClassLoader extends ClassQuery<Object> {
@@ -145,6 +154,27 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 		@Override
 		public ClassQuery<C> inPackage(String filteredPackageName) {
 			return new Predicated<>(parent.inPackage(filteredPackageName), filter);
+		}
+	}
+
+	private static final class Annotated<C>
+		extends Filtered<C> {
+
+		private final AnnotationFilter annotationFilter;
+
+		Annotated(ClassQuery<C> parent, AnnotationFilter annotationFilter) {
+			super(parent);
+			this.annotationFilter = annotationFilter;
+		}
+
+		@Override
+		public ClassQuery<C> inPackage(String filteredPackageName) {
+			return new Annotated<>(parent.inPackage(filteredPackageName), annotationFilter);
+		}
+
+		@Override
+		protected boolean matches(Class<? extends C> candidate) {
+			return annotationFilter.matches(candidate);
 		}
 	}
 
