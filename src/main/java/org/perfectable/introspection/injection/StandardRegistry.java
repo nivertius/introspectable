@@ -38,7 +38,7 @@ public class StandardRegistry implements Registry, Configuration {
 		for (Construction<?> construction : preparedConstructions) {
 			if (construction.matches(targetClass, qualifiers)) {
 				@SuppressWarnings("unchecked")
-				T casted = ((Construction<T>) construction).create(targetClass);
+				T casted = ((Construction<T>) construction).construct();
 				return casted;
 			}
 		}

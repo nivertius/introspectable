@@ -20,8 +20,8 @@ final class RegisteredSingleton<T> implements Construction<T>, Configuration.Reg
 	}
 
 	@Override
-	public T create(Class<T> targetClass) {
-		return targetClass.cast(singleton);
+	public T construct() {
+		return singleton;
 	}
 
 	@Override

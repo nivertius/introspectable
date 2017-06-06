@@ -24,8 +24,8 @@ abstract class PreparedConstruction<T> implements Construction<T>, Configuration
 		this.typeMatch = typeMatch;
 	}
 
-	protected final T construct(Class<T> targetClass) {
-		return targetClass.cast(provider.get());
+	protected final T provide() {
+		return provider.get();
 	}
 
 	@Override
@@ -44,8 +44,8 @@ abstract class PreparedConstruction<T> implements Construction<T>, Configuration
 		}
 
 		@Override
-		public T create(Class<T> targetClass) {
-			return construct(targetClass);
+		public T construct() {
+			return provide();
 		}
 	}
 
@@ -58,9 +58,9 @@ abstract class PreparedConstruction<T> implements Construction<T>, Configuration
 		}
 
 		@Override
-		public T create(Class<T> targetClass) {
+		public T construct() {
 			if (singletonInstance == null) {
-				singletonInstance = construct(targetClass);
+				singletonInstance = provide();
 			}
 			return singletonInstance;
 		}
