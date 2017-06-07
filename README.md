@@ -69,6 +69,21 @@ Class<?> targetClass =
         .resolve(messageConsumer);
 ```
 
+#### Example: Servlet Discovery
+
+To discover and register all servlets, web application needs to scan classpath for `Servlet` classes to instantiate:
+
+```java
+introspect(Application.class.getClassLoader())
+    .classes()
+    .inPackage(Application.class.getPackage())
+    .subtypeOf(Servlet.class)
+    .stream()
+    .map(Introspections::introspect)
+    .map(ClassIntrospection::instantiate)
+    .forEach(this::registerServlet);
+```
+
 ### Proxies
 
 Introspectable adds simple facade for creating proxies. Natively, it supports standard JDK proxies and 
