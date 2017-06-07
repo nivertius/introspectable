@@ -12,6 +12,10 @@ public final class Introspections {
 		return MethodIntrospection.of(method);
 	}
 
+	public static ClassLoaderIntrospection introspect(ClassLoader classLoader) {
+		return ClassLoaderIntrospection.of(classLoader);
+	}
+
 	private Introspections() {
 		// utility
 	}
