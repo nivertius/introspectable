@@ -4,7 +4,7 @@ Easier Java reflections.
 
 ## Introduction
 
-Reflections, a access to program elements structure from themselves, although not recommended in applications are essential 
+Reflections, an access to program elements structure from themselves, although not recommended in applications are essential 
 when creating frameworks. Java has somewhat complicated and verbose ways to do reflections, sometimes to the extremes.
 
 Introspectable comes to rescue. This library has few methods that eases common reflection tasks.
