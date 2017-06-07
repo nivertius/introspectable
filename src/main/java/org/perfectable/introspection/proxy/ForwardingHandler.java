@@ -22,9 +22,7 @@ public final class ForwardingHandler<T> implements InvocationHandler<T> {
 	@Nullable
 	@Override
 	public Object handle(Invocation<T> invocation) throws Throwable {
-		Invocation<T> replacedReceiver =
-				invocation.decompose((method, receiver, arguments) -> Invocation.of(method, this.target, arguments));
-		return replacedReceiver.invoke();
+		return invocation.withReceiver(target).invoke();
 	}
 
 }

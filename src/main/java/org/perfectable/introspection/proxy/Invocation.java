@@ -47,6 +47,10 @@ public final class Invocation<T> {
 		return decomposer.decompose(method, receiver, arguments);
 	}
 
+	public <X extends T> Invocation<X> withReceiver(X newReceiver) {
+		return of(method, newReceiver, arguments);
+	}
+
 	@FunctionalInterface
 	public interface Invoker<T> {
 		// SUPPRESS NEXT 2 IllegalThrows
