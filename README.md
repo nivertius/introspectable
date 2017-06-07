@@ -108,6 +108,27 @@ Object proxy =
             });
 ```
 
+#### Example: Call logging
+
+`UserService` service calls needs to be logged:
+
+```java
+UserService proxy =
+    ProxyBuilderFactory.any()
+        .ofType(UserService.class)
+        .instantiate(invocation -> {
+                String source = invocation.decompose((method, target, parameters) ->
+                    method.getDeclaringClass() + "#" + method.getName());
+                LOGGER.info("Before call on {}", source);
+                try {
+                    return invocation.withReceiver(realService).invoke();
+                }
+                finally {
+                    LOGGER.info("After call on {}", source);
+                }
+            });
+```
+
 ## How to use
 
 Add as dependency:
