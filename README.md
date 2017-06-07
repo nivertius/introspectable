@@ -86,10 +86,10 @@ Object proxy =
     ProxyBuilderFactory.withFeature(Feature.SUPERCLASS)
         .ofType(stubClass, Remote.class)
         .instantiate(invocation -> {
-                invocation.decompose((method, target, parameters) -> {
-                    channel.transmit(method.getName(), proxyName, serialize(parameters));
-                };
-                return channel.readReplay();
+                Transmission transmission =
+                    invocation.decompose((method, target, parameters) ->
+                        channel.transmit(method.getName(), proxyName, serialize(parameters)));
+                return transmission.readReplay();
             });
 ```
 
