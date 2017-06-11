@@ -35,15 +35,11 @@ public class ClassQueryTest {
 
 	@Test
 	public void testClassLoaderSubtype() {
-		ClassQuery<AbstractQuery<?, ?>> query = ClassQuery.of(ClassQueryTest.class.getClassLoader())
-			.inPackage(PACKAGE_NAME)
-			.subtypeOf(ClassQueryTest.<AbstractQuery<?, ?>>genericsCast(AbstractQuery.class));
+		ClassQuery<Object> query = ClassQuery.of(ClassQueryTest.class.getClassLoader())
+			.subtypeOf(AbstractQuery.class);
 
 		assertThat(query)
-			.contains(ClassQueryTest.<ClassQuery<?>>genericsCast(ClassQuery.class));
-	}
-
-	private static <C> Class<C> genericsCast(Class<? super C> source) {
-		return (Class<C>) source;
+			.contains(ClassQuery.class, MethodQuery.class)
+			.doesNotContain(String.class, Subject.class, CtClass.class);
 	}
 }

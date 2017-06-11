@@ -44,9 +44,7 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 		return StandardClassQuery.ofClassLoader(loader);
 	}
 
-	public <X extends C> ClassQuery<X> subtypeOf(Class<? extends X> subtype) {
-		return new Subtyped<>(this, subtype);
-	}
+	public abstract <X extends C> ClassQuery<X> subtypeOf(Class<? extends X> supertype);
 
 	public abstract ClassQuery<C> inPackage(String filteredPackageName);
 
@@ -65,28 +63,30 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 
 	public abstract ClassQuery<C> annotatedWith(AnnotationFilter annotationFilter);
 
-	private static final class StandardClassQuery extends ClassQuery<Object> {
+	private static final class StandardClassQuery<C> extends ClassQuery<C> {
 		private static final Predicate<? super CtClass> DEFAULT_PRE_LOAD_FILTER = className -> true;
+
+		private static final StandardClassQuery<Object> GLOBAL =
+			new StandardClassQuery<>(Object.class, GlobalResourceSource.INSTANCE, ClassPool.getDefault(),
+				Class::forName, DEFAULT_PRE_LOAD_FILTER);
 
 		private static final String CLASS_FILE_SUFFIX = ".class";
 		private final ResourceSource resources;
 		private final ClassPool classPool;
 		private final TypeLoader loader;
+		private final Class<? extends C> castedType;
 		private final Predicate<? super CtClass> preLoadFilter;
-
-		private static final StandardClassQuery GLOBAL =
-			new StandardClassQuery(GlobalResourceSource.INSTANCE, ClassPool.getDefault(), Class::forName,
-				DEFAULT_PRE_LOAD_FILTER);
 
 		static ClassQuery<Object> ofClassLoader(ClassLoader loader) {
 			ClassPool classPool = new ClassPool();
 			classPool.appendClassPath(new LoaderClassPath(loader));
-			return new StandardClassQuery(ClassLoaderResourceSource.of(loader), classPool, loader::loadClass,
-				DEFAULT_PRE_LOAD_FILTER);
+			return new StandardClassQuery<>(Object.class, ClassLoaderResourceSource.of(loader), classPool,
+				loader::loadClass, DEFAULT_PRE_LOAD_FILTER);
 		}
 
-		private StandardClassQuery(ResourceSource resources, ClassPool classPool, TypeLoader loader,
-								   Predicate<? super CtClass> preLoadFilter) {
+		private StandardClassQuery(Class<? extends C> castedType, ResourceSource resources, ClassPool classPool,
+								   TypeLoader loader, Predicate<? super CtClass> preLoadFilter) {
+			this.castedType = castedType;
 			this.resources = resources;
 			this.classPool = classPool;
 			this.loader = loader;
@@ -94,24 +94,32 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 		}
 
 		@Override
-		public ClassQuery<Object> inPackage(String newFilteredPackageName) {
+		public ClassQuery<C> inPackage(String newFilteredPackageName) {
 			return withPreLoadFilter(PackagePredicate.of(newFilteredPackageName));
 		}
 
 		@Override
-		public ClassQuery<Object> annotatedWith(AnnotationFilter annotationFilter) {
+		public ClassQuery<C> annotatedWith(AnnotationFilter annotationFilter) {
 			return withPreLoadFilter(AnnotationPredicate.of(annotationFilter));
 		}
 
-		private ClassQuery<Object> withPreLoadFilter(Predicate<? super CtClass> additionalPreLoadFilter) {
+		@Override
+		public <X extends C> ClassQuery<X> subtypeOf(Class<? extends X> supertype) {
+			@SuppressWarnings("unchecked")
+			Predicate<? super CtClass> newPreLoadFilter =
+				((Predicate<CtClass>) preLoadFilter).and(SubtypePredicate.of(supertype));
+			return new StandardClassQuery<X>(supertype, resources, classPool, loader, newPreLoadFilter);
+		}
+
+		private ClassQuery<C> withPreLoadFilter(Predicate<? super CtClass> additionalPreLoadFilter) {
 			@SuppressWarnings("unchecked")
 			Predicate<? super CtClass> newPreLoadFilter =
 				((Predicate<CtClass>) preLoadFilter).and(additionalPreLoadFilter);
-			return new StandardClassQuery(resources, classPool, loader, newPreLoadFilter);
+			return new StandardClassQuery<>(castedType, resources, classPool, loader, newPreLoadFilter);
 		}
 
 		@Override
-		public Stream<Class<?>> stream() {
+		public Stream<Class<? extends C>> stream() {
 			return resources.entries()
 				.filter(StandardClassQuery::isClass)
 				.map(StandardClassQuery::getClassName)
@@ -140,9 +148,10 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 			}
 		}
 
-		private Class<?> load(CtClass preloadedClass) {
+		private Class<? extends C> load(CtClass preloadedClass) {
 			try {
-				return loader.load(preloadedClass.getName());
+				return loader.load(preloadedClass.getName())
+					.asSubclass(castedType);
 			}
 			catch (ClassNotFoundException e) {
 				throw new AssertionError(e);
@@ -187,6 +196,46 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 			}
 
 		}
+
+		private static final class SubtypePredicate implements Predicate<CtClass> {
+			private final Class<?> supertype;
+
+			public static Predicate<? super CtClass> of(Class<?> supertype) {
+				return new SubtypePredicate(supertype);
+			}
+
+			private SubtypePredicate(Class<?> supertype) {
+				this.supertype = supertype;
+			}
+
+			@Override // SUPPRESS Unit4TestShouldUseTestAnnotation
+			public boolean test(CtClass ctClass) {
+				if (ctClass.getName().equals(supertype.getName())) {
+					return true;
+				}
+				try {
+					CtClass superclass = ctClass.getSuperclass();
+					if (superclass != null && test(superclass)) {
+						return true;
+					}
+				}
+				catch (NotFoundException ignored) { // SUPPRESS EmptyBlock
+					// continue
+				}
+				try {
+					CtClass[] ctInterfaces = ctClass.getInterfaces();
+					for (CtClass ctInterface : ctInterfaces) {
+						if (test(ctInterface)) {
+							return true;
+						}
+					}
+				}
+				catch (NotFoundException ignored) { // SUPPRESS EmptyBlock
+					// continue
+				}
+				return false;
+			}
+		}
 	}
 
 	private abstract static class Filtered<C> extends ClassQuery<C> {
@@ -228,34 +277,10 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 		public ClassQuery<C> annotatedWith(AnnotationFilter annotationFilter) {
 			return new Predicated<>(parent.annotatedWith(annotationFilter), filter);
 		}
-	}
-
-	private static class Subtyped<X extends C, C> extends ClassQuery<X> {
-		// generic types changes, cannot inherit from Filtered
-
-		private final ClassQuery<? extends C> parent;
-		private final Class<? extends X> subtype;
-
-		Subtyped(ClassQuery<? extends C> parent, Class<? extends X> subtype) {
-			this.parent = parent;
-			this.subtype = subtype;
-		}
 
 		@Override
-		public Stream<Class<? extends X>> stream() {
-			return parent.stream()
-				.filter(subtype::isAssignableFrom)
-				.map(current -> current.asSubclass(subtype));
-		}
-
-		@Override
-		public ClassQuery<X> inPackage(String filteredPackageName) {
-			return new Subtyped<>(parent.inPackage(filteredPackageName), subtype);
-		}
-
-		@Override
-		public ClassQuery<X> annotatedWith(AnnotationFilter annotationFilter) {
-			return new Subtyped<>(parent.annotatedWith(annotationFilter), subtype);
+		public <X extends C> ClassQuery<X> subtypeOf(Class<? extends X> subtype) {
+			return new Predicated<>(parent.subtypeOf(subtype), filter);
 		}
 	}
 
