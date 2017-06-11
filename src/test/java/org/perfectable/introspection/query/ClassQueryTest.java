@@ -3,6 +3,7 @@ package org.perfectable.introspection.query;
 import org.perfectable.introspection.Subject;
 import org.perfectable.introspection.SubjectReflection;
 
+import javassist.CtClass;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,7 +19,8 @@ public class ClassQueryTest {
 			.inPackage(PACKAGE_NAME);
 
 		assertThat(query)
-			.contains(ClassQueryTest.class, ClassQuery.class, Subject.class, SubjectReflection.class);
+			.contains(ClassQueryTest.class, ClassQuery.class, Subject.class, SubjectReflection.class)
+			.doesNotContain(String.class, CtClass.class);
 	}
 
 	@Test

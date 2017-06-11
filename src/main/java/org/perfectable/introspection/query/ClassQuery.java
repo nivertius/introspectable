@@ -64,32 +64,38 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 	}
 
 	private static final class StandardClassQuery extends ClassQuery<Object> {
+		private static final Predicate<? super String> DEFAULT_PRE_LOAD_FILTER = className -> true;
+
 		private static final String CLASS_FILE_SUFFIX = ".class";
 		private final ResourceSource resources;
 		private final TypeLoader loader;
-		private final String filteredPackageName;
+		private final Predicate<? super String> preLoadFilter;
 
 		private static final StandardClassQuery GLOBAL =
-			new StandardClassQuery(GlobalResourceSource.INSTANCE, Class::forName, "");
+			new StandardClassQuery(GlobalResourceSource.INSTANCE, Class::forName, DEFAULT_PRE_LOAD_FILTER);
 
 		static ClassQuery<Object> ofClassLoader(ClassLoader loader) {
-			return new StandardClassQuery(ClassLoaderResourceSource.of(loader), loader::loadClass, "");
+			return new StandardClassQuery(ClassLoaderResourceSource.of(loader), loader::loadClass,
+				DEFAULT_PRE_LOAD_FILTER);
 		}
 
-		private StandardClassQuery(ResourceSource resources, TypeLoader loader, String filteredPackageName) {
+		private StandardClassQuery(ResourceSource resources, TypeLoader loader,
+								   Predicate<? super String> preLoadFilter) {
 			this.resources = resources;
 			this.loader = loader;
-			this.filteredPackageName = filteredPackageName;
+			this.preLoadFilter = preLoadFilter;
 		}
-
 
 		@Override
 		public ClassQuery<Object> inPackage(String newFilteredPackageName) {
-			requireNonNull(newFilteredPackageName);
-			if (!newFilteredPackageName.startsWith(this.filteredPackageName)) {
-				return EmptyClassQuery.INSTANCE;
-			}
-			return new StandardClassQuery(resources, loader, newFilteredPackageName);
+			return withPreLoadFilter(PackagePredicate.of(newFilteredPackageName));
+		}
+
+		private ClassQuery<Object> withPreLoadFilter(Predicate<? super String> additionalPreLoadFilter) {
+			@SuppressWarnings("unchecked")
+			Predicate<? super String> newPreLoadFilter =
+				((Predicate<String>) preLoadFilter).and(additionalPreLoadFilter);
+			return new StandardClassQuery(resources, loader, newPreLoadFilter);
 		}
 
 		@Override
@@ -97,14 +103,9 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 			return resources.entries()
 				.filter(StandardClassQuery::isClass)
 				.map(StandardClassQuery::getClassName)
-				.filter(this::isInFilteredPackage)
+				.filter(preLoadFilter)
 				.map(this::load)
 				.flatMap(Streams::presentInstances);
-		}
-
-
-		private boolean isInFilteredPackage(String className) {
-			return className.startsWith(filteredPackageName);
 		}
 
 		private static boolean isClass(String path) {
@@ -126,6 +127,23 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 		private static String getClassName(String path) {
 			int classNameEnd = path.length() - CLASS_FILE_SUFFIX.length();
 			return path.substring(0, classNameEnd).replace('/', '.');
+		}
+
+		private static final class PackagePredicate implements Predicate<String> {
+			private final String filteredPackageName;
+
+			public static PackagePredicate of(String filteredPackageName) {
+				return new PackagePredicate(filteredPackageName);
+			}
+
+			private PackagePredicate(String filteredPackageName) {
+				this.filteredPackageName = filteredPackageName;
+			}
+
+			@Override // SUPPRESS Unit4TestShouldUseTestAnnotation
+			public boolean test(String className) {
+				return className.startsWith(filteredPackageName);
+			}
 		}
 	}
 
@@ -207,29 +225,6 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 		@Override
 		public ClassQuery<X> inPackage(String filteredPackageName) {
 			return new Subtyped<>(parent.inPackage(filteredPackageName), subtype);
-		}
-	}
-
-	private static final class EmptyClassQuery extends ClassQuery<Object> {
-		static final EmptyClassQuery INSTANCE = new EmptyClassQuery();
-
-		private EmptyClassQuery() {
-			// singleton
-		}
-
-		@Override
-		public Stream<Class<?>> stream() {
-			return Stream.of();
-		}
-
-		@Override
-		public EmptyClassQuery inPackage(String filteredPackageName) {
-			return INSTANCE;
-		}
-
-		@Override
-		public EmptyClassQuery filter(Predicate<? super Class<?>> filter) {
-			return INSTANCE;
 		}
 	}
 
