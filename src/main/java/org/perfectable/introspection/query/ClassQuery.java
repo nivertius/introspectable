@@ -13,10 +13,9 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -25,17 +24,20 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 
 import static java.util.Objects.requireNonNull;
 
 public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, ClassQuery<C>> {
 
-	private static final ClassPath CLASS_PATH = new ClassPath();
+	public static ClassQuery<Object> all() {
+		return StandardClassQuery.GLOBAL;
+	}
 
 	public static ClassQuery<Object> of(ClassLoader loader) {
 		requireNonNull(loader);
-		return ClassQuery.OfClassLoader.create(loader);
+		return StandardClassQuery.ofClassLoader(loader);
 	}
 
 	public <X extends C> ClassQuery<X> subtypeOf(Class<? extends X> subtype) {
@@ -61,16 +63,21 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 		return new Annotated<>(this, annotationFilter);
 	}
 
-	private static final class OfClassLoader extends ClassQuery<Object> {
+	private static final class StandardClassQuery extends ClassQuery<Object> {
 		private static final String CLASS_FILE_SUFFIX = ".class";
-		private final ClassLoader loader;
+		private final ResourceSource resources;
+		private final TypeLoader loader;
 		private final String filteredPackageName;
 
-		public static ClassQuery<Object> create(ClassLoader loader) {
-			return new OfClassLoader(loader, "");
+		private static final StandardClassQuery GLOBAL =
+			new StandardClassQuery(GlobalResourceSource.INSTANCE, Class::forName, "");
+
+		static ClassQuery<Object> ofClassLoader(ClassLoader loader) {
+			return new StandardClassQuery(ClassLoaderResourceSource.of(loader), loader::loadClass, "");
 		}
 
-		private OfClassLoader(ClassLoader loader, String filteredPackageName) {
+		private StandardClassQuery(ResourceSource resources, TypeLoader loader, String filteredPackageName) {
+			this.resources = resources;
 			this.loader = loader;
 			this.filteredPackageName = filteredPackageName;
 		}
@@ -82,18 +89,19 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 			if (!newFilteredPackageName.startsWith(this.filteredPackageName)) {
 				return EmptyClassQuery.INSTANCE;
 			}
-			return new OfClassLoader(loader, newFilteredPackageName);
+			return new StandardClassQuery(resources, loader, newFilteredPackageName);
 		}
 
 		@Override
 		public Stream<Class<?>> stream() {
-			return CLASS_PATH.entries(loader).stream()
-				.filter(OfClassLoader::isClass)
-				.map(OfClassLoader::getClassName)
+			return resources.entries()
+				.filter(StandardClassQuery::isClass)
+				.map(StandardClassQuery::getClassName)
 				.filter(this::isInFilteredPackage)
 				.map(this::load)
 				.flatMap(Streams::presentInstances);
 		}
+
 
 		private boolean isInFilteredPackage(String className) {
 			return className.startsWith(filteredPackageName);
@@ -107,7 +115,7 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 
 		private Optional<Class<?>> load(String className) {
 			try {
-				Class<?> loadedClass = loader.loadClass(className);
+				Class<?> loadedClass = loader.load(className);
 				return Optional.of(loadedClass);
 			}
 			catch (ClassNotFoundException | NoClassDefFoundError exception) {
@@ -225,35 +233,24 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 		}
 	}
 
-	private static class ClassPath {
-		private final Map<ClassLoader, ImmutableSet<String>> entriesCache = new ConcurrentHashMap<>();
+	private interface TypeLoader {
+		Class<?> load(String typeName) throws ClassNotFoundException, NoClassDefFoundError;
+	}
 
-		ImmutableSet<String> entries(ClassLoader loader) {
-			return entriesCache.computeIfAbsent(loader, ClassPath::generateHierarchyEntries);
-		}
+	private interface ResourceSource {
+		Stream<String> entries();
+	}
 
-		private static ImmutableSet<String> generateHierarchyEntries(ClassLoader classLoader) {
+	private abstract static class UrlResourceSource implements ResourceSource {
+		@Override
+		public Stream<String> entries() {
 			Set<File> visited = new HashSet<>();
-			ClassLoader currentClassLoader = classLoader;
 			ImmutableSet.Builder<String> resultBuilder = ImmutableSet.builder();
-			while (currentClassLoader != null) {
-				generateClassloaderEntries(currentClassLoader, resultBuilder, visited);
-				currentClassLoader = currentClassLoader.getParent();
-			}
-			return resultBuilder.build();
+			generateUrls(url -> generateUrlEntry(url, resultBuilder, visited));
+			return resultBuilder.build().stream();
 		}
 
-		private static void generateClassloaderEntries(ClassLoader classLoader,
-												ImmutableSet.Builder<String> resultBuilder,
-												Set<File> visited) {
-			if (!(classLoader instanceof URLClassLoader)) {
-				return;
-			}
-			URLClassLoader urlClassLoader = (URLClassLoader) classLoader;
-			for (URL url : urlClassLoader.getURLs()) {
-				generateUrlEntry(url, resultBuilder, visited);
-			}
-		}
+		protected abstract void generateUrls(Consumer<URL> urlAction);
 
 		private static void generateUrlEntry(URL url, ImmutableSet.Builder<String> resultBuilder, Set<File> visited) {
 			File file = new File(url.getFile());
@@ -271,8 +268,8 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 
 		// SUPPRESS NEXT 1 MethodLength
 		private static void generateJarEntries(File jarPath,
-										ImmutableSet.Builder<String> resultBuilder,
-										Set<File> visited) {
+											   ImmutableSet.Builder<String> resultBuilder,
+											   Set<File> visited) {
 			@Nullable String manifestClassPath;
 			try (JarFile jarFile = new JarFile(jarPath);) {
 				manifestClassPath = getManifestClassPathString(jarFile);
@@ -312,7 +309,7 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 			return manifest.getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
 		}
 
-		private static URL safeToUrl(String entry) {
+		protected static URL safeToUrl(String entry) {
 			try {
 				return new URL(entry);
 			}
@@ -335,6 +332,57 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 				Path relativePath = basePath.relativize(path);
 				resultBuilder.add(relativePath.toString());
 				return FileVisitResult.CONTINUE;
+			}
+		}
+	}
+
+	private static final class GlobalResourceSource extends UrlResourceSource {
+		static final GlobalResourceSource INSTANCE = new GlobalResourceSource();
+
+		private static final Splitter CLASSPATH_SPLITTER = Splitter.on(':');
+		private static final String ENTRY_URL_PREFIX = "file://";
+
+		private GlobalResourceSource() {
+			// singleton
+		}
+
+		@Override
+		protected void generateUrls(Consumer<URL> urlAction) {
+			String classPathString = System.getProperty("java.class.path");
+			Iterable<String> classPathEntries = CLASSPATH_SPLITTER.split(classPathString);
+			for (String entry : classPathEntries) {
+				if (entry.endsWith("*")) {
+					throw new AssertionError("Wildcarded classpath is unsupported");
+				}
+				URL url = safeToUrl(ENTRY_URL_PREFIX + entry);
+				urlAction.accept(url);
+			}
+		}
+	}
+
+	private static final class ClassLoaderResourceSource extends UrlResourceSource {
+		private final ClassLoader classLoader;
+
+		public static ClassLoaderResourceSource of(ClassLoader classLoader) {
+			return new ClassLoaderResourceSource(classLoader);
+		}
+
+		private ClassLoaderResourceSource(ClassLoader classLoader) {
+			this.classLoader = classLoader;
+		}
+
+		@Override
+		protected void generateUrls(Consumer<URL> urlAction) {
+			ClassLoader currentClassLoader = classLoader;
+			while (currentClassLoader != null) {
+				if (!(currentClassLoader instanceof URLClassLoader)) {
+					continue;
+				}
+				URLClassLoader urlClassLoader = (URLClassLoader) currentClassLoader;
+				for (URL url : urlClassLoader.getURLs()) {
+					urlAction.accept(url);
+				}
+				currentClassLoader = currentClassLoader.getParent();
 			}
 		}
 	}

@@ -13,7 +13,7 @@ public class ClassQueryTest {
 	private static final String PACKAGE_NAME = "org.perfectable";
 
 	@Test
-	public void testPackage() {
+	public void testClassLoaderPackage() {
 		ClassQuery<Object> query = ClassQuery.of(ClassQueryTest.class.getClassLoader())
 			.inPackage(PACKAGE_NAME);
 
@@ -22,7 +22,7 @@ public class ClassQueryTest {
 	}
 
 	@Test
-	public void testSubtype() {
+	public void testClassLoaderSubtype() {
 		ClassQuery<AbstractQuery<?, ?>> query = ClassQuery.of(ClassQueryTest.class.getClassLoader())
 			.inPackage(PACKAGE_NAME)
 			.subtypeOf(ClassQueryTest.<AbstractQuery<?, ?>>genericsCast(AbstractQuery.class));
