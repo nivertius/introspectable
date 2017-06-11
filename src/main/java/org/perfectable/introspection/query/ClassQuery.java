@@ -53,9 +53,7 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 	}
 
 	@Override
-	public ClassQuery<C> filter(Predicate<? super Class<? extends C>> filter) {
-		return new Predicated<>(this, filter);
-	}
+	public abstract ClassQuery<C> filter(Predicate<? super Class<? extends C>> filter);
 
 	public final ClassQuery<C> annotatedWith(Class<? extends Annotation> annotation) {
 		return annotatedWith(AnnotationFilter.of(annotation));
@@ -66,10 +64,11 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 	private static final class StandardClassQuery<C> extends ClassQuery<C> {
 		private static final Predicate<? super String> DEFAULT_CLASSNAME_FILTER = className -> true;
 		private static final Predicate<? super CtClass> DEFAULT_PRE_LOAD_FILTER = ctClass -> true;
+		private static final Predicate<? super Class<?>> DEFAULT_POST_LOAD_FILTER = ctClass -> true;
 
 		private static final StandardClassQuery<Object> GLOBAL =
 			new StandardClassQuery<>(Object.class, GlobalResourceSource.INSTANCE, ClassPool.getDefault(),
-				Class::forName, DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER);
+				Class::forName, DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER, DEFAULT_POST_LOAD_FILTER);
 
 		private static final String CLASS_FILE_SUFFIX = ".class";
 		private final ResourceSource resources;
@@ -78,23 +77,27 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 		private final Class<? extends C> castedType;
 		private final Predicate<? super String> classNameFilter;
 		private final Predicate<? super CtClass> preLoadFilter;
+		private final Predicate<? super Class<? extends C>> postLoadFilter;
 
 		static ClassQuery<Object> ofClassLoader(ClassLoader loader) {
 			ClassPool classPool = new ClassPool();
 			classPool.appendClassPath(new LoaderClassPath(loader));
 			return new StandardClassQuery<>(Object.class, ClassLoaderResourceSource.of(loader), classPool,
-				loader::loadClass, DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER);
+				loader::loadClass, DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER, DEFAULT_POST_LOAD_FILTER);
 		}
 
-		private StandardClassQuery(Class<? extends C> castedType, ResourceSource resources, ClassPool classPool,
+		private StandardClassQuery(Class<? extends C> castedType, // SUPPRESS ParameterNumber
+								   ResourceSource resources, ClassPool classPool,
 								   TypeLoader loader, Predicate<? super String> classNameFilter,
-								   Predicate<? super CtClass> preLoadFilter) {
+								   Predicate<? super CtClass> preLoadFilter,
+								   Predicate<? super Class<? extends C>> postLoadFilter) {
 			this.castedType = castedType;
 			this.resources = resources;
 			this.classPool = classPool;
 			this.loader = loader;
 			this.classNameFilter = classNameFilter;
 			this.preLoadFilter = preLoadFilter;
+			this.postLoadFilter = postLoadFilter;
 		}
 
 		@Override
@@ -112,21 +115,33 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 			@SuppressWarnings("unchecked")
 			Predicate<? super CtClass> newPreLoadFilter =
 				((Predicate<CtClass>) preLoadFilter).and(SubtypePredicate.of(supertype));
-			return new StandardClassQuery<X>(supertype, resources, classPool, loader, classNameFilter, newPreLoadFilter);
+			return new StandardClassQuery<X>(supertype, resources, classPool, loader,
+				classNameFilter, newPreLoadFilter, DEFAULT_POST_LOAD_FILTER);
+		}
+
+		@Override
+		public ClassQuery<C> filter(Predicate<? super Class<? extends C>> filter) {
+			@SuppressWarnings("unchecked")
+			Predicate<? super Class<? extends C>> newPostLoadFilter =
+				((Predicate<Class<? extends C>>) postLoadFilter).and(filter);
+			return new StandardClassQuery<C>(castedType, resources, classPool, loader,
+				classNameFilter, preLoadFilter, newPostLoadFilter);
 		}
 
 		private ClassQuery<C> withClassNameFilter(Predicate<? super String> additionalClassNameFilter) {
 			@SuppressWarnings("unchecked")
 			Predicate<? super String> newClassNameFilter =
 				((Predicate<String>) classNameFilter).and(additionalClassNameFilter);
-			return new StandardClassQuery<>(castedType, resources, classPool, loader, newClassNameFilter, preLoadFilter);
+			return new StandardClassQuery<>(castedType, resources, classPool, loader,
+				newClassNameFilter, preLoadFilter, DEFAULT_POST_LOAD_FILTER);
 		}
 
 		private ClassQuery<C> withPreLoadFilter(Predicate<? super CtClass> additionalPreLoadFilter) {
 			@SuppressWarnings("unchecked")
 			Predicate<? super CtClass> newPreLoadFilter =
 				((Predicate<CtClass>) preLoadFilter).and(additionalPreLoadFilter);
-			return new StandardClassQuery<>(castedType, resources, classPool, loader, classNameFilter, newPreLoadFilter);
+			return new StandardClassQuery<>(castedType, resources, classPool, loader,
+				classNameFilter, newPreLoadFilter, DEFAULT_POST_LOAD_FILTER);
 		}
 
 		@Override
@@ -243,52 +258,6 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 				}
 				return false;
 			}
-		}
-	}
-
-	private abstract static class Filtered<C> extends ClassQuery<C> {
-		protected final ClassQuery<C> parent;
-
-		Filtered(ClassQuery<C> parent) {
-			this.parent = parent;
-		}
-
-		protected abstract boolean matches(Class<? extends C> candidate);
-
-		@Override
-		public Stream<Class<? extends C>> stream() {
-			return this.parent.stream()
-				.filter(this::matches);
-		}
-	}
-
-	private static final class Predicated<C>
-		extends Filtered<C> {
-		private final Predicate<? super Class<? extends C>> filter;
-
-		Predicated(ClassQuery<C> parent, Predicate<? super Class<? extends C>> filter) {
-			super(parent);
-			this.filter = filter;
-		}
-
-		@Override
-		protected boolean matches(Class<? extends C> candidate) {
-			return filter.test(candidate);
-		}
-
-		@Override
-		public ClassQuery<C> inPackage(String filteredPackageName) {
-			return new Predicated<>(parent.inPackage(filteredPackageName), filter);
-		}
-
-		@Override
-		public ClassQuery<C> annotatedWith(AnnotationFilter annotationFilter) {
-			return new Predicated<>(parent.annotatedWith(annotationFilter), filter);
-		}
-
-		@Override
-		public <X extends C> ClassQuery<X> subtypeOf(Class<? extends X> subtype) {
-			return new Predicated<>(parent.subtypeOf(subtype), filter);
 		}
 	}
 
