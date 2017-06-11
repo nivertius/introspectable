@@ -3,6 +3,7 @@ package org.perfectable.introspection.query; // SUPPRESS FileLength
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -62,9 +63,7 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 		return annotatedWith(AnnotationFilter.of(annotation));
 	}
 
-	public ClassQuery<C> annotatedWith(AnnotationFilter annotationFilter) {
-		return new Annotated<>(this, annotationFilter);
-	}
+	public abstract ClassQuery<C> annotatedWith(AnnotationFilter annotationFilter);
 
 	private static final class StandardClassQuery extends ClassQuery<Object> {
 		private static final Predicate<? super CtClass> DEFAULT_PRE_LOAD_FILTER = className -> true;
@@ -97,6 +96,11 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 		@Override
 		public ClassQuery<Object> inPackage(String newFilteredPackageName) {
 			return withPreLoadFilter(PackagePredicate.of(newFilteredPackageName));
+		}
+
+		@Override
+		public ClassQuery<Object> annotatedWith(AnnotationFilter annotationFilter) {
+			return withPreLoadFilter(AnnotationPredicate.of(annotationFilter));
 		}
 
 		private ClassQuery<Object> withPreLoadFilter(Predicate<? super CtClass> additionalPreLoadFilter) {
@@ -165,6 +169,24 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 				return packageName.startsWith(filteredPackageName);
 			}
 		}
+
+		private static final class AnnotationPredicate implements Predicate<CtClass> {
+			private final AnnotationFilter annotationFilter;
+
+			public static AnnotationPredicate of(AnnotationFilter annotationFilter) {
+				return new AnnotationPredicate(annotationFilter);
+			}
+
+			private AnnotationPredicate(AnnotationFilter annotationFilter) {
+				this.annotationFilter = annotationFilter;
+			}
+
+			@Override // SUPPRESS Unit4TestShouldUseTestAnnotation
+			public boolean test(CtClass preloadedClass) {
+				return annotationFilter.matches(CtClassAnnotatedElementAdapter.adapt(preloadedClass));
+			}
+
+		}
 	}
 
 	private abstract static class Filtered<C> extends ClassQuery<C> {
@@ -201,26 +223,10 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 		public ClassQuery<C> inPackage(String filteredPackageName) {
 			return new Predicated<>(parent.inPackage(filteredPackageName), filter);
 		}
-	}
-
-	private static final class Annotated<C>
-		extends Filtered<C> {
-
-		private final AnnotationFilter annotationFilter;
-
-		Annotated(ClassQuery<C> parent, AnnotationFilter annotationFilter) {
-			super(parent);
-			this.annotationFilter = annotationFilter;
-		}
 
 		@Override
-		public ClassQuery<C> inPackage(String filteredPackageName) {
-			return new Annotated<>(parent.inPackage(filteredPackageName), annotationFilter);
-		}
-
-		@Override
-		protected boolean matches(Class<? extends C> candidate) {
-			return annotationFilter.matches(candidate);
+		public ClassQuery<C> annotatedWith(AnnotationFilter annotationFilter) {
+			return new Predicated<>(parent.annotatedWith(annotationFilter), filter);
 		}
 	}
 
@@ -245,6 +251,11 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 		@Override
 		public ClassQuery<X> inPackage(String filteredPackageName) {
 			return new Subtyped<>(parent.inPackage(filteredPackageName), subtype);
+		}
+
+		@Override
+		public ClassQuery<X> annotatedWith(AnnotationFilter annotationFilter) {
+			return new Subtyped<>(parent.annotatedWith(annotationFilter), subtype);
 		}
 	}
 
@@ -399,6 +410,44 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 				}
 				currentClassLoader = currentClassLoader.getParent();
 			}
+		}
+	}
+
+	private static final class CtClassAnnotatedElementAdapter implements AnnotatedElement {
+		private final CtClass ctClass;
+
+		static CtClassAnnotatedElementAdapter adapt(CtClass preloadedClass) {
+			return new CtClassAnnotatedElementAdapter(preloadedClass);
+		}
+
+		private CtClassAnnotatedElementAdapter(CtClass ctClass) {
+			this.ctClass = ctClass;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+			try {
+				return (T) ctClass.getAnnotation(annotationClass);
+			}
+			catch (ClassNotFoundException e) {
+				throw new AssertionError(e);
+			}
+		}
+
+		@Override
+		public Annotation[] getAnnotations() {
+			try {
+				return (Annotation[]) ctClass.getAnnotations();
+			}
+			catch (ClassNotFoundException e) {
+				throw new AssertionError(e);
+			}
+		}
+
+		@Override
+		public Annotation[] getDeclaredAnnotations() {
+			return (Annotation[]) ctClass.getAvailableAnnotations();
 		}
 	}
 

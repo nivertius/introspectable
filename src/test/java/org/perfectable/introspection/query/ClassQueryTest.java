@@ -24,6 +24,16 @@ public class ClassQueryTest {
 	}
 
 	@Test
+	public void testClassLoaderAnnotation() {
+		ClassQuery<Object> query = ClassQuery.of(ClassQueryTest.class.getClassLoader())
+			.annotatedWith(Subject.Special.class);
+
+		assertThat(query)
+			.contains(Subject.class)
+			.doesNotContain(String.class, CtClass.class, ClassQuery.class);
+	}
+
+	@Test
 	public void testClassLoaderSubtype() {
 		ClassQuery<AbstractQuery<?, ?>> query = ClassQuery.of(ClassQueryTest.class.getClassLoader())
 			.inPackage(PACKAGE_NAME)
