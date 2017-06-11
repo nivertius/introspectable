@@ -64,38 +64,42 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 	public abstract ClassQuery<C> annotatedWith(AnnotationFilter annotationFilter);
 
 	private static final class StandardClassQuery<C> extends ClassQuery<C> {
-		private static final Predicate<? super CtClass> DEFAULT_PRE_LOAD_FILTER = className -> true;
+		private static final Predicate<? super String> DEFAULT_CLASSNAME_FILTER = className -> true;
+		private static final Predicate<? super CtClass> DEFAULT_PRE_LOAD_FILTER = ctClass -> true;
 
 		private static final StandardClassQuery<Object> GLOBAL =
 			new StandardClassQuery<>(Object.class, GlobalResourceSource.INSTANCE, ClassPool.getDefault(),
-				Class::forName, DEFAULT_PRE_LOAD_FILTER);
+				Class::forName, DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER);
 
 		private static final String CLASS_FILE_SUFFIX = ".class";
 		private final ResourceSource resources;
 		private final ClassPool classPool;
 		private final TypeLoader loader;
 		private final Class<? extends C> castedType;
+		private final Predicate<? super String> classNameFilter;
 		private final Predicate<? super CtClass> preLoadFilter;
 
 		static ClassQuery<Object> ofClassLoader(ClassLoader loader) {
 			ClassPool classPool = new ClassPool();
 			classPool.appendClassPath(new LoaderClassPath(loader));
 			return new StandardClassQuery<>(Object.class, ClassLoaderResourceSource.of(loader), classPool,
-				loader::loadClass, DEFAULT_PRE_LOAD_FILTER);
+				loader::loadClass, DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER);
 		}
 
 		private StandardClassQuery(Class<? extends C> castedType, ResourceSource resources, ClassPool classPool,
-								   TypeLoader loader, Predicate<? super CtClass> preLoadFilter) {
+								   TypeLoader loader, Predicate<? super String> classNameFilter,
+								   Predicate<? super CtClass> preLoadFilter) {
 			this.castedType = castedType;
 			this.resources = resources;
 			this.classPool = classPool;
 			this.loader = loader;
+			this.classNameFilter = classNameFilter;
 			this.preLoadFilter = preLoadFilter;
 		}
 
 		@Override
 		public ClassQuery<C> inPackage(String newFilteredPackageName) {
-			return withPreLoadFilter(PackagePredicate.of(newFilteredPackageName));
+			return withClassNameFilter(PackageNamePredicate.of(newFilteredPackageName));
 		}
 
 		@Override
@@ -108,14 +112,21 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 			@SuppressWarnings("unchecked")
 			Predicate<? super CtClass> newPreLoadFilter =
 				((Predicate<CtClass>) preLoadFilter).and(SubtypePredicate.of(supertype));
-			return new StandardClassQuery<X>(supertype, resources, classPool, loader, newPreLoadFilter);
+			return new StandardClassQuery<X>(supertype, resources, classPool, loader, classNameFilter, newPreLoadFilter);
+		}
+
+		private ClassQuery<C> withClassNameFilter(Predicate<? super String> additionalClassNameFilter) {
+			@SuppressWarnings("unchecked")
+			Predicate<? super String> newClassNameFilter =
+				((Predicate<String>) classNameFilter).and(additionalClassNameFilter);
+			return new StandardClassQuery<>(castedType, resources, classPool, loader, newClassNameFilter, preLoadFilter);
 		}
 
 		private ClassQuery<C> withPreLoadFilter(Predicate<? super CtClass> additionalPreLoadFilter) {
 			@SuppressWarnings("unchecked")
 			Predicate<? super CtClass> newPreLoadFilter =
 				((Predicate<CtClass>) preLoadFilter).and(additionalPreLoadFilter);
-			return new StandardClassQuery<>(castedType, resources, classPool, loader, newPreLoadFilter);
+			return new StandardClassQuery<>(castedType, resources, classPool, loader, classNameFilter, newPreLoadFilter);
 		}
 
 		@Override
@@ -123,6 +134,7 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 			return resources.entries()
 				.filter(StandardClassQuery::isClass)
 				.map(StandardClassQuery::getClassName)
+				.filter(classNameFilter)
 				.map(this::preload)
 				.filter(preLoadFilter)
 				.map(this::load);
@@ -158,24 +170,20 @@ public abstract class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Cl
 			}
 		}
 
-		private static final class PackagePredicate implements Predicate<CtClass> {
+		private static final class PackageNamePredicate implements Predicate<String> {
 			private final String filteredPackageName;
 
-			public static PackagePredicate of(String filteredPackageName) {
-				return new PackagePredicate(filteredPackageName);
+			public static PackageNamePredicate of(String filteredPackageName) {
+				return new PackageNamePredicate(filteredPackageName);
 			}
 
-			private PackagePredicate(String filteredPackageName) {
+			private PackageNamePredicate(String filteredPackageName) {
 				this.filteredPackageName = filteredPackageName;
 			}
 
 			@Override // SUPPRESS Unit4TestShouldUseTestAnnotation
-			public boolean test(CtClass preloadedClass) {
-				String packageName = preloadedClass.getPackageName();
-				if (packageName == null) {
-					return filteredPackageName.isEmpty();
-				}
-				return packageName.startsWith(filteredPackageName);
+			public boolean test(String className) {
+				return className.startsWith(filteredPackageName);
 			}
 		}
 
