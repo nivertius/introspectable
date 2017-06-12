@@ -10,16 +10,16 @@ import static org.perfectable.introspection.Introspections.introspect;
 abstract class PreparedConstruction<T> implements Construction<T>, Configuration.Registrator<T> {
 	public static <T> PreparedConstruction<T> create(Class<T> createdClass,
 													 Provider<T> provider, Annotation... qualifiers) {
-		CompositeTypeMatch typeMatch = CompositeTypeMatch.create(createdClass, qualifiers);
+		TypeMatch typeMatch = SimpleTypeMatch.create(createdClass, qualifiers);
 		boolean isSingleton = introspect(createdClass).annotations().typed(Singleton.class).isPresent();
 		return isSingleton ? new SingletonConstruction<>(provider, typeMatch)
 				: new PrototypeConstruction<>(provider, typeMatch);
 	}
 
-	private final CompositeTypeMatch typeMatch;
+	private TypeMatch typeMatch;
 	private final Provider<T> provider;
 
-	private PreparedConstruction(Provider<T> provider, CompositeTypeMatch typeMatch) {
+	private PreparedConstruction(Provider<T> provider, TypeMatch typeMatch) {
 		this.provider = provider;
 		this.typeMatch = typeMatch;
 	}
@@ -35,11 +35,11 @@ abstract class PreparedConstruction<T> implements Construction<T>, Configuration
 
 	@Override
 	public void as(Class<? super T> injectableClass, Annotation... qualifiers) {
-		typeMatch.add(injectableClass, qualifiers);
+		typeMatch = typeMatch.orElse(SimpleTypeMatch.create(injectableClass, qualifiers));
 	}
 
 	private static class PrototypeConstruction<T> extends PreparedConstruction<T> {
-		PrototypeConstruction(Provider<T> provider, CompositeTypeMatch typeMatch) {
+		PrototypeConstruction(Provider<T> provider, TypeMatch typeMatch) {
 			super(provider, typeMatch);
 		}
 
@@ -53,7 +53,7 @@ abstract class PreparedConstruction<T> implements Construction<T>, Configuration
 		@Nullable
 		private T singletonInstance;
 
-		SingletonConstruction(Provider<T> provider, CompositeTypeMatch typeMatch) {
+		SingletonConstruction(Provider<T> provider, TypeMatch typeMatch) {
 			super(provider, typeMatch);
 		}
 

@@ -5,4 +5,7 @@ interface TypeMatch {
 
 	boolean matches(Query<?> query);
 
+	default TypeMatch orElse(TypeMatch other) {
+		return CompositeTypeMatch.create(this, other);
+	}
 }

@@ -1,20 +1,16 @@
 package org.perfectable.introspection.injection;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 
 final class CompositeTypeMatch implements TypeMatch {
-	private final List<TypeMatch> components;
+	private final ImmutableList<TypeMatch> components;
 
-	private CompositeTypeMatch(List<TypeMatch> components) {
+	private CompositeTypeMatch(ImmutableList<TypeMatch> components) {
 		this.components = components;
 	}
 
-	static CompositeTypeMatch create(Class<?> targetClass, Annotation... qualifiers) {
-		SimpleTypeMatch<?> element = SimpleTypeMatch.create(targetClass, qualifiers);
-		return new CompositeTypeMatch(Lists.newArrayList(element));
+	static CompositeTypeMatch create(TypeMatch... matches) {
+		return new CompositeTypeMatch(ImmutableList.copyOf(matches));
 	}
 
 	@Override
@@ -22,8 +18,15 @@ final class CompositeTypeMatch implements TypeMatch {
 		return components.stream().anyMatch(component -> component.matches(query));
 	}
 
-	public void add(Class<?> injectableClass, Annotation... qualifiers) {
-		SimpleTypeMatch<?> newComponent = SimpleTypeMatch.create(injectableClass, qualifiers);
-		components.add(newComponent);
+	@Override
+	public TypeMatch orElse(TypeMatch other) {
+		ImmutableList.Builder<TypeMatch> builder = ImmutableList.<TypeMatch>builder().addAll(components);
+		if (other instanceof CompositeTypeMatch) {
+			builder.addAll(((CompositeTypeMatch) other).components);
+		}
+		else {
+			builder.add(other);
+		}
+		return new CompositeTypeMatch(builder.build());
 	}
 }
