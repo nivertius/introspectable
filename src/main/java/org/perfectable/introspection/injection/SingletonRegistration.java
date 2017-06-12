@@ -2,28 +2,30 @@ package org.perfectable.introspection.injection;
 
 import java.lang.annotation.Annotation;
 
+import com.google.common.collect.ImmutableSet;
+
 final class SingletonRegistration<T> implements Registration<T> {
 	private final T singleton;
-	private final TypeMatch typeMatch;
+	private final ImmutableSet<Annotation> additionalQualifiers;
 
 	public static <T> SingletonRegistration<T> create(T singleton) {
-		TypeMatch typeMatch = TypeMatch.create(singleton.getClass());
-		return new SingletonRegistration<>(singleton, typeMatch);
+		return new SingletonRegistration<>(singleton, ImmutableSet.of());
 	}
 
-	private SingletonRegistration(T singleton, TypeMatch typeMatch) {
+	private SingletonRegistration(T singleton, ImmutableSet<Annotation> additionalQualifiers) {
 		this.singleton = singleton;
-		this.typeMatch = typeMatch;
+		this.additionalQualifiers = additionalQualifiers;
 	}
 
 	@Override
 	public Construction<T> perform(Registry registry) {
-		return RegisteredSingleton.create(singleton, typeMatch);
+		return RegisteredSingleton.create(singleton, additionalQualifiers);
 	}
 
 	@Override
-	public Registration<T> with(Annotation annotation) {
-		TypeMatch newTypeMatch = typeMatch.withAnnotation(annotation);
-		return new SingletonRegistration<>(singleton, newTypeMatch);
+	public Registration<T> with(Annotation qualifier) {
+		ImmutableSet<Annotation> newAdditionalQualifiers = ImmutableSet.<Annotation>builder()
+			.addAll(additionalQualifiers).add(qualifier).build();
+		return new SingletonRegistration<>(singleton, newAdditionalQualifiers);
 	}
 }
