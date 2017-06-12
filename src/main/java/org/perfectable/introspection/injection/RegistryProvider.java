@@ -34,12 +34,7 @@ final class RegistryProvider<T> implements Provider<T> {
 	@Override
 	public T get() {
 		Constructor<T> constructor;
-		try {
-			constructor = findInjectableConstructor(createdClass);
-		}
-		catch (NoSuchMethodException e) {
-			throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes
-		}
+		constructor = findInjectableConstructor(createdClass);
 		Object[] arguments = prepareArguments(constructor, registry);
 		T instance;
 		try {
@@ -58,14 +53,13 @@ final class RegistryProvider<T> implements Provider<T> {
 	}
 
 
-	private static <T> Constructor<T> findInjectableConstructor(Class<T> targetClass) throws NoSuchMethodException {
+	private static <T> Constructor<T> findInjectableConstructor(Class<T> targetClass) {
 		return ConstructorQuery.of(targetClass)
 				.annotatedWith(Inject.class)
 				.stream()
 				.peek(constructor -> constructor.setAccessible(true))
 				.findFirst()
 				.orElseGet(() -> introspect(targetClass).defaultConstructor());
-
 	}
 
 	private Stream<Injection> fieldInjections(Class<?> targetObjectClass) {

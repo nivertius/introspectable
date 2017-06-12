@@ -245,7 +245,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 	}
 
 	private interface TypeLoader {
-		Class<?> load(String typeName) throws ClassNotFoundException, NoClassDefFoundError;
+		Class<?> load(String typeName) throws ClassNotFoundException;
 	}
 
 	private interface ResourceSource {
