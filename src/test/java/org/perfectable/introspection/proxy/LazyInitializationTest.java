@@ -12,13 +12,13 @@ import org.mockito.Mock;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class LazyInitializationTest {
+class LazyInitializationTest {
 
 	@Mock
 	private TestFirstInterface firstMock;
 
 	@Test
-	public void testInitialize() {
+	void testInitialize() {
 		TestInitializer<TestFirstInterface> initializer = new TestInitializer<>(this.firstMock);
 		TestFirstInterface proxy = LazyInitialization.createProxy(TestFirstInterface.class, initializer);
 		initializer.assertNotExecuted();
@@ -28,7 +28,7 @@ public class LazyInitializationTest {
 	}
 
 	@Test
-	public void testExtractInstance() {
+	void testExtractInstance() {
 		TestInitializer<TestFirstInterface> initializer = new TestInitializer<>(this.firstMock);
 		TestFirstInterface proxy = LazyInitialization.createProxy(TestFirstInterface.class, initializer);
 		initializer.assertNotExecuted();

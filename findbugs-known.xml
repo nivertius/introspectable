@@ -45,4 +45,20 @@
         <Field classname='org.perfectable.introspection.Subject' name='STATIC_FIELD'
                signature='Lorg/perfectable/introspection/Subject;' primary='true' isStatic='true' />
     </BugInstance>
+    <BugInstance abbrev='SIC' category='PERFORMANCE' priority='2' type='SIC_INNER_SHOULD_BE_STATIC'>
+        <ShortMessage>Should be a static inner class</ShortMessage>
+        <Class classname='org.perfectable.introspection.query.GenericsQueryTest$OfClassTest' primary='true' />
+    </BugInstance>
+    <BugInstance abbrev='SIC' category='PERFORMANCE' priority='2' type='SIC_INNER_SHOULD_BE_STATIC'>
+        <ShortMessage>Should be a static inner class</ShortMessage>
+        <Class classname='org.perfectable.introspection.query.GenericsQueryTest$OfFieldTest' primary='true' />
+    </BugInstance>
+	<BugInstance abbrev='SIC' category='PERFORMANCE' priority='2' type='SIC_INNER_SHOULD_BE_STATIC'>
+		<ShortMessage>Should be a static inner class</ShortMessage>
+		<Class classname='org.perfectable.introspection.query.GenericsQueryTest$OfMethodTest' primary='true' />
+	</BugInstance>
+	<BugInstance abbrev='SIC' category='PERFORMANCE' priority='2' type='SIC_INNER_SHOULD_BE_STATIC'>
+		<ShortMessage>Should be a static inner class</ShortMessage>
+		<Class classname='org.perfectable.introspection.query.GenericsQueryTest$OfParameterTest' primary='true' />
+	</BugInstance>
 </BugCollection>

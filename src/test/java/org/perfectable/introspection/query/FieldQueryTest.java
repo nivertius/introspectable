@@ -17,7 +17,7 @@ class FieldQueryTest {
 			method -> !method.getName().equals("$jacocoData");
 
 	@Test
-	public void testUnrestricted() {
+	void testUnrestricted() {
 		FieldQuery extracted =
 				FieldQuery.of(Subject.class);
 
@@ -28,7 +28,7 @@ class FieldQueryTest {
 	}
 
 	@Test
-	public void testNamed() {
+	void testNamed() {
 		FieldQuery extracted =
 				FieldQuery.of(Subject.class).named("stringField");
 
@@ -38,7 +38,7 @@ class FieldQueryTest {
 	}
 
 	@Test
-	public void testFilter() {
+	void testFilter() {
 		FieldQuery extracted =
 				FieldQuery.of(Subject.class)
 						.filter(field -> (field.getModifiers() & Modifier.PUBLIC) > 0);
@@ -49,7 +49,7 @@ class FieldQueryTest {
 	}
 
 	@Test
-	public void testTyped() {
+	void testTyped() {
 		FieldQuery extracted =
 				FieldQuery.of(Subject.class)
 						.typed(Number.class);
@@ -60,7 +60,7 @@ class FieldQueryTest {
 	}
 
 	@Test
-	public void testAnnotatedWith() {
+	void testAnnotatedWith() {
 		FieldQuery extracted =
 				FieldQuery.of(Subject.class)
 						.annotatedWith(Nullable.class);
@@ -71,7 +71,7 @@ class FieldQueryTest {
 	}
 
 	@Test
-	public void testExcludingModifier() {
+	void testExcludingModifier() {
 		FieldQuery extracted =
 				FieldQuery.of(Subject.class)
 						.excludingModifier(Modifier.FINAL)

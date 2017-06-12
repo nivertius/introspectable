@@ -6,24 +6,24 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class FeatureTest {
+class FeatureTest {
 
 	@Test
-	public void testAny() {
+	void testAny() {
 		ProxyBuilderFactory factory = ProxyBuilderFactory.any();
 		assertThat(factory)
 				.isInstanceOf(org.perfectable.introspection.proxy.jdk.JdkProxyBuilderFactory.class);
 	}
 
 	@Test
-	public void testEmptyFeatures() {
+	void testEmptyFeatures() {
 		ProxyBuilderFactory factory = ProxyBuilderFactory.withFeature();
 		assertThat(factory)
 				.isNotNull();
 	}
 
 	@Test
-	public void testSuperclass() {
+	void testSuperclass() {
 		ProxyBuilderFactory factory = ProxyBuilderFactory.withFeature(Feature.SUPERCLASS);
 		assertThat(factory)
 				.isNotNull();

@@ -12,10 +12,10 @@ import static org.perfectable.introspection.injection.Query.typed;
 import static org.perfectable.introspection.injection.Registration.singleton;
 import static org.perfectable.introspection.injection.Registration.type;
 
-public class StandardRegistryTest {
+class StandardRegistryTest {
 
 	@Test
-	public void testEmpty() {
+	void testEmpty() {
 		StandardRegistry registry = StandardRegistry.create();
 		registry.register(type(EmptyService.class));
 
@@ -25,7 +25,7 @@ public class StandardRegistryTest {
 	}
 
 	@Test
-	public void testConstructorCreated() {
+	void testConstructorCreated() {
 		StandardRegistry registry = StandardRegistry.create();
 		registry.register(type(EmptyService.class));
 		registry.register(type(ConstructorService.class));
@@ -38,7 +38,7 @@ public class StandardRegistryTest {
 	}
 
 	@Test
-	public void testConstructorProvided() {
+	void testConstructorProvided() {
 		StandardRegistry registry = StandardRegistry.create();
 		EmptyService emptyService = new EmptyService();
 		registry.register(singleton(emptyService));
@@ -52,7 +52,7 @@ public class StandardRegistryTest {
 	}
 
 	@Test
-	public void testQualifiedQueryConstruction() {
+	void testQualifiedQueryConstruction() {
 		StandardRegistry registry = StandardRegistry.create();
 		registry.register(type(EmptyService.class));
 		registry.register(type(QualifiedService.class));
@@ -66,7 +66,7 @@ public class StandardRegistryTest {
 	}
 
 	@Test
-	public void testQualifiedQuerySingleton() {
+	void testQualifiedQuerySingleton() {
 		StandardRegistry registry = StandardRegistry.create();
 		EmptyService unqualifiedEmptyService = new EmptyService();
 		EmptyService qualifiedEmptyService = new QualifiedService();
@@ -81,7 +81,7 @@ public class StandardRegistryTest {
 	}
 
 	@Test
-	public void testExternalQualifiedQueryType() {
+	void testExternalQualifiedQueryType() {
 		StandardRegistry registry = StandardRegistry.create();
 		EmptyService unqualifiedEmptyService = new EmptyService();
 		EmptyService qualifiedEmptyService = new EmptyService();
@@ -96,7 +96,7 @@ public class StandardRegistryTest {
 	}
 
 	@Test
-	public void testQualifiedSetterProvided() {
+	void testQualifiedSetterProvided() {
 		StandardRegistry registry = StandardRegistry.create();
 		EmptyService unqualifiedEmptyService = new EmptyService();
 		EmptyService qualifiedEmptyService = new QualifiedService();

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class InheritanceQueryTest {
+class InheritanceQueryTest {
 
 	private static class Root {
 		// test class
@@ -21,7 +21,7 @@ public class InheritanceQueryTest {
 	}
 
 	@Test
-	public void testString() {
+	void testString() {
 		InheritanceQuery<String> chain = InheritanceQuery.of(String.class);
 
 		assertThat(chain)
@@ -29,7 +29,7 @@ public class InheritanceQueryTest {
 	}
 
 	@Test
-	public void testStringOnlyInterfaces() {
+	void testStringOnlyInterfaces() {
 		InheritanceQuery<String> chain = InheritanceQuery.of(String.class).onlyInterfaces();
 
 		assertThat(chain)
@@ -37,7 +37,7 @@ public class InheritanceQueryTest {
 	}
 
 	@Test
-	public void testStringOnlyClasses() {
+	void testStringOnlyClasses() {
 		InheritanceQuery<String> chain = InheritanceQuery.of(String.class).onlyClasses();
 
 		assertThat(chain)
@@ -45,7 +45,7 @@ public class InheritanceQueryTest {
 	}
 
 	@Test
-	public void testFilter() {
+	void testFilter() {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class)
 				.filter(type -> type.getPackage().getName().startsWith("org.perfectable"));
 
@@ -54,7 +54,7 @@ public class InheritanceQueryTest {
 	}
 
 	@Test
-	public void testLeaf() {
+	void testLeaf() {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class);
 
 		assertThat(chain)
@@ -62,7 +62,7 @@ public class InheritanceQueryTest {
 	}
 
 	@Test
-	public void testExcludingRoot() {
+	void testExcludingRoot() {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class).upToExcluding(Root.class);
 
 		assertThat(chain)
@@ -70,7 +70,7 @@ public class InheritanceQueryTest {
 	}
 
 	@Test
-	public void testIncludingRoot() {
+	void testIncludingRoot() {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class).upToIncluding(Root.class);
 
 		assertThat(chain)

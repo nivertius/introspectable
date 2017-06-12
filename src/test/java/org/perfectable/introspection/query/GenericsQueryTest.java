@@ -13,7 +13,7 @@ import static org.perfectable.introspection.SimpleReflections.getField;
 import static org.perfectable.introspection.SimpleReflections.getMethod;
 
 @SuppressWarnings("ClassCanBeStatic") // SUPPRESS SuppressWarnings
-public class GenericsQueryTest { // SUPPRESS TestClassWithoutTestCases nested tests only
+class GenericsQueryTest { // SUPPRESS TestClassWithoutTestCases nested tests only
 
 	@Nested
 	class OfClassTest {

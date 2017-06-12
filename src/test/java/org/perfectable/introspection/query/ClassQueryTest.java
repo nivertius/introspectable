@@ -10,11 +10,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 // SUPPRESS NEXT 1 SuppressWarnings
 @SuppressWarnings("unchecked")
-public class ClassQueryTest {
+class ClassQueryTest {
 	private static final String PACKAGE_NAME = "org.perfectable";
 
 	@Test
-	public void testClassLoaderPackage() {
+	void testClassLoaderPackage() {
 		ClassQuery<Object> query = ClassQuery.of(ClassQueryTest.class.getClassLoader())
 			.inPackage(PACKAGE_NAME);
 
@@ -24,7 +24,7 @@ public class ClassQueryTest {
 	}
 
 	@Test
-	public void testClassLoaderAnnotation() {
+	void testClassLoaderAnnotation() {
 		ClassQuery<Object> query = ClassQuery.of(ClassQueryTest.class.getClassLoader())
 			.annotatedWith(Subject.Special.class);
 
@@ -34,7 +34,7 @@ public class ClassQueryTest {
 	}
 
 	@Test
-	public void testClassLoaderSubtype() {
+	void testClassLoaderSubtype() {
 		ClassQuery<Object> query = ClassQuery.of(ClassQueryTest.class.getClassLoader())
 			.subtypeOf(AbstractQuery.class);
 

@@ -13,7 +13,7 @@ import org.mockito.Mock;
 import static org.perfectable.introspection.Introspections.introspect;
 
 @ExtendWith(MockitoExtension.class)
-public class JdkProxyBuilderTest {
+class JdkProxyBuilderTest {
 
 	private static final JdkProxyBuilderFactory FACTORY = new JdkProxyBuilderFactory();
 
@@ -21,7 +21,7 @@ public class JdkProxyBuilderTest {
 	private TestFirstInterface firstMock;
 
 	@Test
-	public void testSimple() {
+	void testSimple() {
 		ProxyBuilder<TestFirstInterface> proxyBuilder =
 				FACTORY.ofInterfaces(TestFirstInterface.class);
 		TestFirstInterface proxy = proxyBuilder.instantiate(ForwardingHandler.of(this.firstMock));

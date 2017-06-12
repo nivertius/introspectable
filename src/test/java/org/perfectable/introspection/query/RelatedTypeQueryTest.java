@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class RelatedTypeQueryTest {
+class RelatedTypeQueryTest {
 
 	private static final String MAIN_PACKAGE = "org.perfectable";
 
 	@Test
-	public void testString() {
+	void testString() {
 		RelatedTypeQuery related = RelatedTypeQuery.of(String.class);
 
 		assertThat(related)
@@ -25,7 +25,7 @@ public class RelatedTypeQueryTest {
 	}
 
 	@Test
-	public void testSubjectAnnotation() {
+	void testSubjectAnnotation() {
 		RelatedTypeQuery related = RelatedTypeQuery.of(Subject.Special.class);
 
 		assertThat(related)
@@ -37,7 +37,7 @@ public class RelatedTypeQueryTest {
 	}
 
 	@Test
-	public void testSubjectFiltered() {
+	void testSubjectFiltered() {
 		RelatedTypeQuery related = RelatedTypeQuery.of(Subject.Special.class)
 				.filter(type -> type.getPackage() != null)
 				.filter(type -> type.getPackage().getName().startsWith(MAIN_PACKAGE));

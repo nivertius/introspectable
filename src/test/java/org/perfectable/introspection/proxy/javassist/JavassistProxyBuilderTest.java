@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class JavassistProxyBuilderTest {
+class JavassistProxyBuilderTest {
 
 	private static final JavassistProxyBuilderFactory FACTORY = new JavassistProxyBuilderFactory();
 	private static final String MESSAGE_METHOD_CALLED = "Actual method should not be called";
@@ -26,7 +26,7 @@ public class JavassistProxyBuilderTest {
 	private TestClassMixed mixedMock;
 
 	@Test
-	public void testOfInterfaces() {
+	void testOfInterfaces() {
 		ProxyBuilder<TestFirstInterface> proxyBuilder =
 				FACTORY.ofInterfaces(TestFirstInterface.class);
 		TestFirstInterface proxy = proxyBuilder.instantiate(ForwardingHandler.of(this.firstMock));
@@ -39,7 +39,7 @@ public class JavassistProxyBuilderTest {
 	}
 
 	@Test
-	public void testOfClass() {
+	void testOfClass() {
 		ProxyBuilder<TestClass> proxyBuilder =
 				FACTORY.ofClass(TestClass.class);
 		TestClass proxy = proxyBuilder.instantiate(ForwardingHandler.of(this.classMock));
@@ -52,7 +52,7 @@ public class JavassistProxyBuilderTest {
 	}
 
 	@Test
-	public void testOfClassWithInterface() {
+	void testOfClassWithInterface() {
 		ProxyBuilder<TestClass> proxyBuilder =
 				FACTORY.ofClass(TestClass.class, TestFirstInterface.class);
 		TestClass proxy = proxyBuilder.instantiate(ForwardingHandler.of(this.mixedMock));

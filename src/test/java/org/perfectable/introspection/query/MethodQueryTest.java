@@ -19,7 +19,7 @@ class MethodQueryTest {
 			method -> !method.getName().equals("$jacocoInit");
 
 	@Test
-	public void testNamed() {
+	void testNamed() {
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).named("noResultNoArgument");
 
@@ -29,7 +29,7 @@ class MethodQueryTest {
 	}
 
 	@Test
-	public void testFilterParameterCount() {
+	void testFilterParameterCount() {
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).filter(method -> method.getParameterCount() == 1);
 
@@ -42,7 +42,7 @@ class MethodQueryTest {
 	}
 
 	@Test
-	public void testParametersByLength() {
+	void testParametersByLength() {
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).parameters(parameters -> parameters.length == 1);
 
@@ -55,7 +55,7 @@ class MethodQueryTest {
 	}
 
 	@Test
-	public void testParametersByType() {
+	void testParametersByType() {
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).parameters(long.class);
 
@@ -65,7 +65,7 @@ class MethodQueryTest {
 	}
 
 	@Test
-	public void testFilterDeclaringClass() {
+	void testFilterDeclaringClass() {
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).filter(method -> Object.class.equals(method.getDeclaringClass()));
 
@@ -82,7 +82,7 @@ class MethodQueryTest {
 	}
 
 	@Test
-	public void testTyped() {
+	void testTyped() {
 		@SuppressWarnings("deprecation") // SUPPRESS SuppressWarnings need to test the method
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).typed(Object.class);
@@ -97,7 +97,7 @@ class MethodQueryTest {
 	}
 
 	@Test
-	public void testReturning() {
+	void testReturning() {
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).returning(Object.class);
 
@@ -111,7 +111,7 @@ class MethodQueryTest {
 	}
 
 	@Test
-	public void testReturningBoolean() {
+	void testReturningBoolean() {
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).returning(boolean.class);
 
@@ -121,7 +121,7 @@ class MethodQueryTest {
 	}
 
 	@Test
-	public void testReturningVoid() {
+	void testReturningVoid() {
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).returningVoid();
 
@@ -139,7 +139,7 @@ class MethodQueryTest {
 	}
 
 	@Test
-	public void testAnnotatedWithClass() {
+	void testAnnotatedWithClass() {
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).annotatedWith(Nullable.class);
 
@@ -149,7 +149,7 @@ class MethodQueryTest {
 	}
 
 	@Test
-	public void testAnnotatedWith() {
+	void testAnnotatedWith() {
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).annotatedWith(AnnotationFilter.of(Nullable.class));
 
@@ -159,7 +159,7 @@ class MethodQueryTest {
 	}
 
 	@Test
-	public void testExcludingModifier() {
+	void testExcludingModifier() {
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).excludingModifier(Modifier.PUBLIC);
 

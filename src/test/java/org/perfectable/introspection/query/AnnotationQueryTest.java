@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AnnotationQueryTest {
+class AnnotationQueryTest {
 
 	private static class Root {
 		// test class
@@ -26,7 +26,7 @@ public class AnnotationQueryTest {
 	}
 
 	@Test
-	public void testEmpty() {
+	void testEmpty() {
 		AnnotationQuery<?> chain = AnnotationQuery.empty();
 
 		assertThat(chain)
@@ -34,7 +34,7 @@ public class AnnotationQueryTest {
 	}
 
 	@Test
-	public void testEmptyFilter() {
+	void testEmptyFilter() {
 		AnnotationQuery<?> chain = AnnotationQuery.empty()
 			.filter(annotation -> annotation.toString().equals("None"));
 
@@ -43,7 +43,7 @@ public class AnnotationQueryTest {
 	}
 
 	@Test
-	public void testString() {
+	void testString() {
 		AnnotationQuery<?> chain = AnnotationQuery.of(String.class);
 
 		assertThat(chain)
@@ -52,7 +52,7 @@ public class AnnotationQueryTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testSubjectUnrestricted() {
+	void testSubjectUnrestricted() {
 		AnnotationQuery<Annotation> chain = AnnotationQuery.of(Subject.class);
 
 		assertThat(chain)
@@ -62,7 +62,7 @@ public class AnnotationQueryTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testSubjectTyped() {
+	void testSubjectTyped() {
 		AnnotationQuery<?> chain = AnnotationQuery.of(Subject.class)
 			.typed(Subject.Special.class);
 
@@ -73,7 +73,7 @@ public class AnnotationQueryTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testPredicated() {
+	void testPredicated() {
 		AnnotationQuery<?> chain = AnnotationQuery.of(Subject.class)
 			.filter(annotation -> annotation.annotationType().getSimpleName().charAt(0) == 'O');
 
@@ -84,7 +84,7 @@ public class AnnotationQueryTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testAnnotatedWith() {
+	void testAnnotatedWith() {
 		AnnotationQuery<Annotation> chain = AnnotationQuery.empty()
 			.join(AnnotationQuery.of(Subject.class).annotatedWith(Retention.class));
 
@@ -95,7 +95,7 @@ public class AnnotationQueryTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testJoin() {
+	void testJoin() {
 		AnnotationQuery<Subject.Special> first =
 			AnnotationQuery.of(Subject.class).typed(Subject.Special.class);
 		AnnotationQuery<Documented> second =
@@ -109,7 +109,7 @@ public class AnnotationQueryTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testJoinMultiple() {
+	void testJoinMultiple() {
 		AnnotationQuery<Annotation> chain = AnnotationQuery.empty()
 			.join(AnnotationQuery.of(Retention.class).typed(Documented.class))
 			.join(AnnotationQuery.of(Subject.class).typed(Subject.Special.class))
