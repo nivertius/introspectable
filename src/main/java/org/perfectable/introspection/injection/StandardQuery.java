@@ -3,6 +3,7 @@ package org.perfectable.introspection.injection;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableSet;
 
 final class StandardQuery<T> implements Query<T> {
@@ -36,6 +37,14 @@ final class StandardQuery<T> implements Query<T> {
 			&& qualifiers.matchesAll(annotations);
 	}
 
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+			.add("type", type.getName())
+			.add("qualifiers", qualifiers)
+			.toString();
+	}
+
 	private interface AnnotationMatch {
 		AnnotationMatch ANY = new AnnotationMatch() {
 			@Override
@@ -46,6 +55,11 @@ final class StandardQuery<T> implements Query<T> {
 			@Override
 			public AnnotationMatch add(AnnotationMatch other) {
 				return other;
+			}
+
+			@Override
+			public String toString() {
+				return "ANY";
 			}
 		};
 
@@ -93,6 +107,13 @@ final class StandardQuery<T> implements Query<T> {
 				}
 				return new Composite(newComponents.build());
 			}
+
+			@Override
+			public String toString() {
+				return MoreObjects.toStringHelper(this)
+					.add("components", components)
+					.toString();
+			}
 		}
 
 		class Typed implements AnnotationMatch {
@@ -108,6 +129,13 @@ final class StandardQuery<T> implements Query<T> {
 					.map(Annotation::annotationType)
 					.anyMatch(qualifierType::equals);
 			}
+
+			@Override
+			public String toString() {
+				return MoreObjects.toStringHelper(this)
+					.add("qualifierType", qualifierType)
+					.toString();
+			}
 		}
 
 		class Exact implements AnnotationMatch {
@@ -120,6 +148,13 @@ final class StandardQuery<T> implements Query<T> {
 			@Override
 			public boolean matchesAll(Set<Annotation> annotations) {
 				return annotations.contains(qualifier);
+			}
+
+			@Override
+			public String toString() {
+				return MoreObjects.toStringHelper(this)
+					.add("qualifier", qualifier)
+					.toString();
 			}
 		}
 	}
