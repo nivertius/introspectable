@@ -416,18 +416,13 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 				return (T) ctClass.getAnnotation(annotationClass);
 			}
 			catch (ClassNotFoundException e) {
-				throw new AssertionError(e);
+				return null;
 			}
 		}
 
 		@Override
 		public Annotation[] getAnnotations() {
-			try {
-				return (Annotation[]) ctClass.getAnnotations();
-			}
-			catch (ClassNotFoundException e) {
-				throw new AssertionError(e);
-			}
+			throw new UnsupportedOperationException("Inherited annotation fetching is not currently supported");
 		}
 
 		@Override
