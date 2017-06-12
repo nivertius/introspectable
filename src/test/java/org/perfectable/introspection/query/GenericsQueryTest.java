@@ -12,10 +12,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.perfectable.introspection.SimpleReflections.getField;
 import static org.perfectable.introspection.SimpleReflections.getMethod;
 
+@SuppressWarnings("ClassCanBeStatic") // SUPPRESS SuppressWarnings
 public class GenericsQueryTest { // SUPPRESS TestClassWithoutTestCases nested tests only
 
 	@Nested
-	static class OfClassTest {
+	class OfClassTest {
 
 		@Test
 		void nonGeneric() {
@@ -46,7 +47,7 @@ public class GenericsQueryTest { // SUPPRESS TestClassWithoutTestCases nested te
 	}
 
 	@Nested
-	static class OfFieldTest {
+	class OfFieldTest {
 
 		@Test
 		void simple() {
@@ -108,7 +109,7 @@ public class GenericsQueryTest { // SUPPRESS TestClassWithoutTestCases nested te
 	}
 
 	@Nested
-	static class OfMethodTest {
+	class OfMethodTest {
 
 		@Test
 		void simple() {
@@ -169,7 +170,7 @@ public class GenericsQueryTest { // SUPPRESS TestClassWithoutTestCases nested te
 
 
 	@Nested
-	static class OfParameterTest {
+	class OfParameterTest {
 
 		@Test
 		void simple() {
