@@ -9,29 +9,31 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.perfectable.introspection.injection.Query.typed;
+import static org.perfectable.introspection.injection.Registration.singleton;
+import static org.perfectable.introspection.injection.Registration.type;
 
 public class StandardRegistryTest {
 
 	@Test
 	public void testEmpty() {
 		StandardRegistry registry = StandardRegistry.create();
-		registry.register(EmptyService.class);
+		registry.register(type(EmptyService.class));
 
 		EmptyService service = registry.fetch(typed(EmptyService.class));
 		assertThat(service)
-				.isNotNull();
+			.isNotNull();
 	}
 
 	@Test
 	public void testConstructorCreated() {
 		StandardRegistry registry = StandardRegistry.create();
-		registry.register(EmptyService.class);
-		registry.register(ConstructorService.class);
+		registry.register(type(EmptyService.class));
+		registry.register(type(ConstructorService.class));
 
 		ConstructorService service = registry.fetch(typed(ConstructorService.class));
 
 		assertThat(service)
-				.isNotNull();
+			.isNotNull();
 		service.assertAnythingInjected();
 	}
 
@@ -39,8 +41,8 @@ public class StandardRegistryTest {
 	public void testConstructorProvided() {
 		StandardRegistry registry = StandardRegistry.create();
 		EmptyService emptyService = new EmptyService();
-		registry.register(emptyService);
-		registry.register(ConstructorService.class);
+		registry.register(singleton(emptyService));
+		registry.register(type(ConstructorService.class));
 
 		ConstructorService service = registry.fetch(typed(ConstructorService.class));
 
@@ -52,8 +54,8 @@ public class StandardRegistryTest {
 	@Test
 	public void testQualifiedQueryConstruction() {
 		StandardRegistry registry = StandardRegistry.create();
-		registry.register(EmptyService.class);
-		registry.register(QualifiedService.class);
+		registry.register(type(EmptyService.class));
+		registry.register(type(QualifiedService.class));
 
 		EmptyService service =
 			registry.fetch(typed(EmptyService.class).qualifiedWith(TestQualifier.class));
@@ -68,8 +70,23 @@ public class StandardRegistryTest {
 		StandardRegistry registry = StandardRegistry.create();
 		EmptyService unqualifiedEmptyService = new EmptyService();
 		EmptyService qualifiedEmptyService = new QualifiedService();
-		registry.register(unqualifiedEmptyService);
-		registry.register(qualifiedEmptyService);
+		registry.register(singleton(unqualifiedEmptyService));
+		registry.register(singleton(qualifiedEmptyService));
+
+		EmptyService service =
+			registry.fetch(typed(EmptyService.class).qualifiedWith(TestQualifier.class));
+
+		assertThat(service)
+			.isSameAs(qualifiedEmptyService);
+	}
+
+	@Test
+	public void testExternalQualifiedQueryType() {
+		StandardRegistry registry = StandardRegistry.create();
+		EmptyService unqualifiedEmptyService = new EmptyService();
+		EmptyService qualifiedEmptyService = new EmptyService();
+		registry.register(singleton(unqualifiedEmptyService));
+		registry.register(singleton(qualifiedEmptyService).with(TestQualifier.class));
 
 		EmptyService service =
 			registry.fetch(typed(EmptyService.class).qualifiedWith(TestQualifier.class));
@@ -83,9 +100,9 @@ public class StandardRegistryTest {
 		StandardRegistry registry = StandardRegistry.create();
 		EmptyService unqualifiedEmptyService = new EmptyService();
 		EmptyService qualifiedEmptyService = new QualifiedService();
-		registry.register(unqualifiedEmptyService);
-		registry.register(qualifiedEmptyService);
-		registry.register(QualifiedSetterService.class);
+		registry.register(singleton(unqualifiedEmptyService));
+		registry.register(singleton(qualifiedEmptyService));
+		registry.register(type(QualifiedSetterService.class));
 
 		QualifiedSetterService service =
 			registry.fetch(typed(QualifiedSetterService.class));
@@ -120,7 +137,7 @@ public class StandardRegistryTest {
 
 		void assertAnythingInjected() {
 			assertThat(dependency)
-					.isNotNull();
+				.isNotNull();
 		}
 
 		void assertInjected(EmptyService expected) {
