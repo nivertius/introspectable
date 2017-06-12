@@ -104,7 +104,7 @@ final class RegistryProvider<T> implements Provider<T> {
 	private static Query<?> createQuery(Class<?> type, Annotation... qualifiers) {
 		Query<?> query = Query.typed(type);
 		for (Annotation qualifier : qualifiers) {
-			query.qualifiedWith(qualifier);
+			query = query.qualifiedWith(qualifier);
 		}
 		return query;
 	}
