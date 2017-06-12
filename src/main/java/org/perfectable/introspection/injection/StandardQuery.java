@@ -96,6 +96,9 @@ final class StandardQuery<T> implements Query<T> {
 
 			@Override
 			public AnnotationMatch add(AnnotationMatch other) {
+				if (other == ANY) { // SUPPRESS CompareObjectsWithEquals
+					return this;
+				}
 				ImmutableSet.Builder<AnnotationMatch> newComponents = ImmutableSet.<AnnotationMatch>builder()
 					.addAll(components);
 				if (other instanceof Composite) {
