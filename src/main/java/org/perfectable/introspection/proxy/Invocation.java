@@ -75,7 +75,7 @@ public final class Invocation<T> {
 				checkArgument(!parameterType.isPrimitive());
 			}
 			else {
-				Class<?> argumentType = arguments[i].getClass();
+				Class<?> argumentType = argument.getClass();
 				checkArgument(parameterType.isAssignableFrom(argumentType));
 			}
 		}
