@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
+// SUPPRESS NEXT 1 ClassDataAbstractionCoupling
 public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>, ConstructorQuery<X>> {
 
 	public static <X> ConstructorQuery<X> of(Class<X> type) {
@@ -48,6 +49,11 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 	@Override
 	public ConstructorQuery<X> excludingModifier(int excludedModifier) {
 		return new ExcludingModifier<>(this, excludedModifier);
+	}
+
+	@Override
+	public ConstructorQuery<X> asAccessible() {
+		return new AccessibleMarking<>(this);
 	}
 
 	private static class Complete<X> extends ConstructorQuery<X> {
@@ -164,6 +170,20 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 		@Override
 		protected boolean matches(Constructor<X> candidate) {
 			return (candidate.getModifiers() & this.excludedModifier) == 0;
+		}
+	}
+
+	private static class AccessibleMarking<X> extends ConstructorQuery<X> {
+		private final ConstructorQuery<X> parent;
+
+		AccessibleMarking(ConstructorQuery<X> parent) {
+			this.parent = parent;
+		}
+
+		@Override
+		public Stream<Constructor<X>> stream() {
+			return parent.stream()
+				.peek(field -> field.setAccessible(true));
 		}
 	}
 }

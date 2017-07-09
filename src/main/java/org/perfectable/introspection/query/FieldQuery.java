@@ -42,6 +42,11 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		return new ExcludingModifier(this, excludedModifier);
 	}
 
+	@Override
+	public FieldQuery asAccessible() {
+		return new AccessibleMarking(this);
+	}
+
 	FieldQuery() {
 		// package extension only
 	}
@@ -146,4 +151,17 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 
+	private static class AccessibleMarking extends FieldQuery {
+		private final FieldQuery parent;
+
+		AccessibleMarking(FieldQuery parent) {
+			this.parent = parent;
+		}
+
+		@Override
+		public Stream<Field> stream() {
+			return this.parent.stream()
+				.peek(field -> field.setAccessible(true));
+		}
+	}
 }

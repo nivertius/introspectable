@@ -20,6 +20,8 @@ public abstract class MemberQuery<M extends Member & AnnotatedElement, Q extends
 
 	public abstract Q excludingModifier(int excludedModifier);
 
+	public abstract Q asAccessible();
+
 	MemberQuery() {
 		// package extension only
 	}

@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
+// SUPPRESS NEXT 1 ClassDataAbstractionCoupling
 public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 
 	public static <X> MethodQuery of(Class<X> type) {
@@ -57,6 +58,11 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 	@Override
 	public MethodQuery excludingModifier(int excludedModifier) {
 		return new ExcludingModifier(this, excludedModifier);
+	}
+
+	@Override
+	public MethodQuery asAccessible() {
+		return new AccessibleMarking(this);
 	}
 
 	MethodQuery() {
@@ -178,4 +184,17 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		}
 	}
 
+	private static class AccessibleMarking extends MethodQuery {
+		private final MethodQuery parent;
+
+		AccessibleMarking(MethodQuery parent) {
+			this.parent = parent;
+		}
+
+		@Override
+		public Stream<Method> stream() {
+			return parent.stream()
+				.peek(field -> field.setAccessible(true));
+		}
+	}
 }
