@@ -30,7 +30,7 @@ class AnnotationQueryTest {
 		AnnotationQuery<?> chain = AnnotationQuery.empty();
 
 		assertThat(chain)
-			.containsExactly();
+			.containsExactlyInAnyOrder();
 	}
 
 	@Test
@@ -39,7 +39,7 @@ class AnnotationQueryTest {
 			.filter(annotation -> annotation.toString().equals("None"));
 
 		assertThat(chain)
-			.containsExactly();
+			.containsExactlyInAnyOrder();
 	}
 
 	@Test
@@ -47,7 +47,7 @@ class AnnotationQueryTest {
 		AnnotationQuery<?> chain = AnnotationQuery.of(String.class);
 
 		assertThat(chain)
-			.containsExactly();
+			.containsExactlyInAnyOrder();
 	}
 
 	@SuppressWarnings("unchecked")

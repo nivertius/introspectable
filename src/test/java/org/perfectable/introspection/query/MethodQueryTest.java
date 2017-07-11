@@ -26,7 +26,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT);
+				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_NO_ARGUMENT);
 	}
 
 	@Test
@@ -36,7 +36,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactly(SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT,
+			.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT);
 	}
 

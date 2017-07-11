@@ -13,7 +13,8 @@ class ClassIntrospectionTest {
 		Iterable<Field> fields = ClassIntrospection.of(Subject.class).fields()
 				.named(SubjectReflection.STATIC_FIELD.getName());
 
-		assertThat(fields).containsExactly(SubjectReflection.STATIC_FIELD);
+		assertThat(fields)
+			.containsExactlyInAnyOrder(SubjectReflection.STATIC_FIELD);
 	}
 
 }

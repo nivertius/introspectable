@@ -24,7 +24,7 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactly(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
+				.containsExactlyInAnyOrder(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
 						SubjectReflection.PROTECTED_NUMBER_FIELD, SubjectReflection.STATIC_FIELD);
 	}
 
@@ -35,7 +35,7 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactly(SubjectReflection.STRING_FIELD);
+				.containsExactlyInAnyOrder(SubjectReflection.STRING_FIELD);
 	}
 
 	@Test
@@ -45,7 +45,7 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactly(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
+			.containsExactlyInAnyOrder(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
 				SubjectReflection.PROTECTED_NUMBER_FIELD);
 	}
 
@@ -57,7 +57,7 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactly(SubjectReflection.STATIC_FIELD);
+				.containsExactlyInAnyOrder(SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -68,7 +68,7 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactly(SubjectReflection.PROTECTED_NUMBER_FIELD);
+				.containsExactlyInAnyOrder(SubjectReflection.PROTECTED_NUMBER_FIELD);
 	}
 
 	@Test
@@ -79,7 +79,7 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactly(SubjectReflection.OBJECT_FIELD, SubjectReflection.STATIC_FIELD);
+				.containsExactlyInAnyOrder(SubjectReflection.OBJECT_FIELD, SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -103,7 +103,7 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactly(SubjectReflection.STATIC_FIELD);
+				.containsExactlyInAnyOrder(SubjectReflection.STATIC_FIELD);
 	}
 
 
