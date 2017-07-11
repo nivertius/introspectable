@@ -83,6 +83,18 @@ class FieldQueryTest {
 	}
 
 	@Test
+	void testRequiringModifier() {
+		FieldQuery extracted =
+			FieldQuery.of(Subject.class)
+				.requiringModifier(Modifier.FINAL)
+				.requiringModifier(Modifier.PROTECTED);
+
+		assertThat(extracted)
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactlyInAnyOrder(SubjectReflection.PROTECTED_NUMBER_FIELD);
+	}
+
+	@Test
 	void testExcludingModifier() {
 		FieldQuery extracted =
 				FieldQuery.of(Subject.class)

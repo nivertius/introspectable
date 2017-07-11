@@ -21,6 +21,8 @@ public abstract class MemberQuery<M extends Member & AnnotatedElement, Q extends
 
 	public abstract Q annotatedWith(AnnotationFilter annotationFilter);
 
+	public abstract Q requiringModifier(int requiredModifier);
+
 	public abstract Q excludingModifier(int excludedModifier);
 
 	public abstract Q asAccessible();

@@ -54,6 +54,11 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 	}
 
 	@Override
+	public ConstructorQuery<X> requiringModifier(int requiredModifier) {
+		return new RequiringModifier<>(this, requiredModifier);
+	}
+
+	@Override
 	public ConstructorQuery<X> excludingModifier(int excludedModifier) {
 		return new ExcludingModifier<>(this, excludedModifier);
 	}
@@ -178,6 +183,20 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 		@Override
 		protected boolean matches(Constructor<X> candidate) {
 			return this.annotationFilter.matches(candidate);
+		}
+	}
+
+	private static final class RequiringModifier<X> extends Filtered<X> {
+		private final int requiredModifier;
+
+		RequiringModifier(ConstructorQuery<X> parent, int requiredModifier) {
+			super(parent);
+			this.requiredModifier = requiredModifier;
+		}
+
+		@Override
+		protected boolean matches(Constructor<X> candidate) {
+			return (candidate.getModifiers() & this.requiredModifier) != 0;
 		}
 	}
 

@@ -63,6 +63,11 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 	}
 
 	@Override
+	public MethodQuery requiringModifier(int requiredModifier) {
+		return new RequiringModifier(this, requiredModifier);
+	}
+
+	@Override
 	public MethodQuery excludingModifier(int excludedModifier) {
 		return new ExcludingModifier(this, excludedModifier);
 	}
@@ -188,6 +193,20 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		@Override
 		protected boolean matches(Method candidate) {
 			return this.annotationFilter.matches(candidate);
+		}
+	}
+
+	private static final class RequiringModifier extends Filtered {
+		private final int requiredModifier;
+
+		RequiringModifier(MethodQuery parent, int requiredModifier) {
+			super(parent);
+			this.requiredModifier = requiredModifier;
+		}
+
+		@Override
+		protected boolean matches(Method candidate) {
+			return (candidate.getModifiers() & this.requiredModifier) != 0;
 		}
 	}
 

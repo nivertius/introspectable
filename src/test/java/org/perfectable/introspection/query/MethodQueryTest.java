@@ -171,9 +171,22 @@ class MethodQueryTest {
 	}
 
 	@Test
+	void testRequiringModifier() {
+		MethodQuery extracted =
+			MethodQuery.of(Subject.class)
+				.requiringModifier(Modifier.PROTECTED);
+
+		assertThat(extracted)
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactlyInAnyOrder(SimpleReflections.OBJECT_FINALIZE, SimpleReflections.OBJECT_CLONE,
+				SubjectReflection.METHOD_PROTECTED);
+	}
+
+	@Test
 	void testExcludingModifier() {
 		MethodQuery extracted =
-				MethodQuery.of(Subject.class).excludingModifier(Modifier.PUBLIC);
+				MethodQuery.of(Subject.class)
+					.excludingModifier(Modifier.PUBLIC);
 
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
