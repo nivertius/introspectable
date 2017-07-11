@@ -3,6 +3,7 @@ package org.perfectable.introspection.query;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
@@ -19,6 +20,12 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 	public MethodQuery named(String name) {
 		requireNonNull(name);
 		return new Named(this, name);
+	}
+
+	@Override
+	public MethodQuery nameMatching(Pattern namePattern) {
+		requireNonNull(namePattern);
+		return new NameMatching(this, namePattern);
 	}
 
 	@Override
@@ -124,6 +131,20 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		@Override
 		protected boolean matches(Method candidate) {
 			return this.name.equals(candidate.getName());
+		}
+	}
+
+	private static final class NameMatching extends Filtered {
+		private final Pattern namePattern;
+
+		NameMatching(MethodQuery parent, Pattern namePattern) {
+			super(parent);
+			this.namePattern = namePattern;
+		}
+
+		@Override
+		protected boolean matches(Method candidate) {
+			return this.namePattern.matcher(candidate.getName()).matches();
 		}
 	}
 

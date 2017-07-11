@@ -6,6 +6,7 @@ import org.perfectable.introspection.SubjectReflection;
 
 import java.lang.reflect.Method;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import javassist.Modifier;
@@ -26,6 +27,17 @@ class MethodQueryTest {
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
 				.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT);
+	}
+
+	@Test
+	void testNameMatching() {
+		MethodQuery extracted =
+			MethodQuery.of(Subject.class).nameMatching(Pattern.compile(".*ResultDouble.*"));
+
+		assertThat(extracted)
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT,
+				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT);
 	}
 
 	@Test

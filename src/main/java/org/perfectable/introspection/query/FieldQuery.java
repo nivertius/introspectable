@@ -2,10 +2,12 @@ package org.perfectable.introspection.query;
 
 import java.lang.reflect.Field;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
+// SUPPRESS NEXT 1 ClassDataAbstractionCoupling
 public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 
 	public static <X> FieldQuery of(Class<X> type) {
@@ -17,6 +19,12 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	public FieldQuery named(String name) {
 		requireNonNull(name);
 		return new Named(this, name);
+	}
+
+	@Override
+	public FieldQuery nameMatching(Pattern namePattern) {
+		requireNonNull(namePattern);
+		return new NameMatching(this, namePattern);
 	}
 
 	@Override
@@ -95,6 +103,20 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 
+	private static final class NameMatching extends Filtered {
+		private final Pattern namePattern;
+
+		NameMatching(FieldQuery parent, Pattern namePattern) {
+			super(parent);
+			this.namePattern = namePattern;
+		}
+
+		@Override
+		protected boolean matches(Field candidate) {
+			return this.namePattern.matcher(candidate.getName()).matches();
+		}
+	}
+
 	private static final class Predicated extends Filtered {
 		private final Predicate<? super Field> filter;
 
@@ -164,4 +186,6 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 				.peek(field -> field.setAccessible(true));
 		}
 	}
+
+
 }

@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
@@ -20,6 +21,12 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 	public ConstructorQuery<X> named(String name) {
 		requireNonNull(name);
 		return new Named<>(this, name);
+	}
+
+	@Override
+	public ConstructorQuery<X> nameMatching(Pattern namePattern) {
+		requireNonNull(namePattern);
+		return new NameMatching<>(this, namePattern);
 	}
 
 	@Override
@@ -113,6 +120,21 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 		@Override
 		protected boolean matches(Constructor<X> candidate) {
 			return this.name.equals(candidate.getName());
+		}
+	}
+
+
+	private static final class NameMatching<X> extends Filtered<X> {
+		private final Pattern namePattern;
+
+		NameMatching(ConstructorQuery<X> parent, Pattern namePattern) {
+			super(parent);
+			this.namePattern = namePattern;
+		}
+
+		@Override
+		protected boolean matches(Constructor<X> candidate) {
+			return this.namePattern.matcher(candidate.getName()).matches();
 		}
 	}
 

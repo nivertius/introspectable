@@ -6,6 +6,7 @@ import org.perfectable.introspection.SubjectReflection;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,17 @@ class FieldQueryTest {
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
 				.containsExactly(SubjectReflection.STRING_FIELD);
+	}
+
+	@Test
+	void testNameMatching() {
+		FieldQuery extracted =
+			FieldQuery.of(Subject.class).nameMatching(Pattern.compile(".*Field"));
+
+		assertThat(extracted)
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
+				SubjectReflection.PROTECTED_NUMBER_FIELD);
 	}
 
 	@Test

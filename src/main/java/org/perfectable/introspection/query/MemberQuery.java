@@ -3,12 +3,15 @@ package org.perfectable.introspection.query;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
+import java.util.regex.Pattern;
 
 public abstract class MemberQuery<M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>>
 		extends AbstractQuery<M, Q>
 		implements Iterable<M> {
 
 	public abstract Q named(String name);
+
+	public abstract Q nameMatching(Pattern namePattern);
 
 	public abstract Q typed(Class<?> type);
 
