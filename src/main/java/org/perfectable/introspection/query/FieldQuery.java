@@ -33,8 +33,11 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		return new Predicated(this, filter);
 	}
 
-	@Override
 	public FieldQuery typed(Class<?> type) {
+		return typed(TypeFilter.subtypeOf(type));
+	}
+
+	public FieldQuery typed(TypeFilter type) {
 		requireNonNull(type);
 		return new Typed(this, type);
 	}
@@ -137,16 +140,16 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	}
 
 	private static final class Typed extends Filtered {
-		private final Class<?> type;
+		private final TypeFilter typeFilter;
 
-		Typed(FieldQuery parent, Class<?> type) {
+		Typed(FieldQuery parent, TypeFilter typeFilter) {
 			super(parent);
-			this.type = type;
+			this.typeFilter = typeFilter;
 		}
 
 		@Override
 		protected boolean matches(Field candidate) {
-			return this.type.isAssignableFrom(candidate.getType());
+			return this.typeFilter.matches(candidate.getType());
 		}
 	}
 

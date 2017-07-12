@@ -40,16 +40,13 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		return new Parameters(this, parametersFilter);
 	}
 
-	// only implements super
-	@Deprecated
-	@Override
-	public MethodQuery typed(Class<?> type) {
-		return returning(type);
+	public MethodQuery returning(Class<?> type) {
+		return returning(TypeFilter.subtypeOf(type));
 	}
 
-	public MethodQuery returning(Class<?> type) {
-		requireNonNull(type);
-		return new Returning(this, type);
+	public MethodQuery returning(TypeFilter typeFilter) {
+		requireNonNull(typeFilter);
+		return new Returning(this, typeFilter);
 	}
 
 	public MethodQuery returningVoid() {
@@ -169,16 +166,16 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 	}
 
 	private static final class Returning extends Filtered {
-		private final Class<?> returnType;
+		private final TypeFilter typeFilter;
 
-		Returning(MethodQuery parent, Class<?> returnType) {
+		Returning(MethodQuery parent, TypeFilter typeFilter) {
 			super(parent);
-			this.returnType = returnType;
+			this.typeFilter = typeFilter;
 		}
 
 		@Override
 		protected boolean matches(Method candidate) {
-			return this.returnType.equals(candidate.getReturnType());
+			return this.typeFilter.matches(candidate.getReturnType());
 		}
 	}
 

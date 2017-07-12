@@ -94,22 +94,7 @@ class MethodQueryTest {
 	}
 
 	@Test
-	void testTyped() {
-		@SuppressWarnings("deprecation") // SUPPRESS SuppressWarnings need to test the method
-		MethodQuery extracted =
-				MethodQuery.of(Subject.class).typed(Object.class);
-
-		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(
-						SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
-						SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
-						SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
-						SimpleReflections.OBJECT_CLONE);
-	}
-
-	@Test
-	void testReturning() {
+	void testReturningSimple() {
 		MethodQuery extracted =
 				MethodQuery.of(Subject.class).returning(Object.class);
 
@@ -119,7 +104,22 @@ class MethodQueryTest {
 						SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 						SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 						SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
-						SimpleReflections.OBJECT_CLONE);
+						SimpleReflections.OBJECT_CLONE, SimpleReflections.OBJECT_TO_STRING,
+					    SimpleReflections.OBJECT_GET_CLASS);
+	}
+
+	@Test
+	void testReturningExact() {
+		MethodQuery extracted =
+			MethodQuery.of(Subject.class).returning(TypeFilter.exact(Object.class));
+
+		assertThat(extracted)
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactlyInAnyOrder(
+				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
+				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
+				SimpleReflections.OBJECT_CLONE);
 	}
 
 	@Test

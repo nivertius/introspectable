@@ -61,7 +61,7 @@ class FieldQueryTest {
 	}
 
 	@Test
-	void testTyped() {
+	void testTypedSimple() {
 		FieldQuery extracted =
 				FieldQuery.of(Subject.class)
 						.typed(Number.class);
@@ -69,6 +69,17 @@ class FieldQueryTest {
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
 				.containsExactlyInAnyOrder(SubjectReflection.PROTECTED_NUMBER_FIELD);
+	}
+
+	@Test
+	void testTypedExact() {
+		FieldQuery extracted =
+			FieldQuery.of(Subject.class)
+				.typed(TypeFilter.exact(Object.class));
+
+		assertThat(extracted)
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactlyInAnyOrder(SubjectReflection.OBJECT_FIELD);
 	}
 
 	@Test

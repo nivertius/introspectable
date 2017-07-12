@@ -61,4 +61,20 @@
 		<ShortMessage>Should be a static inner class</ShortMessage>
 		<Class classname='org.perfectable.introspection.query.GenericsQueryTest$OfParameterTest' primary='true' />
 	</BugInstance>
+    <BugInstance abbrev='IC' category='BAD_PRACTICE' priority='1'
+                 type='IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION'>
+        <ShortMessage>Superclass uses subclass during initialization</ShortMessage>
+        <Class classname='org.perfectable.introspection.query.TypeFilter' primary='true' />
+        <Method isStatic='true' classname='org.perfectable.introspection.query.TypeFilter' signature='()V'
+                name='&lt;clinit&gt;' primary='true' />
+        <Class classname='org.perfectable.introspection.query.TypeFilter$Complete' />
+    </BugInstance>
+    <BugInstance abbrev='IC' category='BAD_PRACTICE' priority='1'
+                 type='IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION'>
+        <ShortMessage>Superclass uses subclass during initialization</ShortMessage>
+        <Class classname='org.perfectable.introspection.query.TypeFilter' primary='true' />
+        <Method isStatic='true' classname='org.perfectable.introspection.query.TypeFilter' signature='()V'
+                name='&lt;clinit&gt;' primary='true' />
+        <Class classname='org.perfectable.introspection.query.TypeFilter$Empty' />
+    </BugInstance>
 </BugCollection>

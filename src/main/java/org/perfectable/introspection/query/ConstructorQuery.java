@@ -42,12 +42,6 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 	}
 
 	@Override
-	public ConstructorQuery<X> typed(Class<?> type) {
-		requireNonNull(type);
-		return new Typed<>(this, type);
-	}
-
-	@Override
 	public ConstructorQuery<X> annotatedWith(AnnotationFilter annotationFilter) {
 		requireNonNull(annotationFilter);
 		return new Annotated<>(this, annotationFilter);
@@ -155,20 +149,6 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 		protected boolean matches(Constructor<X> candidate) {
 			Parameter[] parameters = candidate.getParameters();
 			return parametersFilter.matches(parameters);
-		}
-	}
-
-	private static final class Typed<X> extends Filtered<X> {
-		private final Class<?> type;
-
-		Typed(ConstructorQuery<X> parent, Class<?> type) {
-			super(parent);
-			this.type = type;
-		}
-
-		@Override
-		protected boolean matches(Constructor<X> candidate) {
-			return this.type.equals(candidate.getDeclaringClass());
 		}
 	}
 

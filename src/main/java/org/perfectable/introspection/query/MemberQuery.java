@@ -13,8 +13,6 @@ public abstract class MemberQuery<M extends Member & AnnotatedElement, Q extends
 
 	public abstract Q nameMatching(Pattern namePattern);
 
-	public abstract Q typed(Class<?> type);
-
 	public Q annotatedWith(Class<? extends Annotation> annotationClass) {
 		return annotatedWith(AnnotationFilter.of(annotationClass));
 	}
