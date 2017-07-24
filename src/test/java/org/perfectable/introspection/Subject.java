@@ -4,6 +4,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import javax.annotation.Nullable;
 
+import static org.perfectable.introspection.SubjectReflection.MESSAGE_CONSTRUCTOR_CALLED;
 import static org.perfectable.introspection.SubjectReflection.MESSAGE_METHOD_CALLED;
 
 @Subject.Special
@@ -30,6 +31,23 @@ public class Subject {
 	// SUPPRESS NEXT 2 StaticVariableName used for testing
 	@Nullable
 	public static Subject STATIC_FIELD; // SUPPRESS VisibilityModifier used for testing
+
+	public Subject() {
+		throw new AssertionError(MESSAGE_CONSTRUCTOR_CALLED);
+	}
+
+	public Subject(String argument1) { // SUPPRESS UnusedFormalParameter used for testing
+		throw new AssertionError(MESSAGE_CONSTRUCTOR_CALLED);
+	}
+
+	@Special
+	public Subject(Number argument1) { // SUPPRESS UnusedFormalParameter used for testing
+		throw new AssertionError(MESSAGE_CONSTRUCTOR_CALLED);
+	}
+
+	protected Subject(Object argument1, Object argument2) { // SUPPRESS UnusedFormalParameter used for testing
+		throw new AssertionError(MESSAGE_CONSTRUCTOR_CALLED);
+	}
 
 	public void noResultNoArgument() {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);

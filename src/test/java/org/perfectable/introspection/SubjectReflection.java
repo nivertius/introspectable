@@ -1,13 +1,16 @@
 package org.perfectable.introspection;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import static org.perfectable.introspection.SimpleReflections.getConstructor;
 import static org.perfectable.introspection.SimpleReflections.getField;
 import static org.perfectable.introspection.SimpleReflections.getMethod;
 
 public final class SubjectReflection {
 	static final String MESSAGE_METHOD_CALLED = "Test method should not be called";
+	static final String MESSAGE_CONSTRUCTOR_CALLED = "Test constructor should not be called";
 
 	public static final Field STRING_FIELD =
 		getField(Subject.class, "stringField");
@@ -17,6 +20,15 @@ public final class SubjectReflection {
 		getField(Subject.class, "STATIC_FIELD");
 	public static final Field PROTECTED_NUMBER_FIELD =
 		getField(Subject.class, "protectedNumberField");
+
+	public static final Constructor<Subject> CONSTRUCTOR_NO_ARGS =
+		getConstructor(Subject.class);
+	public static final Constructor<Subject> CONSTRUCTOR_STRING =
+		getConstructor(Subject.class, String.class);
+	public static final Constructor<Subject> CONSTRUCTOR_ANNOTATED =
+		getConstructor(Subject.class, Number.class);
+	public static final Constructor<Subject> CONSTRUCTOR_PROTECTED =
+		getConstructor(Subject.class, Object.class, Object.class);
 
 	public static final Method NO_RESULT_NO_ARGUMENT =
 		getMethod(Subject.class, "noResultNoArgument");
