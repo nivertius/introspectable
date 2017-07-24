@@ -67,7 +67,7 @@
         <Class classname='org.perfectable.introspection.query.TypeFilter' primary='true' />
         <Method isStatic='true' classname='org.perfectable.introspection.query.TypeFilter' signature='()V'
                 name='&lt;clinit&gt;' primary='true' />
-        <Class classname='org.perfectable.introspection.query.TypeFilter$Complete' />
+        <Class classname='org.perfectable.introspection.query.TypeFilters$Complete' />
     </BugInstance>
     <BugInstance abbrev='IC' category='BAD_PRACTICE' priority='1'
                  type='IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION'>
@@ -75,6 +75,6 @@
         <Class classname='org.perfectable.introspection.query.TypeFilter' primary='true' />
         <Method isStatic='true' classname='org.perfectable.introspection.query.TypeFilter' signature='()V'
                 name='&lt;clinit&gt;' primary='true' />
-        <Class classname='org.perfectable.introspection.query.TypeFilter$Empty' />
+        <Class classname='org.perfectable.introspection.query.TypeFilters$Empty' />
     </BugInstance>
 </BugCollection>
