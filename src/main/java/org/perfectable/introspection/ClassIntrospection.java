@@ -1,6 +1,7 @@
 package org.perfectable.introspection;
 
 import org.perfectable.introspection.query.AnnotationQuery;
+import org.perfectable.introspection.query.ConstructorQuery;
 import org.perfectable.introspection.query.FieldQuery;
 import org.perfectable.introspection.query.GenericsQuery;
 import org.perfectable.introspection.query.InheritanceQuery;
@@ -23,6 +24,10 @@ public final class ClassIntrospection<X> {
 
 	public FieldQuery fields() {
 		return FieldQuery.of(this.type);
+	}
+
+	public ConstructorQuery<X> constructors() {
+		return ConstructorQuery.of(this.type);
 	}
 
 	public MethodQuery methods() {
