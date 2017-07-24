@@ -69,6 +69,20 @@ Class<?> targetClass =
         .resolve(messageConsumer);
 ```
 
+#### Example: Dependency injection
+
+To inject new instances with required dependencies, IoC container needs to know which constructor is injected:
+
+```java
+Constructor<C> injectedConstructor =
+    introspect(instanceClass)
+        .constructors()
+        .annotatedWith(Inject.class)
+        .requiringModifier(Modifier.PUBLIC)
+        .option()
+        .orElseThrow(MissingInjectableConstructor::new);
+```
+
 #### Example: Servlet Discovery
 
 To discover and register all servlets, web application needs to scan classpath for `Servlet` classes to instantiate:
