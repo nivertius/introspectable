@@ -1,7 +1,6 @@
 package org.perfectable.introspection.query;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -160,8 +159,7 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 
 		@Override
 		protected boolean matches(Method candidate) {
-			Parameter[] parameters = candidate.getParameters();
-			return parametersFilter.matches(parameters);
+			return parametersFilter.matches(candidate);
 		}
 	}
 

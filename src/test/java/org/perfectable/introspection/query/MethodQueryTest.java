@@ -49,6 +49,7 @@ class MethodQueryTest {
 				.filteredOn(JACOCO_EXCLUSION)
 				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 						SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+						SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
 						SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
 						SimpleReflections.OBJECT_WAIT_TIMEOUT, SimpleReflections.OBJECT_EQUALS);
 	}
@@ -56,12 +57,13 @@ class MethodQueryTest {
 	@Test
 	void testParametersByLength() {
 		MethodQuery extracted =
-				MethodQuery.of(Subject.class).parameters(parameters -> parameters.length == 1);
+				MethodQuery.of(Subject.class).parameters(ParametersFilter.count(1));
 
 		assertThat(extracted)
 				.filteredOn(JACOCO_EXCLUSION)
 				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 						SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+					SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
 						SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
 						SimpleReflections.OBJECT_WAIT_TIMEOUT, SimpleReflections.OBJECT_EQUALS);
 	}
@@ -141,8 +143,12 @@ class MethodQueryTest {
 				.filteredOn(JACOCO_EXCLUSION)
 				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_NO_ARGUMENT,
 						SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
+						SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
 						SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
-						SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.METHOD_PROTECTED,
+						SubjectReflection.NO_RESULT_STRING_NUMBER_ARGUMENT,
+						SubjectReflection.NO_RESULT_VARARGS_ARGUMENT,
+						SubjectReflection.NO_RESULT_VARARGS_DOUBLE_ARGUMENT,
+						SubjectReflection.METHOD_PROTECTED,
 						SimpleReflections.OBJECT_WAIT, SimpleReflections.OBJECT_WAIT_TIMEOUT,
 						SimpleReflections.OBJECT_WAIT_NANOSECONDS,
 						SimpleReflections.OBJECT_FINALIZE, SimpleReflections.OBJECT_REGISTER_NATIVES,

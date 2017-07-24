@@ -35,7 +35,19 @@ public class Subject {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);
 	}
 
+	public void noResultPrimitiveArgument(int argument1) {
+		throw new AssertionError(MESSAGE_METHOD_CALLED);
+	}
+
 	public void noResultSingleArgument(Object argument1) {
+		throw new AssertionError(MESSAGE_METHOD_CALLED);
+	}
+
+	public void noResultStringArgument(String argument1) {
+		throw new AssertionError(MESSAGE_METHOD_CALLED);
+	}
+
+	public void noResultStringNumberArgument(String argument1, Number argument2) {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);
 	}
 
@@ -48,6 +60,10 @@ public class Subject {
 	}
 
 	public void noResultVarargsArgument(Object... arguments) {
+		throw new AssertionError(MESSAGE_METHOD_CALLED);
+	}
+
+	public void noResultVarargsDoubleArgument(Object argument1, Object argument2, Object... arguments) {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);
 	}
 

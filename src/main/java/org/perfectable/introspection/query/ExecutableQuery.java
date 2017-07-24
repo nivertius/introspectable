@@ -11,7 +11,7 @@ public abstract class ExecutableQuery<E extends Executable, Q extends Executable
 
 	public Q parameters(Class<?>... parameterTypes) {
 		requireNonNull(parameterTypes);
-		return parameters(ParametersFilter.types(parameterTypes));
+		return parameters(ParametersFilter.typesAccepted(parameterTypes));
 	}
 
 }

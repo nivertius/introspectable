@@ -10,40 +10,48 @@ public final class SubjectReflection {
 	static final String MESSAGE_METHOD_CALLED = "Test method should not be called";
 
 	public static final Field STRING_FIELD =
-			getField(Subject.class, "stringField");
+		getField(Subject.class, "stringField");
 	public static final Field OBJECT_FIELD =
-			getField(Subject.class, "objectField");
+		getField(Subject.class, "objectField");
 	public static final Field STATIC_FIELD =
-			getField(Subject.class, "STATIC_FIELD");
+		getField(Subject.class, "STATIC_FIELD");
 	public static final Field PROTECTED_NUMBER_FIELD =
-			getField(Subject.class, "protectedNumberField");
+		getField(Subject.class, "protectedNumberField");
 
 	public static final Method NO_RESULT_NO_ARGUMENT =
-			getMethod(Subject.class, "noResultNoArgument");
+		getMethod(Subject.class, "noResultNoArgument");
 	public static final Method NO_RESULT_SINGLE_ARGUMENT =
-			getMethod(Subject.class, "noResultSingleArgument", Object.class);
+		getMethod(Subject.class, "noResultSingleArgument", Object.class);
+	public static final Method NO_RESULT_PRIMITIVE_ARGUMENT =
+		getMethod(Subject.class, "noResultPrimitiveArgument", int.class);
+	public static final Method NO_RESULT_STRING_ARGUMENT =
+		getMethod(Subject.class, "noResultStringArgument", String.class);
 	public static final Method NO_RESULT_DOUBLE_ARGUMENT =
-			getMethod(Subject.class, "noResultDoubleArgument", Object.class, Object.class);
+		getMethod(Subject.class, "noResultDoubleArgument", Object.class, Object.class);
+	public static final Method NO_RESULT_STRING_NUMBER_ARGUMENT =
+		getMethod(Subject.class, "noResultStringNumberArgument", String.class, Number.class);
 	public static final Method NO_RESULT_TRIPLE_ARGUMENT =
-			getMethod(Subject.class, "noResultTripleArgument",
-					Object.class, Object.class, Object.class);
+		getMethod(Subject.class, "noResultTripleArgument",
+			Object.class, Object.class, Object.class);
 	public static final Method NO_RESULT_VARARGS_ARGUMENT =
-			getMethod(Subject.class, "noResultVarargsArgument", Object[].class);
+		getMethod(Subject.class, "noResultVarargsArgument", Object[].class);
+	public static final Method NO_RESULT_VARARGS_DOUBLE_ARGUMENT =
+		getMethod(Subject.class, "noResultVarargsDoubleArgument", Object.class, Object.class, Object[].class);
 	public static final Method WITH_RESULT_NO_ARGUMENT =
-			getMethod(Subject.class, "withResultNoArgument");
+		getMethod(Subject.class, "withResultNoArgument");
 	public static final Method WITH_RESULT_SINGLE_ARGUMENT =
-			getMethod(Subject.class, "withResultSingleArgument", Object.class);
+		getMethod(Subject.class, "withResultSingleArgument", Object.class);
 	public static final Method WITH_RESULT_DOUBLE_ARGUMENT =
-			getMethod(Subject.class, "withResultDoubleArgument", Object.class, Object.class);
+		getMethod(Subject.class, "withResultDoubleArgument", Object.class, Object.class);
 	public static final Method WITH_RESULT_TRIPLE_ARGUMENT =
-			getMethod(Subject.class, "withResultTripleArgument",
-					Object.class, Object.class, Object.class);
+		getMethod(Subject.class, "withResultTripleArgument",
+			Object.class, Object.class, Object.class);
 	public static final Method WITH_RESULT_VARARGS_ARGUMENT =
-			getMethod(Subject.class, "withResultVarargsArgument", Object[].class);
+		getMethod(Subject.class, "withResultVarargsArgument", Object[].class);
 	public static final Method METHOD_PROTECTED =
-			getMethod(Subject.class, "methodProtected");
+		getMethod(Subject.class, "methodProtected");
 	public static final Method ANNOTATED_WITH_NULLABLE =
-			getMethod(Subject.class, "annotatedWithNullable");
+		getMethod(Subject.class, "annotatedWithNullable");
 
 	private SubjectReflection() {
 		// utility class

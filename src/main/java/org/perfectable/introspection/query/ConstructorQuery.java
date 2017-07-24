@@ -1,7 +1,6 @@
 package org.perfectable.introspection.query;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -147,8 +146,7 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 
 		@Override
 		protected boolean matches(Constructor<X> candidate) {
-			Parameter[] parameters = candidate.getParameters();
-			return parametersFilter.matches(parameters);
+			return parametersFilter.matches(candidate);
 		}
 	}
 
