@@ -3,7 +3,6 @@ package org.perfectable.introspection.query;
 import java.util.Deque;
 import java.util.Enumeration;
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
@@ -37,13 +36,7 @@ final class Streams {
 		return StreamSupport.stream(spliterator, false);
 	}
 
-
-	public static <X> Stream<X> presentInstances(Optional<X> optional) {
-		return optional.map(Stream::of).orElseGet(Stream::of);
-	}
-
 	private static final class GeneratorSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
-
 		private static final int ADDITIONAL_CHARACTERISTICS = 0;
 
 		private final Spliterator<? extends T> wrapped;
