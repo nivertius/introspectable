@@ -30,7 +30,7 @@ public class Subject {
 
 	// SUPPRESS NEXT 2 StaticVariableName used for testing
 	@Nullable
-	public static Subject STATIC_FIELD; // SUPPRESS VisibilityModifier used for testing
+	public static Subject staticField; // SUPPRESS VisibilityModifier used for testing
 
 	public Subject() {
 		throw new AssertionError(MESSAGE_CONSTRUCTOR_CALLED);

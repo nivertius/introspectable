@@ -17,7 +17,7 @@ public final class SubjectReflection {
 	public static final Field OBJECT_FIELD =
 		getField(Subject.class, "objectField");
 	public static final Field STATIC_FIELD =
-		getField(Subject.class, "STATIC_FIELD");
+		getField(Subject.class, "staticField");
 	public static final Field PROTECTED_NUMBER_FIELD =
 		getField(Subject.class, "protectedNumberField");
 

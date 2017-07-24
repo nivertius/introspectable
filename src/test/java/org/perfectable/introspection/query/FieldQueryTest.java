@@ -45,7 +45,9 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactlyInAnyOrder(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
+			.containsExactlyInAnyOrder(SubjectReflection.STRING_FIELD,
+				SubjectReflection.STATIC_FIELD,
+				SubjectReflection.OBJECT_FIELD,
 				SubjectReflection.PROTECTED_NUMBER_FIELD);
 	}
 
