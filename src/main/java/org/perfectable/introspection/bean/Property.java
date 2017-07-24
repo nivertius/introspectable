@@ -58,13 +58,13 @@ public interface Property<CT, PT> {
 		return FieldProperty.fromField(field);
 	}
 
-	static <CX> Property<CX, ?> fromField(Class<CX> beanClass, Field field) {
+	static <CX> Property<CX, ?> fromField(Field field, Class<CX> beanClass) {
 		requireNonNull(field);
 		checkArgument(field.getDeclaringClass().isAssignableFrom(beanClass));
 		return FieldProperty.fromField(field);
 	}
 
-	static <CX, PX> Property<CX, PX> fromField(Class<CX> beanClass, Field field, Class<PX> type) {
+	static <CX, PX> Property<CX, PX> fromField(Field field, Class<CX> beanClass, Class<PX> type) {
 		requireNonNull(field);
 		checkArgument(field.getDeclaringClass().isAssignableFrom(beanClass));
 		checkArgument(field.getType().equals(type));

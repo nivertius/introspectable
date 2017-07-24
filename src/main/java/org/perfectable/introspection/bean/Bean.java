@@ -43,7 +43,7 @@ public final class Bean<T> {
 		return FieldQuery.of(this.instance.getClass())
 				.excludingModifier(Modifier.STATIC)
 				.stream()
-				.map(field -> Property.fromField(instanceClass, field).bind(this.instance));
+				.map(field -> Property.fromField(field, instanceClass).bind(this.instance));
 	}
 
 	public <X> BoundProperty<T, X> property(String name, Class<X> type) {
