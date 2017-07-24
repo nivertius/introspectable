@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.TestExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -17,7 +16,7 @@ public class MockitoExtension implements TestInstancePostProcessor, AfterEachCal
 	}
 
 	@Override
-	public void afterEach(@Nullable TestExtensionContext context) {
+	public void afterEach(@Nullable ExtensionContext context) {
 		Mockito.validateMockitoUsage();
 	}
 
