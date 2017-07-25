@@ -1,4 +1,4 @@
-package org.perfectable.introspection.query; // SUPPRESS LENGTH
+package org.perfectable.introspection.query; // SUPPRESS FILE FileLength
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +34,45 @@ import javassist.NotFoundException;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Iterable-like container that searches for classes.
+ *
+ * <p>This is straightforward method to search for classes that have specified characteristics when one doesn't have
+ * their name.
+ *
+ * <p>Instances of this class are immutable, each filtering produces new, modified instance. To obtain unrestricted
+ * query, use {@link #system()} or {@link #of(ClassLoader)}.
+ *
+ * <p>To obtain results either iterate this class with {@link #iterator} (or in enhanced-for loop) or use one of
+ * {@link #stream()}, {@link #unique()}, {@link #option()} or {@link #isPresent()}.
+ *
+ * <p>This query works in three stages, from fastest to slowest. First it reads classpath entries looking for class
+ * files. At this point it filters for package and class names. These are the fastest filters that can immeasurably
+ * speed up querying, and it is suggested that all queries should have at least one of these filters.
+ *
+ * <p>Then, it uses Javassist classfile reading, which only parses the classfile, without initializing it. At this
+ * point, the query can filter for things like checking if annotation is present or if interface is implemented.
+ * These filters are much faster that conventional classloading (because class dependencies don't have to be loaded and
+ * no class initialization actually occurs).
+ *
+ * <p>Lastly, class is loaded and arbitrary filtering on it is applied.
+ *
+ * <p>If unrestricted, this query is very slow, as it will load all classes either in classloader or on classpath!
+ *
+ * <p>Example usage, which registers all classes in package "org.perfectable" that implements
+ * {@link java.io.Serializable} and are annotated by javax.annotation.Generated:
+ * <pre>
+ *     ClassQuery.of(Application.class.getClassloader())
+ *         .inPackage("org.perfectable")
+ *         .subtypeOf(java.io.Serializable.class)
+ *         .annotatedBy(javax.annotation.Generated.class)
+ *         .stream()
+ *         .forEach(this::register);
+ * </pre>
+ *
+ * @param <C>
+ *     Base type for returned classes.
+ */
 public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, ClassQuery<C>> {
 	private static final Predicate<? super String> DEFAULT_CLASSNAME_FILTER = className -> true;
 	private static final Predicate<? super CtClass> DEFAULT_PRE_LOAD_FILTER = ctClass -> true;
@@ -54,10 +93,21 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 	private final Predicate<? super CtClass> preLoadFilter;
 	private final Predicate<? super Class<? extends C>> postLoadFilter;
 
+	/**
+	 * Queries for all classes reachable from declared classpath.
+	 *
+	 * @return query for system classloader classes.
+	 */
 	public static ClassQuery<Object> system() {
 		return ClassQuery.SYSTEM;
 	}
 
+	/**
+	 * Queries for classes reachable by specified classloader.
+	 *
+	 * @param loader classloader to introspect
+	 * @return query for classes in classloader
+	 */
 	public static ClassQuery<Object> of(ClassLoader loader) {
 		requireNonNull(loader);
 		ClassPool classPool1 = new ClassPool();
@@ -80,6 +130,15 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		this.postLoadFilter = postLoadFilter;
 	}
 
+	/**
+	 * Restricts query to classes that are subtype of specified type.
+	 *
+	 * <p>This restriction works on unloaded classes and gives some speedup when obtaining results of query.
+	 *
+	 * @param supertype class which will be supertype of any result returned by this query
+	 * @param <X> new supertype bound
+	 * @return query for classes with specific supertype
+	 */
 	public <X extends C> ClassQuery<X> subtypeOf(Class<? extends X> supertype) {
 		@SuppressWarnings("unchecked")
 		Predicate<? super CtClass> newPreLoadFilter =
@@ -88,14 +147,35 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			classNameFilter, newPreLoadFilter, DEFAULT_POST_LOAD_FILTER);
 	}
 
+	/**
+	 * Restricts query to classes that in specified package or its descendants.
+	 *
+	 * <p>This restriction works on class names and gives generous speedup when obtaining results of query.
+	 *
+	 * @param filteredPackageName name of the package which will restrict results
+	 * @return query that returns classes in specified package
+	 */
 	public ClassQuery<C> inPackage(String filteredPackageName) {
 		return withClassNameFilter(PackageNamePredicate.of(filteredPackageName));
 	}
 
+	/**
+	 * Restricts query to classes that in specified package or its descendants.
+	 *
+	 * <p>This restriction works on class names and gives generous speedup when obtaining results of query.
+	 *
+	 * @param filteredPackage package which will restrict results
+	 * @return query that returns classes in specified package
+	 */
 	public ClassQuery<C> inPackage(Package filteredPackage) {
 		return inPackage(filteredPackage.getName());
 	}
 
+	/**
+	 * Restricts query to classes that matches specified predicate.
+	 *
+	 * <p>This restriction works on loaded classes and gives no speedup when obtaining results of query.
+	 */
 	@Override
 	public ClassQuery<C> filter(Predicate<? super Class<? extends C>> filter) {
 		@SuppressWarnings("unchecked")
@@ -105,14 +185,29 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			classNameFilter, preLoadFilter, newPostLoadFilter);
 	}
 
+	/**
+	 * Restricts query to classes that are annotated by annotation with specified class.
+	 *
+	 * <p>This restriction works on unloaded classes and gives some speedup when obtaining results of query.
+	 *
+	 * @param annotation annotation that must be present on class to be returned
+	 * @return query that returns only classes that have specific annotation
+	 */
 	public ClassQuery<C> annotatedWith(Class<? extends Annotation> annotation) {
 		return annotatedWith(AnnotationFilter.single(annotation));
 	}
 
+	/**
+	 * Restricts query to classes that matches specified annotation filter.
+	 *
+	 * <p>This restriction works on unloaded classes and gives some speedup when obtaining results of query.
+	 *
+	 * @param annotationFilter filter for annotation on class
+	 * @return query that returns classes matching specified filter
+	 */
 	public ClassQuery<C> annotatedWith(AnnotationFilter annotationFilter) {
 		return withPreLoadFilter(AnnotationPredicate.of(annotationFilter));
 	}
-
 
 	@Override
 	public Stream<Class<? extends C>> stream() {
@@ -198,8 +293,8 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			return Optional.of(loaded);
 		}
 		catch (Throwable e) { // SUPPRESS IllegalCatch
-			// altrough this should only throw ClassNotFoundException or NoClassDefFoundError,
-			// lot of different exception occurs while loading classes and if it happens, Class is not loadadble anyway
+			// although this should only throw ClassNotFoundException or NoClassDefFoundError,
+			// lot of different exception occurs while loading classes and if it happens, Class is not loadable anyway
 			return Optional.empty();
 		}
 	}
@@ -410,7 +505,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			Iterable<String> classPathEntries = CLASSPATH_SPLITTER.split(classPathString);
 			for (String entry : classPathEntries) {
 				if (entry.endsWith("*")) {
-					throw new AssertionError("Wildcarded classpath is unsupported");
+					throw new AssertionError("Wild-carded classpath is unsupported");
 				}
 				URL url = safeToUrl(ENTRY_URL_PREFIX + entry);
 				urlAction.accept(url);
