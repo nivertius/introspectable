@@ -3,6 +3,7 @@ package org.perfectable.introspection.query;
 import org.perfectable.introspection.Subject;
 import org.perfectable.introspection.SubjectReflection;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
@@ -18,6 +19,15 @@ class FieldQueryTest {
 			method -> !method.getName().equals("$jacocoData");
 
 	@Test
+	void testEmpty() {
+		FieldQuery extracted =
+			FieldQuery.empty();
+
+		assertThat(extracted)
+			.isEmpty();
+	}
+
+	@Test
 	void testUnrestricted() {
 		FieldQuery extracted =
 				FieldQuery.of(Subject.class);
@@ -26,6 +36,36 @@ class FieldQueryTest {
 				.filteredOn(JACOCO_EXCLUSION)
 				.containsExactlyInAnyOrder(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
 						SubjectReflection.PROTECTED_NUMBER_FIELD, SubjectReflection.STATIC_FIELD);
+	}
+
+	@Test
+	void testEmptyInterface() {
+		FieldQuery extracted =
+			FieldQuery.of(Serializable.class);
+
+		assertThat(extracted)
+			.isEmpty();
+	}
+
+	@Test
+	void testInterfaceWithStaticField() {
+		FieldQuery extracted =
+			FieldQuery.of(Subject.NestedInterface.class);
+
+		assertThat(extracted)
+			.containsExactly(SubjectReflection.NESTED_INTERFACE_FIELD);
+	}
+
+	@Test
+	void testJoined() {
+		FieldQuery extracted =
+			FieldQuery.of(Subject.class).join(FieldQuery.of(Subject.NestedInterface.class));
+
+		assertThat(extracted)
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactlyInAnyOrder(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
+				SubjectReflection.PROTECTED_NUMBER_FIELD, SubjectReflection.STATIC_FIELD,
+				SubjectReflection.NESTED_INTERFACE_FIELD);
 	}
 
 	@Test

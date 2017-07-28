@@ -115,4 +115,7 @@ public class Subject {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);
 	}
 
+	public interface NestedInterface { // SUPPRESS InterfaceIsType:
+		String STATIC_FIELD = "staticFieldValue"; // SUPPRESS ConstantInIntarface
+	}
 }

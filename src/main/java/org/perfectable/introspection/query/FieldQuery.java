@@ -1,18 +1,29 @@
-package org.perfectable.introspection.query;
+package org.perfectable.introspection.query; // SUPPRESS FileLength
 
 import java.lang.reflect.Field;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import com.google.common.collect.ImmutableList;
+
 import static java.util.Objects.requireNonNull;
 
 // SUPPRESS NEXT 1 ClassDataAbstractionCoupling
 public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 
+	public static FieldQuery empty() {
+		return Empty.INSTANCE;
+	}
+
 	public static <X> FieldQuery of(Class<X> type) {
 		requireNonNull(type);
 		return new Complete<>(type);
+	}
+
+	public FieldQuery join(FieldQuery other) {
+		requireNonNull(other);
+		return Composite.composite(this, other);
 	}
 
 	@Override
@@ -37,9 +48,9 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		return typed(TypeFilter.subtypeOf(type));
 	}
 
-	public FieldQuery typed(TypeFilter type) {
-		requireNonNull(type);
-		return new Typed(this, type);
+	public FieldQuery typed(TypeFilter typeFilter) {
+		requireNonNull(typeFilter);
+		return new Typed(this, typeFilter);
 	}
 
 	@Override
@@ -77,7 +88,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		@Override
 		public Stream<Field> stream() {
 			return this.chain.stream()
-					.flatMap(testedClass -> Stream.of(testedClass.getDeclaredFields()));
+				.flatMap(testedClass -> Stream.of(testedClass.getDeclaredFields()));
 		}
 	}
 
@@ -93,7 +104,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		@Override
 		public Stream<Field> stream() {
 			return this.parent.stream()
-					.filter(this::matches);
+				.filter(this::matches);
 		}
 	}
 
@@ -209,5 +220,41 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 
+	private static final class Empty extends FieldQuery {
+		static final Empty INSTANCE = new Empty();
 
+		@Override
+		public Stream<Field> stream() {
+			return Stream.of();
+		}
+
+		private Empty() {
+			// singleton
+		}
+	}
+
+	private static final class Composite extends FieldQuery {
+		private final ImmutableList<FieldQuery> components;
+
+		private Composite(ImmutableList<FieldQuery> components) {
+			this.components = components;
+		}
+
+		private static Composite composite(FieldQuery... components) {
+			return new Composite(ImmutableList.copyOf(components));
+		}
+
+		@Override
+		public Stream<Field> stream() {
+			return components.stream().flatMap(FieldQuery::stream);
+		}
+
+		@Override
+		public Composite join(FieldQuery other) {
+			ImmutableList<FieldQuery> newComponents =
+				ImmutableList.<FieldQuery>builder()
+					.addAll(components).add(other).build();
+			return new Composite(newComponents);
+		}
+	}
 }

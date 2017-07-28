@@ -29,11 +29,11 @@ class RelatedTypeQueryTest {
 		RelatedTypeQuery related = RelatedTypeQuery.of(Subject.Special.class);
 
 		assertThat(related)
-				.doesNotHaveDuplicates();
-		assertThat(related)
+				.doesNotHaveDuplicates()
 				.filteredOn(type -> type.getPackage() != null)
 				.filteredOn(type -> type.getPackage().getName().startsWith(MAIN_PACKAGE))
-				.containsExactlyInAnyOrder(Subject.class, Subject.Special.class, Subject.OtherAnnotation.class);
+				.containsExactlyInAnyOrder(Subject.class, Subject.Special.class, Subject.OtherAnnotation.class,
+					Subject.NestedInterface.class);
 	}
 
 	@Test
@@ -43,8 +43,8 @@ class RelatedTypeQueryTest {
 				.filter(type -> type.getPackage().getName().startsWith(MAIN_PACKAGE));
 
 		assertThat(related)
-				.doesNotHaveDuplicates();
-		assertThat(related)
-				.containsExactlyInAnyOrder(Subject.class, Subject.Special.class, Subject.OtherAnnotation.class);
+				.doesNotHaveDuplicates()
+				.containsExactlyInAnyOrder(Subject.class, Subject.Special.class, Subject.OtherAnnotation.class,
+					Subject.NestedInterface.class);
 	}
 }

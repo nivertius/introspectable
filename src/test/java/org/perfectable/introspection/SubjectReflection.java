@@ -20,6 +20,8 @@ public final class SubjectReflection {
 		getField(Subject.class, "staticField");
 	public static final Field PROTECTED_NUMBER_FIELD =
 		getField(Subject.class, "protectedNumberField");
+	public static final Field NESTED_INTERFACE_FIELD =
+		getField(Subject.NestedInterface.class, "STATIC_FIELD");
 
 	public static final Constructor<Subject> CONSTRUCTOR_NO_ARGS =
 		getConstructor(Subject.class);
