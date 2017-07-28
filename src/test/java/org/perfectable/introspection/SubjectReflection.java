@@ -66,6 +66,8 @@ public final class SubjectReflection {
 		getMethod(Subject.class, "methodProtected");
 	public static final Method ANNOTATED_WITH_NULLABLE =
 		getMethod(Subject.class, "annotatedWithNullable");
+	public static final Method TO_STRING =
+		getMethod(Subject.class, "toString");
 
 	private SubjectReflection() {
 		// utility class

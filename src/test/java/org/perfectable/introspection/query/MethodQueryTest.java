@@ -106,6 +106,7 @@ class MethodQueryTest {
 						SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 						SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 						SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
+						SubjectReflection.TO_STRING,
 						SimpleReflections.OBJECT_CLONE, SimpleReflections.OBJECT_TO_STRING,
 					    SimpleReflections.OBJECT_GET_CLASS);
 	}
@@ -154,6 +155,37 @@ class MethodQueryTest {
 						SimpleReflections.OBJECT_FINALIZE, SimpleReflections.OBJECT_REGISTER_NATIVES,
 						SimpleReflections.OBJECT_NOTIFY,
 						SimpleReflections.OBJECT_NOTIFY_ALL);
+	}
+
+	@Test
+	void testNotOverriden() {
+		MethodQuery extracted =
+			MethodQuery.of(Subject.class)
+				.notOverridden();
+
+		assertThat(extracted)
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_NO_ARGUMENT,
+				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
+				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
+				SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
+				SubjectReflection.NO_RESULT_STRING_NUMBER_ARGUMENT,
+				SubjectReflection.NO_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.NO_RESULT_VARARGS_DOUBLE_ARGUMENT,
+				SubjectReflection.METHOD_PROTECTED,
+				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
+				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.ANNOTATED_WITH_NULLABLE,
+				SubjectReflection.TO_STRING,
+				SimpleReflections.OBJECT_EQUALS, SimpleReflections.OBJECT_HASH_CODE,
+				SimpleReflections.OBJECT_GET_CLASS,
+				SimpleReflections.OBJECT_CLONE,
+				SimpleReflections.OBJECT_WAIT, SimpleReflections.OBJECT_WAIT_TIMEOUT,
+				SimpleReflections.OBJECT_WAIT_NANOSECONDS, SimpleReflections.OBJECT_FINALIZE,
+				SimpleReflections.OBJECT_REGISTER_NATIVES,
+				SimpleReflections.OBJECT_NOTIFY, SimpleReflections.OBJECT_NOTIFY_ALL)
+			.doesNotContain(SimpleReflections.OBJECT_TO_STRING);
 	}
 
 	@Test

@@ -115,6 +115,11 @@ public class Subject {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);
 	}
 
+	@Override
+	public String toString() {
+		throw new AssertionError(MESSAGE_METHOD_CALLED);
+	}
+	
 	public interface NestedInterface { // SUPPRESS InterfaceIsType:
 		String STATIC_FIELD = "staticFieldValue"; // SUPPRESS ConstantInIntarface
 	}

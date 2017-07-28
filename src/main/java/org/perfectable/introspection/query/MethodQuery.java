@@ -1,9 +1,15 @@
 package org.perfectable.introspection.query;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import com.google.common.base.Equivalence;
 
 import static java.util.Objects.requireNonNull;
 
@@ -50,6 +56,10 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 
 	public MethodQuery returningVoid() {
 		return returning(Void.TYPE);
+	}
+
+	public MethodQuery notOverridden() {
+		return new NotOverriden(this);
 	}
 
 	@Override
@@ -230,6 +240,37 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		public Stream<Method> stream() {
 			return parent.stream()
 				.peek(field -> field.setAccessible(true));
+		}
+	}
+
+	private static final class NotOverriden extends MethodQuery {
+		static final Equivalence<Method> SIGNATURE_EQUIVALENCE = new Equivalence<Method>() {
+			@Override
+			protected boolean doEquivalent(Method left, Method right) {
+				return left.getName().equals(right.getName())
+					&& Arrays.equals(left.getParameterTypes(), right.getParameterTypes());
+			}
+
+			@Override
+			protected int doHash(Method method) {
+				return Objects.hash(method.getName(), Arrays.hashCode(method.getParameterTypes()));
+			}
+		};
+
+		private final MethodQuery parent;
+
+		NotOverriden(MethodQuery parent) {
+			this.parent = parent;
+		}
+
+		@Override
+		public Stream<Method> stream() {
+			Set<Equivalence.Wrapper<Method>> processed = new HashSet<>();
+			return parent.stream()
+				.map(SIGNATURE_EQUIVALENCE::wrap)
+				.filter(signature -> !processed.contains(signature))
+				.peek(processed::add)
+				.map(Equivalence.Wrapper::get);
 		}
 	}
 }
