@@ -289,8 +289,9 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 					.map(ZipEntry::getName)
 					.forEach(resultBuilder::add);
 			}
-			catch (IOException e) {
-				throw new AssertionError(e);
+			catch (IOException ignored) {
+				// could not open jar file, probably not jar
+				return;
 			}
 			if (manifestClassPath == null) {
 				return;
