@@ -73,6 +73,11 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<properties>
+		<version.junit-jupiter>5.0.0</version.junit-jupiter>
+		<version.junit-platform>1.0.0</version.junit-platform>
+	</properties>
 
 	<build>
 		<plugins>
