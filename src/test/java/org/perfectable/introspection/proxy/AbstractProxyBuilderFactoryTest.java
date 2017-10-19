@@ -2,12 +2,16 @@ package org.perfectable.introspection.proxy;
 
 import org.perfectable.introspection.MockitoExtension;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class)
 public abstract class AbstractProxyBuilderFactoryTest {
@@ -16,6 +20,22 @@ public abstract class AbstractProxyBuilderFactoryTest {
 	private static final String MESSAGE_METHOD_CALLED = "Actual method should not be called";
 
 	protected abstract ProxyBuilderFactory createFactory();
+
+	@Test
+	void testCheckedException(@Mock TestInterfaceChecked targetMock) throws IOException {
+		ProxyBuilderFactory factory = createFactory();
+		ProxyBuilder<TestInterfaceChecked> proxyBuilder =
+			factory.ofInterfaces(TestInterfaceChecked.class);
+		TestInterfaceChecked proxy = proxyBuilder.instantiate(ForwardingHandler.of(targetMock));
+
+		assertThat(proxy).isInstanceOf(TestInterfaceChecked.class);
+
+		IOException thrown = new IOException();
+		doThrow(thrown).when(targetMock).firstMethod();
+
+		assertThatThrownBy(() -> proxy.firstMethod())
+			.isSameAs(thrown);
+	}
 
 	@Test
 	void testOfInterfaces(@Mock TestFirstInterface firstMock) {
@@ -63,6 +83,10 @@ public abstract class AbstractProxyBuilderFactoryTest {
 
 		mixedMock.firstMethod();
 		((TestFirstInterface) proxy).firstMethod();
+	}
+
+	public interface TestInterfaceChecked {
+		void firstMethod() throws IOException;
 	}
 
 	public interface TestFirstInterface {
