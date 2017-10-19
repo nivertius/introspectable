@@ -38,6 +38,22 @@ public abstract class AbstractProxyBuilderFactoryTest {
 	}
 
 	@Test
+	void testUncheckedException(@Mock TestFirstInterface targetMock) throws IOException {
+		ProxyBuilderFactory factory = createFactory();
+		ProxyBuilder<TestFirstInterface> proxyBuilder =
+			factory.ofInterfaces(TestFirstInterface.class);
+		TestFirstInterface proxy = proxyBuilder.instantiate(ForwardingHandler.of(targetMock));
+
+		assertThat(proxy).isInstanceOf(TestFirstInterface.class);
+
+		IllegalArgumentException thrown = new IllegalArgumentException();
+		doThrow(thrown).when(targetMock).firstMethod();
+
+		assertThatThrownBy(() -> proxy.firstMethod())
+			.isSameAs(thrown);
+	}
+
+	@Test
 	void testOfInterfaces(@Mock TestFirstInterface firstMock) {
 		ProxyBuilderFactory factory = createFactory();
 		ProxyBuilder<TestFirstInterface> proxyBuilder =
