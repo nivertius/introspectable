@@ -15,19 +15,10 @@ public abstract class AbstractProxyBuilderFactoryTest {
 	private static final String MESSAGE_ASSUME_SUPERCLASS = "This factory does not support superclass proxies";
 	private static final String MESSAGE_METHOD_CALLED = "Actual method should not be called";
 
-	@Mock
-	private TestFirstInterface firstMock;
-
-	@Mock
-	private TestClass classMock;
-
-	@Mock
-	private TestClassMixed mixedMock;
-
 	protected abstract ProxyBuilderFactory createFactory();
 
 	@Test
-	void testOfInterfaces() {
+	void testOfInterfaces(@Mock TestFirstInterface firstMock) {
 		ProxyBuilderFactory factory = createFactory();
 		ProxyBuilder<TestFirstInterface> proxyBuilder =
 			factory.ofInterfaces(TestFirstInterface.class);
@@ -41,7 +32,7 @@ public abstract class AbstractProxyBuilderFactoryTest {
 	}
 
 	@Test
-	void testOfClass() {
+	void testOfClass(@Mock TestClass classMock) {
 		ProxyBuilderFactory factory = createFactory();
 		assumeTrue(factory.supportsFeature(ProxyBuilderFactory.Feature.SUPERCLASS), MESSAGE_ASSUME_SUPERCLASS);
 
@@ -57,7 +48,7 @@ public abstract class AbstractProxyBuilderFactoryTest {
 	}
 
 	@Test
-	void testOfClassWithInterface() {
+	void testOfClassWithInterface(@Mock TestClassMixed mixedMock) {
 		ProxyBuilderFactory factory = createFactory();
 		assumeTrue(factory.supportsFeature(ProxyBuilderFactory.Feature.SUPERCLASS), MESSAGE_ASSUME_SUPERCLASS);
 		ProxyBuilder<TestClass> proxyBuilder =
