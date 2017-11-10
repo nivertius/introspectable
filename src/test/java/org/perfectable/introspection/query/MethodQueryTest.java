@@ -18,6 +18,7 @@ class MethodQueryTest {
 
 	private static final Predicate<Method> JACOCO_EXCLUSION =
 		method -> !method.getName().equals("$jacocoInit");
+	private static final String EXAMPLE_STRING = "testString";
 
 	@Test
 	void testUnrestricted() {
@@ -46,7 +47,8 @@ class MethodQueryTest {
 				ObjectMethods.WAIT_NANOSECONDS, ObjectMethods.FINALIZE,
 				ObjectMethods.REGISTER_NATIVES,
 				ObjectMethods.NOTIFY, ObjectMethods.NOTIFY_ALL,
-				ObjectMethods.TO_STRING);
+				ObjectMethods.TO_STRING)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -55,7 +57,9 @@ class MethodQueryTest {
 			MethodQuery.of(Subject.class).named("noResultNoArgument");
 
 		assertThat(extracted)
-			.isSingleton(SubjectReflection.NO_RESULT_NO_ARGUMENT);
+			.isSingleton(SubjectReflection.NO_RESULT_NO_ARGUMENT)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -65,7 +69,9 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.containsExactly(SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT,
-				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT);
+				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -79,7 +85,9 @@ class MethodQueryTest {
 				SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
 				SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
-				ObjectMethods.WAIT_TIMEOUT, ObjectMethods.EQUALS);
+				ObjectMethods.WAIT_TIMEOUT, ObjectMethods.EQUALS)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -93,7 +101,9 @@ class MethodQueryTest {
 				SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
 				SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
-				ObjectMethods.WAIT_TIMEOUT, ObjectMethods.EQUALS);
+				ObjectMethods.WAIT_TIMEOUT, ObjectMethods.EQUALS)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -103,7 +113,9 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactly(ObjectMethods.WAIT_TIMEOUT);
+			.containsExactly(ObjectMethods.WAIT_TIMEOUT)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -120,7 +132,9 @@ class MethodQueryTest {
 				ObjectMethods.WAIT_NANOSECONDS,
 				ObjectMethods.GET_CLASS, ObjectMethods.CLONE,
 				ObjectMethods.TO_STRING,
-				ObjectMethods.REGISTER_NATIVES);
+				ObjectMethods.REGISTER_NATIVES)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -136,7 +150,9 @@ class MethodQueryTest {
 				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
 				SubjectReflection.TO_STRING,
 				ObjectMethods.CLONE, ObjectMethods.TO_STRING,
-				ObjectMethods.GET_CLASS);
+				ObjectMethods.GET_CLASS)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -149,7 +165,9 @@ class MethodQueryTest {
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
-				ObjectMethods.CLONE);
+				ObjectMethods.CLONE)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -158,7 +176,9 @@ class MethodQueryTest {
 			MethodQuery.of(Subject.class).returning(boolean.class);
 
 		assertThat(extracted)
-			.isSingleton(ObjectMethods.EQUALS);
+			.isSingleton(ObjectMethods.EQUALS)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -180,7 +200,9 @@ class MethodQueryTest {
 				ObjectMethods.WAIT_NANOSECONDS,
 				ObjectMethods.FINALIZE, ObjectMethods.REGISTER_NATIVES,
 				ObjectMethods.NOTIFY,
-				ObjectMethods.NOTIFY_ALL);
+				ObjectMethods.NOTIFY_ALL)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -211,7 +233,8 @@ class MethodQueryTest {
 				ObjectMethods.WAIT_NANOSECONDS, ObjectMethods.FINALIZE,
 				ObjectMethods.REGISTER_NATIVES,
 				ObjectMethods.NOTIFY, ObjectMethods.NOTIFY_ALL)
-			.doesNotContain(ObjectMethods.TO_STRING);
+			.doesNotContain(EXAMPLE_STRING, null, ObjectMethods.TO_STRING,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -221,7 +244,9 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactly(SubjectReflection.ANNOTATED_WITH_NULLABLE);
+			.containsExactly(SubjectReflection.ANNOTATED_WITH_NULLABLE)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -231,7 +256,9 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactly(SubjectReflection.ANNOTATED_WITH_NULLABLE);
+			.containsExactly(SubjectReflection.ANNOTATED_WITH_NULLABLE)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -243,7 +270,9 @@ class MethodQueryTest {
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
 			.containsExactly(ObjectMethods.FINALIZE, ObjectMethods.CLONE,
-				SubjectReflection.METHOD_PROTECTED);
+				SubjectReflection.METHOD_PROTECTED)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -255,6 +284,8 @@ class MethodQueryTest {
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
 			.containsExactly(ObjectMethods.FINALIZE, ObjectMethods.CLONE,
-				ObjectMethods.REGISTER_NATIVES, SubjectReflection.METHOD_PROTECTED);
+				ObjectMethods.REGISTER_NATIVES, SubjectReflection.METHOD_PROTECTED)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.STATIC_FIELD);
 	}
 }

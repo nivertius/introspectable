@@ -45,6 +45,16 @@ public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>
 		public Stream<Class<? super X>> stream() {
 			return Streams.generateSingle(initial, InheritanceQuery::safeGetSupertypes);
 		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			if (!(candidate instanceof Class<?>)) {
+				return false;
+			}
+			@SuppressWarnings("unchecked")
+			Class<? super X> candidateClass = (Class<? super X>) candidate;
+			return candidateClass.isAssignableFrom(initial);
+		}
 	}
 
 	private abstract static class Filtered<X> extends InheritanceQuery<X> {
@@ -61,6 +71,17 @@ public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>
 		public Stream<Class<? super X>> stream() {
 			return this.parent.stream()
 					.filter(this::matches);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean contains(Object candidate) {
+			if (!(candidate instanceof Class<?>)) {
+				return false;
+			}
+			@SuppressWarnings("unchecked")
+			Class<? super X> candidateClass = (Class<? super X>) candidate;
+			return matches(candidateClass) && parent.contains(candidate);
 		}
 	}
 

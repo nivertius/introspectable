@@ -12,6 +12,8 @@ import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat
 
 class ConstructorQueryTest {
 
+	private static final String EXAMPLE_STRING = "testString";
+
 	@Test
 	void testUnrestricted() {
 		ConstructorQuery<Subject> extracted =
@@ -21,7 +23,8 @@ class ConstructorQueryTest {
 			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
 				SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED,
-				SubjectReflection.CONSTRUCTOR_PROTECTED);
+				SubjectReflection.CONSTRUCTOR_PROTECTED)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -33,7 +36,8 @@ class ConstructorQueryTest {
 			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
 				SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED,
-				SubjectReflection.CONSTRUCTOR_PROTECTED);
+				SubjectReflection.CONSTRUCTOR_PROTECTED)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -42,7 +46,8 @@ class ConstructorQueryTest {
 			ConstructorQuery.of(Subject.class).named("Something Other");
 
 		assertThat(extracted)
-			.isEmpty();
+			.isEmpty()
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -54,7 +59,8 @@ class ConstructorQueryTest {
 			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
 				SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED,
-				SubjectReflection.CONSTRUCTOR_PROTECTED);
+				SubjectReflection.CONSTRUCTOR_PROTECTED)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -63,7 +69,8 @@ class ConstructorQueryTest {
 			ConstructorQuery.of(Subject.class).filter(method -> method.getParameterCount() == 0);
 
 		assertThat(extracted)
-			.isSingleton(SubjectReflection.CONSTRUCTOR_NO_ARGS);
+			.isSingleton(SubjectReflection.CONSTRUCTOR_NO_ARGS)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -73,7 +80,8 @@ class ConstructorQueryTest {
 
 		assertThat(extracted)
 			.containsExactly(SubjectReflection.CONSTRUCTOR_STRING,
-				SubjectReflection.CONSTRUCTOR_ANNOTATED);
+				SubjectReflection.CONSTRUCTOR_ANNOTATED)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -82,7 +90,8 @@ class ConstructorQueryTest {
 			ConstructorQuery.of(Subject.class).parameters(String.class);
 
 		assertThat(extracted)
-			.isSingleton(SubjectReflection.CONSTRUCTOR_STRING);
+			.isSingleton(SubjectReflection.CONSTRUCTOR_STRING)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -95,7 +104,8 @@ class ConstructorQueryTest {
 			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
 				SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED,
-				SubjectReflection.CONSTRUCTOR_PROTECTED);
+				SubjectReflection.CONSTRUCTOR_PROTECTED)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -104,7 +114,8 @@ class ConstructorQueryTest {
 			ConstructorQuery.of(Subject.class).annotatedWith(Subject.Special.class);
 
 		assertThat(extracted)
-			.isSingleton(SubjectReflection.CONSTRUCTOR_ANNOTATED);
+			.isSingleton(SubjectReflection.CONSTRUCTOR_ANNOTATED)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -113,7 +124,8 @@ class ConstructorQueryTest {
 			ConstructorQuery.of(Subject.class).annotatedWith(AnnotationFilter.of(Subject.Special.class));
 
 		assertThat(extracted)
-			.isSingleton(SubjectReflection.CONSTRUCTOR_ANNOTATED);
+			.isSingleton(SubjectReflection.CONSTRUCTOR_ANNOTATED)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -123,7 +135,8 @@ class ConstructorQueryTest {
 				.requiringModifier(Modifier.PROTECTED);
 
 		assertThat(extracted)
-			.isSingleton(SubjectReflection.CONSTRUCTOR_PROTECTED);
+			.isSingleton(SubjectReflection.CONSTRUCTOR_PROTECTED)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -135,6 +148,7 @@ class ConstructorQueryTest {
 		assertThat(extracted)
 			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
 				SubjectReflection.CONSTRUCTOR_STRING,
-				SubjectReflection.CONSTRUCTOR_ANNOTATED);
+				SubjectReflection.CONSTRUCTOR_ANNOTATED)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 }

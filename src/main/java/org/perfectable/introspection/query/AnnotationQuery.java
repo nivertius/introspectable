@@ -69,6 +69,15 @@ public abstract class AnnotationQuery<A extends Annotation>
 			return this.parent.stream()
 					.filter(this::matches);
 		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean contains(Object candidate) {
+			if (!(candidate instanceof Annotation)) {
+				return false;
+			}
+			return matches((A) candidate) && parent.contains(candidate);
+		}
 	}
 
 	private static final class Predicated<A extends Annotation>
@@ -116,6 +125,11 @@ public abstract class AnnotationQuery<A extends Annotation>
 					.filter(type::isInstance)
 					.map(type::cast);
 		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			return type.isInstance(candidate) && parent.contains(candidate);
+		}
 	}
 
 	AnnotationQuery() {
@@ -139,6 +153,11 @@ public abstract class AnnotationQuery<A extends Annotation>
 		@Override
 		public AnnotationQuery<Annotation> join(AnnotationQuery<? extends Annotation> other) {
 			return (AnnotationQuery<Annotation>) other;
+		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			return false;
 		}
 
 		private Empty() {
@@ -169,6 +188,12 @@ public abstract class AnnotationQuery<A extends Annotation>
 					ImmutableList.<AnnotationQuery<?>>builder()
 						.addAll(components).add(other).build();
 			return new Composite<Annotation>(newComponents);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean contains(Object candidate) {
+			return components.stream().anyMatch(component -> component.contains(candidate));
 		}
 	}
 }

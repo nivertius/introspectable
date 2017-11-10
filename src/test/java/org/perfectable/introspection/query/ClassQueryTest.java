@@ -15,6 +15,8 @@ class ClassQueryTest {
 	private static final String PACKAGE_NAME = "org.perfectable";
 
 	abstract static class Methods {
+		private static final String EXAMPLE_STRING = "testString";
+
 		protected abstract ClassQuery<Object> createQuery();
 
 		@Test
@@ -25,7 +27,7 @@ class ClassQueryTest {
 			assertThat(query)
 				.contains(Subject.OtherAnnotation.class, AnnotationFilter.class,
 					ClassQueryTest.class, ClassQuery.class, Subject.class, SubjectReflection.class)
-				.doesNotContain(Serializable.class, String.class, CtClass.class);
+				.doesNotContain(Serializable.class, String.class, CtClass.class, EXAMPLE_STRING);
 		}
 
 		@Test
@@ -36,7 +38,7 @@ class ClassQueryTest {
 			assertThat(query)
 				.isSingleton(Subject.class)
 				.doesNotContain(Serializable.class, AnnotationFilter.class, String.class, CtClass.class,
-					ClassQueryTest.class, ClassQuery.class, SubjectReflection.class);
+					ClassQueryTest.class, ClassQuery.class, SubjectReflection.class, EXAMPLE_STRING);
 		}
 
 		@Test
@@ -47,7 +49,7 @@ class ClassQueryTest {
 			assertThat(query)
 				.contains(ClassQuery.class, MethodQuery.class)
 				.doesNotContain(Serializable.class, AnnotationFilter.class, String.class, CtClass.class,
-					ClassQueryTest.class, Subject.class, SubjectReflection.class);
+					ClassQueryTest.class, Subject.class, SubjectReflection.class, EXAMPLE_STRING);
 		}
 
 		@Test
@@ -58,7 +60,7 @@ class ClassQueryTest {
 			assertThat(query)
 				.contains(AnnotationFilter.class)
 				.doesNotContain(String.class, CtClass.class, ClassQueryTest.class,
-					ClassQuery.class, Subject.class, SubjectReflection.class);
+					ClassQuery.class, Subject.class, SubjectReflection.class, EXAMPLE_STRING);
 		}
 
 	}

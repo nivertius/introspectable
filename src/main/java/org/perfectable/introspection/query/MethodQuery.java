@@ -1,4 +1,4 @@
-package org.perfectable.introspection.query;
+package org.perfectable.introspection.query; // SUPPRESS LENGTH
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -99,6 +99,17 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 			return this.chain.stream()
 					.flatMap(testedClass -> Stream.of(testedClass.getDeclaredMethods()));
 		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			if (!(candidate instanceof Method)) {
+				return false;
+			}
+			Method candidateMethod = (Method) candidate;
+			@SuppressWarnings("unchecked")
+			Class<? super X> declaringClass = (Class<? super X>) candidateMethod.getDeclaringClass();
+			return chain.contains(declaringClass);
+		}
 	}
 
 	private abstract static class Filtered extends MethodQuery {
@@ -114,6 +125,15 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		public Stream<Method> stream() {
 			return this.parent.stream()
 					.filter(this::matches);
+		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			if (!(candidate instanceof Method)) {
+				return false;
+			}
+			Method candidateMethod = (Method) candidate;
+			return matches(candidateMethod) && parent.contains(candidate);
 		}
 	}
 
@@ -241,6 +261,11 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 			return parent.stream()
 				.peek(field -> field.setAccessible(true));
 		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			return parent.contains(candidate);
+		}
 	}
 
 	private static final class NotOverriden extends MethodQuery {
@@ -271,6 +296,24 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 				.filter(signature -> !processed.contains(signature))
 				.peek(processed::add)
 				.map(Equivalence.Wrapper::get);
+		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			if (!(candidate instanceof Method)) {
+				return false;
+			}
+			if (!parent.contains(candidate)) {
+				return false;
+			}
+			Method candidateMethod = (Method) candidate;
+			Class<?> declaringClass = candidateMethod.getDeclaringClass();
+			MethodQuery sameSignature = parent
+				.parameters(ParametersFilter.typesExact(candidateMethod.getParameterTypes()))
+				.named(candidateMethod.getName());
+			return sameSignature.stream()
+					.map(Method::getDeclaringClass)
+					.allMatch(methodClass -> methodClass.isAssignableFrom(declaringClass));
 		}
 	}
 }

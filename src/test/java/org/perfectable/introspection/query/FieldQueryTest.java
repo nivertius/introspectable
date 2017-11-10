@@ -17,6 +17,7 @@ import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat
 class FieldQueryTest {
 	private static final Predicate<Field> JACOCO_EXCLUSION =
 		method -> !method.getName().equals("$jacocoData");
+	private static final String EXAMPLE_STRING = "testString";
 
 	@Test
 	void testEmpty() {
@@ -35,7 +36,8 @@ class FieldQueryTest {
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
 			.containsExactly(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
-				SubjectReflection.PROTECTED_NUMBER_FIELD, SubjectReflection.STATIC_FIELD);
+				SubjectReflection.PROTECTED_NUMBER_FIELD, SubjectReflection.STATIC_FIELD)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -44,7 +46,8 @@ class FieldQueryTest {
 			FieldQuery.of(Serializable.class);
 
 		assertThat(extracted)
-			.isEmpty();
+			.isEmpty()
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -53,7 +56,8 @@ class FieldQueryTest {
 			FieldQuery.of(Subject.NestedInterface.class);
 
 		assertThat(extracted)
-			.isSingleton(SubjectReflection.NESTED_INTERFACE_FIELD);
+			.isSingleton(SubjectReflection.NESTED_INTERFACE_FIELD)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -65,7 +69,8 @@ class FieldQueryTest {
 			.filteredOn(JACOCO_EXCLUSION)
 			.containsExactly(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
 				SubjectReflection.PROTECTED_NUMBER_FIELD, SubjectReflection.STATIC_FIELD,
-				SubjectReflection.NESTED_INTERFACE_FIELD);
+				SubjectReflection.NESTED_INTERFACE_FIELD)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -74,7 +79,8 @@ class FieldQueryTest {
 			FieldQuery.of(Subject.class).named("stringField");
 
 		assertThat(extracted)
-			.isSingleton(SubjectReflection.STRING_FIELD);
+			.isSingleton(SubjectReflection.STRING_FIELD)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -84,7 +90,8 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 			.containsExactly(SubjectReflection.STRING_FIELD, SubjectReflection.STATIC_FIELD,
-				SubjectReflection.OBJECT_FIELD, SubjectReflection.PROTECTED_NUMBER_FIELD);
+				SubjectReflection.OBJECT_FIELD, SubjectReflection.PROTECTED_NUMBER_FIELD)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -95,7 +102,8 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactly(SubjectReflection.STATIC_FIELD);
+			.containsExactly(SubjectReflection.STATIC_FIELD)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -105,7 +113,8 @@ class FieldQueryTest {
 				.typed(Number.class);
 
 		assertThat(extracted)
-			.isSingleton(SubjectReflection.PROTECTED_NUMBER_FIELD);
+			.isSingleton(SubjectReflection.PROTECTED_NUMBER_FIELD)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -116,7 +125,8 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactly(SubjectReflection.OBJECT_FIELD);
+			.containsExactly(SubjectReflection.OBJECT_FIELD)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -126,7 +136,8 @@ class FieldQueryTest {
 				.annotatedWith(Nullable.class);
 
 		assertThat(extracted)
-			.containsExactly(SubjectReflection.OBJECT_FIELD, SubjectReflection.STATIC_FIELD);
+			.containsExactly(SubjectReflection.OBJECT_FIELD, SubjectReflection.STATIC_FIELD)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -138,7 +149,8 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactly(SubjectReflection.PROTECTED_NUMBER_FIELD);
+			.containsExactly(SubjectReflection.PROTECTED_NUMBER_FIELD)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 	@Test
@@ -150,7 +162,8 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactly(SubjectReflection.STATIC_FIELD);
+			.containsExactly(SubjectReflection.STATIC_FIELD)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
 
 

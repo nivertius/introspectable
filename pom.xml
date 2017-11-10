@@ -52,6 +52,10 @@
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>jsr305</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.google.errorprone</groupId>
+			<artifactId>error_prone_annotations</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.javassist</groupId>
@@ -108,7 +112,7 @@
 						<rule>
 							<limits>
 								<limit>
-									<minimum>0.72</minimum>
+									<minimum>0.74</minimum>
 								</limit>
 							</limits>
 						</rule>

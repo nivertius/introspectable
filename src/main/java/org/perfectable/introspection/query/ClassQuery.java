@@ -126,6 +126,30 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			.filter(postLoadFilter);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean contains(Object candidate) {
+		if (!(candidate instanceof Class<?>)) {
+			return false;
+		}
+		Class<? extends C> candidateClass = (Class<? extends C>) candidate;
+		if (!DEFAULT_CLASSNAME_FILTER.equals(classNameFilter) && !classNameFilter.test(candidateClass.getName())) {
+			return false;
+		}
+		if (!DEFAULT_POST_LOAD_FILTER.equals(postLoadFilter) && !postLoadFilter.test(candidateClass)) {
+			return false;
+		}
+		if (!DEFAULT_PRE_LOAD_FILTER.equals(preLoadFilter)) {
+			CtClass preloaded = preload(candidateClass.getName());
+			if (!preLoadFilter.test(preloaded)) {
+				return false;
+			}
+		}
+		return resources.contains(getClassPath(candidateClass));
+	}
+
+
+
 	private ClassQuery<C> withClassNameFilter(Predicate<? super String> additionalClassNameFilter) {
 		@SuppressWarnings("unchecked")
 		Predicate<? super String> newClassNameFilter =
@@ -151,6 +175,10 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 	private static String getClassName(String path) {
 		int classNameEnd = path.length() - CLASS_FILE_SUFFIX.length();
 		return path.substring(0, classNameEnd).replace('/', '.');
+	}
+
+	private static String getClassPath(Class<?> resolvedClass) {
+		return resolvedClass.getName().replace('.', '/') + CLASS_FILE_SUFFIX;
 	}
 
 	private CtClass preload(String className) {
@@ -256,6 +284,8 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 
 	private interface ResourceSource {
 		Stream<String> entries();
+
+		boolean contains(String candidate);
 	}
 
 	private abstract static class UrlResourceSource implements ResourceSource {
@@ -267,6 +297,11 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			ImmutableSet.Builder<String> resultBuilder = ImmutableSet.builder();
 			generateUrls(url -> generateUrlEntry(url, resultBuilder, visited));
 			return resultBuilder.build().stream();
+		}
+
+		@Override
+		public boolean contains(String candidate) {
+			return entries().anyMatch(candidate::equals);
 		}
 
 		protected abstract void generateUrls(Consumer<URL> urlAction);

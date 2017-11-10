@@ -27,7 +27,7 @@ final class AbstractQueryAssert<ELEMENT, MAPPED>
 		this.filter = filter;
 	}
 
-	static <ELEMENT> AbstractQueryAssert<ELEMENT, ELEMENT> assertThat(AbstractQuery<ELEMENT, ?> actual) {
+	static <ELEMENT> AbstractQueryAssert<ELEMENT, ELEMENT> assertThat(AbstractQuery<? extends ELEMENT, ?> actual) {
 		return new AbstractQueryAssert<>(actual, Function.identity(), element -> true);
 	}
 
@@ -91,9 +91,7 @@ final class AbstractQueryAssert<ELEMENT, MAPPED>
 		List<? extends MAPPED> mapped = convertElements();
 		iterables.assertContains(info, mapped, elements);
 		checkOptionPresent();
-		if (elements.length > 2) { // SUPPRESS javadoc AvoidLiteralsInIfCondition
-			checkUniqueThrows(IllegalArgumentException.class);
-		}
+		checkContains(elements);
 		return myself;
 	}
 
@@ -104,14 +102,17 @@ final class AbstractQueryAssert<ELEMENT, MAPPED>
 		List<? extends MAPPED> mapped = convertElements();
 		iterables.assertContainsExactlyInAnyOrder(info, mapped, elements);
 		checkOptionPresent();
-		if (elements.length > 2) { // SUPPRESS javadoc AvoidLiteralsInIfCondition
-			checkUniqueThrows(IllegalArgumentException.class);
-		}
+		checkContains(elements);
 		return myself;
 	}
 
 	AbstractQueryAssert<ELEMENT, MAPPED> doesNotContain(Object... elements) {
 		iterables.assertDoesNotContain(info, actual, elements);
+		for (Object element : elements) {
+			if (actual.contains(element)) {
+				failWithMessage("Expected query to not contain <%s> but did", element);
+			}
+		}
 		return myself;
 	}
 
@@ -146,6 +147,18 @@ final class AbstractQueryAssert<ELEMENT, MAPPED>
 		catch (Exception e) { // SUPPRESS IllegalCatch
 			if (!exceptionClass.isInstance(e)) {
 				failWithMessage("Expected query unique to throw " + exceptionClass.getSimpleName(), e);
+			}
+		}
+	}
+
+	@SafeVarargs
+	private final void checkContains(MAPPED... elements) {
+		if (elements.length > 2) { // SUPPRESS javadoc AvoidLiteralsInIfCondition
+			checkUniqueThrows(IllegalArgumentException.class);
+		}
+		for (MAPPED element : elements) {
+			if (!actual.contains(element)) {
+				failWithMessage("Expected query to contain <%s> but didn't", element);
 			}
 		}
 	}

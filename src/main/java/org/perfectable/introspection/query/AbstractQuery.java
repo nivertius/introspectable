@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Iterators;
+import com.google.errorprone.annotations.CompatibleWith;
 
 public abstract class AbstractQuery<E, Q extends AbstractQuery<E, ? extends Q>> implements Iterable<E> {
 
@@ -32,6 +33,10 @@ public abstract class AbstractQuery<E, Q extends AbstractQuery<E, ? extends Q>> 
 			return Optional.of(iterator.next());
 		}
 		return Optional.empty();
+	}
+
+	public boolean contains(@CompatibleWith("E") Object candidate) {
+		return Iterators.contains(iterator(), candidate);
 	}
 
 	AbstractQuery() {

@@ -74,6 +74,16 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 			Constructor<X>[] declaredConstructors = (Constructor<X>[]) type.getDeclaredConstructors();
 			return Arrays.stream(declaredConstructors);
 		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			if (!(candidate instanceof Constructor<?>)) {
+				return false;
+			}
+			@SuppressWarnings("unchecked")
+			Constructor<X> candidateConstructor = (Constructor<X>) candidate;
+			return type.equals(candidateConstructor.getDeclaringClass());
+		}
 	}
 
 
@@ -90,6 +100,16 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 		public Stream<Constructor<X>> stream() {
 			return this.parent.stream()
 					.filter(this::matches);
+		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			if (!(candidate instanceof Constructor<?>)) {
+				return false;
+			}
+			@SuppressWarnings("unchecked")
+			Constructor<X> candidateConstructor = (Constructor<X>) candidate;
+			return matches(candidateConstructor) && parent.contains(candidate);
 		}
 	}
 
@@ -203,6 +223,11 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 		public Stream<Constructor<X>> stream() {
 			return parent.stream()
 				.peek(field -> field.setAccessible(true));
+		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			return parent.contains(candidate);
 		}
 	}
 }

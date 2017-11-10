@@ -90,6 +90,17 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 			return this.chain.stream()
 				.flatMap(testedClass -> Stream.of(testedClass.getDeclaredFields()));
 		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			if (!(candidate instanceof Field)) {
+				return false;
+			}
+			Field candidateField = (Field) candidate;
+			@SuppressWarnings("unchecked")
+			Class<? super X> declaringClass = (Class<? super X>) candidateField.getDeclaringClass();
+			return chain.contains(declaringClass);
+		}
 	}
 
 	private abstract static class Filtered extends FieldQuery {
@@ -105,6 +116,15 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		public Stream<Field> stream() {
 			return this.parent.stream()
 				.filter(this::matches);
+		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			if (!(candidate instanceof Field)) {
+				return false;
+			}
+			Field candidateField = (Field) candidate;
+			return matches(candidateField) && parent.contains(candidate);
 		}
 	}
 
@@ -218,6 +238,11 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 			return this.parent.stream()
 				.peek(field -> field.setAccessible(true));
 		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			return parent.contains(candidate);
+		}
 	}
 
 	private static final class Empty extends FieldQuery {
@@ -226,6 +251,11 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		@Override
 		public Stream<Field> stream() {
 			return Stream.of();
+		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			return false;
 		}
 
 		private Empty() {
@@ -247,6 +277,11 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		@Override
 		public Stream<Field> stream() {
 			return components.stream().flatMap(FieldQuery::stream);
+		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			return components.stream().anyMatch(component -> component.contains(candidate));
 		}
 
 		@Override

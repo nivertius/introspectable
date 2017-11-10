@@ -52,6 +52,15 @@ public abstract class RelatedTypeQuery extends AbstractQuery<Class<?>, RelatedTy
 			return this.parent.stream()
 					.filter(this::matches);
 		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			if (!(candidate instanceof Class<?>)) {
+				return false;
+			}
+			Class<?> candidateClass = (Class<?>) candidate;
+			return matches(candidateClass) && parent.contains(candidate);
+		}
 	}
 
 	private static final class Predicated extends Filtered {

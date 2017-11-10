@@ -1,6 +1,7 @@
 package org.perfectable.introspection.query;
 
 import org.perfectable.introspection.Subject;
+import org.perfectable.introspection.SubjectReflection;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
@@ -13,14 +14,26 @@ import org.junit.jupiter.api.Test;
 import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat;
 
 class AnnotationQueryTest {
+	private static final String EXAMPLE_STRING = "testString";
+
+	private static final Subject.Special INSTANCE_SPECIAL =
+		Subject.class.getAnnotation(Subject.Special.class);
+	private static final Subject.OtherAnnotation INSTANCE_OTHER =
+		Subject.class.getAnnotation(Subject.OtherAnnotation.class);
+	private static final Nullable INSTANCE_NULLABLE =
+		SubjectReflection.ANNOTATED_WITH_NULLABLE.getAnnotation(Nullable.class);
+	private static final Documented INSTANCE_DOCUMENTED =
+		Nullable.class.getAnnotation(Documented.class);
+	private static final Retention INSTANCE_RETENTION =
+		Nullable.class.getAnnotation(Retention.class);
+
 	@Test
 	void testEmpty() {
 		AnnotationQuery<?> query = AnnotationQuery.empty();
 
 		assertThat(query)
-			.<Class<? extends Annotation>>extracting(Annotation::annotationType)
 			.isEmpty()
-			.doesNotContain(String.class, Subject.Special.class, Subject.OtherAnnotation.class);
+			.doesNotContain(EXAMPLE_STRING, INSTANCE_SPECIAL, INSTANCE_OTHER);
 	}
 
 	@Test
@@ -29,9 +42,8 @@ class AnnotationQueryTest {
 			.filter(annotation -> annotation.toString().equals("None"));
 
 		assertThat(query)
-			.<Class<? extends Annotation>>extracting(Annotation::annotationType)
 			.isEmpty()
-			.doesNotContain(String.class, Subject.Special.class, Subject.OtherAnnotation.class);
+			.doesNotContain(EXAMPLE_STRING, INSTANCE_SPECIAL, INSTANCE_OTHER);
 	}
 
 	@Test
@@ -39,9 +51,8 @@ class AnnotationQueryTest {
 		AnnotationQuery<?> query = AnnotationQuery.of(String.class);
 
 		assertThat(query)
-			.<Class<? extends Annotation>>extracting(Annotation::annotationType)
 			.isEmpty()
-			.doesNotContain(String.class, Subject.Special.class, Subject.OtherAnnotation.class);
+			.doesNotContain(EXAMPLE_STRING, INSTANCE_SPECIAL, INSTANCE_OTHER);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -50,9 +61,8 @@ class AnnotationQueryTest {
 		AnnotationQuery<Annotation> query = AnnotationQuery.of(Subject.class);
 
 		assertThat(query)
-			.<Class<? extends Annotation>>extracting(Annotation::annotationType)
-			.contains(Subject.Special.class, Subject.OtherAnnotation.class)
-			.doesNotContain(String.class, Nullable.class);
+			.contains(INSTANCE_SPECIAL, INSTANCE_OTHER)
+			.doesNotContain(EXAMPLE_STRING, INSTANCE_NULLABLE);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -61,10 +71,9 @@ class AnnotationQueryTest {
 		AnnotationQuery<?> query = AnnotationQuery.of(Subject.class)
 			.typed(Subject.Special.class);
 
-		assertThat(query)
-			.<Class<? extends Annotation>>extracting(Annotation::annotationType)
-			.isSingleton(Subject.Special.class)
-			.doesNotContain(String.class, Subject.OtherAnnotation.class, Nullable.class);
+		AbstractQueryAssert.<Annotation>assertThat(query)
+			.isSingleton(INSTANCE_SPECIAL)
+			.doesNotContain(EXAMPLE_STRING, INSTANCE_OTHER, INSTANCE_NULLABLE);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -73,10 +82,9 @@ class AnnotationQueryTest {
 		AnnotationQuery<?> query = AnnotationQuery.of(Subject.class)
 			.filter(annotation -> annotation.annotationType().getSimpleName().charAt(0) == 'O');
 
-		assertThat(query)
-			.<Class<? extends Annotation>>extracting(Annotation::annotationType)
-			.isSingleton(Subject.OtherAnnotation.class)
-			.doesNotContain(String.class, Subject.Special.class, Nullable.class);
+		AbstractQueryAssert.<Annotation>assertThat(query)
+			.isSingleton(INSTANCE_OTHER)
+			.doesNotContain(EXAMPLE_STRING, INSTANCE_SPECIAL, INSTANCE_NULLABLE);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -86,9 +94,8 @@ class AnnotationQueryTest {
 			.annotatedWith(Retention.class);
 
 		assertThat(query)
-			.<Class<? extends Annotation>>extracting(Annotation::annotationType)
-			.contains(Subject.Special.class, Subject.OtherAnnotation.class)
-			.doesNotContain(String.class, Nullable.class);
+			.contains(INSTANCE_SPECIAL, INSTANCE_OTHER)
+			.doesNotContain(EXAMPLE_STRING, INSTANCE_NULLABLE);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -101,9 +108,9 @@ class AnnotationQueryTest {
 		AnnotationQuery<Annotation> query = first.join(second);
 
 		assertThat(query)
-			.<Class<? extends Annotation>>extracting(Annotation::annotationType)
-			.contains(Subject.Special.class, Documented.class)
-			.doesNotContain(String.class, Subject.OtherAnnotation.class, Retention.class, Nullable.class);
+			.contains(INSTANCE_SPECIAL, INSTANCE_DOCUMENTED)
+			.doesNotContain(EXAMPLE_STRING, INSTANCE_OTHER, INSTANCE_RETENTION,
+				INSTANCE_NULLABLE);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -115,9 +122,10 @@ class AnnotationQueryTest {
 			.join(AnnotationQuery.of(Documented.class).typed(Documented.class));
 
 		assertThat(query)
-			.<Class<? extends Annotation>>extracting(Annotation::annotationType)
-			.contains(Documented.class, Subject.Special.class, Documented.class)
-			.doesNotContain(String.class, Subject.OtherAnnotation.class, Retention.class, Nullable.class);
+			.contains(INSTANCE_DOCUMENTED, INSTANCE_SPECIAL, INSTANCE_DOCUMENTED)
+			.doesNotContain(EXAMPLE_STRING, INSTANCE_OTHER, INSTANCE_RETENTION,
+				INSTANCE_NULLABLE);
 	}
+
 
 }
