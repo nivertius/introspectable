@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -120,7 +121,9 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			.filter(classNameFilter)
 			.map(this::preload)
 			.filter(preLoadFilter)
-			.map(this::load);
+			.map(this::load)
+			.flatMap(com.google.common.collect.Streams::stream)
+			.filter(postLoadFilter);
 	}
 
 	private ClassQuery<C> withClassNameFilter(Predicate<? super String> additionalClassNameFilter) {
@@ -159,13 +162,16 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		}
 	}
 
-	private Class<? extends C> load(CtClass preloadedClass) {
+	private Optional<Class<? extends C>> load(CtClass preloadedClass) {
 		try {
-			return loader.load(preloadedClass.getName())
+			Class<? extends C> loaded = loader.load(preloadedClass.getName())
 				.asSubclass(castedType);
+			return Optional.of(loaded);
 		}
-		catch (ClassNotFoundException e) {
-			throw new AssertionError(e);
+		catch (Throwable e) { // SUPPRESS IllegalCatch
+			// altrough this should only throw ClassNotFoundException or NoClassDefFoundError,
+			// lot of different exception occurs while loading classes and if it happens, Class is not loadadble anyway
+			return Optional.empty();
 		}
 	}
 
