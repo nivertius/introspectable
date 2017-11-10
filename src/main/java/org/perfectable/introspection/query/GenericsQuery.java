@@ -42,8 +42,8 @@ public abstract class GenericsQuery<X> {
 			this.resolved = resolved;
 		}
 
-		public Class<?> resolve(Class<? extends X> targetClass) {
-			TypeToken<? extends X> token = TypeToken.of(targetClass);
+		public Class<?> resolve(Type targetClass) {
+			TypeToken<?> token = TypeToken.of(targetClass);
 			TypeToken<?> resolvedToken = token.resolveType(this.resolved);
 			return resolvedToken.getRawType();
 		}
