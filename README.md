@@ -51,7 +51,7 @@ Stream<Method> appliers =
     introspect(target.getClass())
         .methods()
         .named("apply")
-        .parameters(parameters -> parameters.length == 1)
+        .parameterCount(1)
         .returningVoid()
         .excludingModifier(Modifier.STATIC)
         .stream();

@@ -14,4 +14,7 @@ public abstract class ExecutableQuery<E extends Executable, Q extends Executable
 		return parameters(ParametersFilter.typesAccepted(parameterTypes));
 	}
 
+	public Q parameterCount(int parameterCount) {
+		return parameters(ParametersFilter.count(parameterCount));
+	}
 }
