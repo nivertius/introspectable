@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.perfectable</groupId>
@@ -24,8 +24,8 @@
 	<developers>
 		<developer>
 			<id>nivertius</id>
-			<email>nivertius@gmail.com</email>
 			<name>Paweł Płazieński</name>
+			<email>nivertius@gmail.com</email>
 			<roles>
 				<role>Developer</role>
 			</roles>
@@ -37,6 +37,11 @@
 		<developerConnection>scm:git:git@source.perfectable.org:nivertius/introspectable.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
+
+	<properties>
+		<version.junit-jupiter>5.0.0</version.junit-jupiter>
+		<version.junit-platform>1.0.0</version.junit-platform>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -73,11 +78,21 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
-	<properties>
-		<version.junit-jupiter>5.0.0</version.junit-jupiter>
-		<version.junit-platform>1.0.0</version.junit-platform>
-	</properties>
+
+	<repositories>
+		<repository>
+			<id>perfectable-all</id>
+			<name>Perfectable</name>
+			<url>https://maven.perfectable.org/repo</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>perfectable-all</id>
+			<name>Perfectable</name>
+			<url>https://maven.perfectable.org/repo</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<build>
 		<plugins>
@@ -105,19 +120,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<repository>
-			<id>perfectable-all</id>
-			<name>Perfectable</name>
-			<url>https://maven.perfectable.org/repo</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>perfectable-all</id>
-			<name>Perfectable</name>
-			<url>https://maven.perfectable.org/repo</url>
-		</pluginRepository>
-	</pluginRepositories>
 </project>
