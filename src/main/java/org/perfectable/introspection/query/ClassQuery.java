@@ -259,6 +259,8 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 	}
 
 	private abstract static class UrlResourceSource implements ResourceSource {
+		public static final Splitter MANIFEST_CLASSPATH_ENTRY_SPLITTER = Splitter.on(" ");
+
 		@Override
 		public Stream<String> entries() {
 			Set<File> visited = new HashSet<>();
@@ -302,7 +304,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			if (manifestClassPath == null) {
 				return;
 			}
-			for (String manifestEntry : manifestClassPath.split(" ")) {
+			for (String manifestEntry : MANIFEST_CLASSPATH_ENTRY_SPLITTER.split(manifestClassPath)) {
 				URL manifestUrl = safeToUrl(manifestEntry);
 				generateUrlEntry(manifestUrl, resultBuilder, visited);
 			}
