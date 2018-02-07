@@ -1,6 +1,5 @@
 package org.perfectable.introspection.proxy;
 
-
 import javax.annotation.Nullable;
 
 public final class ForwardingHandler<T> implements InvocationHandler<T> {
