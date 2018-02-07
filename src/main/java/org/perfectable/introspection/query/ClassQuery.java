@@ -416,6 +416,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			this.ctClass = ctClass;
 		}
 
+		@Nullable
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {

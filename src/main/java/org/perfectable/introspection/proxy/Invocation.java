@@ -16,6 +16,7 @@ public final class Invocation<T> {
 	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
 
 	private final Method method;
+	@Nullable
 	private final T receiver;
 	private final Object[] arguments;
 
