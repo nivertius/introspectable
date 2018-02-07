@@ -1,8 +1,8 @@
 package org.perfectable.introspection.query;
 
+import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Enumeration;
-import java.util.LinkedList;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
@@ -42,7 +42,7 @@ final class Streams {
 		private final Spliterator<? extends T> wrapped;
 		private final Function<? super T, ? extends Stream<? extends T>> mutator;
 		private final Predicate<? super T> condition;
-		private final Deque<T> buffer = new LinkedList<>();
+		private final Deque<T> buffer = new ArrayDeque<>();
 
 		static <T> GeneratorSpliterator<T> wrap(Spliterator<? extends T> wrapped,
 												Function<? super T, ? extends Stream<? extends T>> mutator,

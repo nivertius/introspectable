@@ -3,14 +3,14 @@ package org.perfectable.introspection.proxy;
 import org.perfectable.introspection.ObjectMethods;
 
 import java.lang.reflect.Method;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Queue;
 import javax.annotation.Nullable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestHandler<T> implements InvocationHandler<T> {
-	private final Queue<Expectance> expected = new LinkedList<>();
+	private final Queue<Expectance> expected = new ArrayDeque<>();
 
 	static <T> TestHandler<T> create() {
 		return new TestHandler<>();
