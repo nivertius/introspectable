@@ -1,4 +1,4 @@
-package org.perfectable.introspection.query; // SUPPRESS FileLength
+package org.perfectable.introspection.query; // SUPPRESS LENGTH
 
 import java.io.File;
 import java.io.IOException;
