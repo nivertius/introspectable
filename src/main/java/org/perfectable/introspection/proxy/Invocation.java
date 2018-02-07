@@ -19,7 +19,7 @@ public final class Invocation<T> {
 	private final T receiver;
 	private final Object[] arguments;
 
-	public static <T> Invocation<T> intercepted(Method method, @Nullable T receiver, Object... arguments) {
+	public static <T> Invocation<T> intercepted(Method method, @Nullable T receiver, @Nullable Object... arguments) {
 		Object[] actualArguments = flattenVariableArguments(method, arguments);
 		return of(method, receiver, actualArguments);
 	}
