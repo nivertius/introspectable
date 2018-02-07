@@ -1,11 +1,11 @@
 package org.perfectable.introspection.proxy.javassist;
 
+import org.perfectable.introspection.ObjectMethods;
 import org.perfectable.introspection.proxy.Invocation;
 import org.perfectable.introspection.proxy.InvocationHandler;
 import org.perfectable.introspection.proxy.ProxyBuilder;
 
 import java.lang.reflect.Method;
-
 import javax.annotation.Nullable;
 
 import javassist.util.proxy.MethodHandler;
@@ -13,7 +13,6 @@ import javassist.util.proxy.Proxy;
 import org.objenesis.instantiator.ObjectInstantiator;
 
 import static java.util.Objects.requireNonNull;
-import static org.perfectable.introspection.Introspections.introspect;
 
 final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 
@@ -36,9 +35,6 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 	}
 
 	private static final class JavassistInvocationHandlerAdapter<I> implements MethodHandler {
-		private static final Method OBJECT_FINALIZE =
-				introspect(Object.class).methods().named("finalize").parameters().unique();
-
 		private final InvocationHandler<I> handler;
 
 		static <I> JavassistInvocationHandlerAdapter<I> adapt(InvocationHandler<I> handler) {
@@ -55,7 +51,7 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 							 @Nullable Object[] args) // SUPPRESS
 				throws Throwable { // SUPPRESS IllegalThrows throwable is actually thrown here
 			requireNonNull(thisMethod);
-			if (thisMethod.equals(OBJECT_FINALIZE)) {
+			if (thisMethod.equals(ObjectMethods.FINALIZE)) {
 				return null; // ignore proxy finalization
 			}
 			@SuppressWarnings("unchecked")
