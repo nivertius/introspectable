@@ -3,11 +3,13 @@ package org.perfectable.introspection.query;
 import org.perfectable.introspection.Subject;
 import org.perfectable.introspection.SubjectReflection;
 
+import java.io.Serializable;
+
 import javassist.CtClass;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat;
 
 class ClassQueryTest {
 	private static final String PACKAGE_NAME = "org.perfectable";
@@ -21,8 +23,9 @@ class ClassQueryTest {
 				.inPackage(PACKAGE_NAME);
 
 			assertThat(query)
-				.contains(ClassQueryTest.class, ClassQuery.class, Subject.class, SubjectReflection.class)
-				.doesNotContain(String.class, CtClass.class);
+				.contains(Subject.OtherAnnotation.class, AnnotationFilter.class,
+					ClassQueryTest.class, ClassQuery.class, Subject.class, SubjectReflection.class)
+				.doesNotContain(Serializable.class, String.class, CtClass.class);
 		}
 
 		@Test
@@ -31,10 +34,10 @@ class ClassQueryTest {
 				.annotatedWith(Subject.Special.class);
 
 			assertThat(query)
-				.contains(Subject.class)
-				.doesNotContain(String.class, CtClass.class, ClassQuery.class);
+				.isSingleton(Subject.class)
+				.doesNotContain(Serializable.class, AnnotationFilter.class, String.class, CtClass.class,
+					ClassQueryTest.class, ClassQuery.class, SubjectReflection.class);
 		}
-
 
 		@Test
 		void subtypeOf() {
@@ -43,7 +46,8 @@ class ClassQueryTest {
 
 			assertThat(query)
 				.contains(ClassQuery.class, MethodQuery.class)
-				.doesNotContain(String.class, Subject.class, CtClass.class);
+				.doesNotContain(Serializable.class, AnnotationFilter.class, String.class, CtClass.class,
+					ClassQueryTest.class, Subject.class, SubjectReflection.class);
 		}
 
 		@Test
@@ -53,7 +57,8 @@ class ClassQueryTest {
 
 			assertThat(query)
 				.contains(AnnotationFilter.class)
-				.doesNotContain(String.class, Subject.class, CtClass.class);
+				.doesNotContain(String.class, CtClass.class, ClassQueryTest.class,
+					ClassQuery.class, Subject.class, SubjectReflection.class);
 		}
 
 	}

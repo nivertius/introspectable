@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import javassist.Modifier;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat;
 
 class ConstructorQueryTest {
 
@@ -18,7 +18,7 @@ class ConstructorQueryTest {
 			ConstructorQuery.of(Subject.class);
 
 		assertThat(extracted)
-			.containsExactlyInAnyOrder(SubjectReflection.CONSTRUCTOR_NO_ARGS,
+			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
 				SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED,
 				SubjectReflection.CONSTRUCTOR_PROTECTED);
@@ -27,10 +27,10 @@ class ConstructorQueryTest {
 	@Test
 	void testNamedPositive() {
 		ConstructorQuery<Subject> extracted =
-				ConstructorQuery.of(Subject.class).named(Subject.class.getName());
+			ConstructorQuery.of(Subject.class).named(Subject.class.getName());
 
 		assertThat(extracted)
-			.containsExactlyInAnyOrder(SubjectReflection.CONSTRUCTOR_NO_ARGS,
+			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
 				SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED,
 				SubjectReflection.CONSTRUCTOR_PROTECTED);
@@ -51,7 +51,7 @@ class ConstructorQueryTest {
 			ConstructorQuery.of(Subject.class).nameMatching(Pattern.compile(".*Subj[ect]{3}$"));
 
 		assertThat(extracted)
-			.containsExactlyInAnyOrder(SubjectReflection.CONSTRUCTOR_NO_ARGS,
+			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
 				SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED,
 				SubjectReflection.CONSTRUCTOR_PROTECTED);
@@ -60,60 +60,60 @@ class ConstructorQueryTest {
 	@Test
 	void testFilterParameterCount() {
 		ConstructorQuery<Subject> extracted =
-				ConstructorQuery.of(Subject.class).filter(method -> method.getParameterCount() == 0);
+			ConstructorQuery.of(Subject.class).filter(method -> method.getParameterCount() == 0);
 
 		assertThat(extracted)
-			.containsExactlyInAnyOrder(SubjectReflection.CONSTRUCTOR_NO_ARGS);
+			.isSingleton(SubjectReflection.CONSTRUCTOR_NO_ARGS);
 	}
 
 	@Test
 	void testParametersByLength() {
 		ConstructorQuery<Subject> extracted =
-				ConstructorQuery.of(Subject.class).parameters(ParametersFilter.count(1));
+			ConstructorQuery.of(Subject.class).parameters(ParametersFilter.count(1));
 
 		assertThat(extracted)
-			.containsExactlyInAnyOrder(SubjectReflection.CONSTRUCTOR_STRING,
+			.containsExactly(SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED);
 	}
 
 	@Test
 	void testParametersByType() {
 		ConstructorQuery<Subject> extracted =
-				ConstructorQuery.of(Subject.class).parameters(String.class);
+			ConstructorQuery.of(Subject.class).parameters(String.class);
 
 		assertThat(extracted)
-			.containsExactlyInAnyOrder(SubjectReflection.CONSTRUCTOR_STRING);
+			.isSingleton(SubjectReflection.CONSTRUCTOR_STRING);
 	}
 
 	@Test
 	void testFilterDeclaringClassPositive() {
 		ConstructorQuery<Subject> extracted =
-				ConstructorQuery.of(Subject.class)
-					.filter(constructor -> Subject.class.equals(constructor.getDeclaringClass()));
+			ConstructorQuery.of(Subject.class)
+				.filter(constructor -> Subject.class.equals(constructor.getDeclaringClass()));
 
 		assertThat(extracted)
-				.containsExactlyInAnyOrder(SubjectReflection.CONSTRUCTOR_NO_ARGS,
-					SubjectReflection.CONSTRUCTOR_STRING,
-					SubjectReflection.CONSTRUCTOR_ANNOTATED,
-					SubjectReflection.CONSTRUCTOR_PROTECTED);
+			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
+				SubjectReflection.CONSTRUCTOR_STRING,
+				SubjectReflection.CONSTRUCTOR_ANNOTATED,
+				SubjectReflection.CONSTRUCTOR_PROTECTED);
 	}
 
 	@Test
 	void testAnnotatedWithClass() {
 		ConstructorQuery<Subject> extracted =
-				ConstructorQuery.of(Subject.class).annotatedWith(Subject.Special.class);
+			ConstructorQuery.of(Subject.class).annotatedWith(Subject.Special.class);
 
 		assertThat(extracted)
-				.containsExactlyInAnyOrder(SubjectReflection.CONSTRUCTOR_ANNOTATED);
+			.isSingleton(SubjectReflection.CONSTRUCTOR_ANNOTATED);
 	}
 
 	@Test
 	void testAnnotatedWith() {
 		ConstructorQuery<Subject> extracted =
-				ConstructorQuery.of(Subject.class).annotatedWith(AnnotationFilter.of(Subject.Special.class));
+			ConstructorQuery.of(Subject.class).annotatedWith(AnnotationFilter.of(Subject.Special.class));
 
 		assertThat(extracted)
-				.containsExactlyInAnyOrder(SubjectReflection.CONSTRUCTOR_ANNOTATED);
+			.isSingleton(SubjectReflection.CONSTRUCTOR_ANNOTATED);
 	}
 
 	@Test
@@ -123,18 +123,18 @@ class ConstructorQueryTest {
 				.requiringModifier(Modifier.PROTECTED);
 
 		assertThat(extracted)
-			.containsExactlyInAnyOrder(SubjectReflection.CONSTRUCTOR_PROTECTED);
+			.isSingleton(SubjectReflection.CONSTRUCTOR_PROTECTED);
 	}
 
 	@Test
 	void testExcludingModifier() {
 		ConstructorQuery<Subject> extracted =
-				ConstructorQuery.of(Subject.class)
-					.excludingModifier(Modifier.PROTECTED);
+			ConstructorQuery.of(Subject.class)
+				.excludingModifier(Modifier.PROTECTED);
 
 		assertThat(extracted)
-				.containsExactlyInAnyOrder(SubjectReflection.CONSTRUCTOR_NO_ARGS,
-					SubjectReflection.CONSTRUCTOR_STRING,
-					SubjectReflection.CONSTRUCTOR_ANNOTATED);
+			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
+				SubjectReflection.CONSTRUCTOR_STRING,
+				SubjectReflection.CONSTRUCTOR_ANNOTATED);
 	}
 }

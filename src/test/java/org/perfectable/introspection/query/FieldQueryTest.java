@@ -12,11 +12,11 @@ import javax.annotation.Nullable;
 
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat;
 
 class FieldQueryTest {
 	private static final Predicate<Field> JACOCO_EXCLUSION =
-			method -> !method.getName().equals("$jacocoData");
+		method -> !method.getName().equals("$jacocoData");
 
 	@Test
 	void testEmpty() {
@@ -30,12 +30,12 @@ class FieldQueryTest {
 	@Test
 	void testUnrestricted() {
 		FieldQuery extracted =
-				FieldQuery.of(Subject.class);
+			FieldQuery.of(Subject.class);
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
-						SubjectReflection.PROTECTED_NUMBER_FIELD, SubjectReflection.STATIC_FIELD);
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
+				SubjectReflection.PROTECTED_NUMBER_FIELD, SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -53,7 +53,7 @@ class FieldQueryTest {
 			FieldQuery.of(Subject.NestedInterface.class);
 
 		assertThat(extracted)
-			.containsExactly(SubjectReflection.NESTED_INTERFACE_FIELD);
+			.isSingleton(SubjectReflection.NESTED_INTERFACE_FIELD);
 	}
 
 	@Test
@@ -63,7 +63,7 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactlyInAnyOrder(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
+			.containsExactly(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
 				SubjectReflection.PROTECTED_NUMBER_FIELD, SubjectReflection.STATIC_FIELD,
 				SubjectReflection.NESTED_INTERFACE_FIELD);
 	}
@@ -71,11 +71,10 @@ class FieldQueryTest {
 	@Test
 	void testNamed() {
 		FieldQuery extracted =
-				FieldQuery.of(Subject.class).named("stringField");
+			FieldQuery.of(Subject.class).named("stringField");
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.STRING_FIELD);
+			.isSingleton(SubjectReflection.STRING_FIELD);
 	}
 
 	@Test
@@ -84,33 +83,29 @@ class FieldQueryTest {
 			FieldQuery.of(Subject.class).nameMatching(Pattern.compile(".*Field"));
 
 		assertThat(extracted)
-			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactlyInAnyOrder(SubjectReflection.STRING_FIELD,
-				SubjectReflection.STATIC_FIELD,
-				SubjectReflection.OBJECT_FIELD,
-				SubjectReflection.PROTECTED_NUMBER_FIELD);
+			.containsExactly(SubjectReflection.STRING_FIELD, SubjectReflection.STATIC_FIELD,
+				SubjectReflection.OBJECT_FIELD, SubjectReflection.PROTECTED_NUMBER_FIELD);
 	}
 
 	@Test
 	void testFilter() {
 		FieldQuery extracted =
-				FieldQuery.of(Subject.class)
-						.filter(field -> (field.getModifiers() & Modifier.PUBLIC) > 0);
+			FieldQuery.of(Subject.class)
+				.filter(field -> (field.getModifiers() & Modifier.PUBLIC) > 0);
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.STATIC_FIELD);
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
 	void testTypedSimple() {
 		FieldQuery extracted =
-				FieldQuery.of(Subject.class)
-						.typed(Number.class);
+			FieldQuery.of(Subject.class)
+				.typed(Number.class);
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.PROTECTED_NUMBER_FIELD);
+			.isSingleton(SubjectReflection.PROTECTED_NUMBER_FIELD);
 	}
 
 	@Test
@@ -121,18 +116,17 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactlyInAnyOrder(SubjectReflection.OBJECT_FIELD);
+			.containsExactly(SubjectReflection.OBJECT_FIELD);
 	}
 
 	@Test
 	void testAnnotatedWith() {
 		FieldQuery extracted =
-				FieldQuery.of(Subject.class)
-						.annotatedWith(Nullable.class);
+			FieldQuery.of(Subject.class)
+				.annotatedWith(Nullable.class);
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.OBJECT_FIELD, SubjectReflection.STATIC_FIELD);
+			.containsExactly(SubjectReflection.OBJECT_FIELD, SubjectReflection.STATIC_FIELD);
 	}
 
 	@Test
@@ -144,19 +138,19 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactlyInAnyOrder(SubjectReflection.PROTECTED_NUMBER_FIELD);
+			.containsExactly(SubjectReflection.PROTECTED_NUMBER_FIELD);
 	}
 
 	@Test
 	void testExcludingModifier() {
 		FieldQuery extracted =
-				FieldQuery.of(Subject.class)
-						.excludingModifier(Modifier.FINAL)
-						.excludingModifier(Modifier.PRIVATE);
+			FieldQuery.of(Subject.class)
+				.excludingModifier(Modifier.FINAL)
+				.excludingModifier(Modifier.PRIVATE);
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.STATIC_FIELD);
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(SubjectReflection.STATIC_FIELD);
 	}
 
 

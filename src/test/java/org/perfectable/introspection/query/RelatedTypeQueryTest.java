@@ -6,10 +6,9 @@ import java.nio.charset.Charset;
 
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat;
 
 class RelatedTypeQueryTest {
-
 	private static final String MAIN_PACKAGE = "org.perfectable";
 
 	@Test
@@ -17,11 +16,8 @@ class RelatedTypeQueryTest {
 		RelatedTypeQuery related = RelatedTypeQuery.of(String.class);
 
 		assertThat(related)
-				.doesNotHaveDuplicates()
-				.contains(int.class)
-				.contains(void.class)
-				.contains(StringBuffer.class)
-				.contains(Charset.class);
+			.doesNotHaveDuplicates()
+			.contains(int.class, void.class, StringBuffer.class, Charset.class);
 	}
 
 	@Test
@@ -29,22 +25,22 @@ class RelatedTypeQueryTest {
 		RelatedTypeQuery related = RelatedTypeQuery.of(Subject.Special.class);
 
 		assertThat(related)
-				.doesNotHaveDuplicates()
-				.filteredOn(type -> type.getPackage() != null)
-				.filteredOn(type -> type.getPackage().getName().startsWith(MAIN_PACKAGE))
-				.containsExactlyInAnyOrder(Subject.class, Subject.Special.class, Subject.OtherAnnotation.class,
-					Subject.NestedInterface.class);
+			.doesNotHaveDuplicates()
+			.filteredOn(type -> type.getPackage() != null)
+			.filteredOn(type -> type.getPackage().getName().startsWith(MAIN_PACKAGE))
+			.containsExactly(Subject.class, Subject.Special.class, Subject.OtherAnnotation.class,
+				Subject.NestedInterface.class);
 	}
 
 	@Test
 	void testSubjectFiltered() {
 		RelatedTypeQuery related = RelatedTypeQuery.of(Subject.Special.class)
-				.filter(type -> type.getPackage() != null)
-				.filter(type -> type.getPackage().getName().startsWith(MAIN_PACKAGE));
+			.filter(type -> type.getPackage() != null)
+			.filter(type -> type.getPackage().getName().startsWith(MAIN_PACKAGE));
 
 		assertThat(related)
-				.doesNotHaveDuplicates()
-				.containsExactlyInAnyOrder(Subject.class, Subject.Special.class, Subject.OtherAnnotation.class,
-					Subject.NestedInterface.class);
+			.doesNotHaveDuplicates()
+			.containsExactly(Subject.class, Subject.Special.class, Subject.OtherAnnotation.class,
+				Subject.NestedInterface.class);
 	}
 }

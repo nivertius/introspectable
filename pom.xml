@@ -106,12 +106,9 @@
 				<configuration>
 					<rules>
 						<rule>
-							<element>BUNDLE</element>
 							<limits>
 								<limit>
-									<counter>COMPLEXITY</counter>
-									<value>COVEREDRATIO</value>
-									<minimum>0.50</minimum>
+									<minimum>0.72</minimum>
 								</limit>
 							</limits>
 						</rule>

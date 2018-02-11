@@ -12,12 +12,12 @@ import javax.annotation.Nullable;
 import javassist.Modifier;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat;
 
 class MethodQueryTest {
 
 	private static final Predicate<Method> JACOCO_EXCLUSION =
-			method -> !method.getName().equals("$jacocoInit");
+		method -> !method.getName().equals("$jacocoInit");
 
 	@Test
 	void testUnrestricted() {
@@ -26,7 +26,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_NO_ARGUMENT,
+			.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT,
 				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
 				SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
@@ -52,11 +52,10 @@ class MethodQueryTest {
 	@Test
 	void testNamed() {
 		MethodQuery extracted =
-				MethodQuery.of(Subject.class).named("noResultNoArgument");
+			MethodQuery.of(Subject.class).named("noResultNoArgument");
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_NO_ARGUMENT);
+			.isSingleton(SubjectReflection.NO_RESULT_NO_ARGUMENT);
 	}
 
 	@Test
@@ -65,80 +64,79 @@ class MethodQueryTest {
 			MethodQuery.of(Subject.class).nameMatching(Pattern.compile(".*ResultDouble.*"));
 
 		assertThat(extracted)
-			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT,
+			.containsExactly(SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT);
 	}
 
 	@Test
 	void testFilterParameterCount() {
 		MethodQuery extracted =
-				MethodQuery.of(Subject.class).filter(method -> method.getParameterCount() == 1);
+			MethodQuery.of(Subject.class).filter(method -> method.getParameterCount() == 1);
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
-						SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
-						SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
-						SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
-						ObjectMethods.WAIT_TIMEOUT, ObjectMethods.EQUALS);
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
+				SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
+				SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				ObjectMethods.WAIT_TIMEOUT, ObjectMethods.EQUALS);
 	}
 
 	@Test
 	void testParametersByLength() {
 		MethodQuery extracted =
-				MethodQuery.of(Subject.class).parameters(ParametersFilter.count(1));
+			MethodQuery.of(Subject.class).parameters(ParametersFilter.count(1));
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
-						SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
-						SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
-						SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
-						ObjectMethods.WAIT_TIMEOUT, ObjectMethods.EQUALS);
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
+				SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
+				SubjectReflection.NO_RESULT_VARARGS_ARGUMENT, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				ObjectMethods.WAIT_TIMEOUT, ObjectMethods.EQUALS);
 	}
 
 	@Test
 	void testParametersByType() {
 		MethodQuery extracted =
-				MethodQuery.of(Subject.class).parameters(long.class);
+			MethodQuery.of(Subject.class).parameters(long.class);
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(ObjectMethods.WAIT_TIMEOUT);
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(ObjectMethods.WAIT_TIMEOUT);
 	}
 
 	@Test
 	void testFilterDeclaringClass() {
 		MethodQuery extracted =
-				MethodQuery.of(Subject.class).filter(method -> Object.class.equals(method.getDeclaringClass()));
+			MethodQuery.of(Subject.class).filter(method -> Object.class.equals(method.getDeclaringClass()));
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(ObjectMethods.HASH_CODE, ObjectMethods.EQUALS,
-						ObjectMethods.FINALIZE,
-						ObjectMethods.NOTIFY, ObjectMethods.NOTIFY_ALL,
-						ObjectMethods.WAIT, ObjectMethods.WAIT_TIMEOUT,
-						ObjectMethods.WAIT_NANOSECONDS,
-						ObjectMethods.GET_CLASS, ObjectMethods.CLONE,
-						ObjectMethods.TO_STRING,
-						ObjectMethods.REGISTER_NATIVES);
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(ObjectMethods.HASH_CODE, ObjectMethods.EQUALS,
+				ObjectMethods.FINALIZE,
+				ObjectMethods.NOTIFY, ObjectMethods.NOTIFY_ALL,
+				ObjectMethods.WAIT, ObjectMethods.WAIT_TIMEOUT,
+				ObjectMethods.WAIT_NANOSECONDS,
+				ObjectMethods.GET_CLASS, ObjectMethods.CLONE,
+				ObjectMethods.TO_STRING,
+				ObjectMethods.REGISTER_NATIVES);
 	}
 
 	@Test
 	void testReturningSimple() {
 		MethodQuery extracted =
-				MethodQuery.of(Subject.class).returning(Object.class);
+			MethodQuery.of(Subject.class).returning(Object.class);
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(
-						SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
-						SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
-						SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
-						SubjectReflection.TO_STRING,
-						ObjectMethods.CLONE, ObjectMethods.TO_STRING,
-						ObjectMethods.GET_CLASS);
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(
+				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
+				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
+				SubjectReflection.TO_STRING,
+				ObjectMethods.CLONE, ObjectMethods.TO_STRING,
+				ObjectMethods.GET_CLASS);
 	}
 
 	@Test
@@ -147,8 +145,7 @@ class MethodQueryTest {
 			MethodQuery.of(Subject.class).returning(TypeFilter.exact(Object.class));
 
 		assertThat(extracted)
-			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactlyInAnyOrder(
+			.containsExactly(
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
@@ -158,33 +155,32 @@ class MethodQueryTest {
 	@Test
 	void testReturningBoolean() {
 		MethodQuery extracted =
-				MethodQuery.of(Subject.class).returning(boolean.class);
+			MethodQuery.of(Subject.class).returning(boolean.class);
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(ObjectMethods.EQUALS);
+			.isSingleton(ObjectMethods.EQUALS);
 	}
 
 	@Test
 	void testReturningVoid() {
 		MethodQuery extracted =
-				MethodQuery.of(Subject.class).returningVoid();
+			MethodQuery.of(Subject.class).returningVoid();
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_NO_ARGUMENT,
-						SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
-						SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
-						SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
-						SubjectReflection.NO_RESULT_STRING_NUMBER_ARGUMENT,
-						SubjectReflection.NO_RESULT_VARARGS_ARGUMENT,
-						SubjectReflection.NO_RESULT_VARARGS_DOUBLE_ARGUMENT,
-						SubjectReflection.METHOD_PROTECTED,
-						ObjectMethods.WAIT, ObjectMethods.WAIT_TIMEOUT,
-						ObjectMethods.WAIT_NANOSECONDS,
-						ObjectMethods.FINALIZE, ObjectMethods.REGISTER_NATIVES,
-						ObjectMethods.NOTIFY,
-						ObjectMethods.NOTIFY_ALL);
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT,
+				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
+				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
+				SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
+				SubjectReflection.NO_RESULT_STRING_NUMBER_ARGUMENT,
+				SubjectReflection.NO_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.NO_RESULT_VARARGS_DOUBLE_ARGUMENT,
+				SubjectReflection.METHOD_PROTECTED,
+				ObjectMethods.WAIT, ObjectMethods.WAIT_TIMEOUT,
+				ObjectMethods.WAIT_NANOSECONDS,
+				ObjectMethods.FINALIZE, ObjectMethods.REGISTER_NATIVES,
+				ObjectMethods.NOTIFY,
+				ObjectMethods.NOTIFY_ALL);
 	}
 
 	@Test
@@ -195,7 +191,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactlyInAnyOrder(SubjectReflection.NO_RESULT_NO_ARGUMENT,
+			.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT,
 				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
 				SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
@@ -221,21 +217,21 @@ class MethodQueryTest {
 	@Test
 	void testAnnotatedWithClass() {
 		MethodQuery extracted =
-				MethodQuery.of(Subject.class).annotatedWith(Nullable.class);
+			MethodQuery.of(Subject.class).annotatedWith(Nullable.class);
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.ANNOTATED_WITH_NULLABLE);
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(SubjectReflection.ANNOTATED_WITH_NULLABLE);
 	}
 
 	@Test
 	void testAnnotatedWith() {
 		MethodQuery extracted =
-				MethodQuery.of(Subject.class).annotatedWith(AnnotationFilter.of(Nullable.class));
+			MethodQuery.of(Subject.class).annotatedWith(AnnotationFilter.of(Nullable.class));
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(SubjectReflection.ANNOTATED_WITH_NULLABLE);
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(SubjectReflection.ANNOTATED_WITH_NULLABLE);
 	}
 
 	@Test
@@ -246,19 +242,19 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactlyInAnyOrder(ObjectMethods.FINALIZE, ObjectMethods.CLONE,
+			.containsExactly(ObjectMethods.FINALIZE, ObjectMethods.CLONE,
 				SubjectReflection.METHOD_PROTECTED);
 	}
 
 	@Test
 	void testExcludingModifier() {
 		MethodQuery extracted =
-				MethodQuery.of(Subject.class)
-					.excludingModifier(Modifier.PUBLIC);
+			MethodQuery.of(Subject.class)
+				.excludingModifier(Modifier.PUBLIC);
 
 		assertThat(extracted)
-				.filteredOn(JACOCO_EXCLUSION)
-				.containsExactlyInAnyOrder(ObjectMethods.FINALIZE, ObjectMethods.CLONE,
-						ObjectMethods.REGISTER_NATIVES, SubjectReflection.METHOD_PROTECTED);
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(ObjectMethods.FINALIZE, ObjectMethods.CLONE,
+				ObjectMethods.REGISTER_NATIVES, SubjectReflection.METHOD_PROTECTED);
 	}
 }
