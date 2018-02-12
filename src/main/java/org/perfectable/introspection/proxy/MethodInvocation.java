@@ -1,7 +1,6 @@
 package org.perfectable.introspection.proxy;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Objects;
@@ -43,12 +42,7 @@ public final class MethodInvocation<T> implements Invocation<T> {
 	@Override
 	@Nullable
 	public Object proceed(Invoker<? super T> invoker) throws Throwable { // SUPPRESS IllegalThrows
-		try {
-			return invoker.process(method, receiver, arguments);
-		}
-		catch (InvocationTargetException e) {
-			throw e.getCause();
-		}
+		return invoker.process(method, receiver, arguments);
 	}
 
 	@Override

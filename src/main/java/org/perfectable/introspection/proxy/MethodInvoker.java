@@ -1,6 +1,7 @@
 package org.perfectable.introspection.proxy;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 
@@ -15,7 +16,12 @@ final class MethodInvoker implements Invocation.Invoker<Object> {
 	@Override
 	public Object process(Method method, @Nullable Object receiver, Object... arguments) throws Throwable {
 		Object[] actualArguments = composeVariableArguments(method, arguments);
-		return method.invoke(receiver, actualArguments);
+		try {
+			return method.invoke(receiver, actualArguments);
+		}
+		catch (InvocationTargetException e) {
+			throw e.getCause();
+		}
 	}
 
 	private static Object[] composeVariableArguments(Method method, Object[] provided) { // SUPPRESS UseVarargs
