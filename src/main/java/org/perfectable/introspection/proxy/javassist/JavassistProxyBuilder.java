@@ -3,6 +3,7 @@ package org.perfectable.introspection.proxy.javassist;
 import org.perfectable.introspection.ObjectMethods;
 import org.perfectable.introspection.proxy.Invocation;
 import org.perfectable.introspection.proxy.InvocationHandler;
+import org.perfectable.introspection.proxy.MethodInvocation;
 import org.perfectable.introspection.proxy.ProxyBuilder;
 
 import java.lang.reflect.Method;
@@ -57,7 +58,7 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 			@SuppressWarnings("unchecked")
 			I castedSelf = (I) self;
 			@SuppressWarnings("unchecked")
-			Invocation<I> invocation = Invocation.intercepted(thisMethod, castedSelf, args);
+			Invocation<I> invocation = MethodInvocation.intercepted(thisMethod, castedSelf, args);
 			return this.handler.handle(invocation);
 		}
 	}

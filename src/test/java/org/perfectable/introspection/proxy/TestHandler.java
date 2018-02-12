@@ -81,7 +81,7 @@ public class TestHandler<T> implements InvocationHandler<T> {
 		}
 	}
 
-	class Expectance implements Invocation.Invoker<T> {
+	class Expectance implements MethodInvocation.Invoker<T> {
 		private final T expectedProxy;
 		private final Method expectedMethod;
 		private final Object[] expectedArguments;

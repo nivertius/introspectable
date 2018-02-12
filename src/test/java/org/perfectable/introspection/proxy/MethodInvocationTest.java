@@ -10,13 +10,13 @@ import static org.perfectable.introspection.SimpleReflections.getMethod;
 // SUPPRESS FILE MultipleStringLiterals
 // SUPPRESS FILE MagicNumber
 // SUPPRESS FILE IllegalThrows
-class InvocationTest {
+class MethodInvocationTest {
 
 	@Test
 	void testInvokeNoArguments() throws Throwable {
 		NoArguments instance = new NoArguments();
 
-		Invocation<NoArguments> invocation = Invocation.of(NoArguments.METHOD, instance);
+		MethodInvocation<NoArguments> invocation = MethodInvocation.of(NoArguments.METHOD, instance);
 
 		Object result = invocation.invoke();
 
@@ -30,8 +30,8 @@ class InvocationTest {
 
 		String firstArgument = "firstArgument";
 		String secondArgument = "secondArgument";
-		Invocation<SimpleArguments> invocation =
-			Invocation.of(SimpleArguments.METHOD, instance, firstArgument, secondArgument);
+		MethodInvocation<SimpleArguments> invocation =
+			MethodInvocation.of(SimpleArguments.METHOD, instance, firstArgument, secondArgument);
 
 		Object result = invocation.invoke();
 
@@ -46,8 +46,8 @@ class InvocationTest {
 		String firstArgument = "firstArgument";
 		String secondArgument = "secondArgument";
 		String thirdArgument = "thirdArgument";
-		Invocation<VariableArguments> invocation =
-			Invocation.of(VariableArguments.METHOD, instance, firstArgument, secondArgument, thirdArgument);
+		MethodInvocation<VariableArguments> invocation =
+			MethodInvocation.of(VariableArguments.METHOD, instance, firstArgument, secondArgument, thirdArgument);
 
 		Object result = invocation.invoke();
 
@@ -62,8 +62,9 @@ class InvocationTest {
 		String firstArgument = "firstArgument";
 		int secondArgument = 238;
 		int thirdArgument = 474;
-		Invocation<VariablePrimitiveArguments> invocation =
-			Invocation.of(VariablePrimitiveArguments.METHOD, instance, firstArgument, secondArgument, thirdArgument);
+		MethodInvocation<VariablePrimitiveArguments> invocation =
+			MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
+				firstArgument, secondArgument, thirdArgument);
 
 		Object result = invocation.invoke();
 
