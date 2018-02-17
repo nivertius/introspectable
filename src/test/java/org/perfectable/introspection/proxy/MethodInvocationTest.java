@@ -5,12 +5,80 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.perfectable.introspection.SimpleReflections.getMethod;
 
 // SUPPRESS FILE MultipleStringLiterals
 // SUPPRESS FILE MagicNumber
 // SUPPRESS FILE IllegalThrows
 class MethodInvocationTest {
+
+	@Test
+	void testNegativeCallabilityStaticNonNullReceiver() throws Throwable {
+		NoArguments instance = new NoArguments();
+
+		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD_STATIC, instance))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Method " + NoArguments.METHOD_STATIC // SUPPRESS AvoidDuplicateLiterals
+				+ " is static, got " + instance + " as receiver");
+	}
+
+	@Test
+	void testNegativeCallabilityNonStaticNullReceiver() throws Throwable {
+		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD, null))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Method " + NoArguments.METHOD // SUPPRESS AvoidDuplicateLiterals
+				+ " is not static, got null as receiver");
+	}
+
+	@Test
+	void testNegativeCallabilityInvalidReceiverType() throws Throwable {
+		VariableArguments instance = new VariableArguments();
+		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD, instance))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Method " + NoArguments.METHOD // SUPPRESS AvoidDuplicateLiterals
+				+ " requires " + NoArguments.class + " as receiver, got " + instance);
+	}
+
+	@Test
+	void testNegativeCallabilityInvalidArgumentCountConstantArguments() throws Throwable {
+		NoArguments instance = new NoArguments();
+		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD, instance, 1))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Method " + NoArguments.METHOD // SUPPRESS AvoidDuplicateLiterals
+				+ " requires 0 arguments, got 1");
+	}
+
+	@Test
+	void testNegativeCallabilityInvalidArgumentCountVariableArguments() throws Throwable {
+		VariableArguments instance = new VariableArguments();
+		assertThatThrownBy(() -> MethodInvocation.of(VariableArguments.METHOD, instance))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Method " + VariableArguments.METHOD // SUPPRESS AvoidDuplicateLiterals
+				+ " requires at least 1 arguments, got 0");
+	}
+
+	@Test
+	void testNegativeCallabilityNullPrimitiveArgument() throws Throwable {
+		String firstArgument = EXAMPLE_FIRST_ARGUMENT;
+		VariablePrimitiveArguments instance = new VariablePrimitiveArguments();
+		assertThatThrownBy(() -> MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance, firstArgument, null))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Method " + VariablePrimitiveArguments.METHOD // SUPPRESS AvoidDuplicateLiterals
+				+ " has primitive int as parameter 2, got null argument");
+	}
+
+	@Test
+	void testNegativeCallabilityInvalidArgumentType() throws Throwable {
+		String firstArgument = EXAMPLE_FIRST_ARGUMENT;
+		int secondArgument = 329387;
+		VariableArguments instance = new VariableArguments();
+		assertThatThrownBy(() -> MethodInvocation.of(VariableArguments.METHOD, instance,
+			firstArgument, secondArgument))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Method " + VariableArguments.METHOD + " takes " + String.class + " as parameter 2,"
+				+ " got " + secondArgument + " as argument");
+	}
 
 	@Test
 	void testInvokeNoArguments() throws Throwable {
@@ -74,12 +142,17 @@ class MethodInvocationTest {
 
 	static class NoArguments {
 		private static final Method METHOD = getMethod(NoArguments.class, "executeNoArgument");
+		static final Method METHOD_STATIC = getMethod(NoArguments.class, "stubStatic");
 
 		private boolean executed;
 
 		void executeNoArgument() {
 			assertThat(executed).isFalse();
 			executed = true;
+		}
+
+		static void stubStatic() {
+			throw new AssertionError("Stub method actually called");
 		}
 
 		void assertExecuted() {

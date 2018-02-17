@@ -2,6 +2,7 @@ package org.perfectable.introspection.proxy;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -75,16 +76,34 @@ public final class MethodInvocation<T> implements Invocation<T> {
 	}
 
 	private static void verifyCallability(Method method, @Nullable Object receiver, Object... arguments) {
-		if (receiver != null) {
-			checkArgument(method.getDeclaringClass().isAssignableFrom(receiver.getClass()));
+		verifyReceiverCompatibility(method, receiver);
+		verifyArgumentsCompatibility(method, arguments);
+	}
+
+	private static void verifyReceiverCompatibility(Method method, @Nullable Object receiver) {
+		if ((method.getModifiers() & Modifier.STATIC) == 0) {
+			checkArgument(receiver != null,
+				"Method %s is not static, got null as receiver", method);
+			Class<?> requiredType = method.getDeclaringClass();
+			checkArgument(requiredType.isInstance(receiver),
+				"Method %s requires %s as receiver, got %s", method, requiredType, receiver);
 		}
+		else {
+			checkArgument(receiver == null,
+				"Method %s is static, got %s as receiver", method, receiver);
+		}
+	}
+
+	private static void verifyArgumentsCompatibility(Method method, Object... arguments) {
 		Class<?>[] formals = method.getParameterTypes();
 		boolean isVarArgs = method.isVarArgs();
 		if (isVarArgs) {
-			checkArgument(arguments.length >= formals.length - 1);
+			checkArgument(arguments.length >= formals.length - 1,
+				"Method %s requires at least %s arguments, got %s", method, formals.length - 1, arguments.length);
 		}
 		else {
-			checkArgument(arguments.length == formals.length);
+			checkArgument(arguments.length == formals.length,
+				"Method %s requires %s arguments, got %s", method, formals.length, arguments.length);
 		}
 		for (int i = 0; i < arguments.length; i++) {
 			Class<?> parameterType;
@@ -96,12 +115,15 @@ public final class MethodInvocation<T> implements Invocation<T> {
 			}
 			Object argument = arguments[i];
 			if (argument == null) {
-				checkArgument(!parameterType.isPrimitive());
+				checkArgument(!parameterType.isPrimitive(),
+					"Method %s has primitive %s as parameter %s, got null argument", method, parameterType, i + 1);
 			}
 			else {
 				Class<?> argumentType = argument.getClass();
 				Class<?> wrappedParameterType = Primitives.wrap(parameterType);
-				checkArgument(wrappedParameterType.isAssignableFrom(argumentType));
+				checkArgument(wrappedParameterType.isAssignableFrom(argumentType),
+					"Method %s takes %s as parameter %s, got %s as argument",
+					method, wrappedParameterType, i + 1, argument);
 			}
 		}
 	}

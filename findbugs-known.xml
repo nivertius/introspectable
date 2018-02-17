@@ -77,4 +77,12 @@
                 name='&lt;clinit&gt;' primary='true' />
         <Class classname='org.perfectable.introspection.query.TypeFilters$Empty' />
     </BugInstance>
+    <BugInstance abbrev='NP' category='STYLE' priority='1' type='NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE'>
+        <LongMessage>receiver must be non-null but is marked as nullable</LongMessage>
+        <Class classname='org.perfectable.introspection.proxy.MethodInvocation' primary='true' />
+        <Method classname='org.perfectable.introspection.proxy.MethodInvocation' name='verifyReceiverCompatibility'
+                signature='(Ljava/lang/reflect/Method;Ljava/lang/Object;)V'
+                isStatic='true' primary='true' />
+        <LocalVariable role='LOCAL_VARIABLE_PARAMETER_NAMED' pc='0' name='receiver' register='1' />
+    </BugInstance>
 </BugCollection>
