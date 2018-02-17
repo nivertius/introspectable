@@ -95,6 +95,21 @@ class MethodInvocationTest {
 	}
 
 	@Test
+	void testInvokeNoArgumentsReplaced() throws Throwable {
+		NoArguments instance = new NoArguments();
+		NoArguments replaced = new NoArguments();
+
+		Invocation<NoArguments> invocation =
+			MethodInvocation.of(NoArguments.METHOD, instance).withReceiver(replaced);
+
+		Object result = invocation.invoke();
+
+		assertThat(result).isNull();
+		instance.assertNotExecuted();
+		replaced.assertExecuted();
+	}
+
+	@Test
 	void testInvokeSimpleArguments() throws Throwable {
 		SimpleArguments instance = new SimpleArguments();
 
@@ -159,6 +174,10 @@ class MethodInvocationTest {
 
 		void assertExecuted() {
 			assertThat(executed).isTrue();
+		}
+
+		void assertNotExecuted() {
+			assertThat(executed).isFalse();
 		}
 	}
 
