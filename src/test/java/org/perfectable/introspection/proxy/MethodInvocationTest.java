@@ -1,6 +1,7 @@
-package org.perfectable.introspection.proxy;
+package org.perfectable.introspection.proxy; // SUPPRESS LENGTH
 
 import java.lang.reflect.Method;
+import javax.annotation.Nullable;
 
 import org.junit.jupiter.api.Test;
 
@@ -186,6 +187,26 @@ class MethodInvocationTest {
 		assertThat(invocation).isNotEqualTo(new Object());
 	}
 
+	@Test
+	void testWrapInto() throws Throwable {
+		NoArguments instance = new NoArguments();
+
+		MethodInvocation<NoArguments> invocation = MethodInvocation.of(NoArguments.METHOD, instance);
+
+		Object expectedResult = new Object();
+		TestInvocationHandler<NoArguments> handler = new TestInvocationHandler<>(expectedResult);
+		Invocation<NoArguments> wrapped = invocation.wrapInto(handler);
+
+		assertThat(wrapped).isNotNull();
+		instance.assertNotExecuted();
+		handler.assertNotExecuted();
+
+		Object result = wrapped.invoke();
+		instance.assertNotExecuted(); // test handler doesn't actually execute invocation
+		handler.assertExecutedWith(invocation);
+		assertThat(result).isSameAs(expectedResult);
+	}
+
 	static class NoArguments {
 		private static final Method METHOD = getMethod(NoArguments.class, "executeNoArgument");
 		static final Method METHOD_STATIC = getMethod(NoArguments.class, "stubStatic");
@@ -277,6 +298,35 @@ class MethodInvocationTest {
 			assertThat(executed).isTrue();
 			assertThat(first).isEqualTo(expectedFirst);
 			assertThat(variable).isEqualTo(expectedVariable);
+		}
+	}
+
+	private static final class TestInvocationHandler<T> implements InvocationHandler<T> {
+		private final Object result;
+
+		private boolean executed;
+		private Invocation<T> executedInvocation;
+
+		TestInvocationHandler(Object result) {
+			this.result = result;
+		}
+
+		@Nullable
+		@Override
+		public Object handle(Invocation<T> invocation) throws Throwable {
+			assertNotExecuted();
+			executed = true;
+			executedInvocation = invocation;
+			return result;
+		}
+
+		void assertNotExecuted() {
+			assertThat(executed).isFalse();
+		}
+
+		void assertExecutedWith(Invocation<T> expectedInvocation) {
+			assertThat(executed).isTrue();
+			assertThat(executedInvocation).isSameAs(expectedInvocation);
 		}
 	}
 }

@@ -14,6 +14,10 @@ public interface Invocation<T> {
 
 	<R> R decompose(Decomposer<? super T, R> decomposer);
 
+	default Invocation<T> wrapInto(InvocationHandler<T> inner) {
+		return HandledInvocation.of(this, inner);
+	}
+
 	default <X extends T> Invocation<X> withReceiver(X newReceiver) {
 		return ReplacedReceiverInvocation.of(this, newReceiver);
 	}
