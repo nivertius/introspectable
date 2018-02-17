@@ -17,10 +17,8 @@ final class ReplacedReceiverInvocation<T, X extends T> implements Invocation<X> 
 
 	@Nullable
 	@Override
-	public Object proceed(Invoker<? super X> invoker) throws Throwable {
-		Invoker<T> replacementInvoker =
-			(method, receiver, arguments) -> invoker.process(method, replacement, arguments);
-		return original.proceed(replacementInvoker);
+	public Object invoke() throws Throwable {
+		return decompose(MethodInvocation::of).invoke();
 	}
 
 	@Override

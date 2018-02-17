@@ -7,6 +7,7 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import javax.annotation.Nullable;
 
+import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestHandler<T> implements InvocationHandler<T> {
@@ -19,19 +20,22 @@ public class TestHandler<T> implements InvocationHandler<T> {
 	@Nullable
 	@Override
 	public Object handle(Invocation<T> invocation) throws Throwable {
-		return invocation.proceed((method, receiver, arguments) -> {
+		Invocation.Decomposer<T, Invocation<? super T>> trDecomposer = (method, receiver, arguments) -> {
+			requireNonNull(receiver);
 			if (ObjectMethods.EQUALS.equals(method)) {
-				return receiver == arguments[0];
+				return new EqualsInvocation(receiver, arguments[0]);
 			}
 			if (ObjectMethods.HASH_CODE.equals(method)) {
-				return System.identityHashCode(receiver);
+				return new HashCodeInvocation(receiver);
 			}
 			if (ObjectMethods.TO_STRING.equals(method)) {
-				return receiver.getClass() + "@" + System.identityHashCode(receiver);
+				return new ToStringInvocation(receiver);
 			}
 			Expectance expectance = expected.remove();
-			return invocation.proceed(expectance);
-		});
+			InvocationResult result = expectance.process(method, receiver, arguments);
+			return new ResultInvocation(result, method, receiver, arguments);
+		};
+		return invocation.decompose(trDecomposer).invoke();
 	}
 
 	public Expectance expectInvocation(T proxy, Method method, Object... arguments) {
@@ -81,7 +85,7 @@ public class TestHandler<T> implements InvocationHandler<T> {
 		}
 	}
 
-	class Expectance implements MethodInvocation.Invoker<T> {
+	class Expectance {
 		private final T expectedProxy;
 		private final Method expectedMethod;
 		private final Object[] expectedArguments;
@@ -103,14 +107,94 @@ public class TestHandler<T> implements InvocationHandler<T> {
 			this.result = new ThrowingResult(thrown);
 		}
 
-		@Nullable
-		@Override
-		public Object process(Method method, @Nullable T receiver, Object... arguments) throws Throwable {
+		public InvocationResult process(Method method, @Nullable T receiver, Object... arguments) {
 			assertThat(receiver).isEqualTo(expectedProxy);
 			assertThat(method).isEqualTo(expectedMethod);
 			assertThat(arguments).isEqualTo(expectedArguments);
-			return result.resolve();
+			return result;
 		}
 	}
 
+	private static class EqualsInvocation implements Invocation<Object> {
+		private final Object receiver;
+		private final Object other;
+
+		EqualsInvocation(Object receiver, Object other) {
+			this.receiver = receiver;
+			this.other = other;
+		}
+
+		@Override
+		public Object invoke() throws Throwable {
+			return receiver == other; // SUPPRESS CompareObjectsWithEquals
+		}
+
+		@Override
+		public <R> R decompose(Decomposer<? super Object, R> decomposer) {
+			return decomposer.decompose(ObjectMethods.EQUALS, receiver, other);
+		}
+	}
+
+	private static class HashCodeInvocation implements Invocation<Object> {
+		private final Object receiver;
+
+		HashCodeInvocation(Object receiver) {
+			this.receiver = receiver;
+		}
+
+		@Nullable
+		@Override
+		public Object invoke() throws Throwable {
+			return System.identityHashCode(receiver);
+		}
+
+		@Override
+		public <R> R decompose(Decomposer<? super Object, R> decomposer) {
+			return decomposer.decompose(ObjectMethods.HASH_CODE, receiver);
+		}
+	}
+
+	private static class ToStringInvocation implements Invocation<Object> {
+		private final Object receiver;
+
+		ToStringInvocation(Object receiver) {
+			this.receiver = receiver;
+		}
+
+		@Nullable
+		@Override
+		public Object invoke() throws Throwable {
+			return receiver.getClass() + "@" + System.identityHashCode(receiver);
+		}
+
+		@Override
+		public <R> R decompose(Decomposer<? super Object, R> decomposer) {
+			return decomposer.decompose(ObjectMethods.TO_STRING, receiver);
+		}
+	}
+
+	private static class ResultInvocation implements Invocation<Object> {
+		private final InvocationResult result;
+		private final Method method;
+		private final Object receiver;
+		private final Object[] arguments;
+
+		ResultInvocation(InvocationResult result, Method method, Object receiver, Object... arguments) {
+			this.result = result;
+			this.method = method;
+			this.receiver = receiver;
+			this.arguments = arguments;
+		}
+
+		@Nullable
+		@Override
+		public Object invoke() throws Throwable {
+			return result.resolve();
+		}
+
+		@Override
+		public <R> R decompose(Decomposer<? super Object, R> decomposer) {
+			return decomposer.decompose(method, receiver, arguments);
+		}
+	}
 }

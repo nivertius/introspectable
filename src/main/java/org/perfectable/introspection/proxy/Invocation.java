@@ -4,20 +4,8 @@ import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 
 public interface Invocation<T> {
-	@FunctionalInterface
-	interface Invoker<T> {
-		// SUPPRESS NEXT 2 IllegalThrows
-		@Nullable
-		Object process(Method method, @Nullable T receiver, Object... arguments) throws Throwable;
-	}
-
 	@Nullable
-	default Object invoke() throws Throwable { // SUPPRESS IllegalThrows
-		return proceed(MethodInvoker.INSTANCE);
-	}
-
-	@Nullable
-	Object proceed(Invoker<? super T> invoker) throws Throwable; // SUPPRESS IllegalThrows
+	Object invoke() throws Throwable; // SUPPRESS IllegalThrows
 
 	@FunctionalInterface
 	interface Decomposer<T, R> {

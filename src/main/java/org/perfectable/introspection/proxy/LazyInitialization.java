@@ -46,18 +46,35 @@ public final class LazyInitialization {
 		@Nullable
 		@Override
 		public Object handle(Invocation<T> invocation) throws Throwable {
-			return invocation.proceed((method, receiver, arguments) -> {
-				if (EXTRACT_INSTANCE_METHOD.equals(method)) {
-					return Optional.ofNullable(this.instance);
-				}
-				if (this.instance == null) {
-					this.instance = this.initializer.initialize();
-				}
-				if (!method.getDeclaringClass().isAssignableFrom(this.instance.getClass())) {
-					throw new AssertionError("Method extracted is of incompatible class");
-				}
-				return MethodInvocation.of(method, this.instance, arguments).invoke();
-			});
+			return invocation.decompose(this::replaceInvocation).invoke();
+		}
+
+		private Invocation<T> replaceInvocation(Method method,
+				@SuppressWarnings("unused") @Nullable T receiver, // SUPPRESS AnnotationLocation
+				Object... arguments) {
+			if (EXTRACT_INSTANCE_METHOD.equals(method)) {
+				return new ExtractInstanceInvocation();
+			}
+			if (this.instance == null) {
+				this.instance = this.initializer.initialize();
+			}
+			if (!method.getDeclaringClass().isAssignableFrom(this.instance.getClass())) {
+				throw new AssertionError("Method extracted is of incompatible class");
+			}
+			return MethodInvocation.of(method, this.instance, arguments);
+		}
+
+		private class ExtractInstanceInvocation implements Invocation<T> {
+			@Nullable
+			@Override
+			public Object invoke() throws Throwable {
+				return Optional.ofNullable(instance);
+			}
+
+			@Override
+			public <R> R decompose(Decomposer<? super T, R> decomposer) {
+				return decomposer.decompose(EXTRACT_INSTANCE_METHOD, instance);
+			}
 		}
 	}
 

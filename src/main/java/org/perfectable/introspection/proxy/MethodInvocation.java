@@ -1,6 +1,7 @@
 package org.perfectable.introspection.proxy;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -40,10 +41,16 @@ public final class MethodInvocation<T> implements Invocation<T> {
 		this.arguments = arguments;
 	}
 
-	@Override
 	@Nullable
-	public Object proceed(Invoker<? super T> invoker) throws Throwable { // SUPPRESS IllegalThrows
-		return invoker.process(method, receiver, arguments);
+	@Override
+	public Object invoke() throws Throwable {
+		Object[] actualArguments = composeVariableArguments(method, arguments);
+		try {
+			return method.invoke(receiver, actualArguments);
+		}
+		catch (InvocationTargetException e) {
+			throw e.getCause();
+		}
 	}
 
 	@Override
@@ -147,4 +154,22 @@ public final class MethodInvocation<T> implements Invocation<T> {
 		return result;
 	}
 
+	private static Object[] composeVariableArguments(Method method, Object[] provided) { // SUPPRESS UseVarargs
+		if (!method.isVarArgs()) {
+			return provided;
+		}
+		Class<?>[] formals = method.getParameterTypes();
+		Class<?> variableFormal = formals[formals.length - 1].getComponentType();
+		int variableLength = provided.length - (formals.length - 1);
+		int resultSize = formals.length;
+		Object[] result = new Object[resultSize];
+		System.arraycopy(provided, 0, result, 0, formals.length - 1);
+		Object variableActual = Array.newInstance(variableFormal, variableLength);
+		for (int i = 0; i < variableLength; i++) {
+			Object value = provided[(formals.length - 1) + i];
+			Array.set(variableActual, i, value);
+		}
+		result[formals.length - 1] = variableActual;
+		return result;
+	}
 }
