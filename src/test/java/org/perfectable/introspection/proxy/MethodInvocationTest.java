@@ -157,6 +157,35 @@ class MethodInvocationTest {
 		instance.assertExecutedWith(firstArgument, new int[] {secondArgument, thirdArgument});
 	}
 
+	@Test
+	void testEquality() {
+		VariablePrimitiveArguments instance = new VariablePrimitiveArguments();
+		VariablePrimitiveArguments otherInstance = new VariablePrimitiveArguments();
+
+		String firstArgument = EXAMPLE_FIRST_ARGUMENT;
+		int secondArgument = 238;
+		int thirdArgument = 474;
+		MethodInvocation<VariablePrimitiveArguments> invocation =
+			MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
+				firstArgument, secondArgument, thirdArgument);
+
+		assertThat(invocation).isEqualTo(invocation);
+		assertThat(invocation).isEqualTo(
+			MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
+				firstArgument, secondArgument, thirdArgument));
+		assertThat(invocation).isNotEqualTo(
+			MethodInvocation.of(VariablePrimitiveArguments.EXPECT_METHOD, instance,
+				firstArgument, new int[] { secondArgument, thirdArgument }));
+		assertThat(invocation).isNotEqualTo(
+			MethodInvocation.of(VariablePrimitiveArguments.METHOD, otherInstance,
+				firstArgument, secondArgument, thirdArgument));
+		assertThat(invocation).isNotEqualTo(
+			MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
+				firstArgument, secondArgument));
+		assertThat(invocation).isNotEqualTo(null);
+		assertThat(invocation).isNotEqualTo(new Object());
+	}
+
 	static class NoArguments {
 		private static final Method METHOD = getMethod(NoArguments.class, "executeNoArgument");
 		static final Method METHOD_STATIC = getMethod(NoArguments.class, "stubStatic");
@@ -230,6 +259,8 @@ class MethodInvocationTest {
 	static class VariablePrimitiveArguments {
 		private static final Method METHOD =
 			getMethod(VariablePrimitiveArguments.class, "executePrimitive", String.class, int[].class);
+		public static final Method EXPECT_METHOD =
+			getMethod(VariablePrimitiveArguments.class, "assertExecutedWith", String.class, int[].class);
 
 		private boolean executed;
 		private String first;
