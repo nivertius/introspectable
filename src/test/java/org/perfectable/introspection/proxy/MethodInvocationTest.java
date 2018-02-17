@@ -13,6 +13,8 @@ import static org.perfectable.introspection.SimpleReflections.getMethod;
 // SUPPRESS FILE IllegalThrows
 class MethodInvocationTest {
 
+	private static final String EXAMPLE_FIRST_ARGUMENT = "firstArgument";
+
 	@Test
 	void testNegativeCallabilityStaticNonNullReceiver() throws Throwable {
 		NoArguments instance = new NoArguments();
@@ -96,7 +98,7 @@ class MethodInvocationTest {
 	void testInvokeSimpleArguments() throws Throwable {
 		SimpleArguments instance = new SimpleArguments();
 
-		String firstArgument = "firstArgument";
+		String firstArgument = EXAMPLE_FIRST_ARGUMENT;
 		String secondArgument = "secondArgument";
 		MethodInvocation<SimpleArguments> invocation =
 			MethodInvocation.of(SimpleArguments.METHOD, instance, firstArgument, secondArgument);
@@ -111,7 +113,7 @@ class MethodInvocationTest {
 	void testInvokeVariableArguments() throws Throwable {
 		VariableArguments instance = new VariableArguments();
 
-		String firstArgument = "firstArgument";
+		String firstArgument = EXAMPLE_FIRST_ARGUMENT;
 		String secondArgument = "secondArgument";
 		String thirdArgument = "thirdArgument";
 		MethodInvocation<VariableArguments> invocation =
@@ -127,7 +129,7 @@ class MethodInvocationTest {
 	void testInvokeVariablePrimitiveArguments() throws Throwable {
 		VariablePrimitiveArguments instance = new VariablePrimitiveArguments();
 
-		String firstArgument = "firstArgument";
+		String firstArgument = EXAMPLE_FIRST_ARGUMENT;
 		int secondArgument = 238;
 		int thirdArgument = 474;
 		MethodInvocation<VariablePrimitiveArguments> invocation =
