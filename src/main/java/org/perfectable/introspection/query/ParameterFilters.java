@@ -11,6 +11,22 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 final class ParameterFilters {
+	static ParametersFilter matchingArguments(Object... arguments) {
+		ImmutableList.Builder<TypeFilter> filters = ImmutableList.builder();
+		for (Object argument : arguments) {
+			TypeFilter filter;
+			if (argument == null) {
+				filter = TypeFilter.PRIMITIVE.negated();
+			}
+			else {
+				Class<?> argumentClass = argument.getClass();
+				filter = TypeFilter.superTypeOf(argumentClass);
+			}
+			filters.add(filter);
+		}
+		return Types.of(filters.build());
+	}
+
 	static final class Types implements ParametersFilter {
 		private final ImmutableList<TypeFilter> parameterTypes;
 
@@ -23,7 +39,16 @@ final class ParameterFilters {
 		static Types exact(Class<?>... parameterTypes) {
 			ImmutableList<TypeFilter> typeFilters =
 				Stream.of(parameterTypes).map(TypeFilter::exact).collect(toImmutableList());
-			return new Types(typeFilters);
+			return of(typeFilters);
+		}
+
+		static Types of(TypeFilter... parameterTypes) {
+			ImmutableList<TypeFilter> typeFilters = ImmutableList.copyOf(parameterTypes);
+			return of(typeFilters);
+		}
+
+		static Types of(ImmutableList<TypeFilter> parameterTypes) {
+			return new Types(parameterTypes);
 		}
 
 		private Types(ImmutableList<TypeFilter> parameterTypes) {

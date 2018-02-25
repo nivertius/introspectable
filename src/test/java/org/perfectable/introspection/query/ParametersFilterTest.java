@@ -151,4 +151,20 @@ class ParametersFilterTest {
 			.matchesMethod(SubjectReflection.NO_RESULT_VARARGS_DOUBLE_ARGUMENT);
 	}
 
+	@Test
+	void matchingArguments() {
+		ParametersFilter filter = ParametersFilter.matchingArguments(null, 0); // SUPPRESS MagicNumber
+
+		assertThat(filter)
+			.doesntMatchMethod(SubjectReflection.NO_RESULT_NO_ARGUMENT)
+			.doesntMatchMethod(SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT)
+			.doesntMatchMethod(SubjectReflection.NO_RESULT_STRING_ARGUMENT)
+			.doesntMatchMethod(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT)
+			.matchesMethod(SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT)
+			.matchesMethod(SubjectReflection.NO_RESULT_STRING_NUMBER_ARGUMENT)
+			.doesntMatchMethod(SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT)
+			.matchesMethod(SubjectReflection.NO_RESULT_VARARGS_ARGUMENT)
+			.matchesMethod(SubjectReflection.NO_RESULT_VARARGS_DOUBLE_ARGUMENT);
+	}
+
 }

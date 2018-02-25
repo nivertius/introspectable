@@ -13,6 +13,10 @@ public interface ParametersFilter {
 		return ParameterFilters.Types.exact(parameterTypes);
 	}
 
+	static ParametersFilter matchingArguments(Object... arguments) {
+		return ParameterFilters.matchingArguments(arguments);
+	}
+
 	static ParametersFilter count(int count) {
 		return ParameterFilters.Count.of(count);
 	}
