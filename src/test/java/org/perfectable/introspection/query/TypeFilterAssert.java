@@ -17,6 +17,9 @@ final class TypeFilterAssert extends AbstractObjectAssert<TypeFilterAssert, Type
 		if (!actual.matches(testedClass)) {
 			failWithMessage("Expected filter to match class <%s>", testedClass.getName());
 		}
+		if (actual.negated().matches(testedClass)) {
+			failWithMessage("Expected filter negation not to match class <%s>", testedClass.getName());
+		}
 		return myself;
 	}
 
@@ -24,6 +27,9 @@ final class TypeFilterAssert extends AbstractObjectAssert<TypeFilterAssert, Type
 		isNotNull();
 		if (actual.matches(testedClass)) {
 			failWithMessage("Expected filter not to match class <%s>", testedClass.getName());
+		}
+		if (!actual.negated().matches(testedClass)) {
+			failWithMessage("Expected filter negation to match class <%s>", testedClass.getName());
 		}
 		return myself;
 	}

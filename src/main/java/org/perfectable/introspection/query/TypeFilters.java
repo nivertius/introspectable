@@ -54,6 +54,11 @@ final class TypeFilters {
 		public boolean matches(Class<?> candidate) {
 			return true;
 		}
+
+		@Override
+		public TypeFilter negated() {
+			return NONE;
+		}
 	}
 
 	static final class Empty implements TypeFilter {
@@ -81,6 +86,11 @@ final class TypeFilters {
 		@Override
 		public TypeFilter withUpperBound(Class<?> superType) {
 			return INSTANCE;
+		}
+
+		@Override
+		public TypeFilter negated() {
+			return TypeFilter.ALL;
 		}
 	}
 
@@ -183,6 +193,24 @@ final class TypeFilters {
 				return this;
 			}
 			return super.withExcluded(newExcludedType);
+		}
+	}
+
+	static final class Negated implements TypeFilter {
+		private final TypeFilter positive;
+
+		Negated(TypeFilter positive) {
+			this.positive = positive;
+		}
+
+		@Override
+		public boolean matches(Class<?> candidate) {
+			return !positive.matches(candidate);
+		}
+
+		@Override
+		public TypeFilter negated() {
+			return positive;
 		}
 	}
 }

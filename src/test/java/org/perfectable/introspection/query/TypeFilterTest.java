@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.perfectable.introspection.query.TypeFilterAssert.assertThat;
 
-// SUPPRESS NEXT 1 MethodCount
-class TypeFilterTest {
+class TypeFilterTest { // SUPPRESS MethodCount
 
 	@Test
 	void all() {
@@ -414,5 +413,34 @@ class TypeFilterTest {
 			.doesntMatchType(Serializable.class)
 			.doesntMatchType(Long.class)
 			.doesntMatchType(String.class);
+	}
+
+	@Test
+	void custom() {
+		TypeFilter filter = type -> type.equals(boolean.class) || type.equals(Number.class);
+
+		assertThat(filter)
+			.matchesType(boolean.class)
+			.doesntMatchType(int.class)
+			.matchesType(Number.class)
+			.doesntMatchType(Object.class)
+			.doesntMatchType(Serializable.class)
+			.doesntMatchType(Long.class)
+			.doesntMatchType(String.class);
+	}
+
+	@Test
+	void customNegated() {
+		TypeFilter positive = type -> type.equals(boolean.class) || type.equals(Number.class);
+		TypeFilter negated = positive.negated();
+
+		assertThat(negated)
+			.doesntMatchType(boolean.class)
+			.matchesType(int.class)
+			.doesntMatchType(Number.class)
+			.matchesType(Object.class)
+			.matchesType(Serializable.class)
+			.matchesType(Long.class)
+			.matchesType(String.class);
 	}
 }

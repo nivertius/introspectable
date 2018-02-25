@@ -32,4 +32,7 @@ public interface TypeFilter {
 		return new TypeFilters.Excluded(this, excludedType);
 	}
 
+	default TypeFilter negated() {
+		return new TypeFilters.Negated(this);
+	}
 }
