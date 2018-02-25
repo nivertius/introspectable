@@ -1,4 +1,4 @@
-package org.perfectable.introspection.query;
+package org.perfectable.introspection.query; // SUPPRESS LENGTH
 
 import java.io.Serializable;
 
@@ -14,6 +14,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.ALL;
 
 		assertThat(filter)
+			.matchesType(boolean.class)
+			.matchesType(int.class)
 			.matchesType(Number.class)
 			.matchesType(Object.class)
 			.matchesType(Serializable.class)
@@ -26,6 +28,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.NONE;
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.doesntMatchType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -38,6 +42,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.NONE.withExcluded(Number.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.doesntMatchType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -50,6 +56,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.NONE.withLowerBound(Number.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.doesntMatchType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -62,6 +70,106 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.NONE.withUpperBound(Number.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
+			.doesntMatchType(Number.class)
+			.doesntMatchType(Object.class)
+			.doesntMatchType(Serializable.class)
+			.doesntMatchType(Long.class)
+			.doesntMatchType(String.class);
+	}
+
+	@Test
+	void primitive() {
+		TypeFilter filter = TypeFilter.PRIMITIVE;
+
+		assertThat(filter)
+			.matchesType(boolean.class)
+			.matchesType(int.class)
+			.doesntMatchType(Number.class)
+			.doesntMatchType(Object.class)
+			.doesntMatchType(Serializable.class)
+			.doesntMatchType(Long.class)
+			.doesntMatchType(String.class);
+	}
+
+	@Test
+	void primitiveWithLowerBoundReference() {
+		TypeFilter filter = TypeFilter.PRIMITIVE.withLowerBound(String.class);
+
+		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
+			.doesntMatchType(Number.class)
+			.doesntMatchType(Object.class)
+			.doesntMatchType(Serializable.class)
+			.doesntMatchType(Long.class)
+			.doesntMatchType(String.class);
+	}
+
+	@Test
+	void primitiveWithLowerBoundPrimitive() {
+		TypeFilter filter = TypeFilter.PRIMITIVE.withLowerBound(int.class);
+
+		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.matchesType(int.class)
+			.doesntMatchType(Number.class)
+			.doesntMatchType(Object.class)
+			.doesntMatchType(Serializable.class)
+			.doesntMatchType(Long.class)
+			.doesntMatchType(String.class);
+	}
+
+	@Test
+	void primitiveWithUpperBoundReference() {
+		TypeFilter filter = TypeFilter.PRIMITIVE.withUpperBound(String.class);
+
+		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
+			.doesntMatchType(Number.class)
+			.doesntMatchType(Object.class)
+			.doesntMatchType(Serializable.class)
+			.doesntMatchType(Long.class)
+			.doesntMatchType(String.class);
+	}
+
+	@Test
+	void primitiveWithUpperBoundPrimitive() {
+		TypeFilter filter = TypeFilter.PRIMITIVE.withUpperBound(int.class);
+
+		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.matchesType(int.class)
+			.doesntMatchType(Number.class)
+			.doesntMatchType(Object.class)
+			.doesntMatchType(Serializable.class)
+			.doesntMatchType(Long.class)
+			.doesntMatchType(String.class);
+	}
+
+	@Test
+	void primitiveWithExcludedReference() {
+		TypeFilter filter = TypeFilter.PRIMITIVE.withExcluded(String.class);
+
+		assertThat(filter)
+			.matchesType(boolean.class)
+			.matchesType(int.class)
+			.doesntMatchType(Number.class)
+			.doesntMatchType(Object.class)
+			.doesntMatchType(Serializable.class)
+			.doesntMatchType(Long.class)
+			.doesntMatchType(String.class);
+	}
+
+	@Test
+	void primitiveWithExcludedPrimitive() {
+		TypeFilter filter = TypeFilter.PRIMITIVE.withExcluded(int.class);
+
+		assertThat(filter)
+			.matchesType(boolean.class)
+			.doesntMatchType(int.class)
 			.doesntMatchType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -74,6 +182,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.ALL.withUpperBound(Number.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.matchesType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -86,6 +196,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.ALL.withLowerBound(Number.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.matchesType(Number.class)
 			.matchesType(Object.class)
 			.matchesType(Serializable.class)
@@ -98,6 +210,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.ALL.withExcluded(Number.class);
 
 		assertThat(filter)
+			.matchesType(boolean.class)
+			.matchesType(int.class)
 			.doesntMatchType(Number.class)
 			.matchesType(Object.class)
 			.matchesType(Serializable.class)
@@ -110,6 +224,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.ALL.withExcluded(Number.class).withExcluded(Number.class);
 
 		assertThat(filter)
+			.matchesType(boolean.class)
+			.matchesType(int.class)
 			.doesntMatchType(Number.class)
 			.matchesType(Object.class)
 			.matchesType(Serializable.class)
@@ -122,6 +238,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.ALL.withExcluded(Number.class).withExcluded(Serializable.class);
 
 		assertThat(filter)
+			.matchesType(boolean.class)
+			.matchesType(int.class)
 			.doesntMatchType(Number.class)
 			.matchesType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -134,6 +252,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.superTypeOf(Number.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.matchesType(Number.class)
 			.matchesType(Object.class)
 			.matchesType(Serializable.class)
@@ -146,6 +266,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.subtypeOf(Number.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.matchesType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -154,10 +276,27 @@ class TypeFilterTest {
 	}
 
 	@Test
+	void subtypeOfObject() {
+		TypeFilter filter = TypeFilter.subtypeOf(Object.class);
+
+		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
+			.matchesType(Number.class)
+			.matchesType(Object.class)
+			.matchesType(Serializable.class)
+			.matchesType(Long.class)
+			.matchesType(String.class);
+	}
+
+
+	@Test
 	void exact() {
 		TypeFilter filter = TypeFilter.exact(Number.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.matchesType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -170,6 +309,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.exact(Number.class).withExcluded(String.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.matchesType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -182,6 +323,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.exact(Number.class).withExcluded(Number.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.doesntMatchType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -194,6 +337,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.exact(Number.class).withUpperBound(Object.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.matchesType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -206,6 +351,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.exact(Number.class).withUpperBound(Long.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.doesntMatchType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -218,6 +365,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.exact(Number.class).withUpperBound(String.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.doesntMatchType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -230,6 +379,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.exact(Number.class).withLowerBound(Long.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.matchesType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -242,6 +393,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.exact(Number.class).withLowerBound(Object.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.doesntMatchType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)
@@ -254,6 +407,8 @@ class TypeFilterTest {
 		TypeFilter filter = TypeFilter.exact(Number.class).withLowerBound(String.class);
 
 		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.doesntMatchType(int.class)
 			.doesntMatchType(Number.class)
 			.doesntMatchType(Object.class)
 			.doesntMatchType(Serializable.class)

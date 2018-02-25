@@ -4,6 +4,7 @@ package org.perfectable.introspection.query;
 public interface TypeFilter {
 	TypeFilter ALL = TypeFilters.Complete.INSTANCE;
 	TypeFilter NONE = TypeFilters.Empty.INSTANCE;
+	TypeFilter PRIMITIVE = TypeFilters.Primitive.INSTANCE;
 
 	static TypeFilter superTypeOf(Class<?> subType) {
 		return ALL.withLowerBound(subType);

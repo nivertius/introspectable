@@ -77,6 +77,15 @@
                 name='&lt;clinit&gt;' primary='true' />
         <Class classname='org.perfectable.introspection.query.TypeFilters$Empty' />
     </BugInstance>
+    <BugInstance abbrev='IC' category='BAD_PRACTICE' priority='2'
+                 type='IC_SUPERCLASS_USES_SUBCLASS_DURING_INITIALIZATION'>
+        <ShortMessage>Superclass uses subclass during initialization</ShortMessage>
+        <Class classname='org.perfectable.introspection.query.TypeFilter' primary='true' />
+        <Method classname='org.perfectable.introspection.query.TypeFilter' name='&lt;clinit&gt;'
+                signature='()V'
+                isStatic='true' primary='true' />
+        <Class classname='org.perfectable.introspection.query.TypeFilters$Primitive' />
+    </BugInstance>
     <BugInstance abbrev='NP' category='STYLE' priority='1' type='NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE'>
         <LongMessage>receiver must be non-null but is marked as nullable</LongMessage>
         <Class classname='org.perfectable.introspection.proxy.MethodInvocation' primary='true' />

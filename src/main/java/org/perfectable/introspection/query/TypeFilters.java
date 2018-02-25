@@ -6,6 +6,43 @@ final class TypeFilters {
 		// utility
 	}
 
+	static final class Primitive implements TypeFilter {
+		static final Primitive INSTANCE = new Primitive();
+
+		private Primitive() {
+			// singleton
+		}
+
+		@Override
+		public TypeFilter withLowerBound(Class<?> subType) {
+			if (subType.isPrimitive()) {
+				return new Exact(subType);
+			}
+			return NONE;
+		}
+
+		@Override
+		public TypeFilter withUpperBound(Class<?> superType) {
+			if (superType.isPrimitive()) {
+				return new Exact(superType);
+			}
+			return NONE;
+		}
+
+		@Override
+		public TypeFilter withExcluded(Class<?> excludedType) {
+			if (!excludedType.isPrimitive()) {
+				return this;
+			}
+			return TypeFilter.super.withExcluded(excludedType);
+		}
+
+		@Override
+		public boolean matches(Class<?> candidate) {
+			return candidate.isPrimitive();
+		}
+	}
+
 	static final class Complete implements TypeFilter {
 		static final Complete INSTANCE = new Complete();
 
