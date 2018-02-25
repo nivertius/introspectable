@@ -29,10 +29,18 @@ public interface TypeFilter {
 	}
 
 	default TypeFilter withExcluded(Class<?> excludedType) {
-		return new TypeFilters.Excluded(this, excludedType);
+		return and(exact(excludedType).negated());
 	}
 
 	default TypeFilter negated() {
 		return new TypeFilters.Negated(this);
+	}
+
+	default TypeFilter and(TypeFilter other) {
+		return TypeFilters.Conjunction.create(this, other);
+	}
+
+	default TypeFilter or(TypeFilter other) {
+		return TypeFilters.Disjunction.create(this, other);
 	}
 }

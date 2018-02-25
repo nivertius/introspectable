@@ -1,5 +1,7 @@
 package org.perfectable.introspection.query;
 
+import com.google.common.collect.ImmutableSet;
+
 final class TypeFilters {
 
 	private TypeFilters() {
@@ -174,28 +176,6 @@ final class TypeFilters {
 		}
 	}
 
-	static final class Excluded extends Filtered {
-		private final Class<?> excludedType;
-
-		Excluded(TypeFilter parent, Class<?> excludedType) {
-			super(parent);
-			this.excludedType = excludedType;
-		}
-
-		@Override
-		protected boolean concreteMatches(Class<?> candidate) {
-			return !excludedType.equals(candidate);
-		}
-
-		@Override
-		public TypeFilter withExcluded(Class<?> newExcludedType) {
-			if (excludedType.equals(newExcludedType)) {
-				return this;
-			}
-			return super.withExcluded(newExcludedType);
-		}
-	}
-
 	static final class Negated implements TypeFilter {
 		private final TypeFilter positive;
 
@@ -211,6 +191,40 @@ final class TypeFilters {
 		@Override
 		public TypeFilter negated() {
 			return positive;
+		}
+	}
+
+	static final class Disjunction implements TypeFilter {
+		private final ImmutableSet<TypeFilter> components;
+
+		static Disjunction create(TypeFilter... components) {
+			return new Disjunction(ImmutableSet.copyOf(components));
+		}
+
+		private Disjunction(ImmutableSet<TypeFilter> components) {
+			this.components = components;
+		}
+
+		@Override
+		public boolean matches(Class<?> candidate) {
+			return components.stream().anyMatch(component -> component.matches(candidate));
+		}
+	}
+
+	static final class Conjunction implements TypeFilter {
+		private final ImmutableSet<TypeFilter> components;
+
+		static Conjunction create(TypeFilter... components) {
+			return new Conjunction(ImmutableSet.copyOf(components));
+		}
+
+		private Conjunction(ImmutableSet<TypeFilter> components) {
+			this.components = components;
+		}
+
+		@Override
+		public boolean matches(Class<?> candidate) {
+			return components.stream().allMatch(component -> component.matches(candidate));
 		}
 	}
 }
