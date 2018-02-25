@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
+import com.google.common.primitives.Primitives;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.ImmutableList.toImmutableList;
@@ -21,6 +22,9 @@ final class ParameterFilters {
 			else {
 				Class<?> argumentClass = argument.getClass();
 				filter = TypeFilter.superTypeOf(argumentClass);
+				if (Primitives.isWrapperType(argumentClass)) {
+					filter = filter.or(TypeFilter.exact(Primitives.unwrap(argumentClass)));
+				}
 			}
 			filters.add(filter);
 		}
