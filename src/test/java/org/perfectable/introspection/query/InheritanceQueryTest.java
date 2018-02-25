@@ -1,6 +1,8 @@
 package org.perfectable.introspection.query;
 
 import java.io.Serializable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +10,12 @@ import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat
 
 class InheritanceQueryTest {
 
+	@Retention(RetentionPolicy.RUNTIME)
+	private @interface Example {
+		// marker
+	}
+
+	@Example
 	private static class Root {
 		// test class
 	}
@@ -55,6 +63,16 @@ class InheritanceQueryTest {
 		assertThat(chain)
 			.hasOption(Leaf.class)
 			.containsExactly(Leaf.class, Branch.class, Root.class);
+	}
+
+	@Test
+	void testAnnotatedWith() {
+		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class)
+			.annotatedWith(Example.class);
+
+		assertThat(chain)
+			.hasUnique(Root.class)
+			.containsExactly(Root.class);
 	}
 
 	@Test

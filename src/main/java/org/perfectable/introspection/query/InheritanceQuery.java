@@ -1,11 +1,24 @@
 package org.perfectable.introspection.query;
 
+import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static java.util.Objects.requireNonNull;
 
 public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>, InheritanceQuery<X>> {
 	public static <X> InheritanceQuery<X> of(Class<X> type) {
 		return new Complete<>(type);
+	}
+
+
+	public InheritanceQuery<X> annotatedWith(Class<? extends Annotation> annotationClass) {
+		return annotatedWith(AnnotationFilter.of(annotationClass));
+	}
+
+	public InheritanceQuery<X> annotatedWith(AnnotationFilter annotationFilter) {
+		requireNonNull(annotationFilter);
+		return new Annotated<>(this, annotationFilter);
 	}
 
 	@Override
@@ -82,6 +95,21 @@ public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>
 			@SuppressWarnings("unchecked")
 			Class<? super X> candidateClass = (Class<? super X>) candidate;
 			return matches(candidateClass) && parent.contains(candidate);
+		}
+	}
+
+
+	private static final class Annotated<X> extends Filtered<X> {
+		private final AnnotationFilter annotationFilter;
+
+		Annotated(InheritanceQuery<X> parent, AnnotationFilter annotationFilter) {
+			super(parent);
+			this.annotationFilter = annotationFilter;
+		}
+
+		@Override
+		protected boolean matches(Class<? super X> candidate) {
+			return this.annotationFilter.matches(candidate);
 		}
 	}
 
