@@ -1,4 +1,4 @@
-package org.perfectable.introspection;
+package org.perfectable.introspection.query;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

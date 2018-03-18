@@ -40,9 +40,9 @@
     </BugInstance>
     <BugInstance abbrev='MS' category='MALICIOUS_CODE' priority='3' type='MS_SHOULD_BE_FINAL'>
         <ShortMessage>Field isn't final but should be</ShortMessage>
-        <LongMessage>org.perfectable.introspection.Subject.staticField isn't final but should be</LongMessage>
-        <Class classname='org.perfectable.introspection.Subject' primary='true' />
-        <Field classname='org.perfectable.introspection.Subject' name='staticField'
+        <LongMessage>org.perfectable.introspection.query.Subject.staticField isn't final but should be</LongMessage>
+        <Class classname='org.perfectable.introspection.query.Subject' primary='true' />
+        <Field classname='org.perfectable.introspection.query.Subject' name='staticField'
                signature='Lorg/perfectable/introspection/Subject;' primary='true' isStatic='true' />
     </BugInstance>
     <BugInstance abbrev='SIC' category='PERFORMANCE' priority='2' type='SIC_INNER_SHOULD_BE_STATIC'>

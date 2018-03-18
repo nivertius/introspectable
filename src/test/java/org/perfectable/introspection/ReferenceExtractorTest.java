@@ -15,7 +15,7 @@ class ReferenceExtractorTest {
 			.extract(Subject::withResultNoArgument);
 
 		assertThat(method)
-			.isEqualTo(SubjectReflection.WITH_RESULT_NO_ARGUMENT);
+			.isEqualTo(Subject.WITH_RESULT_NO_ARGUMENT);
 	}
 
 	@Test
@@ -41,4 +41,14 @@ class ReferenceExtractorTest {
 	}
 
 
+	private static class Subject {
+		private static final String MESSAGE_METHOD_CALLED = "Test method should not be called";
+
+		static final Method WITH_RESULT_NO_ARGUMENT =
+			SimpleReflections.getMethod(Subject.class, "withResultNoArgument");
+
+		Object withResultNoArgument() {
+			throw new AssertionError(MESSAGE_METHOD_CALLED);
+		}
+	}
 }

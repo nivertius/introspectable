@@ -1,7 +1,5 @@
 package org.perfectable.introspection.query;
 
-import org.perfectable.introspection.SubjectReflection;
-
 import org.junit.jupiter.api.Test;
 
 import static org.perfectable.introspection.query.ParametersFilterAssert.assertThat;

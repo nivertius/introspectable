@@ -1,8 +1,6 @@
 package org.perfectable.introspection.query;
 
 import org.perfectable.introspection.ObjectMethods;
-import org.perfectable.introspection.Subject;
-import org.perfectable.introspection.SubjectReflection;
 
 import java.lang.reflect.Method;
 import java.util.function.Predicate;

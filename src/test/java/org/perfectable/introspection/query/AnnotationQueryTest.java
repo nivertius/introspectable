@@ -1,8 +1,5 @@
 package org.perfectable.introspection.query;
 
-import org.perfectable.introspection.Subject;
-import org.perfectable.introspection.SubjectReflection;
-
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

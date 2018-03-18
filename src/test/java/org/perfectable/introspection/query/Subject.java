@@ -1,12 +1,13 @@
-package org.perfectable.introspection;
+package org.perfectable.introspection.query;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import javax.annotation.Nullable;
 
-import static org.perfectable.introspection.SubjectReflection.MESSAGE_CONSTRUCTOR_CALLED;
-import static org.perfectable.introspection.SubjectReflection.MESSAGE_METHOD_CALLED;
+import static org.perfectable.introspection.query.SubjectReflection.MESSAGE_CONSTRUCTOR_CALLED;
+import static org.perfectable.introspection.query.SubjectReflection.MESSAGE_METHOD_CALLED;
 
+@SuppressWarnings("unused")
 @Subject.Special
 @Subject.OtherAnnotation
 public class Subject {
@@ -120,7 +121,8 @@ public class Subject {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);
 	}
 	
-	public interface NestedInterface { // SUPPRESS InterfaceIsType:
+	@SuppressWarnings("unused") // SUPPRESS InterfaceIsType:
+	public interface NestedInterface {
 		String STATIC_FIELD = "staticFieldValue"; // SUPPRESS ConstantInIntarface
 	}
 }

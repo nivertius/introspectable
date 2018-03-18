@@ -1,8 +1,5 @@
 package org.perfectable.introspection.query;
 
-import org.perfectable.introspection.Subject;
-import org.perfectable.introspection.SubjectReflection;
-
 import java.io.Serializable;
 
 import javassist.CtClass;

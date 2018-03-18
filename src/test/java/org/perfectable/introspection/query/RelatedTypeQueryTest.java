@@ -1,7 +1,5 @@
 package org.perfectable.introspection.query;
 
-import org.perfectable.introspection.Subject;
-
 import java.nio.charset.Charset;
 
 import org.junit.jupiter.api.Test;
