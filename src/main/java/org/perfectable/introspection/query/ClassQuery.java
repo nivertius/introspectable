@@ -43,7 +43,8 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 
 	private static final ClassQuery<Object> GLOBAL =
 		new ClassQuery<>(Object.class, GlobalResourceSource.INSTANCE, ClassPool.getDefault(),
-			Class::forName, DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER, DEFAULT_POST_LOAD_FILTER);
+			name -> ClassLoader.getSystemClassLoader().loadClass(name),
+			DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER, DEFAULT_POST_LOAD_FILTER);
 
 	private final ResourceSource resources;
 	private final ClassPool classPool;
