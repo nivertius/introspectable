@@ -16,25 +16,25 @@
     </BugInstance>
     <BugInstance abbrev='Dm' category='I18N' priority='3' type='DM_CONVERT_CASE'>
         <LongMessage>Use of non-localized String.toUpperCase() or String.toLowerCase() in
-            org.perfectable.introspection.bean.ReadOnlyMethodProperty.capitalizeWithPrefix(String, String)</LongMessage>
-        <Class classname='org.perfectable.introspection.bean.ReadOnlyMethodProperty' primary='true' />
-        <Method classname='org.perfectable.introspection.bean.ReadOnlyMethodProperty' name='capitalizeWithPrefix'
+            org.perfectable.introspection.bean.Properties.ReadOnlyMethodProperty.capitalizeWithPrefix(String, String)</LongMessage>
+        <Class classname='org.perfectable.introspection.bean.Properties.ReadOnlyMethodProperty' primary='true' />
+        <Method classname='org.perfectable.introspection.bean.Properties.ReadOnlyMethodProperty' name='capitalizeWithPrefix'
                 signature='(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;'
                 primary='true' isStatic='true' />
     </BugInstance>
     <BugInstance abbrev='Dm' category='I18N' priority='3' type='DM_CONVERT_CASE'>
         <LongMessage>Use of non-localized String.toUpperCase() or String.toLowerCase() in
-            org.perfectable.introspection.bean.ReadOnlyMethodProperty.propertyNameFromGetter(Method)</LongMessage>
-        <Class classname='org.perfectable.introspection.bean.ReadOnlyMethodProperty' primary='true' />
-        <Method classname='org.perfectable.introspection.bean.ReadOnlyMethodProperty' name='propertyNameFromGetter'
+            org.perfectable.introspection.bean.Properties.ReadOnlyMethodProperty.propertyNameFromGetter(Method)</LongMessage>
+        <Class classname='org.perfectable.introspection.bean.Properties.ReadOnlyMethodProperty' primary='true' />
+        <Method classname='org.perfectable.introspection.bean.Properties.ReadOnlyMethodProperty' name='propertyNameFromGetter'
                 signature='(Ljava/lang/reflect/Method;)Ljava/lang/String;'
                 primary='true' isStatic='false' />
     </BugInstance>
     <BugInstance abbrev='Dm' category='I18N' priority='3' type='DM_CONVERT_CASE'>
         <LongMessage>Use of non-localized String.toUpperCase() or String.toLowerCase() in
-            org.perfectable.introspection.bean.WriteOnlyMethodProperty.propertyNameFromSetter(Method)</LongMessage>
-        <Class classname='org.perfectable.introspection.bean.WriteOnlyMethodProperty' primary='true' />
-        <Method classname='org.perfectable.introspection.bean.WriteOnlyMethodProperty' name='propertyNameFromSetter'
+            org.perfectable.introspection.bean.Properties.WriteOnlyMethodProperty.propertyNameFromSetter(Method)</LongMessage>
+        <Class classname='org.perfectable.introspection.bean.Properties.WriteOnlyMethodProperty' primary='true' />
+        <Method classname='org.perfectable.introspection.bean.Properties.WriteOnlyMethodProperty' name='propertyNameFromSetter'
                 signature='(Ljava/lang/reflect/Method;)Ljava/lang/String;'
                 primary='true' isStatic='false' />
     </BugInstance>

@@ -1,11 +1,16 @@
 package org.perfectable.introspection.bean;
 
-import static com.google.common.base.Preconditions.checkState;
+import java.util.Objects;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
+import static org.perfectable.introspection.Introspections.introspect;
 
 public final class BeanSlot<T> {
 	private final Class<T> beanClass;
 
 	public static <X> BeanSlot<X> from(Class<X> beanClass) {
+		requireNonNull(beanClass);
 		return new BeanSlot<>(beanClass);
 	}
 
@@ -14,15 +19,37 @@ public final class BeanSlot<T> {
 	}
 
 	public Bean<T> put(T element) {
-		checkState(this.beanClass.isInstance(element));
+		checkArgument(this.beanClass.isInstance(element));
 		return Bean.from(element);
 	}
 
-	public <X> Property<T, X> property(String name, Class<X> type) {
-		return Property.from(this.beanClass, name, type);
+	public Class<T> type() {
+		return beanClass;
+	}
+
+	public Bean<T> instantiate() {
+		T instance = introspect(beanClass).instantiate();
+		return Bean.from(instance);
 	}
 
 	public Property<T, ?> property(String name) {
-		return Property.raw(this.beanClass, name);
+		return Properties.create(this.beanClass, name);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof BeanSlot<?>)) {
+			return false;
+		}
+		BeanSlot<?> other = (BeanSlot<?>) obj;
+		return beanClass.equals(other.beanClass);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(beanClass);
 	}
 }

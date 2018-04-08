@@ -1,79 +1,37 @@
 package org.perfectable.introspection.bean;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Optional;
 import javax.annotation.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Objects.requireNonNull;
-import static org.perfectable.introspection.Introspections.introspect;
 
-public interface Property<CT, PT> {
+public abstract class Property<CT, PT> {
 
-	@Nullable
-	PT get(CT bean);
+	public abstract String name();
 
-	void set(CT bean, @Nullable PT value);
+	public abstract Class<PT> type();
 
-	String name();
+	public abstract boolean isReadable();
 
-	Class<PT> type();
+	public abstract boolean isWritable();
 
-	boolean isReadable();
-
-	boolean isWritable();
-
-	default BoundProperty<CT, PT> bind(CT bean) {
+	public BoundProperty<CT, PT> bind(CT bean) {
 		return BoundProperty.of(bean, this);
 	}
 
-	static <CX> Property<CX, Object> raw(Class<CX> beanClass, String name) {
-		return from(beanClass, name, Object.class);
+	Property() {
+		// package-only inheritance
 	}
 
-	static <CX, PX> Property<CX, PX> from(Class<CX> beanClass, String name, Class<PX> type) {
-		requireNonNull(beanClass);
-		Optional<Field> field = introspect(beanClass).fields().named(name).typed(type).option();
-		if (field.isPresent()) {
-			return FieldProperty.fromField(field.get());
-		}
-		Optional<Method> getter = ReadOnlyMethodProperty.findGetter(beanClass, name, type);
-		Optional<Method> setter = WriteOnlyMethodProperty.findSetter(beanClass, name, type);
-		if (setter.isPresent() && getter.isPresent()) {
-			return ReadWriteMethodProperty.forGetterSetter(getter.get(), setter.get());
-		}
-		if (getter.isPresent()) {
-			return ReadOnlyMethodProperty.forGetter(getter.get());
-		}
-		if (setter.isPresent()) {
-			return WriteOnlyMethodProperty.forSetter(setter.get());
-		}
-		throw new IllegalArgumentException("No property " + name + " for " + beanClass);
+	abstract PT get(CT bean);
+
+	abstract void set(CT bean, @Nullable PT value);
+
+	<X extends PT> Property<CT, X> as(Class<X> propertyClass) {
+		checkArgument(propertyClass.isAssignableFrom(type()));
+		@SuppressWarnings("unchecked")
+		Property<CT, X> casted = (Property<CT, X>) this;
+		return casted;
 	}
 
-	static Property<?, ?> fromField(Field field) {
-		requireNonNull(field);
-		return FieldProperty.fromField(field);
-	}
-
-	static <CX> Property<CX, ?> fromField(Field field, Class<CX> beanClass) {
-		requireNonNull(field);
-		checkArgument(field.getDeclaringClass().isAssignableFrom(beanClass));
-		return FieldProperty.fromField(field);
-	}
-
-	static <CX, PX> Property<CX, PX> fromField(Field field, Class<CX> beanClass, Class<PX> type) {
-		requireNonNull(field);
-		checkArgument(field.getDeclaringClass().isAssignableFrom(beanClass));
-		checkArgument(field.getType().equals(type));
-		checkArgument(!Modifier.isStatic(field.getModifiers()));
-		return FieldProperty.fromField(field);
-	}
-
-	static Property<?, ?> fromSetter(Method setter) {
-		return WriteOnlyMethodProperty.forSetter(setter);
-	}
 
 }
