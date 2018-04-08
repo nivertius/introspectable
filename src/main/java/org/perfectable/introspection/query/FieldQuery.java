@@ -1,5 +1,7 @@
 package org.perfectable.introspection.query; // SUPPRESS FileLength
 
+import org.perfectable.introspection.PrivilegedActions;
+
 import java.lang.reflect.Field;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -236,7 +238,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		@Override
 		public Stream<Field> stream() {
 			return this.parent.stream()
-				.peek(field -> field.setAccessible(true));
+				.peek(PrivilegedActions::markAccessible);
 		}
 
 		@Override

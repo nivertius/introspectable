@@ -1,5 +1,7 @@
 package org.perfectable.introspection.query; // SUPPRESS LENGTH
 
+import org.perfectable.introspection.PrivilegedActions;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -259,7 +261,7 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		@Override
 		public Stream<Method> stream() {
 			return parent.stream()
-				.peek(field -> field.setAccessible(true));
+				.peek(PrivilegedActions::markAccessible);
 		}
 
 		@Override

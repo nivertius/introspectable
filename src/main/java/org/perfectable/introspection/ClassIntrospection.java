@@ -88,7 +88,7 @@ public final class ClassIntrospection<X> {
 	public Constructor<X> defaultConstructor() {
 		try {
 			Constructor<X> constructor = type.getDeclaredConstructor();
-			constructor.setAccessible(true);
+			PrivilegedActions.markAccessible(constructor);
 			return constructor;
 		}
 		catch (NoSuchMethodException e) {

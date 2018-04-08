@@ -1,6 +1,7 @@
 package org.perfectable.introspection.proxy.jdk;
 
 import org.perfectable.introspection.ObjectMethods;
+import org.perfectable.introspection.PrivilegedActions;
 import org.perfectable.introspection.proxy.Invocation;
 import org.perfectable.introspection.proxy.InvocationHandler;
 import org.perfectable.introspection.proxy.MethodInvocation;
@@ -37,7 +38,7 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		catch (NoSuchMethodException | IllegalArgumentException e) {
 			throw new AssertionError("Proxy class must have constructor with InvocationHandler", e);
 		}
-		constructor.setAccessible(true);
+		PrivilegedActions.markAccessible(constructor);
 		JdkInvocationHandlerAdapter<I> adapterHandler = JdkInvocationHandlerAdapter.adapt(handler);
 		try {
 			return constructor.newInstance(adapterHandler);
