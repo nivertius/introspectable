@@ -151,7 +151,7 @@ Add as dependency:
 <dependency>
     <groupId>org.perfectable</groupId>
     <artifactId>introspectable</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
