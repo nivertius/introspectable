@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,27 +12,50 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 // SUPPRESS FILE MagicNumber
 // SUPPRESS FILE MultipleStringLiterals
+@SuppressWarnings("ClassCanBeStatic")
 class AnnotationBuilderTest {
 
-	@Test
-	void testMarker() {
-		Marker annotation = AnnotationBuilder.marker(Marker.class);
+	@Nested
+	class OfMarker {
+		private final Marker annotation = AnnotationBuilder.marker(Marker.class);
 
-		int expectedHashCode = 0;
-		assertThat(annotation)
-			.isInstanceOf(Marker.class)
-			.isNotEqualTo(new Object())
-			.isNotEqualTo(null)
-			.isNotEqualTo(1)
-			.isEqualTo(annotation)
-			.isEqualTo(MarkerHolder.HELD)
-			.isNotEqualTo(SingleHolder.HELD)
-			.isNotEqualTo(MultipleHolder.HELD)
-			.returns(Marker.class, Annotation::annotationType)
-			.returns(expectedHashCode, Object::hashCode)
-			.returns(MarkerHolder.HELD.hashCode(), Object::hashCode)
-			.returns("@org.perfectable.introspection.AnnotationBuilderTest$Marker()", Object::toString)
-			.returns(MarkerHolder.HELD.toString(), Object::toString);
+		@Test
+		void isInstanceOf() {
+			assertThat(annotation)
+				.isInstanceOf(Marker.class);
+		}
+
+		@Test
+		void isEquals() {
+			assertThat(annotation)
+				.isNotEqualTo(new Object())
+				.isNotEqualTo(null)
+				.isNotEqualTo(1)
+				.isEqualTo(annotation)
+				.isEqualTo(MarkerHolder.HELD)
+				.isNotEqualTo(SingleHolder.HELD)
+				.isNotEqualTo(MultipleHolder.HELD);
+		}
+
+		@Test
+		void hasAnnotationType() {
+			assertThat(annotation)
+				.returns(Marker.class, Annotation::annotationType);
+		}
+
+		@Test
+		void hasHashCode() {
+			assertThat(annotation)
+				.returns(0, Object::hashCode)
+				.returns(MarkerHolder.HELD.hashCode(), Object::hashCode);
+		}
+
+		@Test
+		void hasToString() {
+			assertThat(annotation)
+				.returns("@org.perfectable.introspection.AnnotationBuilderTest$Marker()", Object::toString)
+				.returns(MarkerHolder.HELD.toString(), Object::toString);
+		}
 	}
 
 	@Test
@@ -43,88 +67,164 @@ class AnnotationBuilderTest {
 			.hasMessage("No value set for member 'value'");
 	}
 
-	@Test
-	void testSingleWithValue() {
-		Single annotation = AnnotationBuilder.of(Single.class)
+	@Nested
+	class OfSingle {
+		private final Single annotation = AnnotationBuilder.of(Single.class)
 			.with(Single::value, SingleHolder.VALUE)
 			.build();
 
-		String expectedToString = "@org.perfectable.introspection.AnnotationBuilderTest$Single(value=testValue)";
-		int expectedHashCode = 127 * "value".hashCode() ^ SingleHolder.VALUE.hashCode();
-		assertThat(annotation)
-			.isInstanceOf(Single.class)
-			.isNotEqualTo(new Object())
-			.isNotEqualTo(null)
-			.isNotEqualTo(1)
-			.isEqualTo(annotation)
-			.isEqualTo(SingleHolder.HELD)
-			.returns(Single.class, Annotation::annotationType)
-			.returns(expectedHashCode, Object::hashCode)
-			.returns(SingleHolder.HELD.hashCode(), Object::hashCode)
-			.returns(expectedToString, Object::toString)
-			.returns(SingleHolder.HELD.toString(), Object::toString);
+		@Test
+		void isInstanceOf() {
+			assertThat(annotation)
+				.isInstanceOf(Single.class);
+		}
+
+		@Test
+		void isEquals() {
+			assertThat(annotation)
+				.isNotEqualTo(new Object())
+				.isNotEqualTo(null)
+				.isNotEqualTo(1)
+				.isEqualTo(annotation)
+				.isEqualTo(SingleHolder.HELD);
+		}
+
+		@Test
+		void hasAnnotationType() {
+			assertThat(annotation)
+				.returns(Single.class, Annotation::annotationType);
+		}
+
+		@Test
+		void hasHashCode() {
+			int expectedHashCode = 127 * "value".hashCode() ^ SingleHolder.VALUE.hashCode();
+
+			assertThat(annotation)
+				.returns(expectedHashCode, Object::hashCode)
+				.returns(SingleHolder.HELD.hashCode(), Object::hashCode);
+		}
+
+		@Test
+		void hasToString() {
+			String expectedToString = "@org.perfectable.introspection.AnnotationBuilderTest$Single(value=testValue)";
+
+			assertThat(annotation)
+				.returns(expectedToString, Object::toString)
+				.returns(SingleHolder.HELD.toString(), Object::toString);
+		}
 	}
 
-	@Test
-	void testMultipleMisMatching() {
-		String twoValue = "twoOther";
-		int threeValue = 100;
-		Multiple annotation = AnnotationBuilder.of(Multiple.class)
-			.with(Multiple::two, twoValue)
-			.with(Multiple::three, threeValue)
-			.build();
+	@Nested
+	class OfMultiple {
+		@Nested
+		class Matching {
+			private static final String TWO_VALUE = MultipleHolder.TWO_VALUE;
+			private static final int THREE_VALUE = MultipleHolder.TRHEE_VALUE;
+			private final Multiple annotation = AnnotationBuilder.of(Multiple.class)
+				.with(Multiple::one, Multiple.DEFAULT_ONE)
+				.with(Multiple::two, TWO_VALUE)
+				.with(Multiple::three, THREE_VALUE)
+				.build();
 
-		int expectedHashCode = (127 * "one".hashCode() ^ Multiple.DEFAULT_ONE.hashCode())
-			+ (127 * "two".hashCode() ^ twoValue.hashCode())
-			+ (127 * "three".hashCode() ^ Integer.valueOf(threeValue).hashCode());
-		String expectedToString =
-			"@org.perfectable.introspection.AnnotationBuilderTest$Multiple(two=twoOther, three=100)";
-		assertThat(annotation)
-			.isInstanceOf(Multiple.class)
-			.isNotEqualTo(new Object())
-			.isNotEqualTo(null)
-			.isNotEqualTo(1)
-			.isEqualTo(annotation)
-			.isNotEqualTo(MarkerHolder.HELD)
-			.isNotEqualTo(SingleHolder.HELD)
-			.isNotEqualTo(MultipleHolder.HELD)
-			.returns(Multiple.class, Annotation::annotationType)
-			.returns(expectedHashCode, Object::hashCode)
-			.returns(expectedToString, Object::toString);
+			@Test
+			void isInstanceOf() {
+				assertThat(annotation)
+					.isInstanceOf(Multiple.class);
+			}
+
+			@Test
+			void isEquals() {
+				assertThat(annotation)
+					.isNotEqualTo(new Object())
+					.isNotEqualTo(null)
+					.isNotEqualTo(1)
+					.isEqualTo(annotation)
+					.isNotEqualTo(MarkerHolder.HELD)
+					.isNotEqualTo(SingleHolder.HELD)
+					.isEqualTo(MultipleHolder.HELD);
+			}
+
+			@Test
+			void hasAnnotationType() {
+				assertThat(annotation)
+					.returns(Multiple.class, Annotation::annotationType);
+			}
+
+			@Test
+			void hasHashCode() {
+				int expectedHashCode = (127 * "one".hashCode() ^ Multiple.DEFAULT_ONE.hashCode())
+					+ (127 * "two".hashCode() ^ TWO_VALUE.hashCode())
+					+ (127 * "three".hashCode() ^ Integer.valueOf(THREE_VALUE).hashCode());
+
+				assertThat(annotation)
+					.returns(expectedHashCode, Object::hashCode)
+					.returns(MultipleHolder.HELD.hashCode(), Object::hashCode);
+			}
+
+			@Test
+			void hasToString() {
+				String expectedToString =
+					"@org.perfectable.introspection.AnnotationBuilderTest$Multiple"
+						+ "(one=defaultOne, two=testValue, three=3)";
+				assertThat(annotation)
+					.returns(expectedToString, Object::toString)
+					.returns(MultipleHolder.HELD.hashCode(), Object::hashCode);
+			}
+		}
+
+		@Nested
+		class Mismatching {
+			private static final String TWO_VALUE = "twoOther";
+			private static final int THREE_VALUE = 100;
+			private final Multiple annotation = AnnotationBuilder.of(Multiple.class)
+				.with(Multiple::two, TWO_VALUE)
+				.with(Multiple::three, THREE_VALUE)
+				.build();
+
+			@Test
+			void isInstanceOf() {
+				assertThat(annotation)
+					.isInstanceOf(Multiple.class);
+			}
+
+			@Test
+			void isEquals() {
+				assertThat(annotation)
+					.isNotEqualTo(new Object())
+					.isNotEqualTo(null)
+					.isNotEqualTo(1)
+					.isEqualTo(annotation)
+					.isNotEqualTo(MarkerHolder.HELD)
+					.isNotEqualTo(SingleHolder.HELD)
+					.isNotEqualTo(MultipleHolder.HELD);
+			}
+
+			@Test
+			void hasAnnotationType() {
+				assertThat(annotation)
+					.returns(Multiple.class, Annotation::annotationType);
+			}
+
+			@Test
+			void hasHashCode() {
+				int expectedHashCode = (127 * "one".hashCode() ^ Multiple.DEFAULT_ONE.hashCode())
+					+ (127 * "two".hashCode() ^ TWO_VALUE.hashCode())
+					+ (127 * "three".hashCode() ^ Integer.valueOf(THREE_VALUE).hashCode());
+
+				assertThat(annotation)
+					.returns(expectedHashCode, Object::hashCode);
+			}
+
+			@Test
+			void hasToString() {
+				String expectedToString =
+					"@org.perfectable.introspection.AnnotationBuilderTest$Multiple(two=twoOther, three=100)";
+				assertThat(annotation)
+					.returns(expectedToString, Object::toString);
+			}
+		}
+
 	}
-
-
-	@Test
-	void testMultipleMatching() {
-		String twoValue = MultipleHolder.TWO_VALUE;
-		int threeValue = MultipleHolder.TRHEE_VALUE;
-		Multiple annotation = AnnotationBuilder.of(Multiple.class)
-			.with(Multiple::one, Multiple.DEFAULT_ONE)
-			.with(Multiple::two, twoValue)
-			.with(Multiple::three, threeValue)
-			.build();
-
-		int expectedHashCode = (127 * "one".hashCode() ^ Multiple.DEFAULT_ONE.hashCode())
-			+ (127 * "two".hashCode() ^ twoValue.hashCode())
-			+ (127 * "three".hashCode() ^ Integer.valueOf(threeValue).hashCode());
-		String expectedToString =
-			"@org.perfectable.introspection.AnnotationBuilderTest$Multiple(one=defaultOne, two=testValue, three=3)";
-		assertThat(annotation)
-			.isInstanceOf(Multiple.class)
-			.isNotEqualTo(new Object())
-			.isNotEqualTo(null)
-			.isNotEqualTo(1)
-			.isEqualTo(annotation)
-			.isNotEqualTo(MarkerHolder.HELD)
-			.isNotEqualTo(SingleHolder.HELD)
-			.isEqualTo(MultipleHolder.HELD)
-			.returns(Multiple.class, Annotation::annotationType)
-			.returns(expectedHashCode, Object::hashCode)
-			.returns(MultipleHolder.HELD.hashCode(), Object::hashCode)
-			.returns(expectedToString, Object::toString)
-			.returns(MultipleHolder.HELD.hashCode(), Object::hashCode);
-	}
-
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface Marker {
@@ -153,7 +253,9 @@ class AnnotationBuilderTest {
 		String DEFAULT_ONE = "defaultOne";
 
 		String one() default DEFAULT_ONE;
+
 		String two();
+
 		int three();
 	}
 
