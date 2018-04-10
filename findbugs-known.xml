@@ -94,6 +94,18 @@
                 isStatic='true' primary='true' />
         <LocalVariable role='LOCAL_VARIABLE_PARAMETER_NAMED' pc='0' name='receiver' register='1' />
     </BugInstance>
+    <BugInstance abbrev='UPM' category='PERFORMANCE' priority='3' type='UPM_UNCALLED_PRIVATE_METHOD'>
+        <LongMessage>Private method org.perfectable.introspection.query.Subject.methodPrivate() is never called</LongMessage>
+        <Class classname='org.perfectable.introspection.query.Subject' primary='true' />
+        <Method classname='org.perfectable.introspection.query.Subject' name='methodPrivate' signature='()V'
+                isStatic='false' primary='true' />
+    </BugInstance>
+    <BugInstance abbrev='UPM' category='PERFORMANCE' priority='3' type='UPM_UNCALLED_PRIVATE_METHOD'>
+        <LongMessage>Private method org.perfectable.introspection.query.Subject$Extension.methodPrivate() is never called</LongMessage>
+        <Class classname='org.perfectable.introspection.query.Subject$Extension' primary='true' />
+        <Method classname='org.perfectable.introspection.query.Subject$Extension' name='methodPrivate' signature='()V'
+                isStatic='false' primary='true' />
+    </BugInstance>
     <BugInstance abbrev='SIC' category='PERFORMANCE' priority='2' type='SIC_INNER_SHOULD_BE_STATIC'>
         <LongMessage>Should org.perfectable.introspection.AnnotationBuilderTest$OfMarker be a _static_ inner class?</LongMessage>
         <Class classname='org.perfectable.introspection.AnnotationBuilderTest$OfMarker' primary='true' />

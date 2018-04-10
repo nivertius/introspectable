@@ -27,7 +27,7 @@ class RelatedTypeQueryTest {
 			.filteredOn(type -> type.getPackage() != null)
 			.filteredOn(type -> type.getPackage().getName().startsWith(MAIN_PACKAGE))
 			.containsExactly(Subject.class, Subject.Special.class, Subject.OtherAnnotation.class,
-				Subject.NestedInterface.class);
+				Subject.NestedInterface.class, Subject.Extension.class);
 	}
 
 	@Test
@@ -39,6 +39,6 @@ class RelatedTypeQueryTest {
 		assertThat(related)
 			.doesNotHaveDuplicates()
 			.containsExactly(Subject.class, Subject.Special.class, Subject.OtherAnnotation.class,
-				Subject.NestedInterface.class);
+				Subject.NestedInterface.class, Subject.Extension.class);
 	}
 }

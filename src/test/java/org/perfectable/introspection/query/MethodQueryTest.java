@@ -1,4 +1,4 @@
-package org.perfectable.introspection.query;
+package org.perfectable.introspection.query; // SUPPRESS LENGTH
 
 import org.perfectable.introspection.ObjectMethods;
 
@@ -33,6 +33,8 @@ class MethodQueryTest {
 				SubjectReflection.NO_RESULT_VARARGS_ARGUMENT,
 				SubjectReflection.NO_RESULT_VARARGS_DOUBLE_ARGUMENT,
 				SubjectReflection.METHOD_PROTECTED,
+				SubjectReflection.METHOD_PACKAGE,
+				SubjectReflection.METHOD_PRIVATE,
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
@@ -194,6 +196,8 @@ class MethodQueryTest {
 				SubjectReflection.NO_RESULT_VARARGS_ARGUMENT,
 				SubjectReflection.NO_RESULT_VARARGS_DOUBLE_ARGUMENT,
 				SubjectReflection.METHOD_PROTECTED,
+				SubjectReflection.METHOD_PACKAGE,
+				SubjectReflection.METHOD_PRIVATE,
 				ObjectMethods.WAIT, ObjectMethods.WAIT_TIMEOUT,
 				ObjectMethods.WAIT_NANOSECONDS,
 				ObjectMethods.FINALIZE, ObjectMethods.REGISTER_NATIVES,
@@ -219,6 +223,44 @@ class MethodQueryTest {
 				SubjectReflection.NO_RESULT_VARARGS_ARGUMENT,
 				SubjectReflection.NO_RESULT_VARARGS_DOUBLE_ARGUMENT,
 				SubjectReflection.METHOD_PROTECTED,
+				SubjectReflection.METHOD_PACKAGE,
+				SubjectReflection.METHOD_PRIVATE,
+				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
+				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.ANNOTATED_WITH_NULLABLE,
+				SubjectReflection.TO_STRING,
+				ObjectMethods.EQUALS, ObjectMethods.HASH_CODE,
+				ObjectMethods.GET_CLASS,
+				ObjectMethods.CLONE,
+				ObjectMethods.WAIT, ObjectMethods.WAIT_TIMEOUT,
+				ObjectMethods.WAIT_NANOSECONDS, ObjectMethods.FINALIZE,
+				ObjectMethods.REGISTER_NATIVES,
+				ObjectMethods.NOTIFY, ObjectMethods.NOTIFY_ALL)
+			.doesNotContain(EXAMPLE_STRING, null, ObjectMethods.TO_STRING,
+				SubjectReflection.STATIC_FIELD);
+	}
+
+
+	@Test
+	void testNotOverridenExtension() {
+		MethodQuery extracted =
+			MethodQuery.of(Subject.Extension.class)
+				.notOverridden();
+
+		assertThat(extracted)
+			.filteredOn(JACOCO_EXCLUSION)
+			.containsExactly(SubjectReflection.Extension.NO_RESULT_NO_ARGUMENT,
+				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
+				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
+				SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
+				SubjectReflection.NO_RESULT_STRING_NUMBER_ARGUMENT,
+				SubjectReflection.NO_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.NO_RESULT_VARARGS_DOUBLE_ARGUMENT,
+				SubjectReflection.Extension.METHOD_PROTECTED,
+				SubjectReflection.Extension.METHOD_PACKAGE,
+				SubjectReflection.Extension.METHOD_PRIVATE,
+				SubjectReflection.METHOD_PRIVATE,
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
@@ -282,7 +324,10 @@ class MethodQueryTest {
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
 			.containsExactly(ObjectMethods.FINALIZE, ObjectMethods.CLONE,
-				ObjectMethods.REGISTER_NATIVES, SubjectReflection.METHOD_PROTECTED)
+				ObjectMethods.REGISTER_NATIVES,
+				SubjectReflection.METHOD_PROTECTED,
+				SubjectReflection.METHOD_PACKAGE,
+				SubjectReflection.METHOD_PRIVATE)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
 				SubjectReflection.STATIC_FIELD);
 	}

@@ -110,6 +110,15 @@ public class Subject {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);
 	}
 
+	@SuppressWarnings("static-method")
+	void methodPackage() {
+		throw new AssertionError(MESSAGE_METHOD_CALLED);
+	}
+
+	@SuppressWarnings("static-method")
+	private void methodPrivate() {
+		throw new AssertionError(MESSAGE_METHOD_CALLED);
+	}
 
 	@Nullable
 	public Object annotatedWithNullable() {
@@ -124,5 +133,28 @@ public class Subject {
 	@SuppressWarnings("unused") // SUPPRESS InterfaceIsType:
 	public interface NestedInterface {
 		String STATIC_FIELD = "staticFieldValue"; // SUPPRESS ConstantInIntarface
+	}
+
+	public static class Extension extends Subject {
+		@Override
+		public void noResultNoArgument() {
+			throw new AssertionError(MESSAGE_METHOD_CALLED);
+		}
+
+		@Override
+		protected void methodProtected() {
+			throw new AssertionError(MESSAGE_METHOD_CALLED);
+		}
+
+		@Override
+		void methodPackage() {
+			throw new AssertionError(MESSAGE_METHOD_CALLED);
+		}
+
+		@SuppressWarnings("static-method")
+		private void methodPrivate() {
+			throw new AssertionError(MESSAGE_METHOD_CALLED);
+		}
+
 	}
 }

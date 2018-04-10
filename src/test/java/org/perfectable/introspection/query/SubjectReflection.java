@@ -33,7 +33,7 @@ public final class SubjectReflection {
 		getConstructor(Subject.class, Object.class, Object.class);
 
 	public static final Method NO_RESULT_NO_ARGUMENT =
-		getMethod(Subject.class, "noResultNoArgument");
+		getMethod(Subject.class, "noResultNoArgument"); // SUPPRESS MultipleStringLiterals
 	public static final Method NO_RESULT_SINGLE_ARGUMENT =
 		getMethod(Subject.class, "noResultSingleArgument", Object.class);
 	public static final Method NO_RESULT_PRIMITIVE_ARGUMENT =
@@ -63,7 +63,11 @@ public final class SubjectReflection {
 	public static final Method WITH_RESULT_VARARGS_ARGUMENT =
 		getMethod(Subject.class, "withResultVarargsArgument", Object[].class);
 	public static final Method METHOD_PROTECTED =
-		getMethod(Subject.class, "methodProtected");
+		getMethod(Subject.class, "methodProtected"); // SUPPRESS MultipleStringLiterals
+	public static final Method METHOD_PACKAGE =
+		getMethod(Subject.class, "methodPackage"); // SUPPRESS MultipleStringLiterals
+	public static final Method METHOD_PRIVATE =
+		getMethod(Subject.class, "methodPrivate"); // SUPPRESS MultipleStringLiterals
 	public static final Method ANNOTATED_WITH_NULLABLE =
 		getMethod(Subject.class, "annotatedWithNullable");
 	public static final Method TO_STRING =
@@ -71,5 +75,20 @@ public final class SubjectReflection {
 
 	private SubjectReflection() {
 		// utility class
+	}
+
+	public static final class Extension {
+		public static final Method NO_RESULT_NO_ARGUMENT =
+			getMethod(Subject.Extension.class, "noResultNoArgument"); // SUPPRESS MultipleStringLiterals
+		public static final Method METHOD_PROTECTED =
+			getMethod(Subject.Extension.class, "methodProtected"); // SUPPRESS MultipleStringLiterals
+		public static final Method METHOD_PACKAGE =
+			getMethod(Subject.Extension.class, "methodPackage"); // SUPPRESS MultipleStringLiterals
+		public static final Method METHOD_PRIVATE =
+			getMethod(Subject.Extension.class, "methodPrivate"); // SUPPRESS MultipleStringLiterals
+
+		private Extension() {
+			// utility class
+		}
 	}
 }
