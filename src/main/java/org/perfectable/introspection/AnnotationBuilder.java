@@ -27,15 +27,14 @@ public final class AnnotationBuilder<A extends Annotation> {
 	}
 
 	@FunctionalInterface
-	public interface MemberExtractor<A, X> {
-		@SuppressWarnings("UnusedReturnValue")
+	public interface MemberExtractor<A, X> extends FunctionalReference {
+		@SuppressWarnings("unused")
 		@CanIgnoreReturnValue
 		X extract(A annotation);
 	}
 
 	public <X> AnnotationBuilder<A> with(MemberExtractor<A, X> member, X value) {
-		Method memberMethod = ReferenceExtractor.of(annotationType).extract(member::extract);
-		String name = memberMethod.getName();
+		String name = member.introspect().referencedMethodName();
 		ImmutableMap<String, Object> newValueMap = ImmutableMap.<String, Object>builder()
 			.putAll(valueMap).put(name, value).build();
 		return new AnnotationBuilder<>(annotationType, newValueMap);
