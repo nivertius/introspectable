@@ -118,4 +118,10 @@
         <LongMessage>Should org.perfectable.introspection.AnnotationBuilderTest$OfSingle be a _static_ inner class?</LongMessage>
         <Class classname='org.perfectable.introspection.AnnotationBuilderTest$OfSingle' primary='true' />
     </BugInstance>
+    <BugInstance abbrev='UrF' category='PERFORMANCE' priority='3' type='URF_UNREAD_FIELD'>
+        <LongMessage>Unread field: org.perfectable.introspection.MethodSignature$ObjectType.typeArguments</LongMessage>
+        <Class classname='org.perfectable.introspection.MethodSignature$ObjectType' primary='true' />
+        <Field isStatic='false' classname='org.perfectable.introspection.MethodSignature$ObjectType'
+               signature='Lcom/google/common/collect/ImmutableList;' name='typeArguments' primary='true' />
+    </BugInstance>
 </BugCollection>

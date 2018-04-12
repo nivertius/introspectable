@@ -16,4 +16,13 @@ public final class ClassLoaderIntrospection {
 	public ClassQuery<Object> classes() {
 		return ClassQuery.of(classLoader);
 	}
+
+	public Class<?> loadSafe(String className) {
+		try {
+			return classLoader.loadClass(className);
+		}
+		catch (ClassNotFoundException e) {
+			throw new AssertionError(e);
+		}
+	}
 }
