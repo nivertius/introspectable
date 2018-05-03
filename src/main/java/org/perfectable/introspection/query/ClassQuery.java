@@ -252,28 +252,34 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 
 		@Override // SUPPRESS Unit4TestShouldUseTestAnnotation
 		public boolean test(CtClass ctClass) {
-			if (ctClass.getName().equals(supertype.getName())) {
-				return true;
-			}
+			return ctClass.getName().equals(supertype.getName())
+				|| testSuperclass(ctClass)
+				|| testInterfaces(ctClass);
+		}
+
+		private boolean testSuperclass(CtClass ctClass) {
+			CtClass superclass;
 			try {
-				CtClass superclass = ctClass.getSuperclass();
-				if (superclass != null && test(superclass)) {
+				superclass = ctClass.getSuperclass();
+			}
+			catch (Exception ignored) { // SUPPRESS IllegalCatch
+				return false;
+			}
+			return superclass != null && test(superclass);
+		}
+
+		private boolean testInterfaces(CtClass ctClass) {
+			CtClass[] ctInterfaces;
+			try {
+				ctInterfaces = ctClass.getInterfaces();
+			}
+			catch (Exception ignored) { // SUPPRESS IllegalCatch
+				return false;
+			}
+			for (CtClass ctInterface : ctInterfaces) {
+				if (test(ctInterface)) {
 					return true;
 				}
-			}
-			catch (NotFoundException ignored) { // SUPPRESS EmptyBlock
-				// continue
-			}
-			try {
-				CtClass[] ctInterfaces = ctClass.getInterfaces();
-				for (CtClass ctInterface : ctInterfaces) {
-					if (test(ctInterface)) {
-						return true;
-					}
-				}
-			}
-			catch (NotFoundException ignored) { // SUPPRESS EmptyBlock
-				// continue
 			}
 			return false;
 		}
@@ -461,7 +467,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			try {
 				return (T) ctClass.getAnnotation(annotationClass);
 			}
-			catch (ClassNotFoundException e) {
+			catch (Exception e) { // SUPPRESS IllegalCatch
 				return null;
 			}
 		}
