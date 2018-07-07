@@ -18,7 +18,7 @@ public final class MethodIntrospection {
 	private final Method method;
 
 	public boolean isCallable() {
-		return method.isAccessible() && !Modifier.isAbstract(method.getModifiers());
+		return !Modifier.isAbstract(method.getModifiers());
 	}
 
 	private MethodIntrospection(Method method) {

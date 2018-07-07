@@ -143,12 +143,12 @@ final class Properties {
 
 		@Override
 		public boolean isReadable() {
-			return this.field.isAccessible();
+			return true;
 		}
 
 		@Override
 		public boolean isWritable() {
-			return this.field.isAccessible() && !Modifier.isFinal(this.field.getModifiers());
+			return !Modifier.isFinal(this.field.getModifiers());
 		}
 
 		@Override
