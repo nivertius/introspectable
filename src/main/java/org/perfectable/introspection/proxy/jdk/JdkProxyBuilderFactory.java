@@ -3,7 +3,6 @@ package org.perfectable.introspection.proxy.jdk;
 import org.perfectable.introspection.proxy.AbstractProxyBuilderFactory;
 import org.perfectable.introspection.proxy.ProxyBuilder;
 
-import java.lang.reflect.Proxy;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -18,8 +17,7 @@ public final class JdkProxyBuilderFactory extends AbstractProxyBuilderFactory {
 
 	@Override
 	public ProxyBuilder<?> ofInterfacesSafe(ClassLoader classLoader, Class<?>... interfaces) {
-		Class<?> proxyClass = Proxy.getProxyClass(classLoader, interfaces);
-		return JdkProxyBuilder.ofProxyClass(proxyClass);
+		return JdkProxyBuilder.of(classLoader, interfaces);
 	}
 
 	@Override

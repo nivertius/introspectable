@@ -1,51 +1,40 @@
 package org.perfectable.introspection.proxy.jdk;
 
 import org.perfectable.introspection.ObjectMethods;
-import org.perfectable.introspection.PrivilegedActions;
 import org.perfectable.introspection.proxy.Invocation;
 import org.perfectable.introspection.proxy.InvocationHandler;
 import org.perfectable.introspection.proxy.MethodInvocation;
 import org.perfectable.introspection.proxy.ProxyBuilder;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import javax.annotation.Nullable;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
 final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
+	private final ClassLoader classLoader;
+	private final Class<?>[] interfaces;
 
-	private final Class<I> proxyClass;
-
-	static <X> JdkProxyBuilder<X> ofProxyClass(Class<X> proxyClass) {
-		checkArgument(Proxy.isProxyClass(proxyClass));
-		return new JdkProxyBuilder<>(proxyClass);
+	private JdkProxyBuilder(ClassLoader classLoader, Class<?>... interfaces) {
+		this.classLoader = classLoader;
+		this.interfaces = interfaces.clone();
 	}
 
-	private JdkProxyBuilder(Class<I> proxyClass) {
-		this.proxyClass = proxyClass;
+	static <I> JdkProxyBuilder<I> of(ClassLoader classLoader, Class<?>... interfaces) {
+		return new JdkProxyBuilder<I>(classLoader, interfaces);
 	}
 
 	@Override
 	public I instantiate(InvocationHandler<I> handler) {
-		Constructor<I> constructor;
-		try {
-			constructor = this.proxyClass.getConstructor(java.lang.reflect.InvocationHandler.class);
-		}
-		catch (NoSuchMethodException | IllegalArgumentException e) {
-			throw new AssertionError("Proxy class must have constructor with InvocationHandler", e);
-		}
-		PrivilegedActions.markAccessible(constructor);
 		JdkInvocationHandlerAdapter<I> adapterHandler = JdkInvocationHandlerAdapter.adapt(handler);
 		try {
-			return constructor.newInstance(adapterHandler);
+			@SuppressWarnings("unchecked")
+			I instance = (I) Proxy.newProxyInstance(classLoader, interfaces, adapterHandler);
+			return instance;
 		}
-		catch (InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e) {
-			throw new AssertionError("Proxy class constructor must be possible to call with invocation handler", e);
+		catch (IllegalArgumentException e) {
+			throw new AssertionError("Proxy construction failed", e);
 		}
 	}
 
