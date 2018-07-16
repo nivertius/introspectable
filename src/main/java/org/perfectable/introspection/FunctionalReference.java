@@ -30,7 +30,8 @@ public interface FunctionalReference extends Serializable {
 
 	final class Introspection {
 		public static Introspection of(FunctionalReference marker) {
-			Method writeReplace = MethodQuery.of(marker.getClass())
+			Class<? extends FunctionalReference> markerClass = marker.getClass();
+			Method writeReplace = MethodQuery.of(markerClass)
 				.named("writeReplace")
 				.returning(Object.class)
 				.asAccessible()
@@ -42,14 +43,13 @@ public interface FunctionalReference extends Serializable {
 			catch (IllegalAccessException | InvocationTargetException e) {
 				throw new AssertionError(e);
 			}
-			return new Introspection(serializedForm);
+			return new Introspection(serializedForm, markerClass.getClassLoader());
 		}
 
 		public Class<?> capturingType() {
 			String capturingClass = serializedForm.getCapturingClass();
 			String capturingClassName = formatClassName(capturingClass);
-			ClassLoader loader = getClass().getClassLoader();
-			return loadClass(loader, capturingClassName);
+			return loadClass(capturingClassName);
 		}
 
 		public String referencedMethodName() throws IllegalStateException {
@@ -64,13 +64,12 @@ public interface FunctionalReference extends Serializable {
 
 		public Method referencedMethod() throws IllegalStateException {
 			String methodName = referencedMethodName();
-			ClassLoader loader = getClass().getClassLoader();
-			Class<?> implementationClass = getImplementationClass(loader);
+			Class<?> implementationClass = getImplementationClass();
 			MethodSignature signature = MethodSignature.read(serializedForm.getImplMethodSignature());
 			return MethodQuery.of(implementationClass)
 				.named(methodName)
-				.parameters(signature.runtimeParameterTypes(loader))
-				.returning(signature.runtimeResultType(loader))
+				.parameters(signature.runtimeParameterTypes(classLoader))
+				.returning(signature.runtimeResultType(classLoader))
 				.notOverridden()
 				.asAccessible()
 				.unique();
@@ -81,11 +80,10 @@ public interface FunctionalReference extends Serializable {
 			if (implMethodKind != MethodHandleInfo.REF_newInvokeSpecial) {
 				throw new IllegalStateException("Interface implementation is not a constructor reference");
 			}
-			ClassLoader loader = getClass().getClassLoader();
-			Class<?> implementationClass = getImplementationClass(loader);
+			Class<?> implementationClass = getImplementationClass();
 			MethodSignature signature = MethodSignature.read(serializedForm.getInstantiatedMethodType());
 			return ConstructorQuery.of(implementationClass)
-				.parameters(signature.runtimeParameterTypes(loader))
+				.parameters(signature.runtimeParameterTypes(classLoader))
 				.asAccessible()
 				.unique();
 		}
@@ -115,10 +113,11 @@ public interface FunctionalReference extends Serializable {
 			}
 		}
 
-
 		private final SerializedLambda serializedForm;
+		private final ClassLoader classLoader;
 
-		private Introspection(SerializedLambda serializedForm) {
+		private Introspection(SerializedLambda serializedForm, ClassLoader classLoader) {
+			this.classLoader = classLoader;
 			this.serializedForm = serializedForm;
 		}
 
@@ -126,14 +125,14 @@ public interface FunctionalReference extends Serializable {
 			return capturingClass.replaceAll("/", ".");
 		}
 
-		private static Class<?> loadClass(ClassLoader loader, String className) {
-			return ClassLoaderIntrospection.of(loader)
+		private Class<?> loadClass(String className) {
+			return ClassLoaderIntrospection.of(classLoader)
 				.loadSafe(className);
 		}
 
-		private Class<?> getImplementationClass(ClassLoader loader) {
+		private Class<?> getImplementationClass() {
 			String declaringTypeName = formatClassName(serializedForm.getImplClass());
-			return loadClass(loader, declaringTypeName);
+			return loadClass(declaringTypeName);
 		}
 
 		private Object[] captures() {
