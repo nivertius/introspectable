@@ -28,6 +28,35 @@ public interface FunctionalReference extends Serializable {
 		T visitLambda(Object... captures);
 	}
 
+	abstract class SingularVisitor<T> implements Visitor<T> {
+		@Override
+		public T visitBound(Object boundInstance) {
+			return unexpected();
+		}
+
+		@Override
+		public T visitStatic() {
+			return unexpected();
+		}
+
+		@Override
+		public T visitInstance() {
+			return unexpected();
+		}
+
+		@Override
+		public T visitConstructor() {
+			return unexpected();
+		}
+
+		@Override
+		public T visitLambda(Object... captures) {
+			return unexpected();
+		}
+
+		protected abstract T unexpected();
+	}
+
 	final class Introspection {
 		public static Introspection of(FunctionalReference marker) {
 			Class<? extends FunctionalReference> markerClass = marker.getClass();

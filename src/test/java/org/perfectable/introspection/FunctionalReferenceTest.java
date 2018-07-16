@@ -410,35 +410,11 @@ class FunctionalReferenceTest {
 		}
 	}
 
-	private static class TestVisitor implements FunctionalReference.Visitor<Void> {
+	private static class TestVisitor extends FunctionalReference.SingularVisitor<Void> {
 		static final String INVALID_VISIT_MESSAGE = "Invalid visit";
 
 		@Override
-		public Void visitStatic() {
-			fail(INVALID_VISIT_MESSAGE);
-			return null;
-		}
-
-		@Override
-		public Void visitInstance() {
-			fail(INVALID_VISIT_MESSAGE);
-			return null;
-		}
-
-		@Override
-		public Void visitBound(Object boundInstance) {
-			fail(INVALID_VISIT_MESSAGE);
-			return null;
-		}
-
-		@Override
-		public Void visitConstructor() {
-			fail(INVALID_VISIT_MESSAGE);
-			return null;
-		}
-
-		@Override
-		public Void visitLambda(Object... captures) {
+		protected Void unexpected() {
 			fail(INVALID_VISIT_MESSAGE);
 			return null;
 		}
