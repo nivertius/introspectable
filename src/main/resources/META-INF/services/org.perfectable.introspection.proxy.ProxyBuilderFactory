@@ -1,3 +1,0 @@
-org.perfectable.introspection.proxy.jdk.JdkProxyBuilderFactory
-org.perfectable.introspection.proxy.javassist.JavassistProxyBuilderFactory
-

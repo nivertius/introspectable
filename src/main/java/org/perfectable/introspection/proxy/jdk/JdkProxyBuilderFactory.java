@@ -2,10 +2,14 @@ package org.perfectable.introspection.proxy.jdk;
 
 import org.perfectable.introspection.proxy.AbstractProxyBuilderFactory;
 import org.perfectable.introspection.proxy.ProxyBuilder;
+import org.perfectable.introspection.proxy.ProxyBuilderFactory;
 
 import java.util.EnumSet;
 import java.util.Set;
 
+import com.google.auto.service.AutoService;
+
+@AutoService(ProxyBuilderFactory.class)
 public final class JdkProxyBuilderFactory extends AbstractProxyBuilderFactory {
 
 	private static final Set<Feature> SUPPORTED_FEATURES = EnumSet.noneOf(Feature.class);

@@ -2,18 +2,21 @@ package org.perfectable.introspection.proxy.javassist;
 
 import org.perfectable.introspection.proxy.AbstractProxyBuilderFactory;
 import org.perfectable.introspection.proxy.ProxyBuilder;
+import org.perfectable.introspection.proxy.ProxyBuilderFactory;
 
 import java.lang.reflect.Modifier;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import com.google.auto.service.AutoService;
 import javassist.util.proxy.ProxyFactory;
 import org.objenesis.ObjenesisStd;
 import org.objenesis.instantiator.ObjectInstantiator;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+@AutoService(ProxyBuilderFactory.class)
 public final class JavassistProxyBuilderFactory extends AbstractProxyBuilderFactory {
 
 	private static final ObjenesisStd OBJENESIS = new ObjenesisStd();
