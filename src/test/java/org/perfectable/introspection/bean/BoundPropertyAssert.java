@@ -3,6 +3,7 @@ package org.perfectable.introspection.bean;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.internal.Objects;
 
+@SuppressWarnings("BooleanParameter")
 final class BoundPropertyAssert<VALUE>
 	extends AbstractObjectAssert<BoundPropertyAssert<VALUE>, BoundProperty<?, VALUE>> {
 	private final Objects objects = Objects.instance();
