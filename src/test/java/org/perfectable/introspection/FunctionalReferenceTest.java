@@ -23,15 +23,93 @@ class FunctionalReferenceTest {
 		"Interface implementation is not a method reference";
 
 	@Nested
-	class StaticMethodReference {
+	class StaticMethodReferenceParameterless {
 		private final TestParameterless marker = System::currentTimeMillis;
 		private final Method markerMethod = getMethod(System.class, "currentTimeMillis");
 
 		@Test
 		void capturingType() {
 			assertThat(marker.introspect())
-				.returns(StaticMethodReference.class,
+				.returns(StaticMethodReferenceParameterless.class,
 					FunctionalReference.Introspection::capturingType);
+		}
+
+		@Test
+		void resultType() {
+			assertThat(marker.introspect())
+				.returns(long.class,
+					FunctionalReference.Introspection::resultType);
+		}
+
+		@Test
+		void parametersCount() {
+			assertThat(marker.introspect())
+				.returns(0, FunctionalReference.Introspection::parametersCount);
+		}
+
+		@Test
+		void referencedMethod() {
+			assertThat(marker.introspect())
+				.returns(markerMethod,
+					FunctionalReference.Introspection::referencedMethod);
+		}
+
+		@Test
+		void referencedMethodName() {
+			assertThat(marker.introspect())
+				.returns(markerMethod.getName(),
+					FunctionalReference.Introspection::referencedMethodName);
+		}
+
+		@Test
+		void referencedConstructor() {
+			FunctionalReference.Introspection introspect = marker.introspect();
+			assertThatThrownBy(() -> introspect.referencedConstructor())
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessage(NON_CONSTRUCTOR_REFERENCE_MESSAGE);
+		}
+
+		@Test
+		void visit() {
+			FunctionalReference.Introspection introspect = marker.introspect();
+			introspect.visit(new TestVisitor() {
+				@Override
+				public Void visitStatic() {
+					return null;
+				}
+			});
+		}
+	}
+
+	@Nested
+	class StaticMethodReferenceGeneric {
+		private final TestWithGenerics<Object, Integer> marker = System::identityHashCode;
+		private final Method markerMethod = getMethod(System.class, "identityHashCode", Object.class);
+
+		@Test
+		void capturingType() {
+			assertThat(marker.introspect())
+				.returns(StaticMethodReferenceGeneric.class,
+					FunctionalReference.Introspection::capturingType);
+		}
+
+		@Test
+		void resultType() {
+			assertThat(marker.introspect())
+				.returns(int.class,
+					FunctionalReference.Introspection::resultType);
+		}
+
+		@Test
+		void parametersCount() {
+			assertThat(marker.introspect())
+				.returns(1, FunctionalReference.Introspection::parametersCount);
+		}
+
+		@Test
+		void parametersZeroType() {
+			assertThat(marker.introspect())
+				.returns(Object.class, introspection -> introspection.parameterType(0));
 		}
 
 		@Test
@@ -81,6 +159,25 @@ class FunctionalReferenceTest {
 		}
 
 		@Test
+		void resultType() {
+			assertThat(marker.introspect())
+				.returns(int.class,
+					FunctionalReference.Introspection::resultType);
+		}
+
+		@Test
+		void parametersCount() {
+			assertThat(marker.introspect())
+				.returns(1, FunctionalReference.Introspection::parametersCount);
+		}
+
+		@Test
+		void parametersZeroType() {
+			assertThat(marker.introspect())
+				.returns(Object.class, introspection -> introspection.parameterType(0));
+		}
+
+		@Test
 		void referencedMethod() {
 			assertThat(marker.introspect())
 				.returns(markerMethod,
@@ -116,7 +213,146 @@ class FunctionalReferenceTest {
 	}
 
 	@Nested
-	class BoundInstanceMethodReference {
+	class InstanceMethodReferenceWithGenerics {
+		private final TestWithGenerics<StringBuilder, String> marker = StringBuilder::toString;
+		private final Method markerMethod = getMethod(StringBuilder.class, "toString");
+
+		@Test
+		void capturingType() {
+			assertThat(marker.introspect())
+				.returns(InstanceMethodReferenceWithGenerics.class,
+					FunctionalReference.Introspection::capturingType);
+		}
+
+		@Test
+		void resultType() {
+			assertThat(marker.introspect())
+				.returns(String.class,
+					FunctionalReference.Introspection::resultType);
+		}
+
+		@Test
+		void parametersCount() {
+			assertThat(marker.introspect())
+				.returns(1, FunctionalReference.Introspection::parametersCount);
+		}
+
+		@Test
+		void parametersZeroType() {
+			assertThat(marker.introspect())
+				.returns(StringBuilder.class, introspection -> introspection.parameterType(0));
+		}
+
+		@Test
+		void referencedMethod() {
+			assertThat(marker.introspect())
+				.returns(markerMethod,
+					FunctionalReference.Introspection::referencedMethod);
+		}
+
+		@Test
+		void referencedMethodName() {
+			assertThat(marker.introspect())
+				.returns(markerMethod.getName(),
+					FunctionalReference.Introspection::referencedMethodName);
+		}
+
+		@Test
+		void referencedConstructor() {
+			FunctionalReference.Introspection introspect = marker.introspect();
+			assertThatThrownBy(() -> introspect.referencedConstructor())
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessage(NON_CONSTRUCTOR_REFERENCE_MESSAGE);
+		}
+
+		@Test
+		void visit() {
+			FunctionalReference.Introspection introspect = marker.introspect();
+			introspect.visit(new TestVisitor() {
+				@Override
+				public Void visitInstance() {
+					// pass
+					return null;
+				}
+			});
+		}
+	}
+
+	@Nested
+	class InstanceMethodReferenceWithDoubleGenerics {
+		private final TestDoubleWithGenerics<StringBuilder, StringBuffer, StringBuilder> marker = StringBuilder::append;
+		private final Method markerMethod = getMethod(StringBuilder.class, "append", StringBuffer.class);
+
+		@Test
+		void capturingType() {
+			assertThat(marker.introspect())
+				.returns(InstanceMethodReferenceWithDoubleGenerics.class,
+					FunctionalReference.Introspection::capturingType);
+		}
+
+		@Test
+		void resultType() {
+			assertThat(marker.introspect())
+				.returns(StringBuilder.class,
+					FunctionalReference.Introspection::resultType);
+		}
+
+		@Test
+		void parametersCount() {
+			assertThat(marker.introspect())
+				.returns(2, FunctionalReference.Introspection::parametersCount);
+		}
+
+		@Test
+		void parametersZeroType() {
+			assertThat(marker.introspect())
+				.returns(StringBuilder.class, introspection -> introspection.parameterType(0));
+		}
+
+		@Test
+		void parametersOneType() {
+			assertThat(marker.introspect())
+				.returns(StringBuffer.class, introspection -> introspection.parameterType(1));
+		}
+
+		@Test
+		void referencedMethod() {
+			assertThat(marker.introspect())
+				.returns(markerMethod,
+					FunctionalReference.Introspection::referencedMethod);
+		}
+
+		@Test
+		void referencedMethodName() {
+			assertThat(marker.introspect())
+				.returns(markerMethod.getName(),
+					FunctionalReference.Introspection::referencedMethodName);
+		}
+
+		@Test
+		void referencedConstructor() {
+			FunctionalReference.Introspection introspect = marker.introspect();
+			assertThatThrownBy(() -> introspect.referencedConstructor())
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessage(NON_CONSTRUCTOR_REFERENCE_MESSAGE);
+		}
+
+		@Test
+		void visit() {
+			FunctionalReference.Introspection introspect = marker.introspect();
+			introspect.visit(new TestVisitor() {
+				@Override
+				public Void visitInstance() {
+					// pass
+					return null;
+				}
+			});
+		}
+	}
+
+
+	@Nested
+	class BoundInstanceMethodReferenceParameterless {
 		private final Object instance = new Object();
 		private final TestParameterless marker = instance::hashCode;
 		private final Method markerMethod = getMethod(Object.class, "hashCode");
@@ -124,8 +360,89 @@ class FunctionalReferenceTest {
 		@Test
 		void capturingType() {
 			assertThat(marker.introspect())
-				.returns(BoundInstanceMethodReference.class,
+				.returns(BoundInstanceMethodReferenceParameterless.class,
 					FunctionalReference.Introspection::capturingType);
+		}
+
+		@Test
+		void resultType() {
+			assertThat(marker.introspect())
+				.returns(int.class,
+					FunctionalReference.Introspection::resultType);
+		}
+
+		@Test
+		void parametersCount() {
+			assertThat(marker.introspect())
+				.returns(0, FunctionalReference.Introspection::parametersCount);
+		}
+
+		@Test
+		void referencedMethod() {
+			assertThat(marker.introspect())
+				.returns(markerMethod,
+					FunctionalReference.Introspection::referencedMethod);
+		}
+
+		@Test
+		void referencedMethodName() {
+			assertThat(marker.introspect())
+				.returns(markerMethod.getName(),
+					FunctionalReference.Introspection::referencedMethodName);
+		}
+
+		@Test
+		void referencedConstructor() {
+			FunctionalReference.Introspection introspect = marker.introspect();
+			assertThatThrownBy(() -> introspect.referencedConstructor())
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessage(NON_CONSTRUCTOR_REFERENCE_MESSAGE);
+		}
+
+		@Test
+		void visit() {
+			FunctionalReference.Introspection introspect = marker.introspect();
+			introspect.visit(new TestVisitor() {
+				@Override
+				public Void visitBound(Object boundInstance) {
+					assertThat(boundInstance)
+						.isSameAs(instance);
+					return null;
+				}
+			});
+		}
+	}
+
+	@Nested
+	class BoundInstanceMethodReferenceSingleParameter {
+		private final Object instance = new Object();
+		private final TestSingleParameter marker = instance::equals;
+		private final Method markerMethod = getMethod(Object.class, "equals", Object.class);
+
+		@Test
+		void capturingType() {
+			assertThat(marker.introspect())
+				.returns(BoundInstanceMethodReferenceSingleParameter.class,
+					FunctionalReference.Introspection::capturingType);
+		}
+
+		@Test
+		void resultType() {
+			assertThat(marker.introspect())
+				.returns(boolean.class,
+					FunctionalReference.Introspection::resultType);
+		}
+
+		@Test
+		void parametersCount() {
+			assertThat(marker.introspect())
+				.returns(1, FunctionalReference.Introspection::parametersCount);
+		}
+
+		@Test
+		void parametersZeroType() {
+			assertThat(marker.introspect())
+				.returns(Object.class, introspection -> introspection.parameterType(0));
 		}
 
 		@Test
@@ -177,6 +494,19 @@ class FunctionalReferenceTest {
 		}
 
 		@Test
+		void resultType() {
+			assertThat(marker.introspect())
+				.returns(Object.class,
+					FunctionalReference.Introspection::resultType);
+		}
+
+		@Test
+		void parametersCount() {
+			assertThat(marker.introspect())
+				.returns(0, FunctionalReference.Introspection::parametersCount);
+		}
+
+		@Test
 		void referencedMethod() {
 			FunctionalReference.Introspection introspect = marker.introspect();
 			assertThatThrownBy(() -> introspect.referencedMethod())
@@ -225,6 +555,19 @@ class FunctionalReferenceTest {
 		}
 
 		@Test
+		void resultType() {
+			assertThat(marker.introspect())
+				.returns(RetentionPolicy.class,
+					FunctionalReference.Introspection::resultType);
+		}
+
+		@Test
+		void parametersCount() {
+			assertThat(marker.introspect())
+				.returns(0, FunctionalReference.Introspection::parametersCount);
+		}
+
+		@Test
 		void referencedMethod() {
 			assertThat(marker.introspect())
 				.returns(markerMethod,
@@ -270,6 +613,19 @@ class FunctionalReferenceTest {
 			assertThat(marker.introspect())
 				.returns(ParameterlessLambda.class,
 					FunctionalReference.Introspection::capturingType);
+		}
+
+		@Test
+		void resultType() {
+			assertThat(marker.introspect())
+				.returns(void.class,
+					FunctionalReference.Introspection::resultType);
+		}
+
+		@Test
+		void parametersCount() {
+			assertThat(marker.introspect())
+				.returns(0, FunctionalReference.Introspection::parametersCount);
 		}
 
 		@Test
@@ -325,6 +681,25 @@ class FunctionalReferenceTest {
 		}
 
 		@Test
+		void resultType() {
+			assertThat(marker.introspect())
+				.returns(void.class,
+					FunctionalReference.Introspection::resultType);
+		}
+
+		@Test
+		void parametersCount() {
+			assertThat(marker.introspect())
+				.returns(1, FunctionalReference.Introspection::parametersCount);
+		}
+
+		@Test
+		void parametersZeroType() {
+			assertThat(marker.introspect())
+				.returns(Object.class, introspection -> introspection.parameterType(0));
+		}
+
+		@Test
 		void referencedMethod() {
 			FunctionalReference.Introspection introspect = marker.introspect();
 			assertThatThrownBy(() -> introspect.referencedMethod())
@@ -373,6 +748,19 @@ class FunctionalReferenceTest {
 			assertThat(marker.introspect())
 				.returns(OverloadedMethodReference.class,
 					FunctionalReference.Introspection::capturingType);
+		}
+
+		@Test
+		void resultType() {
+			assertThat(marker.introspect())
+				.returns(java.util.Map.class,
+					FunctionalReference.Introspection::resultType);
+		}
+
+		@Test
+		void parametersCount() {
+			assertThat(marker.introspect())
+				.returns(0, FunctionalReference.Introspection::parametersCount);
 		}
 
 		@Test
@@ -430,6 +818,14 @@ class FunctionalReferenceTest {
 
 	private interface TestWithResult extends FunctionalReference {
 		Object target();
+	}
+
+	private interface TestWithGenerics<S, T> extends FunctionalReference {
+		T target(S parameter);
+	}
+
+	private interface TestDoubleWithGenerics<S, W, T> extends FunctionalReference {
+		T target(S parameter1, W parameter2);
 	}
 
 	private interface TestRetention extends FunctionalReference {
