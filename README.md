@@ -143,6 +143,23 @@ UserService proxy =
             });
 ```
 
+### Annotation building
+
+Sometimes you just need to get instance of annotation type. Be it library interface which assumes that you will extract
+the annotation from element, or some method call just requires annotation, assuming that you extract. In either case, you
+can build it using `AnnotationBuilder`.
+
+#### Example: Named injection
+
+Injection framework requires you to provide `javax.inject.Named` annotation instance:
+
+```java
+Named instance =
+    AnnotationBuilder.of(Named.class)
+        .with(Named::value, "fantastic")
+        .build()
+```
+
 ## How to use
 
 Add as dependency:
