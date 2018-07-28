@@ -160,6 +160,51 @@ Named instance =
         .build()
 ```
 
+### Functional references
+
+Sometimes it would be nice to have properties or method compile-time checked to match requested signature. You can use
+`FunctionalReference` superinterface to make functional interfaces introspectable.
+
+#### Example: Annotation building
+
+Introspection framework uses annotation methods to build annotations:
+
+```java
+@FunctionalInterface
+public interface MemberExtractor<A, X> extends FunctionalReference {
+    X extract(A annotation);
+}
+
+class AnnotationBuilder<A> {
+    public <X> AnnotationBuilder<A> with(MemberExtractor<A, X> member, X value) {
+        String name = member.introspect().referencedMethodName();
+        return withMember(name, value); // private, safe
+    }
+    <...>
+}
+```
+
+#### Example: Factory methods
+
+Injection framework needs to extract factory class and product class from provided factory method:
+
+```java
+@FunctionalInterface
+public interface Factory<F, P> extends FunctionalReference {
+    P build(F factory);
+}
+
+class FactoryInjector<F, P> {
+    public static <F, P> FactoryInjector<F, P> of(Factory<F, P> factory) {
+        FunctionalReference.Introspection introspection = factory.introspect(); // this kinda slow
+        Class<F> factoryClass = (Class<F>) introspection.resultType();
+        Class<P> productClass = (Class<P>) introspection.parameterType(0); // safe
+        return of(factoryClass, productClass, factory);
+    }
+    <...>
+}
+```
+
 ## How to use
 
 Add as dependency:
