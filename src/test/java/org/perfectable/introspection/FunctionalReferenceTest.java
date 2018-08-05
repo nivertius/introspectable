@@ -78,7 +78,8 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitStatic() {
+				public Void visitStatic(Method method) {
+					assertThat(method).isEqualTo(markerMethod);
 					return null;
 				}
 			});
@@ -157,7 +158,8 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitStatic() {
+				public Void visitStatic(Method method) {
+					assertThat(method).isEqualTo(markerMethod);
 					return null;
 				}
 			});
@@ -234,8 +236,8 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitInstance() {
-					// pass
+				public Void visitInstance(Method method) {
+					assertThat(method).isEqualTo(markerMethod);
 					return null;
 				}
 			});
@@ -314,8 +316,8 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitInstance() {
-					// pass
+				public Void visitInstance(Method method) {
+					assertThat(method).isEqualTo(markerMethod);
 					return null;
 				}
 			});
@@ -414,8 +416,8 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitInstance() {
-					// pass
+				public Void visitInstance(Method method) {
+					assertThat(method).isEqualTo(markerMethod);
 					return null;
 				}
 			});
@@ -476,7 +478,8 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitBound(Object boundInstance) {
+				public Void visitBound(Method method, Object boundInstance) {
+					assertThat(method).isEqualTo(markerMethod);
 					assertThat(boundInstance)
 						.isSameAs(instance);
 					return null;
@@ -558,7 +561,8 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitBound(Object boundInstance) {
+				public Void visitBound(Method method, Object boundInstance) {
+					assertThat(method).isEqualTo(markerMethod);
 					assertThat(boundInstance)
 						.isSameAs(instance);
 					return null;
@@ -620,8 +624,8 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitConstructor() {
-					// pass
+				public Void visitConstructor(Constructor<?> constructor) {
+					assertThat(constructor).isEqualTo(markerConstructor);
 					return null;
 				}
 			});
@@ -702,8 +706,8 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitConstructor() {
-					// pass
+				public Void visitConstructor(Constructor<?> constructor) {
+					assertThat(constructor).isEqualTo(markerConstructor);
 					return null;
 				}
 			});
@@ -752,14 +756,12 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 			Extractor<Annotation, Class<?>> extractor =
 				(Annotation annotation) -> (Class<?>) annotation.annotationType();
 			assertThat(marker.introspect())
-				.satisfies(introspection -> {
-					assertThat(introspection.parameterAnnotated(0))
-						.satisfies(annotatedElement -> {
-							assertThat(annotatedElement.getAnnotations())
-								.extracting(extractor)
-								.containsExactly(Documented.class, Retention.class, Target.class);
-						});
-				});
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotated(0))
+					.satisfies(annotatedElement -> {
+						assertThat(annotatedElement.getAnnotations())
+							.extracting(extractor)
+							.containsExactly(Documented.class, Retention.class, Target.class);
+					}));
 		}
 
 		@Test
@@ -789,8 +791,9 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitInstance() {
-					// pass
+				public Void visitInstance(Method method) {
+					assertThat(method)
+						.isEqualTo(markerMethod);
 					return null;
 				}
 			});
@@ -950,7 +953,7 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 	@Nested
 	class OverloadedMethodReference {
 		private final TestParameterless marker = System::getenv;
-		private final Method method = getMethod(System.class, "getenv");
+		private final Method markerMethod = getMethod(System.class, "getenv");
 
 		@Test
 		void capturingType() {
@@ -975,14 +978,14 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 		@Test
 		void referencedMethod() {
 			assertThat(marker.introspect())
-				.returns(method,
+				.returns(markerMethod,
 					FunctionalReference.Introspection::referencedMethod);
 		}
 
 		@Test
 		void referencedMethodName() {
 			assertThat(marker.introspect())
-				.returns(method.getName(),
+				.returns(markerMethod.getName(),
 					FunctionalReference.Introspection::referencedMethodName);
 		}
 
@@ -999,8 +1002,9 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitStatic() {
-					// pass
+				public Void visitStatic(Method method) {
+					assertThat(method)
+						.isEqualTo(markerMethod);
 					return null;
 				}
 			});
@@ -1017,26 +1021,32 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private interface TestParameterless extends FunctionalReference {
 		void target();
 	}
 
+	@SuppressWarnings("unused")
 	private interface TestSingleParameter extends FunctionalReference {
 		void target(Object parameter);
 	}
 
+	@SuppressWarnings("unused")
 	private interface TestWithResult extends FunctionalReference {
 		Object target();
 	}
 
+	@SuppressWarnings("unused")
 	private interface TestWithGenerics<S, T> extends FunctionalReference {
 		T target(S parameter);
 	}
 
+	@SuppressWarnings("unused")
 	private interface TestDoubleWithGenerics<S, W, T> extends FunctionalReference {
 		T target(S parameter1, W parameter2);
 	}
 
+	@SuppressWarnings("unused")
 	private interface TestRetention extends FunctionalReference {
 		RetentionPolicy target(Retention retention);
 	}

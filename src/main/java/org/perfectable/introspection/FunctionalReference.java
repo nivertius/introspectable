@@ -23,40 +23,44 @@ public interface FunctionalReference extends Serializable {
 	}
 
 	interface Visitor<T> {
-		T visitBound(Object boundInstance);
+		T visitBound(Method method, Object boundInstance);
 
-		T visitStatic();
+		T visitStatic(Method method);
 
-		T visitInstance();
+		T visitInstance(Method method);
 
-		T visitConstructor();
+		T visitConstructor(Constructor<?> constructor);
 
 		T visitLambda(Object... captures);
 	}
 
 	abstract class SingularVisitor<T> implements Visitor<T> {
 		@Override
-		public T visitBound(Object boundInstance) {
-			return unexpected();
+		public T visitBound(Method method, Object boundInstance) {
+			return visitMethod(method);
 		}
 
 		@Override
-		public T visitStatic() {
-			return unexpected();
+		public T visitStatic(Method method) {
+			return visitMethod(method);
 		}
 
 		@Override
-		public T visitInstance() {
-			return unexpected();
+		public T visitInstance(Method method) {
+			return visitMethod(method);
 		}
 
 		@Override
-		public T visitConstructor() {
+		public T visitConstructor(Constructor<?> constructor) {
 			return unexpected();
 		}
 
 		@Override
 		public T visitLambda(Object... captures) {
+			return unexpected();
+		}
+
+		protected T visitMethod(Method method) {
 			return unexpected();
 		}
 
@@ -101,7 +105,7 @@ public interface FunctionalReference extends Serializable {
 			}
 		}
 
-		public Class<?> capturingType() {
+		public final Class<?> capturingType() {
 			return capturingType;
 		}
 
@@ -206,7 +210,7 @@ public interface FunctionalReference extends Serializable {
 
 			@Override
 			public <T> T visit(Visitor<T> visitor) {
-				return visitor.visitInstance();
+				return visitor.visitInstance(implementationMethod);
 			}
 
 			@Override
@@ -253,7 +257,7 @@ public interface FunctionalReference extends Serializable {
 			@Override
 			public <T> T visit(Visitor<T> visitor) {
 				Object boundInstance = serializedForm.getCapturedArg(0);
-				return visitor.visitBound(boundInstance);
+				return visitor.visitBound(implementationMethod, boundInstance);
 			}
 		}
 
@@ -264,7 +268,7 @@ public interface FunctionalReference extends Serializable {
 
 			@Override
 			public <T> T visit(Visitor<T> visitor) {
-				return visitor.visitStatic();
+				return visitor.visitStatic(implementationMethod);
 			}
 		}
 
@@ -331,7 +335,7 @@ public interface FunctionalReference extends Serializable {
 
 			@Override
 			public <T> T visit(Visitor<T> visitor) {
-				return visitor.visitConstructor();
+				return visitor.visitConstructor(implementationConstructor);
 			}
 
 			@Override
