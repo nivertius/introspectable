@@ -1,10 +1,14 @@
 package org.perfectable.introspection; // SUPPRESS LENGTH
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
+import org.assertj.core.api.iterable.Extractor;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +20,7 @@ import static org.perfectable.introspection.SimpleReflections.getMethod;
 
 // SUPPRESS FILE MultipleStringLiterals
 @SuppressWarnings("ClassCanBeStatic")
-class FunctionalReferenceTest {
+class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
 	private static final String NON_CONSTRUCTOR_REFERENCE_MESSAGE =
 		"Interface implementation is not a constructor reference";
 	private static final String NON_METHOD_REFERENCE_MESSAGE =
@@ -113,6 +117,20 @@ class FunctionalReferenceTest {
 		}
 
 		@Test
+		void parametersZeroGenericType() {
+			assertThat(marker.introspect())
+				.returns(Object.class, introspection -> introspection.parameterGenericType(0));
+		}
+
+		@Test
+		void parametersZeroAnnotated() {
+			assertThat(marker.introspect())
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotated(0))
+					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
+						.isEmpty()));
+		}
+
+		@Test
 		void referencedMethod() {
 			assertThat(marker.introspect())
 				.returns(markerMethod,
@@ -175,6 +193,18 @@ class FunctionalReferenceTest {
 		void parametersZeroType() {
 			assertThat(marker.introspect())
 				.returns(Object.class, introspection -> introspection.parameterType(0));
+		}
+
+		@Test
+		void parametersZeroGenericType() {
+			assertThat(marker.introspect())
+				.returns(Object.class, introspection -> introspection.parameterGenericType(0));
+		}
+
+		@Test
+		void parametersZeroAnnotated() {
+			assertThat(marker.introspect())
+				.returns(Object.class, introspection -> introspection.parameterAnnotated(0));
 		}
 
 		@Test
@@ -244,6 +274,20 @@ class FunctionalReferenceTest {
 		}
 
 		@Test
+		void parametersZeroGenericType() {
+			assertThat(marker.introspect())
+				.returns(StringBuilder.class, introspection -> introspection.parameterGenericType(0));
+		}
+
+		@Test
+		void parametersZeroAnnotated() {
+			assertThat(marker.introspect())
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotated(0))
+					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
+						.isEmpty()));
+		}
+
+		@Test
 		void referencedMethod() {
 			assertThat(marker.introspect())
 				.returns(markerMethod,
@@ -310,9 +354,37 @@ class FunctionalReferenceTest {
 		}
 
 		@Test
+		void parametersZeroGenericType() {
+			assertThat(marker.introspect())
+				.returns(StringBuilder.class, introspection -> introspection.parameterGenericType(0));
+		}
+
+		@Test
+		void parametersZeroAnnotated() {
+			assertThat(marker.introspect())
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotated(0))
+					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
+						.isEmpty()));
+		}
+
+		@Test
 		void parametersOneType() {
 			assertThat(marker.introspect())
 				.returns(StringBuffer.class, introspection -> introspection.parameterType(1));
+		}
+
+		@Test
+		void parametersOneGenericType() {
+			assertThat(marker.introspect())
+				.returns(StringBuffer.class, introspection -> introspection.parameterGenericType(1));
+		}
+
+		@Test
+		void parametersOneAnnotated() {
+			assertThat(marker.introspect())
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotated(1))
+					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
+						.isEmpty()));
 		}
 
 		@Test
@@ -446,6 +518,20 @@ class FunctionalReferenceTest {
 		}
 
 		@Test
+		void parametersZeroGenericType() {
+			assertThat(marker.introspect())
+				.returns(Object.class, introspection -> introspection.parameterGenericType(0));
+		}
+
+		@Test
+		void parametersZeroAnnotated() {
+			assertThat(marker.introspect())
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotated(0))
+					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
+						.isEmpty()));
+		}
+
+		@Test
 		void referencedMethod() {
 			assertThat(marker.introspect())
 				.returns(markerMethod,
@@ -482,14 +568,14 @@ class FunctionalReferenceTest {
 	}
 
 	@Nested
-	class ConstructorReference {
+	class ConstructorReferenceObject {
 		private final TestWithResult marker = Object::new;
 		private final Constructor<?> markerConstructor = getConstructor(Object.class);
 
 		@Test
 		void capturingType() {
 			assertThat(marker.introspect())
-				.returns(ConstructorReference.class,
+				.returns(ConstructorReferenceObject.class,
 					FunctionalReference.Introspection::capturingType);
 		}
 
@@ -504,6 +590,88 @@ class FunctionalReferenceTest {
 		void parametersCount() {
 			assertThat(marker.introspect())
 				.returns(0, FunctionalReference.Introspection::parametersCount);
+		}
+
+		@Test
+		void referencedMethod() {
+			FunctionalReference.Introspection introspect = marker.introspect();
+			assertThatThrownBy(() -> introspect.referencedMethod())
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessage(NON_METHOD_REFERENCE_MESSAGE);
+		}
+
+		@Test
+		void referencedMethodName() {
+			FunctionalReference.Introspection introspect = marker.introspect();
+			assertThatThrownBy(() -> introspect.referencedMethodName())
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessage(NON_METHOD_REFERENCE_MESSAGE);
+		}
+
+		@Test
+		void referencedConstructor() {
+			assertThat(marker.introspect())
+				.returns(markerConstructor,
+					FunctionalReference.Introspection::referencedConstructor);
+		}
+
+		@Test
+		void visit() {
+			FunctionalReference.Introspection introspect = marker.introspect();
+			introspect.visit(new TestVisitor() {
+				@Override
+				public Void visitConstructor() {
+					// pass
+					return null;
+				}
+			});
+		}
+	}
+
+
+	@Nested
+	class ConstructorReferenceString {
+		private final TestWithGenerics<StringBuffer, String> marker = String::new;
+		private final Constructor<?> markerConstructor = getConstructor(String.class, StringBuffer.class);
+
+		@Test
+		void capturingType() {
+			assertThat(marker.introspect())
+				.returns(ConstructorReferenceString.class,
+					FunctionalReference.Introspection::capturingType);
+		}
+
+		@Test
+		void resultType() {
+			assertThat(marker.introspect())
+				.returns(String.class,
+					FunctionalReference.Introspection::resultType);
+		}
+
+		@Test
+		void parametersCount() {
+			assertThat(marker.introspect())
+				.returns(1, FunctionalReference.Introspection::parametersCount);
+		}
+
+		@Test
+		void parametersZeroType() {
+			assertThat(marker.introspect())
+				.returns(StringBuffer.class, introspection -> introspection.parameterType(0));
+		}
+
+		@Test
+		void parametersZeroGenericType() {
+			assertThat(marker.introspect())
+				.returns(StringBuffer.class, introspection -> introspection.parameterGenericType(0));
+		}
+
+		@Test
+		void parametersZeroAnnotated() {
+			assertThat(marker.introspect())
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotated(0))
+					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
+						.isEmpty()));
 		}
 
 		@Test
@@ -564,7 +732,34 @@ class FunctionalReferenceTest {
 		@Test
 		void parametersCount() {
 			assertThat(marker.introspect())
-				.returns(0, FunctionalReference.Introspection::parametersCount);
+				.returns(1, FunctionalReference.Introspection::parametersCount);
+		}
+
+		@Test
+		void parametersZeroType() {
+			assertThat(marker.introspect())
+				.returns(Retention.class, introspection -> introspection.parameterType(0));
+		}
+
+		@Test
+		void parametersZeroGenericType() {
+			assertThat(marker.introspect())
+				.returns(Retention.class, introspection -> introspection.parameterGenericType(0));
+		}
+
+		@Test
+		void parametersZeroAnnotated() {
+			Extractor<Annotation, Class<?>> extractor =
+				(Annotation annotation) -> (Class<?>) annotation.annotationType();
+			assertThat(marker.introspect())
+				.satisfies(introspection -> {
+					assertThat(introspection.parameterAnnotated(0))
+						.satisfies(annotatedElement -> {
+							assertThat(annotatedElement.getAnnotations())
+								.extracting(extractor)
+								.containsExactly(Documented.class, Retention.class, Target.class);
+						});
+				});
 		}
 
 		@Test
@@ -697,6 +892,20 @@ class FunctionalReferenceTest {
 		void parametersZeroType() {
 			assertThat(marker.introspect())
 				.returns(Object.class, introspection -> introspection.parameterType(0));
+		}
+
+		@Test
+		void parametersZeroGenericType() {
+			assertThat(marker.introspect())
+				.returns(Object.class, introspection -> introspection.parameterGenericType(0));
+		}
+
+		@Test
+		void parametersZeroAnnotated() {
+			assertThat(marker.introspect())
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotated(0))
+					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
+						.isEmpty()));
 		}
 
 		@Test

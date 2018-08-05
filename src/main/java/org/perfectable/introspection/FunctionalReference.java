@@ -1,4 +1,4 @@
-package org.perfectable.introspection; // SUPPRESS GodClass
+package org.perfectable.introspection; // SUPPRESS LENGTH // SUPPRESS GodClass
 
 import org.perfectable.introspection.query.ConstructorQuery;
 import org.perfectable.introspection.query.MethodQuery;
@@ -8,10 +8,13 @@ import org.perfectable.introspection.query.TypeFilter;
 import java.io.Serializable;
 import java.lang.invoke.MethodHandleInfo;
 import java.lang.invoke.SerializedLambda;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import javax.annotation.Nullable;
+import java.lang.reflect.Type;
+
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 @SuppressWarnings("serial")
 public interface FunctionalReference extends Serializable {
@@ -60,7 +63,7 @@ public interface FunctionalReference extends Serializable {
 		protected abstract T unexpected();
 	}
 
-	final class Introspection {
+	abstract class Introspection {
 		public static Introspection of(FunctionalReference marker) {
 			Class<? extends FunctionalReference> markerClass = marker.getClass();
 			Method writeReplace = MethodQuery.of(markerClass)
@@ -75,154 +78,83 @@ public interface FunctionalReference extends Serializable {
 			catch (IllegalAccessException | InvocationTargetException e) {
 				throw new AssertionError(e);
 			}
-			return new Introspection(serializedForm, markerClass.getClassLoader());
-		}
-
-		public Class<?> capturingType() {
-			String capturingClass = serializedForm.getCapturingClass();
-			String capturingClassName = formatClassName(capturingClass);
-			return loadClass(capturingClassName);
-		}
-
-		public Class<?> resultType() {
-			if (serializedForm.getImplMethodKind() == MethodHandleInfo.REF_newInvokeSpecial) {
-				return referencedConstructor().getDeclaringClass();
-			}
-			else {
-				return getImplementationMethod().getReturnType();
-			}
-		}
-
-		public int parametersCount() {
-			if (serializedForm.getImplMethodKind() == MethodHandleInfo.REF_newInvokeSpecial) {
-				return referencedConstructor().getParameterCount();
-			}
-			int rawCount = getImplementationMethod().getParameterCount();
-			if (serializedForm.getImplMethodKind() == MethodHandleInfo.REF_invokeVirtual
-				&& serializedForm.getCapturedArgCount() == 0) {
-				return rawCount + 1;
-			}
-			return rawCount;
-
-		}
-
-		public Class<?> parameterType(int number) {
-			if (serializedForm.getImplMethodKind() == MethodHandleInfo.REF_invokeVirtual
-				&& serializedForm.getCapturedArgCount() == 0) {
-				if (number == 0) {
-					return getImplementationClass();
-				}
-				else {
-					return getImplementationMethod().getParameterTypes()[number - 1];
-				}
-			}
-			return getImplementationMethod().getParameterTypes()[number];
-		}
-
-		public String referencedMethodName() throws IllegalStateException {
-			assertMethodReference();
-			return serializedForm.getImplMethodName();
-		}
-
-		public Method referencedMethod() throws IllegalStateException {
-			assertMethodReference();
-			return getImplementationMethod();
-		}
-
-		@SuppressWarnings("ReturnMissingNullable")
-		public Constructor<?> referencedConstructor() {
-			assertConstructorReference();
-			if (implementationConstructor == null) {
-				MethodSignature signature = MethodSignature.read(serializedForm.getInstantiatedMethodType());
-				implementationConstructor = ConstructorQuery.of(getImplementationClass())
-					.parameters(signature.runtimeParameterTypes(classLoader))
-					.asAccessible()
-					.unique();
-			}
-			return implementationConstructor;
-		}
-
-		public <T> T visit(Visitor<T> visitor) {
+			ClassLoader classLoader = markerClass.getClassLoader();
 			switch (serializedForm.getImplMethodKind()) {
 				case MethodHandleInfo.REF_invokeInterface:
 				case MethodHandleInfo.REF_invokeVirtual:
 					switch (serializedForm.getCapturedArgCount()) {
 						case 0:
-							return visitor.visitInstance();
+							return new OfInstanceMethod(serializedForm, classLoader);
 						case 1:
-							Object boundInstance = serializedForm.getCapturedArg(0);
-							return visitor.visitBound(boundInstance);
+							return new OfBoundMethod(serializedForm, classLoader);
 						default:
 							throw new AssertionError("Illegal number of captures for invokevirtual");
 					}
 				case MethodHandleInfo.REF_invokeStatic:
-					return visitor.visitStatic();
+					return new OfStaticMethod(serializedForm, classLoader);
 				case MethodHandleInfo.REF_invokeSpecial:
-					return visitor.visitLambda(captures());
+					return new OfLambda(serializedForm, classLoader);
 				case MethodHandleInfo.REF_newInvokeSpecial:
-					return visitor.visitConstructor();
+					return new OfConstructorReference(serializedForm, classLoader);
 				default:
 					throw new AssertionError("Illegal MethodHandleInfo for lambda");
 			}
 		}
 
-		private final SerializedLambda serializedForm;
-		private final ClassLoader classLoader;
+		public Class<?> capturingType() {
+			return capturingType;
+		}
 
-		@Nullable
-		private Method implementationMethod;
+		public abstract Class<?> resultType();
 
-		@Nullable
-		private Class<?> implementationClass;
+		public abstract int parametersCount();
 
-		@Nullable
-		private Constructor<?> implementationConstructor;
+		public abstract Class<?> parameterType(int number);
 
-		private Introspection(SerializedLambda serializedForm, ClassLoader classLoader) {
-			this.classLoader = classLoader;
+		public abstract Type parameterGenericType(int number);
+
+		public abstract AnnotatedElement parameterAnnotated(int number);
+
+		@CanIgnoreReturnValue
+		public abstract <T> T visit(Visitor<T> visitor);
+
+		public abstract String referencedMethodName() throws IllegalStateException;
+
+		public abstract Method referencedMethod() throws IllegalStateException;
+
+		protected Constructor<?> referencedConstructor() {
+			throw new IllegalStateException("Interface implementation is not a constructor reference");
+		}
+
+		protected final SerializedLambda serializedForm;
+		protected final Class<?> implementationClass;
+		protected final Class<?> capturingType;
+
+		Introspection(SerializedLambda serializedForm, ClassLoader classLoader) {
 			this.serializedForm = serializedForm;
+			String declaringTypeName = formatClassName(serializedForm.getImplClass());
+			String capturingClassName = formatClassName(serializedForm.getCapturingClass());
+			this.capturingType = ClassLoaderIntrospection.of(classLoader).loadSafe(capturingClassName);
+			this.implementationClass = ClassLoaderIntrospection.of(classLoader).loadSafe(declaringTypeName);
 		}
 
 		private static String formatClassName(String capturingClass) {
 			return capturingClass.replaceAll("/", ".");
 		}
 
-		private Class<?> loadClass(String className) {
-			return ClassLoaderIntrospection.of(classLoader)
-				.loadSafe(className);
-		}
-
-		private void assertMethodReference() {
-			int implMethodKind = serializedForm.getImplMethodKind();
-			if (implMethodKind != MethodHandleInfo.REF_invokeVirtual
-				&& implMethodKind != MethodHandleInfo.REF_invokeStatic
-				&& implMethodKind != MethodHandleInfo.REF_invokeInterface) {
-				throw new IllegalStateException("Interface implementation is not a method reference");
-			}
-		}
-
-		private void assertConstructorReference() {
-			int implMethodKind = serializedForm.getImplMethodKind();
-			if (implMethodKind != MethodHandleInfo.REF_newInvokeSpecial) {
-				throw new IllegalStateException("Interface implementation is not a constructor reference");
-			}
-		}
-
-		@SuppressWarnings("ReturnMissingNullable")
-		private Class<?> getImplementationClass() {
-			if (implementationClass == null) {
-				String declaringTypeName = formatClassName(serializedForm.getImplClass());
-				implementationClass = loadClass(declaringTypeName);
-			}
+		protected Class<?> getImplementationClass() {
 			return implementationClass;
 		}
 
-		@SuppressWarnings("ReturnMissingNullable")
-		private Method getImplementationMethod() {
-			if (implementationMethod == null) {
+
+		private abstract static class OfMethod extends Introspection {
+			protected final Method implementationMethod;
+
+			OfMethod(SerializedLambda serializedForm, ClassLoader classLoader) {
+				super(serializedForm, classLoader);
 				String methodName = serializedForm.getImplMethodName();
 				MethodSignature signature = MethodSignature.read(serializedForm.getImplMethodSignature());
-				implementationMethod = MethodQuery.of(getImplementationClass())
+				implementationMethod = MethodQuery.of(implementationClass)
 					.named(methodName)
 					.parameters(ParametersFilter.typesExact(signature.runtimeParameterTypes(classLoader)))
 					.returning(TypeFilter.exact(signature.runtimeResultType(classLoader)))
@@ -230,17 +162,203 @@ public interface FunctionalReference extends Serializable {
 					.asAccessible()
 					.unique();
 			}
-			return implementationMethod;
-		}
 
-		private Object[] captures() {
-			Object[] result = new Object[serializedForm.getCapturedArgCount()];
-			for (int i = 0; i < result.length; i++) {
-				Object capturedArg = serializedForm.getCapturedArg(i);
-				result[i] = capturedArg;
+			@Override
+			public int parametersCount() {
+				return implementationMethod.getParameterCount();
 			}
-			return result;
+
+			@Override
+			public Class<?> parameterType(int number) {
+				return implementationMethod.getParameterTypes()[number];
+			}
+
+			@Override
+			public Type parameterGenericType(int number) {
+				return implementationMethod.getGenericParameterTypes()[number];
+			}
+
+			@Override
+			public AnnotatedElement parameterAnnotated(int number) {
+				return implementationMethod.getParameters()[number];
+			}
+
+			@Override
+			public String referencedMethodName() throws IllegalStateException {
+				return serializedForm.getImplMethodName();
+			}
+
+			@Override
+			public Method referencedMethod() throws IllegalStateException {
+				return implementationMethod;
+			}
+
+			@Override
+			public final Class<?> resultType() {
+				return implementationMethod.getReturnType();
+			}
 		}
 
+		private static final class OfInstanceMethod extends OfMethod {
+			OfInstanceMethod(SerializedLambda serializedForm, ClassLoader classLoader) {
+				super(serializedForm, classLoader);
+			}
+
+			@Override
+			public <T> T visit(Visitor<T> visitor) {
+				return visitor.visitInstance();
+			}
+
+			@Override
+			public int parametersCount() {
+				return implementationMethod.getParameterCount() + 1;
+			}
+
+			@Override
+			public Class<?> parameterType(int number) {
+				if (number == 0) {
+					return implementationClass;
+				}
+				else {
+					return implementationMethod.getParameterTypes()[number - 1];
+				}
+			}
+
+			@Override
+			public Type parameterGenericType(int number) {
+				if (number == 0) {
+					return implementationClass;
+				}
+				else {
+					return implementationMethod.getGenericParameterTypes()[number - 1];
+				}
+			}
+
+			@Override
+			public AnnotatedElement parameterAnnotated(int number) {
+				if (number == 0) {
+					return implementationClass;
+				}
+				else {
+					return implementationMethod.getParameters()[number - 1];
+				}
+			}
+		}
+
+		private static final class OfBoundMethod extends OfMethod {
+			OfBoundMethod(SerializedLambda serializedForm, ClassLoader classLoader) {
+				super(serializedForm, classLoader);
+			}
+
+			@Override
+			public <T> T visit(Visitor<T> visitor) {
+				Object boundInstance = serializedForm.getCapturedArg(0);
+				return visitor.visitBound(boundInstance);
+			}
+		}
+
+		private static final class OfStaticMethod extends OfMethod {
+			OfStaticMethod(SerializedLambda serializedForm, ClassLoader classLoader) {
+				super(serializedForm, classLoader);
+			}
+
+			@Override
+			public <T> T visit(Visitor<T> visitor) {
+				return visitor.visitStatic();
+			}
+		}
+
+		private static final class OfLambda extends OfMethod {
+			private final Object[] captures;
+
+			OfLambda(SerializedLambda serializedForm, ClassLoader classLoader) {
+				super(serializedForm, classLoader);
+				Object[] result = new Object[this.serializedForm.getCapturedArgCount()];
+				for (int i = 0; i < result.length; i++) {
+					Object capturedArg = this.serializedForm.getCapturedArg(i);
+					result[i] = capturedArg;
+				}
+				this.captures = result;
+			}
+
+			@Override
+			public <T> T visit(Visitor<T> visitor) {
+				return visitor.visitLambda(captures);
+			}
+
+			// SUPPRESS MultipleStringLiterals
+			@Override
+			public Method referencedMethod() throws IllegalStateException {
+				throw new IllegalStateException(
+					"Interface implementation is not a method reference"); // SUPPRESS MultipleStringLiterals
+			}
+
+			@Override
+			public String referencedMethodName() throws IllegalStateException {
+				throw new IllegalStateException(
+					"Interface implementation is not a method reference"); // SUPPRESS MultipleStringLiterals
+			}
+		}
+
+		private static final class OfConstructorReference extends Introspection {
+			private final Constructor<?> implementationConstructor;
+
+			OfConstructorReference(SerializedLambda serializedForm, ClassLoader classLoader) {
+				super(serializedForm, classLoader);
+				MethodSignature signature = MethodSignature.read(this.serializedForm.getInstantiatedMethodType());
+				implementationConstructor = ConstructorQuery.of(getImplementationClass())
+					.parameters(signature.runtimeParameterTypes(classLoader))
+					.asAccessible()
+					.unique();
+			}
+
+			@Override
+			public Method referencedMethod() throws IllegalStateException {
+				throw new IllegalStateException(
+					"Interface implementation is not a method reference"); // SUPPRESS MultipleStringLiterals
+			}
+
+			@Override
+			public String referencedMethodName() throws IllegalStateException {
+				throw new IllegalStateException(
+					"Interface implementation is not a method reference"); // SUPPRESS MultipleStringLiterals
+			}
+
+			@Override
+			protected Constructor<?> referencedConstructor() {
+				return implementationConstructor;
+			}
+
+			@Override
+			public <T> T visit(Visitor<T> visitor) {
+				return visitor.visitConstructor();
+			}
+
+			@Override
+			public Class<?> resultType() {
+				return implementationConstructor.getDeclaringClass();
+			}
+
+			@Override
+			public int parametersCount() {
+				return implementationConstructor.getParameterCount();
+			}
+
+			@Override
+			public Class<?> parameterType(int number) {
+				return implementationConstructor.getParameterTypes()[number];
+			}
+
+			@Override
+			public Type parameterGenericType(int number) {
+				return implementationConstructor.getGenericParameterTypes()[number];
+			}
+
+			@Override
+			public AnnotatedElement parameterAnnotated(int number) {
+				return implementationConstructor.getParameters()[number];
+			}
+		}
 	}
+
 }
