@@ -159,10 +159,6 @@ public abstract class AnnotationQuery<A extends Annotation>
 		public boolean contains(Object candidate) {
 			return false;
 		}
-
-		private Empty() {
-			// singleton
-		}
 	}
 
 	private static final class Composite<A extends Annotation> extends AnnotationQuery<A> {

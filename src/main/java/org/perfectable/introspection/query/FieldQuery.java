@@ -259,10 +259,6 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		public boolean contains(Object candidate) {
 			return false;
 		}
-
-		private Empty() {
-			// singleton
-		}
 	}
 
 	private static final class Composite extends FieldQuery {

@@ -404,10 +404,6 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		private static final Splitter CLASSPATH_SPLITTER = Splitter.on(':');
 		private static final String ENTRY_URL_PREFIX = "file://";
 
-		private GlobalResourceSource() {
-			// singleton
-		}
-
 		@Override
 		protected void generateUrls(Consumer<URL> urlAction) {
 			String classPathString = System.getProperty("java.class.path");
