@@ -151,7 +151,7 @@ class ParametersFilterTest {
 
 	@Test
 	void matchingArguments() {
-		ParametersFilter filter = ParametersFilter.matchingArguments(null, 0); // SUPPRESS MagicNumber
+		ParametersFilter filter = ParametersFilter.matchingArguments(null, 0);
 
 		assertThat(filter)
 			.doesntMatchMethod(SubjectReflection.NO_RESULT_NO_ARGUMENT)

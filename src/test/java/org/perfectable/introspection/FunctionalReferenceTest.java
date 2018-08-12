@@ -20,7 +20,7 @@ import static org.perfectable.introspection.SimpleReflections.getMethod;
 
 // SUPPRESS FILE MultipleStringLiterals
 @SuppressWarnings("ClassCanBeStatic")
-class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength
+class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 	private static final String NON_CONSTRUCTOR_REFERENCE_MESSAGE =
 		"Interface implementation is not a constructor reference";
 	private static final String NON_METHOD_REFERENCE_MESSAGE =

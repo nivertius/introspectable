@@ -111,7 +111,7 @@ final class Properties {
 				this.field.set(bean, value);
 			}
 			catch (IllegalArgumentException | IllegalAccessException e) {
-				throw new RuntimeException(e); // SUPPRESS no better exception here
+				throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
 			}
 		}
 
@@ -125,7 +125,7 @@ final class Properties {
 				return (PT) this.field.get(bean);
 			}
 			catch (IllegalArgumentException | IllegalAccessException e) {
-				throw new RuntimeException(e); // SUPPRESS no better exception here
+				throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
 			}
 		}
 
@@ -181,7 +181,7 @@ final class Properties {
 				return (PT) this.getter.invoke(bean);
 			}
 			catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException(e); // SUPPRESS no better exception here
+				throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
 			}
 		}
 
@@ -246,7 +246,7 @@ final class Properties {
 				this.setter.invoke(bean, value);
 			}
 			catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException(e); // SUPPRESS no better exception here
+				throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
 			}
 		}
 
@@ -305,7 +305,7 @@ final class Properties {
 				return (PT) this.getter.invoke(bean);
 			}
 			catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException(e); // SUPPRESS no better exception here
+				throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
 			}
 		}
 
@@ -315,7 +315,7 @@ final class Properties {
 				this.setter.invoke(bean, value);
 			}
 			catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException(e); // SUPPRESS no better exception here
+				throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
 			}
 		}
 

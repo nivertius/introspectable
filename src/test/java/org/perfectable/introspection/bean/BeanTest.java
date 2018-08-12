@@ -68,7 +68,7 @@ class BeanTest {
 	}
 
 	static class SingleFieldSubject {
-		static final String PROPERTY_ONE_NAME = "one"; // SUPPRESS AvoidDuplicateLiterals
+		static final String PROPERTY_ONE_NAME = "one";
 
 		private static String staticField; // SUPPRESS UnusedPrivateField
 
@@ -102,7 +102,7 @@ class BeanTest {
 	}
 
 	static class SingleGetterSubject {
-		static final String PROPERTY_ONE_NAME = "one"; // SUPPRESS AvoidDuplicateLiterals
+		static final String PROPERTY_ONE_NAME = "one";
 
 		static final String VALUE_ONE = "oneTest";
 
@@ -138,7 +138,7 @@ class BeanTest {
 	}
 
 	static class SingleSetterSubject {
-		static final String PROPERTY_ONE_NAME = "one"; // SUPPRESS AvoidDuplicateLiterals
+		static final String PROPERTY_ONE_NAME = "one";
 
 		void setOne(String value) {
 			throw new AssertionError(MESSAGE_METHOD_CALLED);

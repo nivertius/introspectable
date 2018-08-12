@@ -42,7 +42,8 @@ public final class MethodInvocation<T> implements Invocation<T> {
 		return new MethodInvocation<>(method, receiver, arguments);
 	}
 
-	private MethodInvocation(Method method, @Nullable T receiver, Object... arguments) {
+	private MethodInvocation(Method method, @Nullable T receiver,
+							 Object... arguments) { // SUPPRESS ArrayIsStoredDirectly
 		this.method = method;
 		this.receiver = receiver;
 		this.arguments = arguments;

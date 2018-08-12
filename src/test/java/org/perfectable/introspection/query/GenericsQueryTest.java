@@ -12,8 +12,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.perfectable.introspection.SimpleReflections.getField;
 import static org.perfectable.introspection.SimpleReflections.getMethod;
 
-@SuppressWarnings("ClassCanBeStatic") // SUPPRESS SuppressWarnings
-class GenericsQueryTest { // SUPPRESS TestClassWithoutTestCases nested tests only
+@SuppressWarnings("ClassCanBeStatic")
+class GenericsQueryTest {
 
 	@Nested
 	class OfClassTest {

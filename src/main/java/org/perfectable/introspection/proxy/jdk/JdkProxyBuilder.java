@@ -52,8 +52,8 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		@Nullable
 		@Override
 		public Object invoke(@Nullable Object proxy, Method method,
-							 @Nullable Object[] args) // SUPPRESS declaration uses array not varargs
-				throws Throwable { // SUPPRESS throwable is actually thrown here
+							 @Nullable Object[] args)
+				throws Throwable {
 			requireNonNull(method);
 			if (method.equals(ObjectMethods.FINALIZE)) {
 				return null; // ignore proxy finalization

@@ -27,7 +27,7 @@ public abstract class AbstractProxyBuilderFactory implements ProxyBuilderFactory
 		checkArgument(interfaces.length > 0);
 		Stream.of(interfaces).forEach(AbstractProxyBuilderFactory::checkProxyableInterface);
 		ClassLoader classLoader =
-				interfaces[0].getClassLoader(); // SUPPRESS we actually want first interface classloader here
+				interfaces[0].getClassLoader();
 		checkClassloader(classLoader, interfaces);
 		return ofInterfacesSafe(classLoader, interfaces);
 	}

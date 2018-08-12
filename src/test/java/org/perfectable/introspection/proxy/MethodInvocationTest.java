@@ -30,7 +30,7 @@ class MethodInvocationTest {
 	void testNegativeCallabilityNonStaticNullReceiver() throws Throwable {
 		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD, null))
 			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessage("Method " + NoArguments.METHOD // SUPPRESS AvoidDuplicateLiterals
+			.hasMessage("Method " + NoArguments.METHOD
 				+ " is not static, got null as receiver");
 	}
 
@@ -39,7 +39,7 @@ class MethodInvocationTest {
 		VariableArguments instance = new VariableArguments();
 		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD, instance))
 			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessage("Method " + NoArguments.METHOD // SUPPRESS AvoidDuplicateLiterals
+			.hasMessage("Method " + NoArguments.METHOD
 				+ " requires " + NoArguments.class + " as receiver, got " + instance);
 	}
 
@@ -48,7 +48,7 @@ class MethodInvocationTest {
 		NoArguments instance = new NoArguments();
 		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD, instance, 1))
 			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessage("Method " + NoArguments.METHOD // SUPPRESS AvoidDuplicateLiterals
+			.hasMessage("Method " + NoArguments.METHOD
 				+ " requires 0 arguments, got 1");
 	}
 
@@ -57,7 +57,7 @@ class MethodInvocationTest {
 		VariableArguments instance = new VariableArguments();
 		assertThatThrownBy(() -> MethodInvocation.of(VariableArguments.METHOD, instance))
 			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessage("Method " + VariableArguments.METHOD // SUPPRESS AvoidDuplicateLiterals
+			.hasMessage("Method " + VariableArguments.METHOD
 				+ " requires at least 1 arguments, got 0");
 	}
 
@@ -67,7 +67,7 @@ class MethodInvocationTest {
 		VariablePrimitiveArguments instance = new VariablePrimitiveArguments();
 		assertThatThrownBy(() -> MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance, firstArgument, null))
 			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessage("Method " + VariablePrimitiveArguments.METHOD // SUPPRESS AvoidDuplicateLiterals
+			.hasMessage("Method " + VariablePrimitiveArguments.METHOD
 				+ " has primitive int as parameter 2, got null argument");
 	}
 
@@ -263,7 +263,7 @@ class MethodInvocationTest {
 		private String first;
 		private String[] variable;
 
-		void executeVariable(String actualFirst, String... actualVariable) {
+		void executeVariable(String actualFirst, String... actualVariable) { // SUPPRESS ArrayIsStoredDirectly
 			assertThat(executed).isFalse();
 			executed = true;
 			first = actualFirst;
@@ -287,7 +287,7 @@ class MethodInvocationTest {
 		private String first;
 		private int[] variable;
 
-		void executePrimitive(String actualFirst, int... actualVariable) {
+		void executePrimitive(String actualFirst, int... actualVariable) { // SUPPRESS ArrayIsStoredDirectly
 			assertThat(executed).isFalse();
 			executed = true;
 			first = actualFirst;

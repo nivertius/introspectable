@@ -49,8 +49,8 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 		@Nullable
 		@Override
 		public Object invoke(@Nullable Object self, Method thisMethod, Method proceed,
-							 @Nullable Object[] args) // SUPPRESS
-				throws Throwable { // SUPPRESS IllegalThrows throwable is actually thrown here
+							 @Nullable Object[] args)
+				throws Throwable {
 			requireNonNull(thisMethod);
 			if (thisMethod.equals(ObjectMethods.FINALIZE)) {
 				return null; // ignore proxy finalization

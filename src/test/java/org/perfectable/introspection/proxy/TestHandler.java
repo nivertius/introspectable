@@ -179,7 +179,8 @@ public class TestHandler<T> implements InvocationHandler<T> {
 		private final Object receiver;
 		private final Object[] arguments;
 
-		ResultInvocation(InvocationResult result, Method method, Object receiver, Object... arguments) {
+		ResultInvocation(InvocationResult result, Method method, Object receiver,
+						 Object... arguments) { // SUPPRESS ArrayIsStoredDirectly
 			this.result = result;
 			this.method = method;
 			this.receiver = receiver;

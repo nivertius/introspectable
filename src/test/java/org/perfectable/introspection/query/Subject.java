@@ -22,10 +22,10 @@ public class Subject {
 
 	}
 
-	private String stringField; // SUPPRESS used for testing
+	private String stringField;
 
 	@Nullable
-	private Object objectField; // SUPPRESS used for testing
+	private Object objectField;
 
 	protected final Number protectedNumberField = 191; // SUPPRESS used for testing
 
@@ -37,16 +37,16 @@ public class Subject {
 		throw new AssertionError(MESSAGE_CONSTRUCTOR_CALLED);
 	}
 
-	public Subject(String argument1) { // SUPPRESS UnusedFormalParameter used for testing
+	public Subject(String argument1) {
 		throw new AssertionError(MESSAGE_CONSTRUCTOR_CALLED);
 	}
 
 	@Special
-	public Subject(Number argument1) { // SUPPRESS UnusedFormalParameter used for testing
+	public Subject(Number argument1) {
 		throw new AssertionError(MESSAGE_CONSTRUCTOR_CALLED);
 	}
 
-	protected Subject(Object argument1, Object argument2) { // SUPPRESS UnusedFormalParameter used for testing
+	protected Subject(Object argument1, Object argument2) {
 		throw new AssertionError(MESSAGE_CONSTRUCTOR_CALLED);
 	}
 
@@ -130,7 +130,7 @@ public class Subject {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);
 	}
 	
-	@SuppressWarnings("unused") // SUPPRESS InterfaceIsType:
+	@SuppressWarnings("unused") // SUPPRESS InterfaceIsType
 	public interface NestedInterface {
 		String STATIC_FIELD = "staticFieldValue"; // SUPPRESS ConstantInIntarface
 	}

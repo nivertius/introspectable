@@ -388,7 +388,7 @@ final class MethodSignature {
 		static final PrimitiveType FLOAT = new PrimitiveType(float.class);
 		static final PrimitiveType INT = new PrimitiveType(int.class);
 		static final PrimitiveType LONG = new PrimitiveType(long.class);
-		static final PrimitiveType SHORT = new PrimitiveType(short.class); // SUPPRESS AvoidUsingShortType
+		static final PrimitiveType SHORT = new PrimitiveType(short.class);
 		static final PrimitiveType BOOLEAN = new PrimitiveType(boolean.class);
 
 		private final Class<?> type;

@@ -153,7 +153,7 @@ final class AbstractQueryAssert<ELEMENT, MAPPED>
 
 	@SafeVarargs
 	private final void checkContains(MAPPED... elements) {
-		if (elements.length > 2) { // SUPPRESS javadoc AvoidLiteralsInIfCondition
+		if (elements.length > 2) { // SUPPRESS AvoidLiteralsInIfCondition
 			checkUniqueThrows(IllegalArgumentException.class);
 		}
 		for (MAPPED element : elements) {

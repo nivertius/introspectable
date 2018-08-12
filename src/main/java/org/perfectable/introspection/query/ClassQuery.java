@@ -215,7 +215,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			this.filteredPackageName = filteredPackageName;
 		}
 
-		@Override // SUPPRESS Unit4TestShouldUseTestAnnotation
+		@Override
 		public boolean test(String className) {
 			return className.startsWith(filteredPackageName);
 		}
@@ -232,7 +232,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			this.annotationFilter = annotationFilter;
 		}
 
-		@Override // SUPPRESS Unit4TestShouldUseTestAnnotation
+		@Override
 		public boolean test(CtClass preloadedClass) {
 			return annotationFilter.matches(CtClassAnnotatedElementAdapter.adapt(preloadedClass));
 		}
@@ -250,7 +250,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			this.supertype = supertype;
 		}
 
-		@Override // SUPPRESS Unit4TestShouldUseTestAnnotation
+		@Override
 		public boolean test(CtClass ctClass) {
 			return ctClass.getName().equals(supertype.getName())
 				|| testSuperclass(ctClass)

@@ -72,7 +72,7 @@ public final class ClassIntrospection<X> {
 			return defaultConstructor().newInstance();
 		}
 		catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException(e); // SUPPRESS no better exception here
+			throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
 		}
 	}
 
@@ -92,7 +92,7 @@ public final class ClassIntrospection<X> {
 			return constructor;
 		}
 		catch (NoSuchMethodException e) {
-			throw new RuntimeException(e); // SUPPRESS no better exception here
+			throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
 		}
 	}
 }
