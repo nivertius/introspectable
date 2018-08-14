@@ -1,7 +1,6 @@
 package org.perfectable.introspection.proxy.jdk;
 
 import org.perfectable.introspection.ObjectMethods;
-import org.perfectable.introspection.proxy.Invocation;
 import org.perfectable.introspection.proxy.InvocationHandler;
 import org.perfectable.introspection.proxy.MethodInvocation;
 import org.perfectable.introspection.proxy.ProxyBuilder;
@@ -26,8 +25,8 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 	}
 
 	@Override
-	public I instantiate(InvocationHandler<I> handler) {
-		JdkInvocationHandlerAdapter<I> adapterHandler = JdkInvocationHandlerAdapter.adapt(handler);
+	public I instantiate(InvocationHandler<? super MethodInvocation<I>> handler) {
+		java.lang.reflect.InvocationHandler adapterHandler = JdkInvocationHandlerAdapter.adapt(handler);
 		try {
 			@SuppressWarnings("unchecked")
 			I instance = (I) Proxy.newProxyInstance(classLoader, interfaces, adapterHandler);
@@ -38,14 +37,14 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 		}
 	}
 
-	private static final class JdkInvocationHandlerAdapter<I> implements java.lang.reflect.InvocationHandler {
-		private final InvocationHandler<I> handler;
+	private static final class JdkInvocationHandlerAdapter<T> implements java.lang.reflect.InvocationHandler {
+		private final InvocationHandler<? super MethodInvocation<T>> handler;
 
-		static <I> JdkInvocationHandlerAdapter<I> adapt(InvocationHandler<I> handler) {
+		static <T> JdkInvocationHandlerAdapter<T> adapt(InvocationHandler<? super MethodInvocation<T>> handler) {
 			return new JdkInvocationHandlerAdapter<>(handler);
 		}
 
-		private JdkInvocationHandlerAdapter(InvocationHandler<I> handler) {
+		private JdkInvocationHandlerAdapter(InvocationHandler<? super MethodInvocation<T>> handler) {
 			this.handler = handler;
 		}
 
@@ -59,9 +58,9 @@ final class JdkProxyBuilder<I> implements ProxyBuilder<I> {
 				return null; // ignore proxy finalization
 			}
 			@SuppressWarnings("unchecked")
-			I castedProxy = (I) proxy;
+			T castedProxy = (T) proxy;
 			@SuppressWarnings("unchecked")
-			Invocation<I> invocation = MethodInvocation.intercepted(method, castedProxy, args);
+			MethodInvocation<T> invocation = MethodInvocation.intercepted(method, castedProxy, args);
 			return this.handler.handle(invocation);
 		}
 

@@ -1,24 +1,47 @@
 package org.perfectable.introspection.proxy;
 
-import java.lang.reflect.Method;
 import javax.annotation.Nullable;
 
-public interface Invocation<T> {
+public interface Invocation {
+
 	@Nullable
 	Object invoke() throws Throwable; // SUPPRESS IllegalThrows
 
-	@FunctionalInterface
-	interface Decomposer<T, R> {
-		R decompose(Method method, @Nullable T receiver, Object... arguments);
+	static Invocation returning(Object value) {
+		return new Returning(value);
 	}
 
-	<R> R decompose(Decomposer<? super T, R> decomposer);
-
-	default Invocation<T> wrapInto(InvocationHandler<T> inner) {
-		return HandledInvocation.of(this, inner);
+	static Invocation throwing(Throwable thrown) {
+		return new Throwing(thrown);
 	}
 
-	default <X extends T> Invocation<X> withReceiver(X newReceiver) {
-		return ReplacedReceiverInvocation.of(this, newReceiver);
+	class Returning implements Invocation {
+		@Nullable
+		private final Object value;
+
+		Returning(@Nullable Object value) {
+			this.value = value;
+		}
+
+		@Nullable
+		@Override
+		public Object invoke() {
+			return value;
+		}
 	}
+
+	class Throwing implements Invocation {
+		private final Throwable thrown;
+
+		Throwing(Throwable thrown) {
+			this.thrown = thrown;
+		}
+
+		@Nullable
+		@Override
+		public Object invoke() throws Throwable {
+			throw thrown;
+		}
+	}
+
 }

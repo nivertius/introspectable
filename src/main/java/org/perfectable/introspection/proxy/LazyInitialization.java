@@ -26,7 +26,7 @@ public final class LazyInitialization {
 		return PROXY_BUILDER_FACTORY.ofType(resultClass, Proxy.class).instantiate(handler);
 	}
 
-	private static final class LazyInitializationHandler<T> implements InvocationHandler<T> {
+	private static final class LazyInitializationHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 		private static final Method EXTRACT_INSTANCE_METHOD =
 				introspect(Proxy.class).methods().named("extractInstance").parameters().unique();
 
@@ -45,15 +45,15 @@ public final class LazyInitialization {
 
 		@Nullable
 		@Override
-		public Object handle(Invocation<T> invocation) throws Throwable {
+		public Object handle(MethodInvocation<T> invocation) throws Throwable {
 			return invocation.decompose(this::replaceInvocation).invoke();
 		}
 
-		private Invocation<T> replaceInvocation(Method method,
+		private Invocation replaceInvocation(Method method,
 				@SuppressWarnings("unused") @Nullable T receiver, // SUPPRESS AnnotationLocation
 				Object... arguments) {
 			if (EXTRACT_INSTANCE_METHOD.equals(method)) {
-				return new ExtractInstanceInvocation();
+				return () -> Optional.ofNullable(instance);
 			}
 			if (this.instance == null) {
 				this.instance = this.initializer.initialize();
@@ -62,19 +62,6 @@ public final class LazyInitialization {
 				throw new AssertionError("Method extracted is of incompatible class");
 			}
 			return MethodInvocation.of(method, this.instance, arguments);
-		}
-
-		private class ExtractInstanceInvocation implements Invocation<T> {
-			@Nullable
-			@Override
-			public Object invoke() throws Throwable {
-				return Optional.ofNullable(instance);
-			}
-
-			@Override
-			public <R> R decompose(Decomposer<? super T, R> decomposer) {
-				return decomposer.decompose(EXTRACT_INSTANCE_METHOD, instance);
-			}
 		}
 	}
 

@@ -16,7 +16,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
 
-public final class MethodInvocation<T> implements Invocation<T> {
+public final class MethodInvocation<T> implements Invocation {
 	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
 
 	private final Method method;
@@ -58,13 +58,16 @@ public final class MethodInvocation<T> implements Invocation<T> {
 		return handle.invoke();
 	}
 
-	@Override
+	@FunctionalInterface
+	public interface Decomposer<T, R> {
+		R decompose(Method method, @Nullable T receiver, Object... arguments);
+	}
+
 	public <R> R decompose(Decomposer<? super T, R> decomposer) {
 		return decomposer.decompose(method, receiver, arguments);
 	}
 
-	@Override
-	public <X extends T> Invocation<X> withReceiver(X newReceiver) {
+	public <X extends T> MethodInvocation<X> withReceiver(X newReceiver) {
 		return of(method, newReceiver, arguments);
 	}
 

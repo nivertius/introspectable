@@ -1,7 +1,7 @@
 package org.perfectable.introspection;
 
-import org.perfectable.introspection.proxy.Invocation;
 import org.perfectable.introspection.proxy.InvocationHandler;
+import org.perfectable.introspection.proxy.MethodInvocation;
 import org.perfectable.introspection.proxy.ProxyBuilderFactory;
 
 import java.lang.annotation.Annotation;
@@ -72,7 +72,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 		.named("annotationType")
 		.unique();
 
-	private final class AnnotationInvocationHandler implements InvocationHandler<A> {
+	private final class AnnotationInvocationHandler implements InvocationHandler<MethodInvocation<A>> {
 		private static final int UNCALCULATED_HASH_CODE = -1;
 		private static final int MEMBER_NAME_HASH_MULTIPLIER = 127;
 		private int cachedHashCode = UNCALCULATED_HASH_CODE;
@@ -81,7 +81,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 
 		@Nullable
 		@Override
-		public Object handle(Invocation<A> invocation) {
+		public Object handle(MethodInvocation<A> invocation) {
 			return invocation.decompose(this::calculateMethodResult);
 		}
 
@@ -121,7 +121,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 			return true;
 		}
 
-		int calculateHash() {
+		private int calculateHash() {
 			if (cachedHashCode == UNCALCULATED_HASH_CODE) {
 				int current = 0;
 				for (Method method : annotationType.getDeclaredMethods()) {

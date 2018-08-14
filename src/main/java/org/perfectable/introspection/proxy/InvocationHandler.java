@@ -3,13 +3,9 @@ package org.perfectable.introspection.proxy;
 import javax.annotation.Nullable;
 
 @FunctionalInterface
-public interface InvocationHandler<T> {
+public interface InvocationHandler<I extends Invocation> {
 
 	// SUPPRESS NEXT 2 IllegalThrows generic exception is actually thrown
 	@Nullable
-	Object handle(Invocation<T> invocation) throws Throwable;
-
-	default InvocationHandler<T> andThen(InvocationHandler<T> other) {
-		return CompositeInvocationHandler.of(this, other);
-	}
+	Object handle(I invocation) throws Throwable;
 }

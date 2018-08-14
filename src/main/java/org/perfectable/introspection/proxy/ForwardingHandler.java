@@ -2,7 +2,7 @@ package org.perfectable.introspection.proxy;
 
 import javax.annotation.Nullable;
 
-public final class ForwardingHandler<T> implements InvocationHandler<T> {
+public final class ForwardingHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 
 	private T target;
 
@@ -20,7 +20,7 @@ public final class ForwardingHandler<T> implements InvocationHandler<T> {
 
 	@Nullable
 	@Override
-	public Object handle(Invocation<T> invocation) throws Throwable {
+	public Object handle(MethodInvocation<T> invocation) throws Throwable {
 		return invocation.withReceiver(target).invoke();
 	}
 

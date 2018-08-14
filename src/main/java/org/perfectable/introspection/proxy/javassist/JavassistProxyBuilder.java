@@ -1,7 +1,6 @@
 package org.perfectable.introspection.proxy.javassist;
 
 import org.perfectable.introspection.ObjectMethods;
-import org.perfectable.introspection.proxy.Invocation;
 import org.perfectable.introspection.proxy.InvocationHandler;
 import org.perfectable.introspection.proxy.MethodInvocation;
 import org.perfectable.introspection.proxy.ProxyBuilder;
@@ -28,21 +27,21 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 	}
 
 	@Override
-	public I instantiate(InvocationHandler<I> handler) {
+	public I instantiate(InvocationHandler<? super MethodInvocation<I>> handler) {
 		MethodHandler handlerAdapter = JavassistInvocationHandlerAdapter.adapt(handler);
 		I proxy = this.instantiator.newInstance();
 		((Proxy) proxy).setHandler(handlerAdapter);
 		return proxy;
 	}
 
-	private static final class JavassistInvocationHandlerAdapter<I> implements MethodHandler {
-		private final InvocationHandler<I> handler;
+	private static final class JavassistInvocationHandlerAdapter<T> implements MethodHandler {
+		private final InvocationHandler<? super MethodInvocation<T>> handler;
 
-		static <I> JavassistInvocationHandlerAdapter<I> adapt(InvocationHandler<I> handler) {
+		static <X> JavassistInvocationHandlerAdapter<X> adapt(InvocationHandler<? super MethodInvocation<X>> handler) {
 			return new JavassistInvocationHandlerAdapter<>(handler);
 		}
 
-		private JavassistInvocationHandlerAdapter(InvocationHandler<I> handler) {
+		private JavassistInvocationHandlerAdapter(InvocationHandler<? super MethodInvocation<T>> handler) {
 			this.handler = handler;
 		}
 
@@ -56,9 +55,9 @@ final class JavassistProxyBuilder<I> implements ProxyBuilder<I> {
 				return null; // ignore proxy finalization
 			}
 			@SuppressWarnings("unchecked")
-			I castedSelf = (I) self;
+			T castedSelf = (T) self;
 			@SuppressWarnings("unchecked")
-			Invocation<I> invocation = MethodInvocation.intercepted(thisMethod, castedSelf, args);
+			MethodInvocation<T> invocation = MethodInvocation.intercepted(thisMethod, castedSelf, args);
 			return this.handler.handle(invocation);
 		}
 	}

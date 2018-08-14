@@ -100,7 +100,7 @@ class MethodInvocationTest {
 		NoArguments instance = new NoArguments();
 		NoArguments replaced = new NoArguments();
 
-		Invocation<NoArguments> invocation =
+		MethodInvocation<NoArguments> invocation =
 			MethodInvocation.of(NoArguments.METHOD, instance).withReceiver(replaced);
 
 		Object result = invocation.invoke();
@@ -185,26 +185,6 @@ class MethodInvocationTest {
 				firstArgument, secondArgument));
 		assertThat(invocation).isNotEqualTo(null);
 		assertThat(invocation).isNotEqualTo(new Object());
-	}
-
-	@Test
-	void testWrapInto() throws Throwable {
-		NoArguments instance = new NoArguments();
-
-		MethodInvocation<NoArguments> invocation = MethodInvocation.of(NoArguments.METHOD, instance);
-
-		Object expectedResult = new Object();
-		TestInvocationHandler<NoArguments> handler = new TestInvocationHandler<>(expectedResult);
-		Invocation<NoArguments> wrapped = invocation.wrapInto(handler);
-
-		assertThat(wrapped).isNotNull();
-		instance.assertNotExecuted();
-		handler.assertNotExecuted();
-
-		Object result = wrapped.invoke();
-		instance.assertNotExecuted(); // test handler doesn't actually execute invocation
-		handler.assertExecutedWith(invocation);
-		assertThat(result).isSameAs(expectedResult);
 	}
 
 	static class NoArguments {
@@ -301,11 +281,11 @@ class MethodInvocationTest {
 		}
 	}
 
-	private static final class TestInvocationHandler<T> implements InvocationHandler<T> {
+	private static final class TestInvocationHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 		private final Object result;
 
 		private boolean executed;
-		private Invocation<T> executedInvocation;
+		private MethodInvocation<T> executedInvocation;
 
 		TestInvocationHandler(Object result) {
 			this.result = result;
@@ -313,7 +293,7 @@ class MethodInvocationTest {
 
 		@Nullable
 		@Override
-		public Object handle(Invocation<T> invocation) throws Throwable {
+		public Object handle(MethodInvocation<T> invocation) throws Throwable {
 			assertNotExecuted();
 			executed = true;
 			executedInvocation = invocation;
@@ -324,7 +304,7 @@ class MethodInvocationTest {
 			assertThat(executed).isFalse();
 		}
 
-		void assertExecutedWith(Invocation<T> expectedInvocation) {
+		void assertExecutedWith(MethodInvocation<T> expectedInvocation) {
 			assertThat(executed).isTrue();
 			assertThat(executedInvocation).isSameAs(expectedInvocation);
 		}
