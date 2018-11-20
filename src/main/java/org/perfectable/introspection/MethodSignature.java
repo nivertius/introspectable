@@ -2,6 +2,7 @@ package org.perfectable.introspection; // SUPPRESS LENGTH
 
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.List;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
@@ -9,25 +10,25 @@ import com.google.common.collect.ImmutableList;
 final class MethodSignature {
 	static final CharMatcher IDENTIFIER_BREAKING = CharMatcher.anyOf(";.[:><").or(CharMatcher.whitespace());
 
-	private final ImmutableList<TypeParameter> formalTypeParameters;
-	private final ImmutableList<FieldType> formalParameters;
+	private final List<TypeParameter> formalTypeParameters;
+	private final List<FieldType> formalParameters;
 	private final ReturnType returnType;
-	private final ImmutableList<FieldType> thrownTypes;
+	private final List<FieldType> thrownTypes;
 
 	static MethodSignature read(String signatureString) {
 		CharacterReader reader = new CharacterReader(signatureString);
-		ImmutableList<TypeParameter> typeParameters =
+		List<TypeParameter> typeParameters =
 			TypeParameter.readFormalTypeParametersFrom(reader);
-		ImmutableList<FieldType> formalParameters = parseFormalParameters(reader);
+		List<FieldType> formalParameters = parseFormalParameters(reader);
 		ReturnType returnType = ReturnType.readReturnTypeFrom(reader);
-		ImmutableList<FieldType> thrownTypes = parseThrownTypes(reader);
+		List<FieldType> thrownTypes = parseThrownTypes(reader);
 		return new MethodSignature(typeParameters, formalParameters, returnType, thrownTypes);
 	}
 
-	private MethodSignature(ImmutableList<TypeParameter> typeParameters,
-							ImmutableList<FieldType> formalParameters,
+	private MethodSignature(List<TypeParameter> typeParameters,
+							List<FieldType> formalParameters,
 							ReturnType returnType,
-							ImmutableList<FieldType> thrownTypes) {
+							List<FieldType> thrownTypes) {
 		this.formalTypeParameters = typeParameters;
 		this.formalParameters = formalParameters;
 		this.returnType = returnType;
@@ -230,16 +231,16 @@ final class MethodSignature {
 
 	private static final class TypeParameter implements TypeArgument {
 		private final String identifier;
-		private final ImmutableList<FieldType> bounds;
+		private final List<FieldType> bounds;
 
-		private TypeParameter(String identifier, ImmutableList<FieldType> bounds) {
+		private TypeParameter(String identifier, List<FieldType> bounds) {
 			this.identifier = identifier;
 			this.bounds = bounds;
 		}
 
-		static ImmutableList<TypeParameter> readFormalTypeParametersFrom(CharacterReader reader) {
+		static List<TypeParameter> readFormalTypeParametersFrom(CharacterReader reader) {
 			if (!reader.currentIsThenSkip('<')) {
-				return ImmutableList.of();
+				return List.of();
 			}
 			ImmutableList.Builder<TypeParameter> resultBuilder = ImmutableList.builder();
 			while (!reader.currentIs('>')) {
@@ -284,9 +285,9 @@ final class MethodSignature {
 
 		private final String className;
 		@SuppressWarnings("unused")
-		private final ImmutableList<TypeArgument> typeArguments;
+		private final List<TypeArgument> typeArguments;
 
-		private ObjectType(String className, ImmutableList<TypeArgument> typeArguments) {
+		private ObjectType(String className, List<TypeArgument> typeArguments) {
 			this.className = className;
 			this.typeArguments = typeArguments;
 		}
@@ -312,7 +313,7 @@ final class MethodSignature {
 		}
 
 		static ObjectType createWithoutTypeArguments(String identifier) {
-			return new ObjectType(identifier, ImmutableList.of());
+			return new ObjectType(identifier, List.of());
 		}
 
 		@Override
