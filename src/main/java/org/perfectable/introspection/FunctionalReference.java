@@ -16,6 +16,8 @@ import java.lang.reflect.Type;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 @SuppressWarnings("serial")
 public interface FunctionalReference extends Serializable {
 	default Introspection introspect() {
@@ -117,7 +119,7 @@ public interface FunctionalReference extends Serializable {
 
 		public abstract Type parameterGenericType(int number);
 
-		public abstract AnnotatedElement parameterAnnotated(int number);
+		public abstract AnnotatedElement parameterAnnotated(int number) throws IllegalArgumentException;
 
 		@CanIgnoreReturnValue
 		public abstract <T> T visit(Visitor<T> visitor);
@@ -174,16 +176,19 @@ public interface FunctionalReference extends Serializable {
 
 			@Override
 			public Class<?> parameterType(int number) {
+				checkParameterNumber(number);
 				return implementationMethod.getParameterTypes()[number];
 			}
 
 			@Override
 			public Type parameterGenericType(int number) {
+				checkParameterNumber(number);
 				return implementationMethod.getGenericParameterTypes()[number];
 			}
 
 			@Override
 			public AnnotatedElement parameterAnnotated(int number) {
+				checkParameterNumber(number);
 				return implementationMethod.getParameters()[number];
 			}
 
@@ -200,6 +205,11 @@ public interface FunctionalReference extends Serializable {
 			@Override
 			public final Class<?> resultType() {
 				return implementationMethod.getReturnType();
+			}
+
+			void checkParameterNumber(int number) {
+				checkArgument(number >= 0, "Parameter number must be non-negative"); // SUPPRESS MultipleStringLiterals
+				checkArgument(number < parametersCount(), "Method has no parameter with index %s", number);
 			}
 		}
 
@@ -220,6 +230,7 @@ public interface FunctionalReference extends Serializable {
 
 			@Override
 			public Class<?> parameterType(int number) {
+				checkParameterNumber(number);
 				if (number == 0) {
 					return implementationClass;
 				}
@@ -230,6 +241,7 @@ public interface FunctionalReference extends Serializable {
 
 			@Override
 			public Type parameterGenericType(int number) {
+				checkParameterNumber(number);
 				if (number == 0) {
 					return implementationClass;
 				}
@@ -240,6 +252,7 @@ public interface FunctionalReference extends Serializable {
 
 			@Override
 			public AnnotatedElement parameterAnnotated(int number) {
+				checkParameterNumber(number);
 				if (number == 0) {
 					return implementationClass;
 				}
@@ -350,17 +363,25 @@ public interface FunctionalReference extends Serializable {
 
 			@Override
 			public Class<?> parameterType(int number) {
+				checkParameterNumber(number);
 				return implementationConstructor.getParameterTypes()[number];
 			}
 
 			@Override
 			public Type parameterGenericType(int number) {
+				checkParameterNumber(number);
 				return implementationConstructor.getGenericParameterTypes()[number];
 			}
 
 			@Override
 			public AnnotatedElement parameterAnnotated(int number) {
+				checkParameterNumber(number);
 				return implementationConstructor.getParameters()[number];
+			}
+
+			private void checkParameterNumber(int number) {
+				checkArgument(number >= 0, "Parameter number must be non-negative"); // SUPPRESS MultipleStringLiterals
+				checkArgument(number < parametersCount(), "Constructor has no parameter with index %s", number);
 			}
 		}
 	}
