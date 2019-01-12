@@ -16,49 +16,49 @@ final class BoundPropertyAssert<VALUE>
 		return new BoundPropertyAssert<>(actual);
 	}
 
-	public BoundPropertyAssert<VALUE> hasName(String expectedName) {
+	public BoundPropertyAssert<VALUE> hasName(String expectedName) { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		objects.assertEqual(info, actual.name(), expectedName);
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> hasTypeExactly(Class<?> expectedType) {
+	public BoundPropertyAssert<VALUE> hasTypeExactly(Class<?> expectedType) { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		objects.assertEqual(info, actual.type(), expectedType);
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> isWritable() {
+	public BoundPropertyAssert<VALUE> isWritable() { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		objects.assertEqual(info, actual.isWritable(), true);
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> isNotWritable() {
+	public BoundPropertyAssert<VALUE> isNotWritable() { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		objects.assertEqual(info, actual.isWritable(), false);
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> isReadable() {
+	public BoundPropertyAssert<VALUE> isReadable() { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		objects.assertEqual(info, actual.isReadable(), true);
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> isNotReadable() {
+	public BoundPropertyAssert<VALUE> isNotReadable() { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		objects.assertEqual(info, actual.isReadable(), false);
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> hasNullValue() {
+	public BoundPropertyAssert<VALUE> hasNullValue() { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		objects.assertNull(info, actual.get());
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> hasValueSameAs(VALUE expectedValue) {
+	public BoundPropertyAssert<VALUE> hasValueSameAs(VALUE expectedValue) { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		objects.assertSame(info, actual.get(), expectedValue);
 		return this;

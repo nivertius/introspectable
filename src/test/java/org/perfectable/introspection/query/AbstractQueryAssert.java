@@ -31,7 +31,7 @@ final class AbstractQueryAssert<ELEMENT, MAPPED>
 		return new AbstractQueryAssert<>(actual, Function.identity(), element -> true);
 	}
 
-	AbstractQueryAssert<ELEMENT, MAPPED> isEmpty() {
+	AbstractQueryAssert<ELEMENT, MAPPED> isEmpty() { // SUPPRESS LinguisticNaming
 		isNotNull();
 		iterables.assertEmpty(info, actual);
 		if (actual.isPresent()) {
@@ -46,7 +46,7 @@ final class AbstractQueryAssert<ELEMENT, MAPPED>
 		return myself;
 	}
 
-	AbstractQueryAssert<ELEMENT, MAPPED> isSingleton(MAPPED onlyElement) {
+	AbstractQueryAssert<ELEMENT, MAPPED> isSingleton(MAPPED onlyElement) { // SUPPRESS LinguisticNaming
 		isNotNull();
 		containsExactly(onlyElement);
 		hasOption(onlyElement);
@@ -54,7 +54,7 @@ final class AbstractQueryAssert<ELEMENT, MAPPED>
 		return myself;
 	}
 
-	AbstractQueryAssert<ELEMENT, MAPPED> hasOption(MAPPED onlyElement) {
+	AbstractQueryAssert<ELEMENT, MAPPED> hasOption(MAPPED onlyElement) { // SUPPRESS LinguisticNaming
 		checkOptionPresent();
 		Optional<? extends ELEMENT> option = actual.option();
 		MAPPED optionValue = option.map(mapper).get();
@@ -64,7 +64,7 @@ final class AbstractQueryAssert<ELEMENT, MAPPED>
 		return myself;
 	}
 
-	AbstractQueryAssert<ELEMENT, MAPPED> hasUnique(MAPPED onlyElement) {
+	AbstractQueryAssert<ELEMENT, MAPPED> hasUnique(MAPPED onlyElement) { // SUPPRESS LinguisticNaming
 		isNotNull();
 		try {
 			ELEMENT uniqueResult = this.actual.unique();

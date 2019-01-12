@@ -30,13 +30,13 @@ final class BeanAssert<ELEMENT>
 		return new BeanAssert<>(actual);
 	}
 
-	public BeanAssert<ELEMENT> hasEmptyFieldProperties() {
+	public BeanAssert<ELEMENT> hasEmptyFieldProperties() { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		iterables.assertEmpty(info, actual.fieldProperties());
 		return this;
 	}
 
-	public BeanAssert<ELEMENT> hasFieldPropertiesWithNames(String... names) {
+	public BeanAssert<ELEMENT> hasFieldPropertiesWithNames(String... names) { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		List<String> fieldPropertiesNames =
 			actual.fieldProperties().stream().map(BoundProperty::name).collect(toList());
@@ -44,19 +44,19 @@ final class BeanAssert<ELEMENT>
 		return this;
 	}
 
-	public BeanAssert<ELEMENT> hasTypeExactly(Class<?> expectedType) {
+	public BeanAssert<ELEMENT> hasTypeExactly(Class<?> expectedType) { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		objects.assertEqual(info, actual.type(), expectedType);
 		return this;
 	}
 
-	public BeanAssert<ELEMENT> hasEmptyRelated() {
+	public BeanAssert<ELEMENT> hasEmptyRelated() { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		iterables.assertEmpty(info, actual.related());
 		return this;
 	}
 
-	public BeanAssert<ELEMENT> hasRelated(Object... expectedRelated) {
+	public BeanAssert<ELEMENT> hasRelated(Object... expectedRelated) { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		iterables.assertContains(info, actual.related(), expectedRelated);
 		return this;
@@ -79,13 +79,13 @@ final class BeanAssert<ELEMENT>
 		return propertyAssert;
 	}
 
-	public BeanAssert<ELEMENT> hasContentsSameAs(ELEMENT expectedContents) {
+	public BeanAssert<ELEMENT> hasContentsSameAs(ELEMENT expectedContents) { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		objects.assertSame(info, actual.contents(), expectedContents);
 		return this;
 	}
 
-	public BeanAssert<ELEMENT> hasConsistentCopyMechanism() {
+	public BeanAssert<ELEMENT> hasConsistentCopyMechanism() { // SUPPRESS LinguisticNaming
 		objects.assertNotNull(info, actual);
 		Bean<ELEMENT> copy = actual.copy();
 		objects.assertNotEqual(info, copy, actual);
