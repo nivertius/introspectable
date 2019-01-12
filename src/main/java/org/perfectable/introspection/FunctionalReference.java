@@ -70,7 +70,7 @@ public interface FunctionalReference extends Serializable {
 	}
 
 	abstract class Introspection {
-		public static Introspection of(FunctionalReference marker) { // SUPPRESS CyclomaticComplexity Ncss
+		static Introspection of(FunctionalReference marker) { // SUPPRESS CyclomaticComplexity Ncss
 			Class<? extends FunctionalReference> markerClass = marker.getClass();
 			Method writeReplace = MethodQuery.of(markerClass)
 				.named("writeReplace")

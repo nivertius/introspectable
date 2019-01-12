@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import com.google.common.collect.Iterators;
 import com.google.errorprone.annotations.CompatibleWith;
 
-public abstract class AbstractQuery<E, Q extends AbstractQuery<E, ? extends Q>> implements Iterable<E> {
+abstract class AbstractQuery<E, Q extends AbstractQuery<E, ? extends Q>> implements Iterable<E> {
 
 	public abstract Q filter(Predicate<? super E> filter);
 
@@ -37,9 +37,5 @@ public abstract class AbstractQuery<E, Q extends AbstractQuery<E, ? extends Q>> 
 
 	public boolean contains(@CompatibleWith("E") Object candidate) {
 		return Iterators.contains(iterator(), candidate);
-	}
-
-	AbstractQuery() {
-		// package extension only
 	}
 }

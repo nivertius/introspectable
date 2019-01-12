@@ -14,7 +14,7 @@ public abstract class Property<CT, PT> {
 
 	public abstract boolean isWritable();
 
-	public BoundProperty<CT, PT> bind(CT bean) {
+	public final BoundProperty<CT, PT> bind(CT bean) {
 		return BoundProperty.of(bean, this);
 	}
 
@@ -26,7 +26,7 @@ public abstract class Property<CT, PT> {
 
 	abstract void set(CT bean, @Nullable PT value);
 
-	<X extends PT> Property<CT, X> as(Class<X> propertyClass) {
+	final <X extends PT> Property<CT, X> as(Class<X> propertyClass) {
 		checkArgument(propertyClass.isAssignableFrom(type()));
 		@SuppressWarnings("unchecked")
 		Property<CT, X> casted = (Property<CT, X>) this;

@@ -18,7 +18,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		return Empty.INSTANCE;
 	}
 
-	public static <X> FieldQuery of(Class<X> type) {
+	public static FieldQuery of(Class<?> type) {
 		requireNonNull(type);
 		return new Complete<>(type);
 	}
