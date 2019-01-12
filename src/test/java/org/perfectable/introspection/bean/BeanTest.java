@@ -70,8 +70,10 @@ class BeanTest {
 	static class SingleFieldSubject {
 		static final String PROPERTY_ONE_NAME = "one";
 
+		@SuppressWarnings("unused")
 		private static String staticField; // SUPPRESS UnusedPrivateField
 
+		@SuppressWarnings("unused")
 		private String one;
 
 		Object nonPropertyMethod() {

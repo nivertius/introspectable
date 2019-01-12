@@ -242,7 +242,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 	private static final class SubtypePredicate implements Predicate<CtClass> {
 		private final Class<?> supertype;
 
-		public static Predicate<? super CtClass> of(Class<?> supertype) {
+		public static SubtypePredicate of(Class<?> supertype) {
 			return new SubtypePredicate(supertype);
 		}
 
