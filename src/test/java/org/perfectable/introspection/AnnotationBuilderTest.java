@@ -1,5 +1,6 @@
 package org.perfectable.introspection;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,6 +15,24 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 // SUPPRESS FILE MultipleStringLiterals
 @SuppressWarnings("ClassCanBeStatic")
 class AnnotationBuilderTest {
+
+	@Test
+	void notAnInterface() {
+		@SuppressWarnings("unchecked")
+		Class<Annotation> falseAnnotationClass = (Class<Annotation>) (Class<?>) String.class;
+		assertThatThrownBy(() -> AnnotationBuilder.marker(falseAnnotationClass))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Provided class is not an annotation interface");
+	}
+
+	@Test
+	void notAnAnnotationInterface() {
+		@SuppressWarnings("unchecked")
+		Class<Annotation> falseAnnotationClass = (Class<Annotation>) (Class<?>) Serializable.class;
+		assertThatThrownBy(() -> AnnotationBuilder.marker(falseAnnotationClass))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Provided class is not an annotation interface");
+	}
 
 	@Nested
 	class OfMarker {

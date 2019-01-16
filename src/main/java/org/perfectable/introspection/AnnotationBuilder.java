@@ -14,6 +14,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static org.perfectable.introspection.Introspections.introspect;
 
 public final class AnnotationBuilder<A extends Annotation> {
@@ -23,6 +24,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 	}
 
 	public static <A extends Annotation> AnnotationBuilder<A> of(Class<A> annotationType) {
+		checkAnnotationInterface(annotationType);
 		return new AnnotationBuilder<>(annotationType, ImmutableMap.of());
 	}
 
@@ -53,6 +55,13 @@ public final class AnnotationBuilder<A extends Annotation> {
 				throw new IllegalStateException("No value set for member '" + memberName + "'");
 			}
 		}
+	}
+
+	private static void checkAnnotationInterface(Class<?> annotationType) {
+		checkArgument(annotationType.isInterface()
+				&& annotationType.getInterfaces().length == 1
+				&& annotationType.getInterfaces()[0].equals(Annotation.class),
+			"Provided class is not an annotation interface");
 	}
 
 	private final Class<A> annotationType;
