@@ -34,6 +34,13 @@ class AnnotationBuilderTest {
 			.hasMessage("Provided class is not an annotation interface");
 	}
 
+	@Test
+	void invalidMarker() {
+		assertThatThrownBy(() -> AnnotationBuilder.marker(Single.class))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Annotation interface is not a marker");
+	}
+
 	@Nested
 	class OfMarker {
 		private final Marker annotation = AnnotationBuilder.marker(Marker.class);

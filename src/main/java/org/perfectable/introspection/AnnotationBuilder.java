@@ -20,7 +20,12 @@ import static org.perfectable.introspection.Introspections.introspect;
 public final class AnnotationBuilder<A extends Annotation> {
 
 	public static <A extends Annotation> A marker(Class<A> annotationType) {
-		return of(annotationType).build();
+		checkAnnotationInterface(annotationType);
+		checkArgument(annotationType.getDeclaredMethods().length == 0, "Annotation interface is not a marker");
+		AnnotationInvocationHandler<A> invocationHandler =
+			new AnnotationInvocationHandler<>(annotationType, ImmutableMap.of());
+		return ProxyBuilderFactory.any().ofInterfaces(annotationType)
+			.instantiate(invocationHandler);
 	}
 
 	public static <A extends Annotation> AnnotationBuilder<A> of(Class<A> annotationType) {
@@ -44,6 +49,8 @@ public final class AnnotationBuilder<A extends Annotation> {
 
 	public A build() {
 		validateMembers();
+		AnnotationInvocationHandler<A> invocationHandler =
+			new AnnotationInvocationHandler<>(annotationType, valueMap);
 		return ProxyBuilderFactory.any().ofInterfaces(annotationType)
 			.instantiate(invocationHandler);
 	}
@@ -67,8 +74,6 @@ public final class AnnotationBuilder<A extends Annotation> {
 	private final Class<A> annotationType;
 	private final ImmutableMap<String, Object> valueMap;
 
-	private final AnnotationInvocationHandler invocationHandler = new AnnotationInvocationHandler();
-
 	private AnnotationBuilder(Class<A> annotationType, ImmutableMap<String, Object> valueMap) {
 		this.annotationType = annotationType;
 		this.valueMap = valueMap;
@@ -81,13 +86,21 @@ public final class AnnotationBuilder<A extends Annotation> {
 		.named("annotationType")
 		.unique();
 
-	private final class AnnotationInvocationHandler implements InvocationHandler<MethodInvocation<A>> {
+	private static final class AnnotationInvocationHandler<A> implements InvocationHandler<MethodInvocation<A>> {
 		private static final int UNCALCULATED_HASH_CODE = -1;
 		private static final int MEMBER_NAME_HASH_MULTIPLIER = 127;
+
+		private final Class<A> annotationType;
+		private final ImmutableMap<String, Object> valueMap;
 
 		private volatile int cachedHashCode = UNCALCULATED_HASH_CODE;
 		@Nullable
 		private volatile String cachedRepresentation;
+
+		AnnotationInvocationHandler(Class<A> annotationType, ImmutableMap<String, Object> valueMap) {
+			this.annotationType = annotationType;
+			this.valueMap = valueMap;
+		}
 
 		@Nullable
 		@Override
