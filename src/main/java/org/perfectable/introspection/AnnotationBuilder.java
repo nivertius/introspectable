@@ -75,9 +75,10 @@ public final class AnnotationBuilder<A extends Annotation> {
 	private final class AnnotationInvocationHandler implements InvocationHandler<MethodInvocation<A>> {
 		private static final int UNCALCULATED_HASH_CODE = -1;
 		private static final int MEMBER_NAME_HASH_MULTIPLIER = 127;
-		private int cachedHashCode = UNCALCULATED_HASH_CODE;
+
+		private volatile int cachedHashCode = UNCALCULATED_HASH_CODE;
 		@Nullable
-		private String cachedRepresentation;
+		private volatile String cachedRepresentation;
 
 		@Nullable
 		@Override
@@ -123,13 +124,15 @@ public final class AnnotationBuilder<A extends Annotation> {
 
 		private int calculateHash() {
 			if (cachedHashCode == UNCALCULATED_HASH_CODE) {
-				int current = 0;
-				for (Method method : annotationType.getDeclaredMethods()) {
-					String name = method.getName();
-					Object value = valueMap.getOrDefault(name, method.getDefaultValue());
-					current += MEMBER_NAME_HASH_MULTIPLIER * name.hashCode() ^ Objects.hashCode(value);
+				synchronized (this) {
+					int current = 0;
+					for (Method method : annotationType.getDeclaredMethods()) {
+						String name = method.getName();
+						Object value = valueMap.getOrDefault(name, method.getDefaultValue());
+						current += MEMBER_NAME_HASH_MULTIPLIER * name.hashCode() ^ Objects.hashCode(value);
+					}
+					cachedHashCode = current;
 				}
-				cachedHashCode = current;
 			}
 			return cachedHashCode;
 		}
@@ -137,11 +140,13 @@ public final class AnnotationBuilder<A extends Annotation> {
 		@SuppressWarnings("ReturnMissingNullable")
 		private String calculateRepresentation() {
 			if (cachedRepresentation == null) {
-				StringBuilder representationBuilder = new StringBuilder("@")
-					.append(annotationType.getName()).append('(');
-				MEMBER_JOINER.appendTo(representationBuilder, valueMap);
-				representationBuilder.append(')');
-				cachedRepresentation = representationBuilder.toString();
+				synchronized (this) {
+					StringBuilder representationBuilder = new StringBuilder("@")
+						.append(annotationType.getName()).append('(');
+					MEMBER_JOINER.appendTo(representationBuilder, valueMap);
+					representationBuilder.append(')');
+					cachedRepresentation = representationBuilder.toString();
+				}
 			}
 			return cachedRepresentation;
 		}
