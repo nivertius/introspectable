@@ -1,4 +1,4 @@
-package org.perfectable.introspection;
+package org.perfectable.introspection; // SUPPRESS LENGTH
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -39,6 +39,27 @@ class AnnotationBuilderTest {
 		assertThatThrownBy(() -> AnnotationBuilder.marker(Single.class))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("Annotation interface is not a marker");
+	}
+
+	@Test
+	void nullValue() {
+		AnnotationBuilder<Single> builder = AnnotationBuilder.of(Single.class);
+
+		assertThatThrownBy(() -> builder.with(Single::value, null))
+			.isInstanceOf(NullPointerException.class);
+	}
+
+	@Test
+	void invalidValue() {
+		AnnotationBuilder<Single> builder = AnnotationBuilder.of(Single.class);
+
+		AnnotationBuilder.MemberExtractor<Single, Object> extractor = Single::value;
+
+		Object fakeValue = AnnotationBuilderTest.class;
+
+		assertThatThrownBy(() -> builder.with(extractor, fakeValue))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Value " + fakeValue + " cannot be provided for member value of type class java.lang.String");
 	}
 
 	@Nested

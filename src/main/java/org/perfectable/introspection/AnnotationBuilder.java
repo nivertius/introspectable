@@ -12,11 +12,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.primitives.Primitives;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.Immutable;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
 
+@Immutable
 public final class AnnotationBuilder<A extends Annotation> {
 
 	public static <A extends Annotation> A marker(Class<A> annotationType) {
@@ -41,9 +45,13 @@ public final class AnnotationBuilder<A extends Annotation> {
 	}
 
 	public <X> AnnotationBuilder<A> with(MemberExtractor<A, X> member, X value) {
-		String name = member.introspect().referencedMethodName();
+		requireNonNull(value);
+		Method method = member.introspect().referencedMethod();
+		Class<?> memberType = Primitives.wrap(method.getReturnType());
+		checkArgument(memberType.isInstance(value),
+			"Value %s cannot be provided for member %s of type %s", value, method.getName(), memberType);
 		ImmutableMap<String, Object> newValueMap = ImmutableMap.<String, Object>builder()
-			.putAll(valueMap).put(name, value).build();
+			.putAll(valueMap).put(method.getName(), value).build();
 		return new AnnotationBuilder<>(annotationType, newValueMap);
 	}
 
@@ -72,6 +80,9 @@ public final class AnnotationBuilder<A extends Annotation> {
 	}
 
 	private final Class<A> annotationType;
+
+	// values of this map are only immutable types that can be annotation type elements as declared by JLS 9.6.1
+	@SuppressWarnings("Immutable")
 	private final ImmutableMap<String, Object> valueMap;
 
 	private AnnotationBuilder(Class<A> annotationType, ImmutableMap<String, Object> valueMap) {
@@ -86,15 +97,22 @@ public final class AnnotationBuilder<A extends Annotation> {
 		.named("annotationType")
 		.unique();
 
+	@Immutable
 	private static final class AnnotationInvocationHandler<A> implements InvocationHandler<MethodInvocation<A>> {
 		private static final int UNCALCULATED_HASH_CODE = -1;
 		private static final int MEMBER_NAME_HASH_MULTIPLIER = 127;
 
 		private final Class<A> annotationType;
+
+		// values of this map are only immutable types that can be annotation type elements as declared by JLS 9.6.1
+		@SuppressWarnings("Immutable")
 		private final ImmutableMap<String, Object> valueMap;
 
+		@SuppressWarnings("Immutable") // generated lazily once
 		private volatile int cachedHashCode = UNCALCULATED_HASH_CODE;
+
 		@Nullable
+		@SuppressWarnings("Immutable") // generated lazily once
 		private volatile String cachedRepresentation;
 
 		AnnotationInvocationHandler(Class<A> annotationType, ImmutableMap<String, Object> valueMap) {
