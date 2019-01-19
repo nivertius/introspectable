@@ -1,8 +1,10 @@
 package org.perfectable.introspection.query;
 
 import java.io.Serializable;
+import java.net.URLClassLoader;
 
 import javassist.CtClass;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -64,10 +66,10 @@ class ClassQueryTest {
 
 	@SuppressWarnings("ClassCanBeStatic")
 	@Nested
-	class All extends Methods {
+	class SystemClassLoader extends Methods {
 		@Override
 		protected ClassQuery<Object> createQuery() {
-			return ClassQuery.all();
+			return ClassQuery.system();
 		}
 	}
 
@@ -76,7 +78,9 @@ class ClassQueryTest {
 	class OfClassLoader extends Methods {
 		@Override
 		protected ClassQuery<Object> createQuery() {
-			return ClassQuery.of(ClassQueryTest.class.getClassLoader());
+			ClassLoader classLoader = ClassQueryTest.class.getClassLoader();
+			Assumptions.assumeTrue(classLoader instanceof URLClassLoader);
+			return ClassQuery.of(classLoader);
 		}
 	}
 }

@@ -41,8 +41,8 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 
 	private static final String CLASS_FILE_SUFFIX = ".class";
 
-	private static final ClassQuery<Object> GLOBAL =
-		new ClassQuery<>(Object.class, GlobalResourceSource.INSTANCE, ClassPool.getDefault(),
+	private static final ClassQuery<Object> SYSTEM =  // SUPPRESS AvoidFieldNameMatchingMethodName
+		new ClassQuery<>(Object.class, ClassPathResourceSource.INSTANCE, ClassPool.getDefault(),
 			name -> ClassLoader.getSystemClassLoader().loadClass(name),
 			DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER, DEFAULT_POST_LOAD_FILTER);
 
@@ -54,8 +54,8 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 	private final Predicate<? super CtClass> preLoadFilter;
 	private final Predicate<? super Class<? extends C>> postLoadFilter;
 
-	public static ClassQuery<Object> all() {
-		return ClassQuery.GLOBAL;
+	public static ClassQuery<Object> system() {
+		return ClassQuery.SYSTEM;
 	}
 
 	public static ClassQuery<Object> of(ClassLoader loader) {
@@ -398,8 +398,8 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		}
 	}
 
-	private static final class GlobalResourceSource extends UrlResourceSource {
-		static final GlobalResourceSource INSTANCE = new GlobalResourceSource();
+	private static final class ClassPathResourceSource extends UrlResourceSource {
+		static final ClassPathResourceSource INSTANCE = new ClassPathResourceSource();
 
 		private static final Splitter CLASSPATH_SPLITTER = Splitter.on(':');
 		private static final String ENTRY_URL_PREFIX = "file://";
@@ -433,12 +433,11 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		protected void generateUrls(Consumer<URL> urlAction) {
 			ClassLoader currentClassLoader = classLoader;
 			while (currentClassLoader != null) {
-				if (!(currentClassLoader instanceof URLClassLoader)) {
-					continue;
-				}
-				URLClassLoader urlClassLoader = (URLClassLoader) currentClassLoader;
-				for (URL url : urlClassLoader.getURLs()) {
-					urlAction.accept(url);
+				if (currentClassLoader instanceof URLClassLoader) {
+					URLClassLoader urlClassLoader = (URLClassLoader) currentClassLoader;
+					for (URL url : urlClassLoader.getURLs()) {
+						urlAction.accept(url);
+					}
 				}
 				currentClassLoader = currentClassLoader.getParent();
 			}
