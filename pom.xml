@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.perfectable</groupId>
 		<artifactId>perfectable</artifactId>
-		<version>20</version>
+		<version>21</version>
 	</parent>
 
 	<artifactId>introspectable</artifactId>
@@ -110,6 +110,19 @@
 							<!-- used for compilation, doesn't leave anything in bytecode -->
 							<dependency>com.google.auto.service:auto-service</dependency>
 						</ignoredUnusedDeclaredDependencies>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<annotationProcessorPaths combine.children="append">
+							<path>
+								<groupId>com.google.auto.service</groupId>
+								<artifactId>auto-service</artifactId>
+								<version>${version.autoservice}</version>
+							</path>
+						</annotationProcessorPaths>
 					</configuration>
 				</plugin>
 			</plugins>

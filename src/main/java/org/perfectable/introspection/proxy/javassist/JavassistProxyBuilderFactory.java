@@ -52,7 +52,7 @@ public final class JavassistProxyBuilderFactory extends AbstractProxyBuilderFact
 
 	private static <I> ProxyBuilder<I> createFromFactory(ProxyFactory factory) {
 		@SuppressWarnings("unchecked")
-		Class<I> proxyClass = factory.createClass();
+		Class<I> proxyClass = (Class<I>) factory.createClass();
 		return createFromProxyClass(proxyClass);
 	}
 

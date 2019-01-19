@@ -28,12 +28,12 @@ final class Streams {
 										  Predicate<? super E> condition) {
 		Spliterator<E> wrappedSpliterator =
 			GeneratorSpliterator.wrap(initial.spliterator(), mutator, condition);
-		return StreamSupport.stream(wrappedSpliterator, false);
+		return StreamSupport.stream(wrappedSpliterator, /* parallel= */false);
 	}
 
 	public static <E> Stream<E> from(Enumeration<E> enumeration) {
 		Spliterator<E> spliterator = EnumerationSpliterator.create(enumeration);
-		return StreamSupport.stream(spliterator, false);
+		return StreamSupport.stream(spliterator, /* parallel= */false);
 	}
 
 	private static final class GeneratorSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
