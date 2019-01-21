@@ -8,9 +8,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Primitives;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
@@ -89,8 +89,6 @@ public final class AnnotationBuilder<A extends Annotation> {
 		this.annotationType = annotationType;
 		this.valueMap = valueMap;
 	}
-
-	private static final Joiner.MapJoiner MEMBER_JOINER = Joiner.on(", ").withKeyValueSeparator('=');
 
 	private static final Method ANNOTATION_TYPE_METHOD = introspect(Annotation.class)
 		.methods()
@@ -180,16 +178,20 @@ public final class AnnotationBuilder<A extends Annotation> {
 		@SuppressWarnings("ReturnMissingNullable")
 		private String calculateRepresentation() {
 			if (cachedRepresentation == null) {
-				synchronized (this) {
-					StringBuilder representationBuilder = new StringBuilder("@")
-						.append(annotationType.getName()).append('(');
-					MEMBER_JOINER.appendTo(representationBuilder, valueMap);
-					representationBuilder.append(')');
-					cachedRepresentation = representationBuilder.toString();
-				}
+				String elements = valueMap.entrySet().stream()
+					.map(entry -> entry.getKey() + "=" + formatValue(entry.getValue()))
+					.collect(Collectors.joining(", "));
+				cachedRepresentation = "@" + annotationType.getName() + '(' + elements + ')';
 			}
 			return cachedRepresentation;
 		}
+	}
+
+	private static String formatValue(Object value) {
+		if (value instanceof String) {
+			return "\"" + value + "\""; // SUPPRESS MultipleStringLiterals
+		}
+		return value.toString();
 	}
 
 	private static Object safeInvoke(Class<?> declaringClass, String name, Object target) {

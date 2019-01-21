@@ -96,13 +96,6 @@ class AnnotationBuilderTest {
 				.returns(0, Object::hashCode)
 				.returns(MarkerHolder.HELD.hashCode(), Object::hashCode);
 		}
-
-		@Test
-		void hasToString() {
-			assertThat(annotation)
-				.returns("@org.perfectable.introspection.AnnotationBuilderTest$Marker()", Object::toString)
-				.returns(MarkerHolder.HELD.toString(), Object::toString);
-		}
 	}
 
 	@Test
@@ -149,15 +142,6 @@ class AnnotationBuilderTest {
 			assertThat(annotation)
 				.returns(expectedHashCode, Object::hashCode)
 				.returns(SingleHolder.HELD.hashCode(), Object::hashCode);
-		}
-
-		@Test
-		void hasToString() {
-			String expectedToString = "@org.perfectable.introspection.AnnotationBuilderTest$Single(value=testValue)";
-
-			assertThat(annotation)
-				.returns(expectedToString, Object::toString)
-				.returns(SingleHolder.HELD.toString(), Object::toString);
 		}
 	}
 
@@ -207,16 +191,6 @@ class AnnotationBuilderTest {
 					.returns(expectedHashCode, Object::hashCode)
 					.returns(MultipleHolder.HELD.hashCode(), Object::hashCode);
 			}
-
-			@Test
-			void hasToString() {
-				String expectedToString =
-					"@org.perfectable.introspection.AnnotationBuilderTest$Multiple"
-						+ "(one=defaultOne, two=testValue, three=3)";
-				assertThat(annotation)
-					.returns(expectedToString, Object::toString)
-					.returns(MultipleHolder.HELD.hashCode(), Object::hashCode);
-			}
 		}
 
 		@Nested
@@ -260,14 +234,6 @@ class AnnotationBuilderTest {
 
 				assertThat(annotation)
 					.returns(expectedHashCode, Object::hashCode);
-			}
-
-			@Test
-			void hasToString() {
-				String expectedToString =
-					"@org.perfectable.introspection.AnnotationBuilderTest$Multiple(two=twoOther, three=100)";
-				assertThat(annotation)
-					.returns(expectedToString, Object::toString);
 			}
 		}
 
