@@ -228,7 +228,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 	}
 
-	private static class AccessibleMarking extends FieldQuery {
+	private static final class AccessibleMarking extends FieldQuery {
 		private final FieldQuery parent;
 
 		AccessibleMarking(FieldQuery parent) {

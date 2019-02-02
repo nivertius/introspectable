@@ -214,7 +214,7 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 		}
 	}
 
-	private static class AccessibleMarking<X> extends ConstructorQuery<X> {
+	private static final class AccessibleMarking<X> extends ConstructorQuery<X> {
 		private final ConstructorQuery<X> parent;
 
 		AccessibleMarking(ConstructorQuery<X> parent) {

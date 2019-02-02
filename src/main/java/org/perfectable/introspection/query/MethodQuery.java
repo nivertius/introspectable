@@ -249,7 +249,7 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		}
 	}
 
-	private static class AccessibleMarking extends MethodQuery {
+	private static final class AccessibleMarking extends MethodQuery {
 		private final MethodQuery parent;
 
 		AccessibleMarking(MethodQuery parent) {
