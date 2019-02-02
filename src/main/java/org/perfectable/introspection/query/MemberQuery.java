@@ -5,7 +5,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.util.regex.Pattern;
 
-public abstract class MemberQuery<M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>>
+abstract class MemberQuery<M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>>
 		extends AbstractQuery<M, Q>
 		implements Iterable<M> {
 
@@ -24,8 +24,4 @@ public abstract class MemberQuery<M extends Member & AnnotatedElement, Q extends
 	public abstract Q excludingModifier(int excludedModifier);
 
 	public abstract Q asAccessible();
-
-	MemberQuery() {
-		// package extension only
-	}
 }
