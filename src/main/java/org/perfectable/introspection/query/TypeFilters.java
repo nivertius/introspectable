@@ -61,6 +61,16 @@ final class TypeFilters {
 		public TypeFilter negated() {
 			return NONE;
 		}
+
+		@Override
+		public TypeFilter or(TypeFilter other) {
+			return this;
+		}
+
+		@Override
+		public TypeFilter and(TypeFilter other) {
+			return other;
+		}
 	}
 
 	static final class Empty implements TypeFilter {
@@ -93,6 +103,16 @@ final class TypeFilters {
 		@Override
 		public TypeFilter negated() {
 			return TypeFilter.ALL;
+		}
+
+		@Override
+		public TypeFilter or(TypeFilter other) {
+			return other;
+		}
+
+		@Override
+		public TypeFilter and(TypeFilter other) {
+			return this;
 		}
 	}
 
@@ -130,6 +150,22 @@ final class TypeFilters {
 				return NONE;
 			}
 			return this;
+		}
+
+		@Override
+		public TypeFilter or(TypeFilter other) {
+			if (other.matches(matchedType)) {
+				return other;
+			}
+			return TypeFilter.super.or(other);
+		}
+
+		@Override
+		public TypeFilter and(TypeFilter other) {
+			if (!other.matches(matchedType)) {
+				return NONE;
+			}
+			return this; // cannot get more specific
 		}
 	}
 
@@ -192,6 +228,22 @@ final class TypeFilters {
 		public TypeFilter negated() {
 			return positive;
 		}
+
+		@Override
+		public TypeFilter or(TypeFilter other) {
+			if (other instanceof Negated) {
+				return positive.and(((Negated) other).positive).negated();
+			}
+			return TypeFilter.super.or(other);
+		}
+
+		@Override
+		public TypeFilter and(TypeFilter other) {
+			if (other instanceof Negated) {
+				return positive.or(((Negated) other).positive).negated();
+			}
+			return TypeFilter.super.and(other);
+		}
 	}
 
 	static final class Disjunction implements TypeFilter {
@@ -209,6 +261,13 @@ final class TypeFilters {
 		public boolean matches(Class<?> candidate) {
 			return components.stream().anyMatch(component -> component.matches(candidate));
 		}
+
+		@Override
+		public TypeFilter or(TypeFilter other) {
+			ImmutableSet<TypeFilter> newComponents = ImmutableSet.<TypeFilter>builder()
+				.addAll(components).add(other).build();
+			return new Disjunction(newComponents);
+		}
 	}
 
 	static final class Conjunction implements TypeFilter {
@@ -225,6 +284,13 @@ final class TypeFilters {
 		@Override
 		public boolean matches(Class<?> candidate) {
 			return components.stream().allMatch(component -> component.matches(candidate));
+		}
+
+		@Override
+		public TypeFilter and(TypeFilter other) {
+			ImmutableSet<TypeFilter> newComponents = ImmutableSet.<TypeFilter>builder()
+				.addAll(components).add(other).build();
+			return new Conjunction(newComponents);
 		}
 	}
 }

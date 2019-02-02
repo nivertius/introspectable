@@ -416,6 +416,39 @@ class TypeFilterTest { // SUPPRESS MethodCount
 	}
 
 	@Test
+	void preselected() {
+		TypeFilter filter = TypeFilter.exact(boolean.class)
+			.or(TypeFilter.exact(Number.class))
+			.or(TypeFilter.exact(Serializable.class));
+
+		assertThat(filter)
+			.matchesType(boolean.class)
+			.doesntMatchType(int.class)
+			.matchesType(Number.class)
+			.doesntMatchType(Object.class)
+			.matchesType(Serializable.class)
+			.doesntMatchType(Long.class)
+			.doesntMatchType(String.class);
+	}
+
+	@Test
+	void preexcluded() {
+		TypeFilter filter = TypeFilter.ALL.and(TypeFilter.exact(boolean.class).negated())
+			.and(TypeFilter.exact(Number.class).negated())
+			.and(TypeFilter.exact(Serializable.class).negated());
+
+		assertThat(filter)
+			.doesntMatchType(boolean.class)
+			.matchesType(int.class)
+			.doesntMatchType(Number.class)
+			.matchesType(Object.class)
+			.doesntMatchType(Serializable.class)
+			.matchesType(Long.class)
+			.matchesType(String.class);
+	}
+
+
+	@Test
 	void custom() {
 		TypeFilter filter = type -> type.equals(boolean.class) || type.equals(Number.class);
 
