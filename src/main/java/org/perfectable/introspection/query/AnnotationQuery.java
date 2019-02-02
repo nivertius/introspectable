@@ -54,8 +54,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 		}
 	}
 
-	private abstract static class Filtered<A extends Annotation>
-			extends AnnotationQuery<A> {
+	private abstract static class Filtered<A extends Annotation> extends AnnotationQuery<A> {
 		private final AnnotationQuery<A> parent;
 
 		Filtered(AnnotationQuery<A> parent) {
@@ -80,8 +79,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 		}
 	}
 
-	private static final class Predicated<A extends Annotation>
-			extends Filtered<A> {
+	private static final class Predicated<A extends Annotation> extends Filtered<A> {
 		private final Predicate<? super A> filter;
 
 		Predicated(AnnotationQuery<A> parent, Predicate<? super A> filter) {
@@ -95,8 +93,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 		}
 	}
 
-	private static final class Annotated<A extends Annotation>
-			extends Filtered<A> {
+	private static final class Annotated<A extends Annotation> extends Filtered<A> {
 		private final Class<? extends Annotation> metaAnnotation;
 
 		Annotated(AnnotationQuery<A> parent, Class<? extends Annotation> metaAnnotation) {
@@ -130,10 +127,6 @@ public abstract class AnnotationQuery<A extends Annotation>
 		public boolean contains(Object candidate) {
 			return type.isInstance(candidate) && parent.contains(candidate);
 		}
-	}
-
-	AnnotationQuery() {
-		// package extension only
 	}
 
 	private static final class Empty extends AnnotationQuery<Annotation> {
@@ -191,5 +184,9 @@ public abstract class AnnotationQuery<A extends Annotation>
 		public boolean contains(Object candidate) {
 			return components.stream().anyMatch(component -> component.contains(candidate));
 		}
+	}
+
+	AnnotationQuery() {
+		// package extension only
 	}
 }

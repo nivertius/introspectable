@@ -88,7 +88,6 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 		}
 	}
 
-
 	private abstract static class Filtered<X> extends ConstructorQuery<X> {
 		private final ConstructorQuery<X> parent;
 
@@ -142,7 +141,6 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 			return this.name.equals(candidate.getName());
 		}
 	}
-
 
 	private static final class NameMatching<X> extends Filtered<X> {
 		private final Pattern namePattern;

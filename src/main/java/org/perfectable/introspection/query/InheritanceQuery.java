@@ -98,7 +98,6 @@ public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>
 		}
 	}
 
-
 	private static final class Annotated<X> extends Filtered<X> {
 		private final AnnotationFilter annotationFilter;
 
