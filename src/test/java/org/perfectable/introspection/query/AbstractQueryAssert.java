@@ -90,7 +90,6 @@ final class AbstractQueryAssert<ELEMENT, MAPPED>
 		checkArgument(elements.length > 0, "use isEmpty instead"); // SUPPRESS MultipleStringLiterals
 		List<? extends MAPPED> mapped = convertElements();
 		iterables.assertContains(info, mapped, elements);
-		checkOptionPresent();
 		checkContains(elements);
 		return myself;
 	}
@@ -101,7 +100,6 @@ final class AbstractQueryAssert<ELEMENT, MAPPED>
 		checkArgument(elements.length > 0, "use isEmpty instead"); // SUPPRESS MultipleStringLiterals
 		List<? extends MAPPED> mapped = convertElements();
 		iterables.assertContainsExactlyInAnyOrder(info, mapped, elements);
-		checkOptionPresent();
 		checkContains(elements);
 		return myself;
 	}

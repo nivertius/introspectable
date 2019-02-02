@@ -33,7 +33,6 @@ class InheritanceQueryTest {
 		InheritanceQuery<String> chain = InheritanceQuery.of(String.class);
 
 		assertThat(chain)
-			.hasOption(String.class)
 			.containsExactly(String.class, Serializable.class, Comparable.class, CharSequence.class, Object.class);
 	}
 
@@ -42,7 +41,6 @@ class InheritanceQueryTest {
 		InheritanceQuery<String> chain = InheritanceQuery.of(String.class).onlyInterfaces();
 
 		assertThat(chain)
-			.hasOption(Serializable.class)
 			.containsExactly(Serializable.class, Comparable.class, CharSequence.class);
 	}
 
@@ -51,7 +49,6 @@ class InheritanceQueryTest {
 		InheritanceQuery<String> chain = InheritanceQuery.of(String.class).onlyClasses();
 
 		assertThat(chain)
-			.hasOption(String.class)
 			.containsExactly(String.class, Object.class);
 	}
 
@@ -61,7 +58,6 @@ class InheritanceQueryTest {
 			.filter(type -> type.getPackage().getName().startsWith("org.perfectable"));
 
 		assertThat(chain)
-			.hasOption(Leaf.class)
 			.containsExactly(Leaf.class, Branch.class, Root.class);
 	}
 
@@ -80,7 +76,6 @@ class InheritanceQueryTest {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class);
 
 		assertThat(chain)
-			.hasOption(Leaf.class)
 			.containsExactly(Leaf.class, Branch.class, Root.class, Object.class);
 	}
 
@@ -89,7 +84,6 @@ class InheritanceQueryTest {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class).upToExcluding(Root.class);
 
 		assertThat(chain)
-			.hasOption(Leaf.class)
 			.containsExactly(Leaf.class, Branch.class);
 	}
 
@@ -98,7 +92,6 @@ class InheritanceQueryTest {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class).upToIncluding(Root.class);
 
 		assertThat(chain)
-			.hasOption(Leaf.class)
 			.containsExactly(Leaf.class, Branch.class, Root.class);
 	}
 }

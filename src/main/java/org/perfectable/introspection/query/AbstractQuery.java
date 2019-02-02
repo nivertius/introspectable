@@ -29,10 +29,14 @@ abstract class AbstractQuery<E, Q extends AbstractQuery<E, ? extends Q>> impleme
 
 	public final Optional<E> option() {
 		Iterator<E> iterator = iterator();
-		if (iterator.hasNext()) {
-			return Optional.of(iterator.next());
+		if (!iterator.hasNext()) {
+			return Optional.empty();
 		}
-		return Optional.empty();
+		E element = iterator.next(); // SUPPRESS PrematureDeclaration
+		if (iterator.hasNext()) {
+			throw new IllegalArgumentException("Multiple elements were present in the query");
+		}
+		return Optional.of(element);
 	}
 
 	public boolean contains(@CompatibleWith("E") Object candidate) {
