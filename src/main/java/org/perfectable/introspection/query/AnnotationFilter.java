@@ -2,41 +2,33 @@ package org.perfectable.introspection.query;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 @FunctionalInterface
 public interface AnnotationFilter {
+	AnnotationFilter ACCEPTING = AnnotationFilters.Accepting.INSTANCE;
+	AnnotationFilter REJECTING = AnnotationFilters.Rejecting.INSTANCE;
+	AnnotationFilter ABSENT = AnnotationFilters.Absent.INSTANCE;
 
-	static <A extends Annotation> SingleAnnotationFilter<A> of(Class<A> annotationClass) {
-		return SingleAnnotationFilter.create(annotationClass);
+	static <A extends Annotation> Singular<A> single(Class<A> annotationClass) {
+		return AnnotationFilters.Single.create(annotationClass);
 	}
 
 	boolean matches(AnnotatedElement element);
 
-	final class SingleAnnotationFilter<A extends Annotation> implements AnnotationFilter {
+	default AnnotationFilter and(AnnotationFilter other) {
+		return AnnotationFilters.Conjunction.create(this, other);
+	}
 
-		private final Class<A> annotationClass;
-		private final Predicate<A> predicate;
+	default AnnotationFilter or(AnnotationFilter other) {
+		return AnnotationFilters.Disjunction.create(this, other);
+	}
 
-		public static <A extends Annotation> SingleAnnotationFilter<A> create(Class<A> annotationClass) {
-			return new SingleAnnotationFilter<>(annotationClass, Objects::nonNull);
-		}
+	default AnnotationFilter negated() {
+		return new AnnotationFilters.Negated(this);
+	}
 
-		private SingleAnnotationFilter(Class<A> annotationClass, Predicate<A> predicate) {
-			this.annotationClass = annotationClass;
-			this.predicate = predicate;
-		}
-
-		public SingleAnnotationFilter<A> andMatching(Predicate<A> addedPredicate) {
-			return new SingleAnnotationFilter<>(this.annotationClass, this.predicate.and(addedPredicate));
-		}
-
-		@Override
-		public boolean matches(AnnotatedElement element) {
-			A annotation = element.getAnnotation(this.annotationClass);
-			return this.predicate.test(annotation);
-		}
-
+	interface Singular<A extends Annotation> extends AnnotationFilter {
+		Singular<A> andMatching(Predicate<? super A> addedPredicate);
 	}
 }

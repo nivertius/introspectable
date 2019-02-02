@@ -106,7 +106,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 	}
 
 	public ClassQuery<C> annotatedWith(Class<? extends Annotation> annotation) {
-		return annotatedWith(AnnotationFilter.of(annotation));
+		return annotatedWith(AnnotationFilter.single(annotation));
 	}
 
 	public ClassQuery<C> annotatedWith(AnnotationFilter annotationFilter) {

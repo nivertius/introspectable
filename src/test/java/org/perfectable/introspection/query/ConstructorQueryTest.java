@@ -118,7 +118,7 @@ class ConstructorQueryTest {
 	@Test
 	void testAnnotatedWith() {
 		ConstructorQuery<Subject> extracted =
-			ConstructorQuery.of(Subject.class).annotatedWith(AnnotationFilter.of(Subject.Special.class));
+			ConstructorQuery.of(Subject.class).annotatedWith(AnnotationFilter.single(Subject.Special.class));
 
 		assertThat(extracted)
 			.isSingleton(SubjectReflection.CONSTRUCTOR_ANNOTATED)

@@ -292,7 +292,7 @@ class MethodQueryTest {
 	@Test
 	void testAnnotatedWith() {
 		MethodQuery extracted =
-			MethodQuery.of(Subject.class).annotatedWith(AnnotationFilter.of(Nullable.class));
+			MethodQuery.of(Subject.class).annotatedWith(AnnotationFilter.single(Nullable.class));
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)

@@ -14,7 +14,7 @@ abstract class MemberQuery<M extends Member & AnnotatedElement, Q extends Member
 	public abstract Q nameMatching(Pattern namePattern);
 
 	public Q annotatedWith(Class<? extends Annotation> annotationClass) {
-		return annotatedWith(AnnotationFilter.of(annotationClass));
+		return annotatedWith(AnnotationFilter.single(annotationClass));
 	}
 
 	public abstract Q annotatedWith(AnnotationFilter annotationFilter);

@@ -13,7 +13,7 @@ public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>
 
 
 	public InheritanceQuery<X> annotatedWith(Class<? extends Annotation> annotationClass) {
-		return annotatedWith(AnnotationFilter.of(annotationClass));
+		return annotatedWith(AnnotationFilter.single(annotationClass));
 	}
 
 	public InheritanceQuery<X> annotatedWith(AnnotationFilter annotationFilter) {
