@@ -20,6 +20,9 @@ import com.google.common.collect.ImmutableSet;
 
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings({
+	"DesignForExtension" // class is closed because of package-private constructor
+})
 public abstract class AnnotationQuery<A extends Annotation>
 		extends AbstractQuery<A, AnnotationQuery<A>> {
 

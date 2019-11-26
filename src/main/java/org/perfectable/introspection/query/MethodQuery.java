@@ -14,7 +14,10 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
-// SUPPRESS NEXT 1 ClassDataAbstractionCoupling
+@SuppressWarnings({
+	"DesignForExtension", // class is closed because of package-private constructor
+	"ClassDataAbstractionCoupling"
+})
 public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 
 	public static <X> MethodQuery of(Class<X> type) {

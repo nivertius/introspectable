@@ -12,7 +12,10 @@ import com.google.common.collect.ImmutableList;
 
 import static java.util.Objects.requireNonNull;
 
-// SUPPRESS NEXT 1 ClassDataAbstractionCoupling
+@SuppressWarnings({
+	"DesignForExtension", // class is closed because of package-private constructor
+	"ClassDataAbstractionCoupling"
+})
 public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 
 	public static FieldQuery empty() {

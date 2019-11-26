@@ -29,6 +29,10 @@ import static com.google.common.base.Preconditions.checkArgument;
  * <p>Instances of this type are immutable, as long as provided implementations of {@link Type} and its descendant are.
  * Plain java constructs of those are immutable.
  */
+@SuppressWarnings({
+	"DesignForExtension", // class is closed because of package-private constructor
+	"MethodCount"
+})
 public abstract class TypeView { // SUPPRESS MethodCount
 
 	/**

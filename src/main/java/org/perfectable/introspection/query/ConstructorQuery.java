@@ -10,7 +10,10 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
-// SUPPRESS NEXT 1 ClassDataAbstractionCoupling
+@SuppressWarnings({
+	"DesignForExtension", // class is closed because of package-private constructor
+	"ClassDataAbstractionCoupling"
+})
 public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>, ConstructorQuery<X>> {
 
 	public static <X> ConstructorQuery<X> of(Class<X> type) {

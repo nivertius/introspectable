@@ -6,6 +6,9 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings({
+	"DesignForExtension" // class is closed because of package-private constructor
+})
 public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>, InheritanceQuery<X>> {
 	public static <X> InheritanceQuery<X> of(Class<X> type) {
 		return new Complete<>(type);
