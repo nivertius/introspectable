@@ -63,6 +63,10 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 		return new AccessibleMarking<>(this);
 	}
 
+	ConstructorQuery() {
+		// package-only inheritance
+	}
+
 	private static class Complete<X> extends ConstructorQuery<X> {
 		private final Class<X> type;
 
