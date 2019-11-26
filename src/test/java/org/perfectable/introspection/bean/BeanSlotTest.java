@@ -15,6 +15,8 @@ class BeanSlotTest {
 			.returns(Bean.from(instance), slot -> slot.put(instance));
 	}
 
-	static class Subject { }
+	static class Subject {
+		// test class
+	}
 
 }

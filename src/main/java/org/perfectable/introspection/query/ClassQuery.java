@@ -332,7 +332,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 											   ImmutableSet.Builder<String> resultBuilder,
 											   Set<File> visited) {
 			@Nullable String manifestClassPath;
-			try (JarFile jarFile = new JarFile(jarPath);) {
+			try (JarFile jarFile = new JarFile(jarPath)) {
 				manifestClassPath = getManifestClassPathString(jarFile);
 				Streams.from(jarFile.entries())
 					.filter(entry -> !entry.isDirectory())
