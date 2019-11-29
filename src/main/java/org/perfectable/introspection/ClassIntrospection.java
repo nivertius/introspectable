@@ -3,10 +3,10 @@ package org.perfectable.introspection;
 import org.perfectable.introspection.query.AnnotationQuery;
 import org.perfectable.introspection.query.ConstructorQuery;
 import org.perfectable.introspection.query.FieldQuery;
-import org.perfectable.introspection.query.GenericsQuery;
 import org.perfectable.introspection.query.InheritanceQuery;
 import org.perfectable.introspection.query.MethodQuery;
 import org.perfectable.introspection.query.RelatedTypeQuery;
+import org.perfectable.introspection.type.ClassView;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -42,12 +42,12 @@ public final class ClassIntrospection<X> {
 		return inheritance().onlyInterfaces();
 	}
 
-	public InheritanceQuery<X> supertypes() {
+	public InheritanceQuery<X> superclasses() {
 		return inheritance().onlyClasses();
 	}
 
-	public GenericsQuery<X> generics() {
-		return GenericsQuery.of(this.type);
+	public ClassView<X> view() {
+		return ClassView.of(this.type);
 	}
 
 	public AnnotationQuery<Annotation> annotations() {
