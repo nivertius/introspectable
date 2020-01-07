@@ -1,4 +1,4 @@
-package org.perfectable.introspection; // SUPPRESS LENGTH
+package org.perfectable.introspection; // SUPPRESS FILE FileLength
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
