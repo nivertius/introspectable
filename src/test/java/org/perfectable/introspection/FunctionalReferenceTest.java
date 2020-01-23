@@ -1011,11 +1011,11 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 	}
 
-	private static class TestVisitor extends FunctionalReference.SingularVisitor<Void> {
+	private static class TestVisitor extends FunctionalReference.PartialVisitor<Void> {
 		static final String INVALID_VISIT_MESSAGE = "Invalid visit";
 
 		@Override
-		protected Void unexpected() {
+		protected Void fallback() {
 			fail(INVALID_VISIT_MESSAGE);
 			return null;
 		}

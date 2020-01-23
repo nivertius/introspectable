@@ -49,7 +49,7 @@ public interface FunctionalReference extends Serializable {
 		T visitLambda(Object... captures);
 	}
 
-	abstract class SingularVisitor<T> implements Visitor<T> {
+	abstract class PartialVisitor<T> implements Visitor<T> {
 		@Override
 		public T visitBound(Method method, Object boundInstance) {
 			return visitMethod(method);
@@ -67,18 +67,18 @@ public interface FunctionalReference extends Serializable {
 
 		@Override
 		public T visitConstructor(Constructor<?> constructor) {
-			return unexpected();
+			return fallback();
 		}
 
 		@Override
 		public T visitLambda(Object... captures) {
-			return unexpected();
+			return fallback();
 		}
 
 		protected T visitMethod(Method method) {
-			return unexpected();
+			return fallback();
 		}
 
-		protected abstract T unexpected();
+		protected abstract T fallback();
 	}
 }
