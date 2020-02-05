@@ -456,6 +456,17 @@ public abstract class TypeView {
 	}
 
 	/**
+	 * Creates generic array type where this type is its component.
+	 *
+	 * @return array type with this as component
+	 */
+	public ArrayTypeView buildArray() {
+		Type componentType = unwrap();
+		GenericArrayType type = new SyntheticGenericArrayType(componentType);
+		return new ArrayTypeView(type);
+	}
+	
+	/**
 	 * Visitor patter method dispatching method.
 	 *
 	 * <p>This method calls specific method on provided {@code visitor}, depending on actual implementation of this
@@ -569,11 +580,6 @@ public abstract class TypeView {
 
 	boolean containsVariant(TypeView other) {
 		return equals(other);
-	}
-
-	ArrayTypeView makeArray() {
-		SyntheticGenericArrayType arrayType = new SyntheticGenericArrayType(unwrap());
-		return new ArrayTypeView(arrayType);
 	}
 
 	private static <T> T safeAccessArray(T[] elements, int number) {

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import kotlin.annotations.jvm.ReadOnly;
 
 /**
@@ -30,9 +31,30 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 		return new WildcardTypeView(wildcard);
 	}
 
+	/**
+	 * Produces view for unbounded wildcard.
+	 *
+	 * @return view of an unbounded wildcard type.
+	 */
+	public static WildcardTypeView unbounded() {
+		return new WildcardTypeView(SyntheticWildcardType.UNBOUNDED);
+	}
+
+	/**
+	 * Creates new builder for wildcards.
+	 *
+	 * @return fresh, unconfigured mutable builder
+	 */
+	public static Builder builder() {
+		return new Builder();
+	}
+
 	@Override
 	public Class<?> erasure() {
 		Type[] bounds = type.getUpperBounds();
+		if (bounds.length == 0) {
+			return Object.class;
+		}
 		Type firstBound = bounds[0];
 		return of(firstBound).erasure();
 	}
@@ -236,5 +258,72 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 
 	private static Type[] removeObjectClass(Type[] upperBounds) {
 		return Stream.of(upperBounds).filter(bound -> !Object.class.equals(bound)).toArray(Type[]::new);
+	}
+
+	/**
+	 * Mutable builder class for {@link WildcardTypeView}.
+	 *
+	 * <p>Create instances of this builder using {@link WildcardTypeView#builder}.
+	 *
+	 * <p>Although wildcards that are declared in code can have either at most one lower bound
+	 * or at most one lower bound, nothing is really preventing runtime from creating wildcards that have multiples
+	 * of both. This builder permits this behavior.
+	 *
+	 * <p>Produced type will have erasure equal to erasure of the first upper bound, or {@link Object} if no upper
+	 * bounds were defined.
+	 */
+	public static final class Builder {
+		private final List<Type> lowerBounds = new ArrayList<>();
+		private final List<Type> upperBounds = new ArrayList<>();
+
+		Builder() {
+		}
+
+		/**
+		 * Adds lower bound to constructed type.
+		 *
+		 * <p>This is equivalent for adding {@code extends X} in code, where @{code X} is added bound.
+		 *
+		 * <p>Bounds will be returned in the same order as added in builder. Note that erasure of type variable is
+		 * its first bound, or {@link Object} if there are no bounds.
+		 *
+		 * @param addedBound bound to add
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder withLowerBound(Type addedBound) {
+			lowerBounds.add(addedBound);
+			return this;
+		}
+
+		/**
+		 * Adds upper bound to constructed type.
+		 *
+		 * <p>This is equivalent for adding {@code super X} in code, where @{code X} is added bound.
+		 *
+		 * <p>Bounds will be returned in the same order as added in builder.
+		 *
+		 * @param addedBound bound to add
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder withUpperBound(Type addedBound) {
+			upperBounds.add(addedBound);
+			return this;
+		}
+
+		/**
+		 * Creates wildcard type configured from this builder.
+		 *
+		 * @return configured wildcard type as view
+		 */
+		public WildcardTypeView build() {
+			@SuppressWarnings("assignment.type.incompatible")
+			Type[] finalLowerBounds = lowerBounds.toArray(new Type[0]);
+			@SuppressWarnings("assignment.type.incompatible")
+			Type[] finalUpperBounds = upperBounds.toArray(new Type[0]);
+			WildcardType type = new SyntheticWildcardType(finalLowerBounds, finalUpperBounds);
+			return new WildcardTypeView(type);
+		}
 	}
 }

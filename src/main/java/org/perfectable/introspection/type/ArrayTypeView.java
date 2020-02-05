@@ -164,7 +164,7 @@ public final class ArrayTypeView extends AbstractTypeView<GenericArrayType> {
 
 	@Override
 	public ArrayTypeView resolve(TypeView other) {
-		return component().resolve(other).makeArray();
+		return component().resolve(other).buildArray();
 	}
 
 	@Override

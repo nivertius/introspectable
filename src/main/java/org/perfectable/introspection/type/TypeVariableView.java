@@ -3,9 +3,13 @@ package org.perfectable.introspection.type;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 /**
  * {@link TypeView} that handles {@link TypeVariable}.
@@ -26,6 +30,18 @@ public final class TypeVariableView<D extends GenericDeclaration> extends Abstra
 	 */
 	public static <D extends GenericDeclaration> TypeVariableView<D> of(TypeVariable<D> variable) {
 		return new TypeVariableView<>(variable);
+	}
+
+	/**
+	 * Starts unconfigured builder for type variable.
+	 *
+	 * @param name name of variable about to be built
+	 * @param declaration source that will be used as variable declartion point
+	 * @param <D> type of declaration point for variable
+	 * @return fresh builder, configured only with provided parameters
+	 */
+	public static <D extends GenericDeclaration> Builder<D> builder(String name, D declaration) {
+		return new Builder<>(name, declaration);
 	}
 
 	@Override
@@ -190,5 +206,58 @@ public final class TypeVariableView<D extends GenericDeclaration> extends Abstra
 	private Stream<TypeView> upperBoundsStream() {
 		return Stream.of(type.getBounds())
 			.map(TypeView::of);
+	}
+
+	/**
+	 * Mutable builder pattern for {@link TypeVariableView}.
+	 *
+	 * <p>Create instances of this builder using {@link TypeVariableView#builder}.
+	 *
+	 * <p>Normally, in code type variables can contain only one upper bound that is class, but nothing is preventing
+	 * runtime from using multiples, and this builder doesn't have this restriction.
+	 *
+	 * <p>Produced type will have erasure equal to erasure of the first upper bound, or {@link Object} if no upper
+	 * bounds were defined.
+	 *
+	 * @param <D> source that will be used for declaring the variable
+	 */
+	public static final class Builder<D extends GenericDeclaration> {
+		private final D declaration;
+		private final String name;
+		private final List<Type> bounds = new ArrayList<>();
+
+		Builder(String name, D declaration) {
+			this.name = name;
+			this.declaration = declaration;
+		}
+
+		/**
+		 * Adds additional upper bound for type variable.
+		 *
+		 * <p>This is equivalent to writing in code {@code extends X} where {@code X} is a added bound.
+		 *
+		 * <p>Bounds will be returned in the same order as added in builder. Note that erasure of type variable is
+		 * its first bound, or {@link Object} if there are no bounds.
+		 *
+		 * @param addedBound added bound
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder<D> withUpperBound(Type addedBound) {
+			bounds.add(addedBound);
+			return this;
+		}
+
+		/**
+		 * Builds configured type variable.
+		 *
+		 * @return variable configured in this builder
+		 */
+		public TypeVariableView<D> build() {
+			@SuppressWarnings("assignment.type.incompatible")
+			Type[] finalBounds = bounds.toArray(new Type[0]);
+			TypeVariable<D> typeVariable = new SyntheticTypeVariable<>(name, declaration, finalBounds);
+			return new TypeVariableView<>(typeVariable);
+		}
 	}
 }

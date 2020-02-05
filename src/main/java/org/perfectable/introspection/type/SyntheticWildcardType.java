@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class SyntheticWildcardType implements WildcardType {
+	static final WildcardType UNBOUNDED = new SyntheticWildcardType(new Type[0], new Type[0]);
+
 	private static final Collector<CharSequence, ?, String> BOUND_JOINER = Collectors.joining(" & ");
 
 	SyntheticWildcardType(Type[] lowerBounds, Type[] upperBounds) {

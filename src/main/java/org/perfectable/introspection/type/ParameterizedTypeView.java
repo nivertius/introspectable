@@ -3,19 +3,23 @@ package org.perfectable.introspection.type;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import kotlin.annotations.jvm.ReadOnly;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
 /**
@@ -342,5 +346,128 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 			builder.add(argumentView);
 		}
 		return builder.build();
+	}
+
+	/**
+	 * Mutable builder pattern for {@link ParameterizedTypeView}.
+	 *
+	 * <p>Create instances of this builder using {@link ClassView#parameterizedBuilder}.
+	 */
+	public static final class Builder {
+		private final Class<?> baseType;
+
+		private @Nullable Type ownerType;
+
+		private final Type[] typeArguments;
+
+		@SuppressWarnings("assignment.type.incompatible")
+		Builder(Class<?> baseType) {
+			this.baseType = baseType;
+			this.ownerType = baseType.getDeclaringClass();
+			// type parameters cannot be just cloned, because it will have array component type TypeParameter,
+			// and we want just Type
+			TypeVariable<? extends Class<?>>[] typeParameters = baseType.getTypeParameters();
+			typeArguments = Arrays.copyOf(typeParameters, typeParameters.length, Type[].class);
+		}
+
+		/**
+		 * Sets new owner type for parameterized type.
+		 *
+		 * @see ParameterizedType#getOwnerType
+		 * @param newOwnerType new owner type for produced parameterized type
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder withOwner(Type newOwnerType) {
+			ownerType = newOwnerType;
+			return this;
+		}
+
+		/**
+		 * Sets a argument value for named type parameter in base class.
+		 *
+		 * @param parameterName name of parameter to replace
+		 * @param substitute new value type for specified parameter name
+		 * @throws IllegalArgumentException when there is no type parameter named with provided name in base class
+		 * @throws IllegalArgumentException when provided type is outside bounds of matching parameter
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder withSubstitution(String parameterName, Type substitute) {
+			TypeVariable<? extends Class<?>>[] typeParameters = baseType.getTypeParameters();
+			int parameterNumber = IntStream.range(0, typeParameters.length)
+				.filter(i -> typeParameters[i].getName().equals(parameterName))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException(
+					String.format("Type %s has no parameter with name %s", baseType, parameterName)));
+			return withSubstitution(parameterNumber, substitute);
+		}
+
+		/**
+		 * Sets a argument value for named type parameter in base class.
+		 *
+		 * @param parameterName name of parameter to replace
+		 * @param substitute new value type for specified parameter name
+		 * @throws IllegalArgumentException when there is no type parameter named with provided name in base class
+		 * @throws IllegalArgumentException when provided type is outside bounds of matching parameter
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder withSubstitution(String parameterName, TypeView substitute) {
+			return withSubstitution(parameterName, substitute.unwrap());
+		}
+
+		/**
+		 * Sets a argument value for type parameter selected by index in base class.
+		 *
+		 * <p>Index is in range 0 to L-1 where L is base type parameter count.
+		 *
+		 * @param parameterNumber index of parameter to replace
+		 * @param substitute new value type for specified parameter index
+		 * @throws IllegalArgumentException when type parameter index is out of range
+		 * @throws IllegalArgumentException when provided type is outside bounds of matching parameter
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder withSubstitution(int parameterNumber, Type substitute) {
+			checkArgument(parameterNumber >= 0, "Parameter number must be non-negative");
+			checkArgument(parameterNumber < typeArguments.length,
+				"Type %s has no parameter with index %s", baseType, parameterNumber);
+			Optional<Type> exceededBound = Arrays.stream(baseType.getTypeParameters()[parameterNumber].getBounds())
+				.filter(bound -> !of(bound).isSuperTypeOf(substitute))
+				.findAny();
+			if (exceededBound.isPresent()) {
+				String message = "Substitute " + substitute + " is outside bound " + exceededBound.get();
+				throw new IllegalArgumentException(message);
+			}
+			typeArguments[parameterNumber] = substitute;
+			return this;
+		}
+
+		/**
+		 * Sets a argument value for type parameter selected by index in base class.
+		 *
+		 * <p>Index is in range 0 to L-1 where L is base type parameter count.
+		 *
+		 * @param parameterNumber index of parameter to replace
+		 * @param substitute new value type for specified parameter index
+		 * @throws IllegalArgumentException when type parameter index is out of range
+		 * @throws IllegalArgumentException when provided type is outside bounds of matching parameter
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder withSubstitution(int parameterNumber, TypeView substitute) {
+			return withSubstitution(parameterNumber, substitute.unwrap());
+		}
+
+		/**
+		 * Builds configured parameterized type.
+		 *
+		 * @return new custom parameterized type based on previous builder configuration
+		 */
+		public ParameterizedTypeView build() {
+			ParameterizedType parameterizedType = new SyntheticParameterizedType(baseType, ownerType, typeArguments);
+			return new ParameterizedTypeView(parameterizedType);
+		}
 	}
 }

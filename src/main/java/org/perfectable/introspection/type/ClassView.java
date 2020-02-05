@@ -79,6 +79,24 @@ public final class ClassView<X> extends AbstractTypeView<Class<X>> {
 	}
 
 	/**
+	 * Starts building custom parameterized type using wrapped class as base type.
+	 *
+	 * <p>Builder will be preconfigured based on this class treated as parameterized type:
+	 * <ul>
+	 *     <li>Base type will be this class.</li>
+	 *     <li>Owner will be declaring class of this class, possibly none (i.e. null),
+	 *     when this is top-level class.</li>
+	 *     <li>Arguments to parameterized type will be type variables that this class declares.</li>
+	 * </ul>
+	 *
+	 * @see ParameterizedTypeView.Builder
+	 * @return unconfigured parameterized type builder
+	 */
+	public ParameterizedTypeView.Builder parameterizedBuilder() {
+		return new ParameterizedTypeView.Builder(type);
+	}
+
+	/**
 	 * Converts wrapped class to {@link ParameterizedType}.
 	 *
 	 * <p>This always can be done, but the results might not be expected. Non-generic classes are be treated as generic
