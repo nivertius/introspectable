@@ -46,7 +46,7 @@ class AnnotationBuilderTest {
 		AnnotationBuilder<Single> builder = AnnotationBuilder.of(Single.class);
 
 		assertThatThrownBy(() -> builder.with(Single::value, null))
-			.isInstanceOf(NullPointerException.class);
+			.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
