@@ -19,6 +19,8 @@ import org.objenesis.ObjenesisStd;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
+// THIS IS NOT A PUBLIC API: class must be public because of ServiceLoader
+@SuppressWarnings("javadoc")
 @Immutable
 @AutoService(ProxyService.class)
 public final class JavassistProxyService implements ProxyService {

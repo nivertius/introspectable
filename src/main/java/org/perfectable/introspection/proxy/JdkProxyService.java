@@ -14,6 +14,8 @@ import com.google.errorprone.annotations.Immutable;
 
 import static java.util.Objects.requireNonNull;
 
+// THIS IS NOT A PUBLIC API: class must be public because of ServiceLoader
+@SuppressWarnings("javadoc")
 @Immutable
 @AutoService(ProxyService.class)
 public final class JdkProxyService implements ProxyService {
