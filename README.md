@@ -64,9 +64,10 @@ To convert an incoming message to an appropriate object, messaging needs to know
 ```java
 Class<?> targetClass = 
     introspect(Consumer.class)
-        .generics()
+        .view()
+        .resolve(messageConsumer.getClass())
         .parameter(0)
-        .resolve(messageConsumer);
+        .erasure()
 ```
 
 #### Example: Dependency injection
