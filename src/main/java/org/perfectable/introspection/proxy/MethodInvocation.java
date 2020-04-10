@@ -39,7 +39,8 @@ public final class MethodInvocation<T> implements Invocation {
 		// receiver might be null
 		requireNonNull(arguments);
 		verifyCallability(method, receiver, arguments);
-		return new MethodInvocation<>(method, receiver, arguments);
+		Object[] argumentsClone = arguments.clone();
+		return new MethodInvocation<>(method, receiver, argumentsClone);
 	}
 
 	private MethodInvocation(Method method, @Nullable T receiver,
@@ -64,7 +65,7 @@ public final class MethodInvocation<T> implements Invocation {
 	}
 
 	public <R> R decompose(Decomposer<? super T, R> decomposer) {
-		return decomposer.decompose(method, receiver, arguments);
+		return decomposer.decompose(method, receiver, arguments.clone());
 	}
 
 	public MethodInvocation<T> withMethod(Method newMethod) {
