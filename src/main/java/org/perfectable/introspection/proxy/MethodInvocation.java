@@ -11,12 +11,33 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 import com.google.common.primitives.Primitives;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.concurrent.LazyInit;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
 
+/**
+ * Capture of a information needed to invoke a method.
+ *
+ * <p>This class collects and mimics arguments received by different proxy frameworks when method is intercepted on
+ * proxy object, represents it in uniform fashion and allows some manipulations. Instances of this class can be also
+ * constructed synthetically, as if the call was made but intercepted before execution.
+ *
+ * <p>This class handles three elements of a call: Method that was called, a receiver, that is object on which method
+ * was called, and arguments that were passed with the call. Receiver can be omitted, if the method is static.
+ *
+ * <p>There are two most important methods on this class: {@link #invoke} which will execute the method with specified
+ * arguments and receiver, and return result or throw an exception. The other method is {@link #decompose} which
+ * allows introspection of structure of this invocation.
+ *
+ * <p>Objects of this class are unmodifiable, that is methods of this class that would change the object actually
+ * produce new changed object. It is not immutable, because both receiver and arguments passed can, and often are,
+ * mutable.
+ *
+ * @param <T> Type of method receiver (i.e. {@code this})
+ */
 public final class MethodInvocation<T> implements Invocation {
 	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
 
@@ -30,12 +51,53 @@ public final class MethodInvocation<T> implements Invocation {
 
 	private static final MethodHandle PRIVATE_LOOKUP_CONSTRUCTOR = findPrivateLookupConstructor();
 
+	/**
+	 * Create invocation that was intercepted from proxy mechanism.
+	 *
+	 * <p>This method assumes that if {@code method} is vararg, and requires X non-vararg parameters, the
+	 * {@code arguments} passed here contains exactly X+1 elements, where X one are the non-vararg arguments that are
+	 * compatible with non-vararg parameter type, and the last element is an array of elements of the vararg type.
+	 * This is how the method call is represented in runtime for varargs. This method will 'unroll' the last array
+	 * argument and create invocation that has <i>flat</i> arguments array.
+	 *
+	 * <p>For non-varargs {@code method}, this method is identical to {@link #of}, i.e. {@code arguments} must be a
+	 * <i>flat</i> array with element count exactly equal to method parameter count, and with compatible types.
+	 *
+	 * @param method method that was/will be called on invocation
+	 * @param receiver receiver of the method call (i.e. {@code this})
+	 * @param arguments arguments in a runtime representation
+	 * @param <T> type of receiver
+	 * @return method invocation comprised from passed arguments
+	 * @throws IllegalArgumentException when method invocation is illegal and will not succeed: ex. method is static
+	 *     and receiver was provided (or other way around), receiver is of wrong type for the provided method,
+	 *     or arguments are not matching method parameter types.
+	 */
 	public static <T> MethodInvocation<T> intercepted(Method method,
 													  @Nullable T receiver, @Nullable Object... arguments) {
 		Object[] actualArguments = flattenVariableArguments(method, arguments);
 		return of(method, receiver, actualArguments);
 	}
 
+	/**
+	 * Create synthetic invocation from scratch.
+	 *
+	 * <p>This method assumes that if {@code method} is vararg, and requires X non-vararg parameters,
+	 * {@code arguments} contain at least X elements, where each of these elements is compatible with corresponding
+	 * parameter of the method, and any amount of elements that are compatible with the variable parameter of the
+	 * method.
+	 *
+	 * <p>For non-varargs {@code method}, this method expects an array with element count exactly equal to method
+	 * parameter count, and with compatible types.
+	 *
+	 * @param method method that was/will be called on invocation
+	 * @param receiver receiver of the method call (i.e. {@code this})
+	 * @param arguments arguments in a source representation
+	 * @param <T> type of receiver
+	 * @return method invocation comprised from passed arguments
+	 * @throws IllegalArgumentException when method invocation is illegal and will not succeed: ex. method is static
+	 *     and receiver was provided (or other way around), receiver is of wrong type for the provided method,
+	 *     or arguments are not matching method parameter types.
+	 */
 	public static <T> MethodInvocation<T> of(Method method, @Nullable T receiver, Object... arguments) {
 		requireNonNull(method);
 		// receiver might be null
@@ -52,6 +114,13 @@ public final class MethodInvocation<T> implements Invocation {
 		this.arguments = arguments;
 	}
 
+	/**
+	 * Executes the configured invocation.
+	 *
+	 * @return result of non-throwing invocation. If the method was {@code void}, the result will be null.
+	 * @throws Throwable result of throwing invocation. This will be exactly the exception that method thrown.
+	 */
+	@CanIgnoreReturnValue
 	@Nullable
 	@Override
 	public Object invoke() throws Throwable {
@@ -61,26 +130,93 @@ public final class MethodInvocation<T> implements Invocation {
 		return handle.invoke();
 	}
 
+	/**
+	 * Interface that allows decomposition of the invocation.
+	 *
+	 * @param <T> type of receiver expected
+	 * @param <R> type of result of decomposition.
+	 */
 	@FunctionalInterface
 	public interface Decomposer<T, R> {
+		/**
+		 * Decomposition method.
+		 *
+		 * @param method method that was called
+		 * @param receiver receiver that the method was called on, or null if the method was static
+		 * @param arguments arguments passed to the method, in source (<i>flat</i>) representation
+		 * @return result of decomposition
+		 */
 		R decompose(Method method, @Nullable T receiver, Object... arguments);
 	}
 
+	/**
+	 * Decomposes the invocation to its parts.
+	 *
+	 * <p>This method allows to transform this invocation by its parts into other object.
+	 *
+	 * <p>For example, decomposition might produce log message of method called:
+	 * <pre>
+	 *     Decomposer&lt;Object, String&gt; stringifingDecomposer = (method, receiver, arguments) ->
+	 *         String.format("Method %s was called on %s with %s", method, receiver, arguments);
+	 *     LOGGER.debug(invocation.decompose(stringifingDecomposer))
+	 * </pre>
+	 *
+	 * <p>Another example: decomposer might substitute invocation method for another one:
+	 * <pre>
+	 *     Decomposer&ltObject, MethodInvocation&lt;?&gt;&gt; replacingDecomposer = (method, receiver, arguments) ->
+	 *         MethodInvocation.of(anotherMethod, receiver, arguments);
+	 *     MethodInvocation&lt;?&gt; replacedMethodInvocation = invocation.decompose(replacingDecomposer))
+	 *     return replacedMethodInvocation.invoke();
+	 * </pre>
+	 *
+	 * @param decomposer decomposer to use for this invocation
+	 * @param <R> return type of decomposition
+	 * @return whatever decomposer returned on its {@link Decomposer#decompose} call
+	 */
+	@CanIgnoreReturnValue
 	public <R> R decompose(Decomposer<? super T, R> decomposer) {
 		return decomposer.decompose(method, receiver, arguments.clone());
 	}
 
+	/**
+	 * Creates new invocation with replaced method.
+	 *
+	 * <p>New method is checked for compatibility with both receiver and arguments.
+	 *
+	 * @param newMethod another method to be used
+	 * @return new invocation with new method, same receiver and same arguments
+	 * @throws IllegalArgumentException when new method is incompatible with receiver or arguments in any way
+	 */
 	public MethodInvocation<T> withMethod(Method newMethod) {
 		verifyReceiverCompatibility(newMethod, receiver);
 		verifyArgumentsCompatibility(newMethod, arguments);
 		return new MethodInvocation<>(newMethod, receiver, arguments);
 	}
 
+	/**
+	 * Creates new invocation with replaced receiver.
+	 *
+	 * <p>New receiver is checked for compatibility with method.
+	 *
+	 * @param newReceiver another receiver to be used
+	 * @param <X> extension type of the receiver, to allow concretization of result
+	 * @return new invocation with same method, new receiver and same arguments
+	 * @throws IllegalArgumentException when new receiver is incompatible with method
+	 */
 	public <X extends T> MethodInvocation<X> withReceiver(X newReceiver) {
 		verifyReceiverCompatibility(method, newReceiver);
 		return new MethodInvocation<>(method, newReceiver, arguments);
 	}
 
+	/**
+	 * Creates new invocation with replaced arguments.
+	 *
+	 * <p>New arguments is checked for compatibility with method.
+	 *
+	 * @param newArguments new arguments to be used
+	 * @return new invocation with same method, same receiver and new arguments
+	 * @throws IllegalArgumentException when new arguments is incompatible with method
+	 */
 	public MethodInvocation<T> withArguments(Object... newArguments) {
 		verifyArgumentsCompatibility(method, newArguments);
 		return new MethodInvocation<>(method, receiver, newArguments);
