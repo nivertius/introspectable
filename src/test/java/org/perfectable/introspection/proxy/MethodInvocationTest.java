@@ -28,27 +28,27 @@ class MethodInvocationTest {
 
 	@Test
 	void testNegativeCallabilityNonStaticNullReceiver() throws Throwable {
-		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD, null))
+		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD1, null))
 			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessage("Method " + NoArguments.METHOD
+			.hasMessage("Method " + NoArguments.METHOD1
 				+ " is not static, got null as receiver");
 	}
 
 	@Test
 	void testNegativeCallabilityInvalidReceiverType() throws Throwable {
 		VariableArguments instance = new VariableArguments();
-		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD, instance))
+		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD1, instance))
 			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessage("Method " + NoArguments.METHOD
+			.hasMessage("Method " + NoArguments.METHOD1
 				+ " requires " + NoArguments.class + " as receiver, got " + instance);
 	}
 
 	@Test
 	void testNegativeCallabilityInvalidArgumentCountConstantArguments() throws Throwable {
 		NoArguments instance = new NoArguments();
-		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD, instance, 1))
+		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD1, instance, 1))
 			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessage("Method " + NoArguments.METHOD
+			.hasMessage("Method " + NoArguments.METHOD1
 				+ " requires 0 arguments, got 1");
 	}
 
@@ -87,27 +87,59 @@ class MethodInvocationTest {
 	void testInvokeNoArguments() throws Throwable {
 		NoArguments instance = new NoArguments();
 
-		MethodInvocation<NoArguments> invocation = MethodInvocation.of(NoArguments.METHOD, instance);
+		MethodInvocation<NoArguments> invocation = MethodInvocation.of(NoArguments.METHOD1, instance);
 
 		Object result = invocation.invoke();
 
 		assertThat(result).isNull();
-		instance.assertExecuted();
+		instance.assertExecuted1();
 	}
 
 	@Test
-	void testInvokeNoArgumentsReplaced() throws Throwable {
+	void testInvokeNoArgumentsReceiverReplaced() throws Throwable {
 		NoArguments instance = new NoArguments();
 		NoArguments replaced = new NoArguments();
 
 		MethodInvocation<NoArguments> invocation =
-			MethodInvocation.of(NoArguments.METHOD, instance).withReceiver(replaced);
+			MethodInvocation.of(NoArguments.METHOD1, instance).withReceiver(replaced);
 
 		Object result = invocation.invoke();
 
 		assertThat(result).isNull();
 		instance.assertNotExecuted();
-		replaced.assertExecuted();
+		replaced.assertExecuted1();
+	}
+
+	@Test
+	void testInvokeNoArgumentsMethodReplaced() throws Throwable {
+		NoArguments instance = new NoArguments();
+
+		MethodInvocation<NoArguments> invocation =
+			MethodInvocation.of(NoArguments.METHOD1, instance).withMethod(NoArguments.METHOD2);
+
+		Object result = invocation.invoke();
+
+		assertThat(result).isNull();
+		instance.assertExecuted2();
+	}
+
+	@Test
+	void testInvokeSimpleArgumentsReplaced() throws Throwable {
+		SimpleArguments instance = new SimpleArguments();
+
+		String firstArgument = EXAMPLE_FIRST_ARGUMENT;
+		String secondArgument = "secondArgument";
+		String replacedFirstArgument = "replacedFirstArgument";
+		String replacedSecondArgument = "replacedSecondArgument";
+		MethodInvocation<SimpleArguments> invocation =
+			MethodInvocation.of(SimpleArguments.METHOD, instance, firstArgument, secondArgument);
+		MethodInvocation<SimpleArguments> replaced =
+			invocation.withArguments(replacedFirstArgument, replacedSecondArgument);
+
+		Object result = replaced.invoke();
+
+		assertThat(result).isNull();
+		instance.assertExecutedWith(replacedFirstArgument, replacedSecondArgument);
 	}
 
 	@Test
@@ -188,26 +220,38 @@ class MethodInvocationTest {
 	}
 
 	static class NoArguments {
-		private static final Method METHOD = getMethod(NoArguments.class, "executeNoArgument");
+		private static final Method METHOD1 = getMethod(NoArguments.class, "executeNoArgument1");
+		private static final Method METHOD2 = getMethod(NoArguments.class, "executeNoArgument2");
 		static final Method METHOD_STATIC = getMethod(NoArguments.class, "stubStatic");
 
-		private boolean executed;
+		private boolean executed1;
+		private boolean executed2;
 
-		void executeNoArgument() {
-			assertThat(executed).isFalse();
-			executed = true;
+		void executeNoArgument1() {
+			assertThat(executed1).isFalse();
+			executed1 = true;
+		}
+
+		void executeNoArgument2() {
+			assertThat(executed2).isFalse();
+			executed2 = true;
 		}
 
 		static void stubStatic() {
 			throw new AssertionError("Stub method actually called");
 		}
 
-		void assertExecuted() {
-			assertThat(executed).isTrue();
+		void assertExecuted1() {
+			assertThat(executed1).isTrue();
+		}
+
+		void assertExecuted2() {
+			assertThat(executed2).isTrue();
 		}
 
 		void assertNotExecuted() {
-			assertThat(executed).isFalse();
+			assertThat(executed1).isFalse();
+			assertThat(executed2).isFalse();
 		}
 	}
 

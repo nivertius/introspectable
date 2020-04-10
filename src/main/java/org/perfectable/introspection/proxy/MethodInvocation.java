@@ -67,8 +67,20 @@ public final class MethodInvocation<T> implements Invocation {
 		return decomposer.decompose(method, receiver, arguments);
 	}
 
+	public MethodInvocation<T> withMethod(Method newMethod) {
+		verifyReceiverCompatibility(newMethod, receiver);
+		verifyArgumentsCompatibility(newMethod, arguments);
+		return new MethodInvocation<>(newMethod, receiver, arguments);
+	}
+
 	public <X extends T> MethodInvocation<X> withReceiver(X newReceiver) {
-		return of(method, newReceiver, arguments);
+		verifyReceiverCompatibility(method, newReceiver);
+		return new MethodInvocation<>(method, newReceiver, arguments);
+	}
+
+	public MethodInvocation<T> withArguments(Object... newArguments) {
+		verifyArgumentsCompatibility(method, newArguments);
+		return new MethodInvocation<>(method, receiver, newArguments);
 	}
 
 	@Override
