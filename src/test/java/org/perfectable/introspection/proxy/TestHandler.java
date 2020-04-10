@@ -76,7 +76,7 @@ public class TestHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 		}
 
 		public void andThrow(Throwable thrown) {
-			this.result = Invocation.throwing(thrown);
+			this.result = Invocation.throwing(() -> thrown);
 		}
 
 		public Invocation process(Method method, @Nullable T receiver, Object... arguments) {

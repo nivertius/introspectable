@@ -1,47 +1,27 @@
 package org.perfectable.introspection.proxy;
 
+import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 public interface Invocation {
-
 	@Nullable
 	Object invoke() throws Throwable; // SUPPRESS IllegalThrows
 
-	static Invocation returning(Object value) {
-		return new Returning(value);
+	static Invocation fromRunnable(Runnable runnable) {
+		return new Invocations.RunnableAdapter(runnable);
 	}
 
-	static Invocation throwing(Throwable thrown) {
-		return new Throwing(thrown);
+	static Invocation fromCallable(Callable<?> callable) {
+		return new Invocations.CallableAdapter(callable);
 	}
 
-	class Returning implements Invocation {
-		@Nullable
-		private final Object value;
-
-		Returning(@Nullable Object value) {
-			this.value = value;
-		}
-
-		@Nullable
-		@Override
-		public Object invoke() {
-			return value;
-		}
+	static Invocation returning(@Nullable Object result) {
+		return new Invocations.Returning(result);
 	}
 
-	class Throwing implements Invocation {
-		private final Throwable thrown;
-
-		Throwing(Throwable thrown) {
-			this.thrown = thrown;
-		}
-
-		@Nullable
-		@Override
-		public Object invoke() throws Throwable {
-			throw thrown;
-		}
+	static Invocation throwing(Supplier<Throwable> thrownSupplier) {
+		return new Invocations.Throwing(thrownSupplier);
 	}
 
 }
