@@ -219,6 +219,26 @@ class MethodInvocationTest {
 		assertThat(invocation).isNotEqualTo(new Object());
 	}
 
+
+	@Test
+	void testDecomposition() {
+		VariablePrimitiveArguments instance = new VariablePrimitiveArguments();
+
+		String firstArgument = EXAMPLE_FIRST_ARGUMENT;
+		int secondArgument = 238;
+		int thirdArgument = 474;
+		MethodInvocation<VariablePrimitiveArguments> invocation =
+			MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
+				firstArgument, secondArgument, thirdArgument);
+
+
+		MethodInvocation.Decomposer<Object, Decomposition> decomposer = Decomposition::new;
+		Decomposition result = invocation.decompose(decomposer);
+		result.assertMethod(VariablePrimitiveArguments.METHOD);
+		result.assertReceiver(instance);
+		result.assertArguments(firstArgument, secondArgument, thirdArgument);
+	}
+
 	static class NoArguments {
 		private static final Method METHOD1 = getMethod(NoArguments.class, "executeNoArgument1");
 		private static final Method METHOD2 = getMethod(NoArguments.class, "executeNoArgument2");
@@ -322,6 +342,31 @@ class MethodInvocationTest {
 			assertThat(executed).isTrue();
 			assertThat(first).isEqualTo(expectedFirst);
 			assertThat(variable).isEqualTo(expectedVariable);
+		}
+	}
+
+	private static final class Decomposition {
+		private final Method method;
+		private final Object receiver;
+		private final Object[] arguments;
+
+		Decomposition(Method method, Object receiver, Object[] arguments) { // SUPPRESS UseVarargs
+			this.method = method;
+			this.receiver = receiver;
+			this.arguments = arguments;
+		}
+
+		public void assertMethod(Method expectedMethod) {
+			assertThat(this.method).isEqualTo(expectedMethod);
+		}
+
+		public void assertReceiver(Object expectedReceiver) {
+			assertThat(this.receiver).isEqualTo(expectedReceiver);
+		}
+
+
+		public void assertArguments(Object... expectedArguments) {
+			assertThat(this.arguments).isEqualTo(expectedArguments);
 		}
 	}
 
