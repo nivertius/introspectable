@@ -6,15 +6,14 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
+import com.google.errorprone.annotations.concurrent.LazyInit;
+
 import static org.perfectable.introspection.Introspections.introspect;
 
 public final class LazyInitialization {
 	public interface Proxy<T> {
 		Optional<T> extractInstance();
 	}
-
-	private static final ProxyBuilderFactory PROXY_BUILDER_FACTORY =
-			ProxyBuilderFactory.withFeature(Feature.SUPERCLASS);
 
 	@FunctionalInterface
 	public interface Initializer<T> {
@@ -26,14 +25,17 @@ public final class LazyInitialization {
 		return PROXY_BUILDER_FACTORY.ofType(resultClass, Proxy.class).instantiate(handler);
 	}
 
+	private static final ProxyBuilderFactory PROXY_BUILDER_FACTORY =
+			ProxyBuilderFactory.withFeature(Feature.SUPERCLASS);
+
 	private static final class LazyInitializationHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 		private static final Method EXTRACT_INSTANCE_METHOD =
 				introspect(Proxy.class).methods().named("extractInstance").parameters().unique();
 
 		private final Initializer<? extends T> initializer;
 
-		@Nullable
-		private T instance;
+		@LazyInit
+		private transient T instance;
 
 		public static <T> LazyInitializationHandler<T> create(Initializer<? extends T> initializer) {
 			return new LazyInitializationHandler<>(initializer);
@@ -57,9 +59,6 @@ public final class LazyInitialization {
 			}
 			if (this.instance == null) {
 				this.instance = this.initializer.initialize();
-			}
-			if (!method.getDeclaringClass().isAssignableFrom(this.instance.getClass())) {
-				throw new AssertionError("Method extracted is of incompatible class");
 			}
 			return MethodInvocation.of(method, this.instance, arguments);
 		}
