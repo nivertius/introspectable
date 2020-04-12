@@ -3,7 +3,7 @@ package org.perfectable.introspection.query;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
-
+import java.lang.annotation.Target;
 import javax.annotation.Nullable;
 
 import org.junit.jupiter.api.Test;
@@ -93,6 +93,18 @@ class AnnotationQueryTest {
 		assertThat(query)
 			.contains(INSTANCE_SPECIAL, INSTANCE_OTHER)
 			.doesNotContain(EXAMPLE_STRING, INSTANCE_NULLABLE);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	void testFromElementsUnrestricted() {
+		AnnotationQuery<Annotation> query =
+			AnnotationQuery.fromElements(INSTANCE_DOCUMENTED, INSTANCE_RETENTION, INSTANCE_SPECIAL)
+				.annotatedWith(Target.class);
+
+		assertThat(query)
+			.contains(INSTANCE_DOCUMENTED, INSTANCE_RETENTION)
+			.doesNotContain(INSTANCE_SPECIAL);
 	}
 
 	@SuppressWarnings("unchecked")

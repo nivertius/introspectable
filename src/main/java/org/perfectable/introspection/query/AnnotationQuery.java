@@ -2,10 +2,12 @@ package org.perfectable.introspection.query;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import static java.util.Objects.requireNonNull;
 
@@ -18,6 +20,14 @@ public abstract class AnnotationQuery<A extends Annotation>
 
 	public static AnnotationQuery<Annotation> of(AnnotatedElement element) {
 		return new OfElement(element);
+	}
+
+	public static AnnotationQuery<Annotation> fromElements(Set<Annotation> set) {
+		return new OfSet(ImmutableSet.copyOf(set));
+	}
+
+	public static AnnotationQuery<Annotation> fromElements(Annotation... candidates) {
+		return fromElements(ImmutableSet.copyOf(candidates));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -51,6 +61,19 @@ public abstract class AnnotationQuery<A extends Annotation>
 		@Override
 		public Stream<Annotation> stream() {
 			return Stream.of(element.getAnnotations());
+		}
+	}
+
+	private static final class OfSet extends AnnotationQuery<Annotation> {
+		private final ImmutableSet<Annotation> elements;
+
+		OfSet(ImmutableSet<Annotation> elements) {
+			this.elements = elements;
+		}
+
+		@Override
+		public Stream<Annotation> stream() {
+			return elements.stream();
 		}
 	}
 
