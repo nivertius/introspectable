@@ -1,14 +1,17 @@
 package org.perfectable.introspection; // SUPPRESS FILE FileLength
 
 import java.lang.annotation.Annotation;
-import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
-import org.assertj.core.api.iterable.Extractor;
+import javax.annotation.Nullable;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -118,17 +121,9 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void parametersZeroGenericType() {
+		void parametersZeroAnnotations() {
 			assertThat(marker.introspect())
-				.returns(Object.class, introspection -> introspection.genericParameterType(0));
-		}
-
-		@Test
-		void parametersZeroAnnotated() {
-			assertThat(marker.introspect())
-				.satisfies(introspection -> assertThat(introspection.annotatedParameter(0))
-					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
-						.isEmpty()));
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotations(0)).isEmpty());
 		}
 
 		@Test
@@ -198,15 +193,9 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void parametersZeroGenericType() {
+		void parametersZeroAnnotations() {
 			assertThat(marker.introspect())
-				.returns(Object.class, introspection -> introspection.genericParameterType(0));
-		}
-
-		@Test
-		void parametersZeroAnnotated() {
-			assertThat(marker.introspect())
-				.returns(Object.class, introspection -> introspection.annotatedParameter(0));
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotations(0)).isEmpty());
 		}
 
 		@Test
@@ -276,17 +265,9 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void parametersZeroGenericType() {
+		void parametersZeroAnnotations() {
 			assertThat(marker.introspect())
-				.returns(StringBuilder.class, introspection -> introspection.genericParameterType(0));
-		}
-
-		@Test
-		void parametersZeroAnnotated() {
-			assertThat(marker.introspect())
-				.satisfies(introspection -> assertThat(introspection.annotatedParameter(0))
-					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
-						.isEmpty()));
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotations(0)).isEmpty());
 		}
 
 		@Test
@@ -356,17 +337,9 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void parametersZeroGenericType() {
+		void parametersZeroAnnotations() {
 			assertThat(marker.introspect())
-				.returns(StringBuilder.class, introspection -> introspection.genericParameterType(0));
-		}
-
-		@Test
-		void parametersZeroAnnotated() {
-			assertThat(marker.introspect())
-				.satisfies(introspection -> assertThat(introspection.annotatedParameter(0))
-					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
-						.isEmpty()));
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotations(0)).isEmpty());
 		}
 
 		@Test
@@ -376,17 +349,9 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void parametersOneGenericType() {
+		void parametersOneAnnotations() {
 			assertThat(marker.introspect())
-				.returns(StringBuffer.class, introspection -> introspection.genericParameterType(1));
-		}
-
-		@Test
-		void parametersOneAnnotated() {
-			assertThat(marker.introspect())
-				.satisfies(introspection -> assertThat(introspection.annotatedParameter(1))
-					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
-						.isEmpty()));
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotations(1)).isEmpty());
 		}
 
 		@Test
@@ -521,17 +486,9 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void parametersZeroGenericType() {
+		void parametersZeroAnnotations() {
 			assertThat(marker.introspect())
-				.returns(Object.class, introspection -> introspection.genericParameterType(0));
-		}
-
-		@Test
-		void parametersZeroAnnotated() {
-			assertThat(marker.introspect())
-				.satisfies(introspection -> assertThat(introspection.annotatedParameter(0))
-					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
-						.isEmpty()));
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotations(0)).isEmpty());
 		}
 
 		@Test
@@ -665,17 +622,9 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void parametersZeroGenericType() {
+		void parametersZeroAnnotations() {
 			assertThat(marker.introspect())
-				.returns(StringBuffer.class, introspection -> introspection.genericParameterType(0));
-		}
-
-		@Test
-		void parametersZeroAnnotated() {
-			assertThat(marker.introspect())
-				.satisfies(introspection -> assertThat(introspection.annotatedParameter(0))
-					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
-						.isEmpty()));
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotations(0)).isEmpty());
 		}
 
 		@Test
@@ -746,22 +695,9 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void parametersZeroGenericType() {
+		void parametersZeroAnnotations() {
 			assertThat(marker.introspect())
-				.returns(Retention.class, introspection -> introspection.genericParameterType(0));
-		}
-
-		@Test
-		void parametersZeroAnnotated() {
-			Extractor<Annotation, Class<?>> extractor =
-				(Annotation annotation) -> (Class<?>) annotation.annotationType();
-			assertThat(marker.introspect())
-				.satisfies(introspection -> assertThat(introspection.annotatedParameter(0))
-					.satisfies(annotatedElement -> {
-						assertThat(annotatedElement.getAnnotations())
-							.extracting(extractor)
-							.containsExactly(Documented.class, Retention.class, Target.class);
-					}));
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotations(0)).isEmpty());
 		}
 
 		@Test
@@ -898,17 +834,9 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void parametersZeroGenericType() {
+		void parametersZeroAnnotations() {
 			assertThat(marker.introspect())
-				.returns(Object.class, introspection -> introspection.genericParameterType(0));
-		}
-
-		@Test
-		void parametersZeroAnnotated() {
-			assertThat(marker.introspect())
-				.satisfies(introspection -> assertThat(introspection.annotatedParameter(0))
-					.satisfies(annotatedElement -> assertThat(annotatedElement.getAnnotations())
-						.isEmpty()));
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotations(0)).isEmpty());
 		}
 
 		@Test
@@ -950,6 +878,24 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 	}
 
+
+	@SuppressWarnings("NullableProblems")
+	@Nested
+	class AnnotatedParameterLambda {
+		private final TestSingleParameter marker = (@Nullable Object parameter1) -> { /* empty */ };
+
+		@Disabled("Bug in JDK results in non-retention of annotations")
+		@Test
+		void parametersZeroAnnotations() {
+			assertThat(marker.introspect())
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotations(0))
+					.satisfies(annotations -> assertThat(annotations).extracting(Annotation::annotationType)
+						.satisfies(annotationTypes ->
+							Assertions.<Class<? extends Annotation>>assertThat(annotationTypes)
+								.containsExactly(Nullable.class))));
+		}
+	}
+
 	@Nested
 	class OverloadedMethodReference {
 		private final TestParameterless marker = System::getenv;
@@ -964,9 +910,13 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 
 		@Test
 		void resultType() {
-			assertThat(marker.introspect())
-				.returns(java.util.Map.class,
-					FunctionalReference.Introspection::resultType);
+			FunctionalReference.Introspection introspection = marker.introspect();
+			Type resultType = introspection.resultType();
+			assertThat(resultType).isInstanceOf(ParameterizedType.class);
+			ParameterizedType parameterizedResultType = (ParameterizedType) resultType;
+			assertThat(parameterizedResultType)
+				.returns(java.util.Map.class, ParameterizedType::getRawType)
+				.returns(new Class<?>[] { String.class, String.class }, ParameterizedType::getActualTypeArguments);
 		}
 
 		@Test

@@ -1,10 +1,11 @@
 package org.perfectable.introspection;
 
 import java.io.Serializable;
-import java.lang.reflect.AnnotatedElement;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Set;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
@@ -20,21 +21,19 @@ public interface FunctionalReference extends Serializable {
 
 		Class<?> capturingType();
 
-		Class<?> resultType();
+		Type resultType();
 
 		int parametersCount();
 
-		Class<?> parameterType(int number);
+		Type parameterType(int number);
 
-		Type genericParameterType(int number);
-
-		AnnotatedElement annotatedParameter(int number) throws IllegalArgumentException;
+		Set<Annotation> parameterAnnotations(int number);
 
 		String referencedMethodName() throws IllegalStateException;
 
 		Method referencedMethod() throws IllegalStateException;
 
-		Constructor<?> referencedConstructor();
+		Constructor<?> referencedConstructor() throws IllegalStateException;
 	}
 
 	interface Visitor<T> {

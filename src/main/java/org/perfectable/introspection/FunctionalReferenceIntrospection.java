@@ -5,14 +5,17 @@ import org.perfectable.introspection.query.MethodQuery;
 import org.perfectable.introspection.query.ParametersFilter;
 import org.perfectable.introspection.query.TypeFilter;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandleInfo;
 import java.lang.invoke.SerializedLambda;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Optional;
+import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -117,21 +120,16 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		}
 
 		@Override
-		public Class<?> parameterType(int number) {
-			checkParameterNumber(number);
-			return implementationMethod.getParameterTypes()[number];
-		}
-
-		@Override
-		public Type genericParameterType(int number) {
+		public Type parameterType(int number) {
 			checkParameterNumber(number);
 			return implementationMethod.getGenericParameterTypes()[number];
 		}
 
 		@Override
-		public AnnotatedElement annotatedParameter(int number) {
+		public Set<Annotation> parameterAnnotations(int number) {
 			checkParameterNumber(number);
-			return implementationMethod.getParameters()[number];
+			Annotation[] annotations = implementationMethod.getParameterAnnotations()[number];
+			return ImmutableSet.copyOf(annotations);
 		}
 
 		@Override
@@ -145,8 +143,8 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		}
 
 		@Override
-		public final Class<?> resultType() {
-			return implementationMethod.getReturnType();
+		public final Type resultType() {
+			return implementationMethod.getGenericReturnType();
 		}
 
 		void checkParameterNumber(int number) {
@@ -171,18 +169,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		}
 
 		@Override
-		public Class<?> parameterType(int number) {
-			checkParameterNumber(number);
-			if (number == 0) {
-				return implementationClass;
-			}
-			else {
-				return implementationMethod.getParameterTypes()[number - 1];
-			}
-		}
-
-		@Override
-		public Type genericParameterType(int number) {
+		public Type parameterType(int number) {
 			checkParameterNumber(number);
 			if (number == 0) {
 				return implementationClass;
@@ -193,13 +180,14 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		}
 
 		@Override
-		public AnnotatedElement annotatedParameter(int number) {
+		public Set<Annotation> parameterAnnotations(int number) {
 			checkParameterNumber(number);
 			if (number == 0) {
-				return implementationClass;
+				return ImmutableSet.copyOf(implementationMethod.getAnnotatedReceiverType().getAnnotations());
 			}
 			else {
-				return implementationMethod.getParameters()[number - 1];
+				Annotation[] parameterAnnotations = implementationMethod.getParameterAnnotations()[number - 1];
+				return ImmutableSet.copyOf(parameterAnnotations);
 			}
 		}
 	}
@@ -304,21 +292,16 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		}
 
 		@Override
-		public Class<?> parameterType(int number) {
-			checkParameterNumber(number);
-			return implementationConstructor.getParameterTypes()[number];
-		}
-
-		@Override
-		public Type genericParameterType(int number) {
+		public Type parameterType(int number) {
 			checkParameterNumber(number);
 			return implementationConstructor.getGenericParameterTypes()[number];
 		}
 
 		@Override
-		public AnnotatedElement annotatedParameter(int number) {
+		public Set<Annotation> parameterAnnotations(int number) {
 			checkParameterNumber(number);
-			return implementationConstructor.getParameters()[number];
+			Annotation[] annotations = implementationConstructor.getParameterAnnotations()[number];
+			return ImmutableSet.copyOf(annotations);
 		}
 
 		private void checkParameterNumber(int number) {
