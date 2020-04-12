@@ -15,6 +15,7 @@ import java.lang.reflect.Type;
 import java.util.Optional;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -120,15 +121,15 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		}
 
 		@Override
-		public Type parameterType(int number) {
-			checkParameterNumber(number);
-			return implementationMethod.getGenericParameterTypes()[number];
+		public Type parameterType(int index) {
+			checkParameterNumber(index);
+			return implementationMethod.getGenericParameterTypes()[index];
 		}
 
 		@Override
-		public Set<Annotation> parameterAnnotations(int number) {
-			checkParameterNumber(number);
-			Annotation[] annotations = implementationMethod.getParameterAnnotations()[number];
+		public Set<Annotation> parameterAnnotations(int index) {
+			checkParameterNumber(index);
+			Annotation[] annotations = implementationMethod.getParameterAnnotations()[index];
 			return ImmutableSet.copyOf(annotations);
 		}
 
@@ -164,24 +165,24 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		}
 
 		@Override
-		public Type parameterType(int number) {
-			checkParameterNumber(number);
-			if (number == 0) {
+		public Type parameterType(int index) {
+			checkParameterNumber(index);
+			if (index == 0) {
 				return implementationClass;
 			}
 			else {
-				return implementationMethod.getGenericParameterTypes()[number - 1];
+				return implementationMethod.getGenericParameterTypes()[index - 1];
 			}
 		}
 
 		@Override
-		public Set<Annotation> parameterAnnotations(int number) {
-			checkParameterNumber(number);
-			if (number == 0) {
-				return ImmutableSet.copyOf(implementationMethod.getAnnotatedReceiverType().getAnnotations());
+		public Set<Annotation> parameterAnnotations(int index) {
+			checkParameterNumber(index);
+			if (index == 0) {
+				return ImmutableSet.of();
 			}
 			else {
-				Annotation[] parameterAnnotations = implementationMethod.getParameterAnnotations()[number - 1];
+				Annotation[] parameterAnnotations = implementationMethod.getParameterAnnotations()[index - 1];
 				return ImmutableSet.copyOf(parameterAnnotations);
 			}
 		}
@@ -211,21 +212,21 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	}
 
 	private static final class OfLambda extends OfMethod {
-		private final Object[] captures;
+		private final ImmutableList<Object> captures;
 
 		OfLambda(SerializedLambda serializedForm, ClassLoader classLoader) {
 			super(serializedForm, classLoader);
-			Object[] result = new Object[this.serializedForm.getCapturedArgCount()];
-			for (int i = 0; i < result.length; i++) {
+			ImmutableList.Builder<Object> result = ImmutableList.builder();
+			for (int i = 0; i < this.serializedForm.getCapturedArgCount(); i++) {
 				Object capturedArg = this.serializedForm.getCapturedArg(i);
-				result[i] = capturedArg;
+				result.add(capturedArg);
 			}
-			this.captures = result;
+			this.captures = result.build();
 		}
 
 		@Override
 		public <T> T visit(FunctionalReference.Visitor<T> visitor) {
-			return visitor.visitLambda(captures);
+			return visitor.visitLambda(implementationMethod, captures);
 		}
 
 		// SUPPRESS MultipleStringLiterals
@@ -275,15 +276,15 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		}
 
 		@Override
-		public Type parameterType(int number) {
-			checkParameterNumber(number);
-			return implementationConstructor.getGenericParameterTypes()[number];
+		public Type parameterType(int index) {
+			checkParameterNumber(index);
+			return implementationConstructor.getGenericParameterTypes()[index];
 		}
 
 		@Override
-		public Set<Annotation> parameterAnnotations(int number) {
-			checkParameterNumber(number);
-			Annotation[] annotations = implementationConstructor.getParameterAnnotations()[number];
+		public Set<Annotation> parameterAnnotations(int index) {
+			checkParameterNumber(index);
+			Annotation[] annotations = implementationConstructor.getParameterAnnotations()[index];
 			return ImmutableSet.copyOf(annotations);
 		}
 

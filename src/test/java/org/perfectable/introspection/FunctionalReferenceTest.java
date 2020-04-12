@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -711,7 +712,8 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitLambda(Object... captures) {
+				public Void visitLambda(Method method, List<Object> captures) {
+					assertThat(method).isNotNull();
 					assertThat(captures)
 						.hasSize(1)
 						.hasOnlyElementsOfType(ParameterlessLambda.class);
@@ -780,7 +782,8 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitLambda(Object... captures) {
+				public Void visitLambda(Method method, List<Object> captures) {
+					assertThat(method).isNotNull();
 					assertThat(captures)
 						.hasSize(1)
 						.hasOnlyElementsOfType(SingleParameterLambda.class);

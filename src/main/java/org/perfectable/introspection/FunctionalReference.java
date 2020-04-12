@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Set;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
@@ -25,9 +26,9 @@ public interface FunctionalReference extends Serializable {
 
 		int parametersCount();
 
-		Type parameterType(int number);
+		Type parameterType(int index);
 
-		Set<Annotation> parameterAnnotations(int number);
+		Set<Annotation> parameterAnnotations(int index);
 
 		Method referencedMethod() throws IllegalStateException;
 
@@ -35,23 +36,18 @@ public interface FunctionalReference extends Serializable {
 	}
 
 	interface Visitor<T> {
-		T visitBound(Method method, Object boundInstance);
-
 		T visitStatic(Method method);
 
 		T visitInstance(Method method);
 
+		T visitBound(Method method, Object boundInstance);
+
 		T visitConstructor(Constructor<?> constructor);
 
-		T visitLambda(Object... captures);
+		T visitLambda(Method method, List<Object> captures);
 	}
 
 	abstract class PartialVisitor<T> implements Visitor<T> {
-		@Override
-		public T visitBound(Method method, Object boundInstance) {
-			return visitMethod(method);
-		}
-
 		@Override
 		public T visitStatic(Method method) {
 			return visitMethod(method);
@@ -63,12 +59,17 @@ public interface FunctionalReference extends Serializable {
 		}
 
 		@Override
+		public T visitBound(Method method, Object boundInstance) {
+			return visitMethod(method);
+		}
+
+		@Override
 		public T visitConstructor(Constructor<?> constructor) {
 			return fallback();
 		}
 
 		@Override
-		public T visitLambda(Object... captures) {
+		public T visitLambda(Method method, List<Object> captures) {
 			return fallback();
 		}
 
