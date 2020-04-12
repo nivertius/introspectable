@@ -665,6 +665,22 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 	}
 
+
+	@Nested
+	class MethodParameterAnnotations {
+		private final TestSingleParameter marker = Declarator::staticSingle;
+
+		@Test
+		void parametersZeroAnnotations() {
+			assertThat(marker.introspect())
+				.satisfies(introspection -> assertThat(introspection.parameterAnnotations(0))
+					.satisfies(annotations -> assertThat(annotations).extracting(Annotation::annotationType)
+						.satisfies(annotationTypes ->
+							Assertions.<Class<? extends Annotation>>assertThat(annotationTypes)
+								.containsExactly(Nullable.class))));
+		}
+	}
+
 	@Nested
 	class ParameterlessLambda {
 		private final Object instance = new Object();
@@ -907,5 +923,12 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 	@SuppressWarnings("unused")
 	private interface TestRetention extends FunctionalReference {
 		RetentionPolicy target(Retention retention);
+	}
+
+	@SuppressWarnings("PMD.UseUtilityClass")
+	private static class Declarator {
+		static void staticSingle(@Nullable Object parameter1) {
+			// empty
+		}
 	}
 }
