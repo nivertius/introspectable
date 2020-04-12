@@ -1,34 +1,36 @@
 package org.perfectable.introspection.query;
 
+import java.lang.reflect.Type;
+
 @FunctionalInterface
 public interface TypeFilter {
 	TypeFilter ALL = TypeFilters.Complete.INSTANCE;
 	TypeFilter NONE = TypeFilters.Empty.INSTANCE;
 	TypeFilter PRIMITIVE = TypeFilters.Primitive.INSTANCE;
 
-	static TypeFilter superTypeOf(Class<?> subType) {
+	static TypeFilter superTypeOf(Type subType) {
 		return ALL.withLowerBound(subType);
 	}
 
-	static TypeFilter subtypeOf(Class<?> superType) {
+	static TypeFilter subtypeOf(Type superType) {
 		return ALL.withUpperBound(superType);
 	}
 
-	static TypeFilter exact(Class<?> matchedType) {
+	static TypeFilter exact(Type matchedType) {
 		return new TypeFilters.Exact(matchedType);
 	}
 
-	boolean matches(Class<?> candidate);
+	boolean matches(Type candidate);
 
-	default TypeFilter withUpperBound(Class<?> superType) {
+	default TypeFilter withUpperBound(Type superType) {
 		return new TypeFilters.UpperBounded(this, superType);
 	}
 
-	default TypeFilter withLowerBound(Class<?> subType) {
+	default TypeFilter withLowerBound(Type subType) {
 		return new TypeFilters.LowerBounded(this, subType);
 	}
 
-	default TypeFilter withExcluded(Class<?> excludedType) {
+	default TypeFilter withExcluded(Type excludedType) {
 		return and(exact(excludedType).negated());
 	}
 

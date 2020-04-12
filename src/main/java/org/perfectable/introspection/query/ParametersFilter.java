@@ -2,14 +2,15 @@ package org.perfectable.introspection.query;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 
 @FunctionalInterface
 public interface ParametersFilter {
-	static ParametersFilter typesAccepted(Class<?>... parameterTypes) {
+	static ParametersFilter typesAccepted(Type... parameterTypes) {
 		return ParameterFilters.Types.accepting(parameterTypes);
 	}
 
-	static ParametersFilter typesExact(Class<?>... parameterTypes) {
+	static ParametersFilter typesExact(Type... parameterTypes) {
 		return ParameterFilters.Types.exact(parameterTypes);
 	}
 

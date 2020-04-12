@@ -1,6 +1,7 @@
 package org.perfectable.introspection.query;
 
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
@@ -34,13 +35,13 @@ final class ParameterFilters {
 	static final class Types implements ParametersFilter {
 		private final ImmutableList<TypeFilter> parameterTypes;
 
-		static Types accepting(Class<?>... parameterTypes) {
+		static Types accepting(Type... parameterTypes) {
 			ImmutableList<TypeFilter> typeFilters =
 				Stream.of(parameterTypes).map(TypeFilter::superTypeOf).collect(toImmutableList());
 			return new Types(typeFilters);
 		}
 
-		static Types exact(Class<?>... parameterTypes) {
+		static Types exact(Type... parameterTypes) {
 			ImmutableList<TypeFilter> typeFilters =
 				Stream.of(parameterTypes).map(TypeFilter::exact).collect(toImmutableList());
 			return of(typeFilters);
