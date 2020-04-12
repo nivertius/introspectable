@@ -50,8 +50,8 @@ public final class AnnotationBuilder<A extends Annotation> {
 		Class<?> memberType = Primitives.wrap(method.getReturnType());
 		checkArgument(memberType.isInstance(value),
 			"Value %s cannot be provided for member %s of type %s", value, method.getName(), memberType);
-		ImmutableMap<String, Object> newValueMap = ImmutableMap.<String, Object>builder()
-			.putAll(valueMap).put(method.getName(), value).build();
+		ImmutableMap<Method, Object> newValueMap = ImmutableMap.<Method, Object>builder()
+			.putAll(valueMap).put(method, value).build();
 		return new AnnotationBuilder<>(annotationType, newValueMap);
 	}
 
@@ -65,9 +65,8 @@ public final class AnnotationBuilder<A extends Annotation> {
 
 	private void validateMembers() throws IllegalStateException {
 		for (Method method : annotationType.getDeclaredMethods()) {
-			String memberName = method.getName();
-			if (method.getDefaultValue() == null && !valueMap.containsKey(memberName)) {
-				throw new IllegalStateException("No value set for member '" + memberName + "'");
+			if (method.getDefaultValue() == null && !valueMap.containsKey(method)) {
+				throw new IllegalStateException("No value set for member '" + method.getName() + "'");
 			}
 		}
 	}
@@ -83,9 +82,9 @@ public final class AnnotationBuilder<A extends Annotation> {
 
 	// values of this map are only immutable types that can be annotation type elements as declared by JLS 9.6.1
 	@SuppressWarnings("Immutable")
-	private final ImmutableMap<String, Object> valueMap;
+	private final ImmutableMap<Method, Object> valueMap;
 
-	private AnnotationBuilder(Class<A> annotationType, ImmutableMap<String, Object> valueMap) {
+	private AnnotationBuilder(Class<A> annotationType, ImmutableMap<Method, Object> valueMap) {
 		this.annotationType = annotationType;
 		this.valueMap = valueMap;
 	}
@@ -104,7 +103,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 
 		// values of this map are only immutable types that can be annotation type elements as declared by JLS 9.6.1
 		@SuppressWarnings("Immutable")
-		private final ImmutableMap<String, Object> valueMap;
+		private final ImmutableMap<Method, Object> valueMap;
 
 		@SuppressWarnings("Immutable") // generated lazily once
 		private volatile int cachedHashCode = UNCALCULATED_HASH_CODE;
@@ -113,7 +112,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 		@SuppressWarnings("Immutable") // generated lazily once
 		private volatile String cachedRepresentation;
 
-		AnnotationInvocationHandler(Class<A> annotationType, ImmutableMap<String, Object> valueMap) {
+		AnnotationInvocationHandler(Class<A> annotationType, ImmutableMap<Method, Object> valueMap) {
 			this.annotationType = annotationType;
 			this.valueMap = valueMap;
 		}
@@ -137,7 +136,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 			if (ANNOTATION_TYPE_METHOD.equals(method)) {
 				return annotationType;
 			}
-			return valueMap.getOrDefault(method.getName(), method.getDefaultValue());
+			return valueMap.getOrDefault(method, method.getDefaultValue());
 		}
 
 		boolean calculateEquals(Object other) {
@@ -150,9 +149,8 @@ public final class AnnotationBuilder<A extends Annotation> {
 				return false;
 			}
 			for (Method method : annotationType.getDeclaredMethods()) {
-				String name = method.getName();
-				Object thisValue = valueMap.getOrDefault(name, method.getDefaultValue());
-				Object otherValue = safeInvoke(otherAnnotationType, name, other);
+				Object thisValue = valueMap.getOrDefault(method, method.getDefaultValue());
+				Object otherValue = safeInvoke(method, other);
 				if (!Objects.equals(thisValue, otherValue)) {
 					return false;
 				}
@@ -165,8 +163,8 @@ public final class AnnotationBuilder<A extends Annotation> {
 				synchronized (this) {
 					int current = 0;
 					for (Method method : annotationType.getDeclaredMethods()) {
+						Object value = valueMap.getOrDefault(method, method.getDefaultValue());
 						String name = method.getName();
-						Object value = valueMap.getOrDefault(name, method.getDefaultValue());
 						current += MEMBER_NAME_HASH_MULTIPLIER * name.hashCode() ^ Objects.hashCode(value);
 					}
 					cachedHashCode = current;
@@ -194,12 +192,11 @@ public final class AnnotationBuilder<A extends Annotation> {
 		return value.toString();
 	}
 
-	private static Object safeInvoke(Class<?> declaringClass, String name, Object target) {
+	private static Object safeInvoke(Method method, Object target) {
 		try {
-			Method method = declaringClass.getDeclaredMethod(name);
 			return method.invoke(target);
 		}
-		catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+		catch (IllegalAccessException | InvocationTargetException e) {
 			throw new AssertionError(e);
 		}
 	}
