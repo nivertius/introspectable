@@ -14,6 +14,7 @@ import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat
 
 class MethodQueryTest {
 
+	@SuppressWarnings("UnnecessaryLambda")
 	private static final Predicate<Method> JACOCO_EXCLUSION =
 		method -> !method.getName().equals("$jacocoInit");
 	private static final String EXAMPLE_STRING = "testString";

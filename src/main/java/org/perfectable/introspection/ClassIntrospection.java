@@ -66,13 +66,14 @@ public final class ClassIntrospection<X> {
 				&& !type.isPrimitive();
 	}
 
+	@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
 	public X instantiate() {
 		checkState(isInstantiable(), "%s is not isInstantiable", type);
 		try {
 			return defaultConstructor().newInstance();
 		}
 		catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -85,6 +86,7 @@ public final class ClassIntrospection<X> {
 		this.type = type;
 	}
 
+	@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
 	public Constructor<X> defaultConstructor() {
 		try {
 			Constructor<X> constructor = type.getDeclaredConstructor();
@@ -92,7 +94,7 @@ public final class ClassIntrospection<X> {
 			return constructor;
 		}
 		catch (NoSuchMethodException e) {
-			throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
+			throw new RuntimeException(e);
 		}
 	}
 }

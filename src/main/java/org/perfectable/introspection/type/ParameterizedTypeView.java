@@ -46,7 +46,7 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 	 * Calculates types used as arguments for this parameterized type.
 	 *
 	 * <p>In other words, this method returns list of types that were used in place of type variables in declaration
-	 * of this type. For example, if wrapped type is @{code Map&lt;Integer, ? extends String[]&gt;} then this method
+	 * of this type. For example, if wrapped type is {@code Map<Integer, ? extends String[]>} then this method
 	 * will return a list with two elements containing type view wrapping of class and type view wrapping of wildcard
 	 * type with array class as a upper bound.
 	 *

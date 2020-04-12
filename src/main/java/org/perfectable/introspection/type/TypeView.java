@@ -135,7 +135,7 @@ public abstract class TypeView { // SUPPRESS MethodCount
 	 * <p>This extracts exactly <b>type parameters</b> that are declared with method, not type of method
 	 * formal parameter.
 	 *
-	 * <p>In following example, {@code ofTypeParameterOf(&lt;m&gt;, 0)} returns {@code E}, not {@code String}.
+	 * <p>In following example, {@code ofTypeParameterOf(<m>, 0)} returns {@code E}, not {@code String}.
 	 * <pre>
 	 *     public &lt;E&gt; void m(String i, E j)
 	 * </pre>
@@ -160,7 +160,7 @@ public abstract class TypeView { // SUPPRESS MethodCount
 	 *
 	 * <p>This extracts exactly <b>formal parameters</b> of method, not type of type parameter declared by method.
 	 *
-	 * <p>In following example, {@code ofTypeParameterOf(&lt;m&gt;, 0)} returns {@code String}, not {@code E}.
+	 * <p>In following example, {@code ofTypeParameterOf(<m>, 0)} returns {@code String}, not {@code E}.
 	 * <pre>
 	 *     public &lt;E&gt; void m(String i, E j)
 	 * </pre>
@@ -312,9 +312,9 @@ public abstract class TypeView { // SUPPRESS MethodCount
 	 * Tests if provided value is instance of wrapped type.
 	 *
 	 * <p>Because of type erasure, this method only tests if erasure of provided element type is subtype of this type.
-	 * This might not always be true! For example, for method {@code boolean m(List&gt;? extends Number&lt; t)}
-	 * extracted parameter type is {@code List&gt;? extends Number&lt;} but {@code t} has runtime type {@code List}.
-	 * If we have view of type {@code List&gt;? extends Serializable&lt;}, then {@code isInstance(t)} should
+	 * This might not always be true! For example, for method {@code boolean m(List<? extends Number> t)}
+	 * extracted parameter type is {@code List<? extends Number>} but {@code t} has runtime type {@code List}.
+	 * If we have view of type {@code List<? extends Serializable>}, then {@code isInstance(t)} should
 	 * return true, when in fact it will return false, as runtime class is treated as parameterized class with
 	 * no substitutions.
 	 *
@@ -426,20 +426,20 @@ public abstract class TypeView { // SUPPRESS MethodCount
 	 * parameterized type as a bound, and this parameterized type might have substitution for specific variable.
 	 *
 	 * <p>This method can be used to find what the signature of field or method looks like in some specific type. For
-	 * example: lets say that there's a generic class {@code class Example&lt;T&gt;} that declares field
-	 * {@code protected List&lt;T&gt; elements}. It's descendant class, declared
-	 * {@code class ExtendedExample extends Example&lt;String&gt;} inherits field {@code elements}. In this case no
-	 * conventional method will extract actual field type, {@code List&lt;String&gt;}:
+	 * example: lets say that there's a generic class {@code class Example<T>} that declares field
+	 * {@code protected List<T> elements}. It's descendant class, declared
+	 * {@code class ExtendedExample extends Example<String>} inherits field {@code elements}. In this case no
+	 * conventional method will extract actual field type, {@code List<String>}:
 	 * <ul>
 	 * <li>Field found by {@link Class#getDeclaredField} called on {@code ExampleExtension} will return null,
 	 * as this field is not declared there.</li>
 	 * <li>Field found by {@link Class#getDeclaredField} called on {@code Example} (or {@link Class#getField} on
 	 * child class, if the field would be public) will return field from parent class,
-	 * executing {@link Field#getGenericType} on it will return {@code List&lt;T&gt;}</li>
+	 * executing {@link Field#getGenericType} on it will return {@code List<T>}</li>
 	 * </ul>
 	 * But this can be resolved using this method:
 	 * {@code TypeView.ofTypeOf(Example.class.getDeclaredField("elements")).resolve(ExampleExtension.class)} will wrap
-	 * {@code List&lt;String&gt;}, because variable substitution {@code T} -> {@code String} is used.
+	 * {@code List<String>}, because variable substitution {@code T} -> {@code String} is used.
 	 *
 	 * @param other type to copy substitutions from
 	 * @return TypeView that uses substitutions from provided type

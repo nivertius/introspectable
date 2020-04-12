@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Throwables;
+
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
@@ -106,12 +108,13 @@ final class Properties {
 		}
 
 		@Override
+		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
 		void set(CT bean, @Nullable PT value) {
 			try {
 				this.field.set(bean, value);
 			}
-			catch (IllegalArgumentException | IllegalAccessException e) {
-				throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
+			catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -119,13 +122,13 @@ final class Properties {
 		// checked at construction
 		@Override
 		@Nullable
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
 		PT get(CT bean) {
 			try {
 				return (PT) this.field.get(bean);
 			}
-			catch (IllegalArgumentException | IllegalAccessException e) {
-				throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
+			catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -173,15 +176,19 @@ final class Properties {
 			this.getter = requireNonNull(getter);
 		}
 
-		@SuppressWarnings("unchecked") // checked at construction
+		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
 		@Override
 		@Nullable
 		public PT get(CT bean) {
 			try {
 				return (PT) this.getter.invoke(bean);
 			}
-			catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
+			catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+			catch (InvocationTargetException e) {
+				Throwables.throwIfUnchecked(e.getTargetException());
+				throw new RuntimeException(e.getTargetException()); // SUPPRESS PreserveStackTrace
 			}
 		}
 
@@ -240,13 +247,18 @@ final class Properties {
 			throw new IllegalStateException("Property is not readable");
 		}
 
+		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
 		@Override
 		public void set(CT bean, @Nullable PT value) {
 			try {
 				this.setter.invoke(bean, value);
 			}
-			catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
+			catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+			catch (InvocationTargetException e) {
+				Throwables.throwIfUnchecked(e.getTargetException());
+				throw new RuntimeException(e.getTargetException()); // SUPPRESS PreserveStackTrace
 			}
 		}
 
@@ -297,25 +309,34 @@ final class Properties {
 			this.setter = setter;
 		}
 
-		@SuppressWarnings("unchecked") // checked at construction
+		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
 		@Override
 		@Nullable
 		public PT get(CT bean) {
 			try {
 				return (PT) this.getter.invoke(bean);
 			}
-			catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
+			catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+			catch (InvocationTargetException e) {
+				Throwables.throwIfUnchecked(e.getTargetException());
+				throw new RuntimeException(e.getTargetException()); // SUPPRESS PreserveStackTrace
 			}
 		}
 
 		@Override
+		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
 		public void set(CT bean, @Nullable PT value) {
 			try {
 				this.setter.invoke(bean, value);
 			}
-			catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException(e); // SUPPRESS AvoidThrowingRawExceptionTypes no better exception here
+			catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+			catch (InvocationTargetException e) {
+				Throwables.throwIfUnchecked(e.getTargetException());
+				throw new RuntimeException(e.getTargetException()); // SUPPRESS PreserveStackTrace
 			}
 		}
 

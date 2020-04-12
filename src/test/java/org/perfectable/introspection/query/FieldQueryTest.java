@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat;
 
 class FieldQueryTest {
+	@SuppressWarnings("UnnecessaryLambda")
 	private static final Predicate<Field> JACOCO_EXCLUSION =
 		method -> !method.getName().equals("$jacocoData");
 	private static final String EXAMPLE_STRING = "testString";

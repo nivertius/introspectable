@@ -26,7 +26,7 @@ public final class MethodInvocation<T> implements Invocation {
 
 	private transient MethodHandle handle;
 
-	private static final MethodHandle PRIVATE_LOOKUP_CONSTRUCTOR;
+	private static final MethodHandle PRIVATE_LOOKUP_CONSTRUCTOR = findPrivateLookupConstructor();
 
 	public static <T> MethodInvocation<T> intercepted(Method method,
 													  @Nullable T receiver, @Nullable Object... arguments) {
@@ -202,23 +202,23 @@ public final class MethodInvocation<T> implements Invocation {
 		return MethodHandles.insertArguments(methodHandle, 0, arguments);
 	}
 
-	static {
+	private static MethodHandle findPrivateLookupConstructor() {
 		Constructor<MethodHandles.Lookup> unique = introspect(MethodHandles.Lookup.class)
 			.constructors()
 			.parameters(Class.class, int.class)
 			.asAccessible()
 			.unique();
 		MethodHandle methodHandle;
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
 		try {
-			methodHandle = MethodHandles.lookup()
-				.unreflectConstructor(unique);
+			methodHandle = lookup.unreflectConstructor(unique);
 		}
 		catch (IllegalAccessException e) {
 			throw new AssertionError(e);
 		}
 		int allModifiers = MethodHandles.Lookup.PUBLIC | MethodHandles.Lookup.PROTECTED
 			| MethodHandles.Lookup.PACKAGE | MethodHandles.Lookup.PRIVATE;
-		PRIVATE_LOOKUP_CONSTRUCTOR = MethodHandles.insertArguments(methodHandle, 1, allModifiers);
+		return MethodHandles.insertArguments(methodHandle, 1, allModifiers);
 	}
 
 }

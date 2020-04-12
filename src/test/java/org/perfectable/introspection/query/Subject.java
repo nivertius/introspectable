@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import static org.perfectable.introspection.query.SubjectReflection.MESSAGE_CONSTRUCTOR_CALLED;
 import static org.perfectable.introspection.query.SubjectReflection.MESSAGE_METHOD_CALLED;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "InterfaceWithOnlyStatics"})
 @Subject.Special
 @Subject.OtherAnnotation
 public class Subject {

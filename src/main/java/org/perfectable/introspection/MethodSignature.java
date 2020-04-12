@@ -123,6 +123,7 @@ final class MethodSignature {
 		}
 	}
 
+	@SuppressWarnings("InterfaceWithOnlyStatics")
 	private interface TypeArgument {
 		static TypeArgument readTypeArgumentFrom(CharacterReader reader) {
 			if (reader.currentIsThenSkip('*')) {
