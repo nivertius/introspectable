@@ -133,11 +133,6 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		}
 
 		@Override
-		public String referencedMethodName() throws IllegalStateException {
-			return serializedForm.getImplMethodName();
-		}
-
-		@Override
 		public Method referencedMethod() throws IllegalStateException {
 			return implementationMethod;
 		}
@@ -239,12 +234,6 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 			throw new IllegalStateException(
 				"Interface implementation is not a method reference"); // SUPPRESS MultipleStringLiterals
 		}
-
-		@Override
-		public String referencedMethodName() throws IllegalStateException {
-			throw new IllegalStateException(
-				"Interface implementation is not a method reference"); // SUPPRESS MultipleStringLiterals
-		}
 	}
 
 	private static final class OfConstructorReference extends FunctionalReferenceIntrospection {
@@ -261,12 +250,6 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 
 		@Override
 		public Method referencedMethod() throws IllegalStateException {
-			throw new IllegalStateException(
-				"Interface implementation is not a method reference"); // SUPPRESS MultipleStringLiterals
-		}
-
-		@Override
-		public String referencedMethodName() throws IllegalStateException {
 			throw new IllegalStateException(
 				"Interface implementation is not a method reference"); // SUPPRESS MultipleStringLiterals
 		}

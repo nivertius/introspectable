@@ -29,8 +29,6 @@ public interface FunctionalReference extends Serializable {
 
 		Set<Annotation> parameterAnnotations(int number);
 
-		String referencedMethodName() throws IllegalStateException;
-
 		Method referencedMethod() throws IllegalStateException;
 
 		Constructor<?> referencedConstructor() throws IllegalStateException;

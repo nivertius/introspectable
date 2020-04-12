@@ -62,13 +62,6 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void referencedMethodName() {
-			assertThat(marker.introspect())
-				.returns(markerMethod.getName(),
-					FunctionalReference.Introspection::referencedMethodName);
-		}
-
-		@Test
 		void referencedConstructor() {
 			FunctionalReference.Introspection introspect = marker.introspect();
 			assertThatThrownBy(() -> introspect.referencedConstructor())
@@ -131,13 +124,6 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 			assertThat(marker.introspect())
 				.returns(markerMethod,
 					FunctionalReference.Introspection::referencedMethod);
-		}
-
-		@Test
-		void referencedMethodName() {
-			assertThat(marker.introspect())
-				.returns(markerMethod.getName(),
-					FunctionalReference.Introspection::referencedMethodName);
 		}
 
 		@Test
@@ -206,13 +192,6 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void referencedMethodName() {
-			assertThat(marker.introspect())
-				.returns(markerMethod.getName(),
-					FunctionalReference.Introspection::referencedMethodName);
-		}
-
-		@Test
 		void referencedConstructor() {
 			FunctionalReference.Introspection introspect = marker.introspect();
 			assertThatThrownBy(() -> introspect.referencedConstructor())
@@ -275,13 +254,6 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 			assertThat(marker.introspect())
 				.returns(markerMethod,
 					FunctionalReference.Introspection::referencedMethod);
-		}
-
-		@Test
-		void referencedMethodName() {
-			assertThat(marker.introspect())
-				.returns(markerMethod.getName(),
-					FunctionalReference.Introspection::referencedMethodName);
 		}
 
 		@Test
@@ -362,13 +334,6 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void referencedMethodName() {
-			assertThat(marker.introspect())
-				.returns(markerMethod.getName(),
-					FunctionalReference.Introspection::referencedMethodName);
-		}
-
-		@Test
 		void referencedConstructor() {
 			FunctionalReference.Introspection introspect = marker.introspect();
 			assertThatThrownBy(() -> introspect.referencedConstructor())
@@ -421,13 +386,6 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 			assertThat(marker.introspect())
 				.returns(markerMethod,
 					FunctionalReference.Introspection::referencedMethod);
-		}
-
-		@Test
-		void referencedMethodName() {
-			assertThat(marker.introspect())
-				.returns(markerMethod.getName(),
-					FunctionalReference.Introspection::referencedMethodName);
 		}
 
 		@Test
@@ -499,13 +457,6 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void referencedMethodName() {
-			assertThat(marker.introspect())
-				.returns(markerMethod.getName(),
-					FunctionalReference.Introspection::referencedMethodName);
-		}
-
-		@Test
 		void referencedConstructor() {
 			FunctionalReference.Introspection introspect = marker.introspect();
 			assertThatThrownBy(() -> introspect.referencedConstructor())
@@ -557,14 +508,6 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		void referencedMethod() {
 			FunctionalReference.Introspection introspect = marker.introspect();
 			assertThatThrownBy(() -> introspect.referencedMethod())
-				.isInstanceOf(IllegalStateException.class)
-				.hasMessage(NON_METHOD_REFERENCE_MESSAGE);
-		}
-
-		@Test
-		void referencedMethodName() {
-			FunctionalReference.Introspection introspect = marker.introspect();
-			assertThatThrownBy(() -> introspect.referencedMethodName())
 				.isInstanceOf(IllegalStateException.class)
 				.hasMessage(NON_METHOD_REFERENCE_MESSAGE);
 		}
@@ -636,14 +579,6 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void referencedMethodName() {
-			FunctionalReference.Introspection introspect = marker.introspect();
-			assertThatThrownBy(() -> introspect.referencedMethodName())
-				.isInstanceOf(IllegalStateException.class)
-				.hasMessage(NON_METHOD_REFERENCE_MESSAGE);
-		}
-
-		@Test
 		void referencedConstructor() {
 			assertThat(marker.introspect())
 				.returns(markerConstructor,
@@ -708,13 +643,6 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 
 		@Test
-		void referencedMethodName() {
-			assertThat(marker.introspect())
-				.returns(markerMethod.getName(),
-					FunctionalReference.Introspection::referencedMethodName);
-		}
-
-		@Test
 		void referencedConstructor() {
 			FunctionalReference.Introspection introspect = marker.introspect();
 			assertThatThrownBy(() -> introspect.referencedConstructor())
@@ -766,14 +694,6 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		void referencedMethod() {
 			FunctionalReference.Introspection introspect = marker.introspect();
 			assertThatThrownBy(() -> introspect.referencedMethod())
-				.isInstanceOf(IllegalStateException.class)
-				.hasMessage(NON_METHOD_REFERENCE_MESSAGE);
-		}
-
-		@Test
-		void referencedMethodName() {
-			FunctionalReference.Introspection introspect = marker.introspect();
-			assertThatThrownBy(() -> introspect.referencedMethodName())
 				.isInstanceOf(IllegalStateException.class)
 				.hasMessage(NON_METHOD_REFERENCE_MESSAGE);
 		}
@@ -843,14 +763,6 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		void referencedMethod() {
 			FunctionalReference.Introspection introspect = marker.introspect();
 			assertThatThrownBy(() -> introspect.referencedMethod())
-				.isInstanceOf(IllegalStateException.class)
-				.hasMessage(NON_METHOD_REFERENCE_MESSAGE);
-		}
-
-		@Test
-		void referencedMethodName() {
-			FunctionalReference.Introspection introspect = marker.introspect();
-			assertThatThrownBy(() -> introspect.referencedMethodName())
 				.isInstanceOf(IllegalStateException.class)
 				.hasMessage(NON_METHOD_REFERENCE_MESSAGE);
 		}
@@ -930,13 +842,6 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 			assertThat(marker.introspect())
 				.returns(markerMethod,
 					FunctionalReference.Introspection::referencedMethod);
-		}
-
-		@Test
-		void referencedMethodName() {
-			assertThat(marker.introspect())
-				.returns(markerMethod.getName(),
-					FunctionalReference.Introspection::referencedMethodName);
 		}
 
 		@Test
