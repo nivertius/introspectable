@@ -1,7 +1,6 @@
 package org.perfectable.introspection.proxy; // SUPPRESS LENGTH
 
 import java.lang.reflect.Method;
-import javax.annotation.Nullable;
 
 import org.junit.jupiter.api.Test;
 
@@ -367,35 +366,6 @@ class MethodInvocationTest {
 
 		public void assertArguments(Object... expectedArguments) {
 			assertThat(this.arguments).isEqualTo(expectedArguments);
-		}
-	}
-
-	private static final class TestInvocationHandler<T> implements InvocationHandler<MethodInvocation<T>> {
-		private final Object result;
-
-		private boolean executed;
-		private MethodInvocation<T> executedInvocation;
-
-		TestInvocationHandler(Object result) {
-			this.result = result;
-		}
-
-		@Nullable
-		@Override
-		public Object handle(MethodInvocation<T> invocation) throws Throwable {
-			assertNotExecuted();
-			executed = true;
-			executedInvocation = invocation;
-			return result;
-		}
-
-		void assertNotExecuted() {
-			assertThat(executed).isFalse();
-		}
-
-		void assertExecutedWith(MethodInvocation<T> expectedInvocation) {
-			assertThat(executed).isTrue();
-			assertThat(executedInvocation).isSameAs(expectedInvocation);
 		}
 	}
 }
