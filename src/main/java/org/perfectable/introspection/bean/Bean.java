@@ -8,7 +8,6 @@ import java.util.Objects;
 import com.google.common.collect.ImmutableSet;
 
 import static java.util.Objects.requireNonNull;
-import static org.perfectable.introspection.Introspections.introspect;
 
 public final class Bean<B> {
 
@@ -37,10 +36,10 @@ public final class Bean<B> {
 	}
 
 	public Bean<B> copy() {
-		B duplicate = introspect(type()).instantiate();
+		Bean<B> duplicate = BeanSchema.from(type()).instantiate();
 		fieldProperties()
 				.forEach(property -> property.copy(duplicate));
-		return new Bean<>(duplicate);
+		return duplicate;
 	}
 
 	public ImmutableSet<Property<B, ?>> fieldProperties() {

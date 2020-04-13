@@ -50,9 +50,9 @@ public final class Property<B, T> {
 		return schema.isWritable();
 	}
 
-	public void copy(B other) {
+	public void copy(Bean<B> other) {
 		T value = get();
-		this.schema.set(other, value);
+		this.schema.set(other.contents(), value);
 	}
 
 	@Override
