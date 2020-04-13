@@ -4,6 +4,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
+@FunctionalInterface
 public interface Invocation {
 	@Nullable
 	Object invoke() throws Throwable; // SUPPRESS IllegalThrows
