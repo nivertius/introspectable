@@ -6,6 +6,12 @@ import javax.annotation.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Represents a property of a bean.
+ *
+ * @param <B> Bean type that has this property
+ * @param <T> Type of property value
+ */
 public final class Property<B, T> {
 	private final B bean;
 	private final PropertySchema<B, T> schema;
@@ -21,35 +27,81 @@ public final class Property<B, T> {
 		this.schema = schema;
 	}
 
-	public <X extends T> Property<B, X> as(Class<X> propertyClass) {
-		return schema.as(propertyClass).bind(bean);
+	/**
+	 * Safely casts expected value to specific type.
+	 *
+	 * @param newValueType new value type representation
+	 * @param <X> new value type
+	 * @return property with new value type
+	 * @throws IllegalArgumentException if property value aren't of this type.
+	 */
+	public <X extends T> Property<B, X> as(Class<X> newValueType) {
+		return schema.as(newValueType).bind(bean);
 	}
 
+	/**
+	 * Extracts value of this property from bound bean.
+	 *
+	 * @return Property value
+	 * @throws IllegalStateException when this property is not readable
+	 */
 	@Nullable
 	public T get() {
 		return schema.get(this.bean);
 	}
 
+	/**
+	 * Sets provided value for this property of bound bean.
+	 *
+	 * @param value new value for this property
+	 * @throws IllegalStateException when this property is not writeable
+	 */
 	public void set(@Nullable T value) {
 		schema.set(bean, value);
 	}
 
+	/**
+	 * Extracts type of the property.
+	 *
+	 * @return property type
+	 */
 	public Type type() {
 		return schema.type();
 	}
 
+	/**
+	 * Extracts name of the property.
+	 *
+	 * @return property name
+	 */
 	public String name() {
 		return schema.name();
 	}
 
+	/**
+	 * Answers if the property is readable, i.e. {@link #get} will succeed.
+	 *
+	 * @return if the property can have value read
+	 */
 	public boolean isReadable() {
 		return schema.isReadable();
 	}
 
+	/**
+	 * Answers if the property is writeable, i.e. {@link #set} will succeed.
+	 *
+	 * @return if the property can have value written
+	 */
 	public boolean isWritable() {
 		return schema.isWritable();
 	}
 
+	/**
+	 * Copies value of this property to same property of another bean.
+	 *
+	 * @param other bean to set value on
+	 * @throws IllegalStateException when this property is either not readable or not writeable
+	 */
 	public void copy(Bean<B> other) {
 		T value = get();
 		this.schema.set(other.contents(), value);
