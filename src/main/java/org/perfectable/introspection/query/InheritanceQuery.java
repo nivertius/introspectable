@@ -6,19 +6,61 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Iterable-like container that allows access to supertypes of a class.
+ *
+ * <p>This of course only lists types that are actually defined (transitively) by initially-provided class. Altrough
+ * wildcard types, type variables might be supertype or supertype of specified type, they are not listed.
+ *
+ * <p>Instances of this class are immutable, each filtering produces new, modified instance. To obtain query for
+ * specific class, use {@link #of}.
+ *
+ * <p>To obtain results either iterate this class with {@link #iterator} (or in enhanced-for loop) or use one of
+ * {@link #stream()}, {@link #unique()}, {@link #option()} or {@link #isPresent()}.
+ *
+ * <p>Example usage, which registers all interfaces that DatabaseService implements that are annotated by Remote
+ * <pre>
+ *     InheritanceQuery.of(DatabaseService.class)
+ *         .annotatedWith(Remote.class)
+ *         .onlyInterfaces()
+ *         .stream()
+ *         .forEach(this::register);
+ * </pre>
+ *
+ * @param <X> lower bound of the searched types
+ */
 @SuppressWarnings({
 	"DesignForExtension" // class is closed because of package-private constructor
 })
 public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>, InheritanceQuery<X>> {
+	/**
+	 * Creates unrestricted query that will list all the supertypes that this class or interface extends/implements.
+	 *
+	 * @param type class to start search with
+	 * @param <X> upper subtype of all results
+	 * @return new, unrestricted inheritance query
+	 */
 	public static <X> InheritanceQuery<X> of(Class<X> type) {
 		return new Complete<>(type);
 	}
 
-
+	/**
+	 * Creates query which lists the same classes as this one, but only if they have an annotation with provided class.
+	 *
+	 * @param annotationClass annotation class that will be used
+	 * @return query filtered for classes annotated with specified class
+	 */
 	public InheritanceQuery<X> annotatedWith(Class<? extends Annotation> annotationClass) {
 		return annotatedWith(AnnotationFilter.single(annotationClass));
 	}
 
+	/**
+	 * Creates query which lists the same classes as this one, but only if they have an annotation that matches
+	 * specified filter.
+	 *
+	 * @param annotationFilter annotation filter that will be used
+	 * @return query filtered for classes annotated with specific properties
+	 */
 	public InheritanceQuery<X> annotatedWith(AnnotationFilter annotationFilter) {
 		requireNonNull(annotationFilter);
 		return new Annotated<>(this, annotationFilter);
@@ -29,18 +71,44 @@ public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>
 		return new Predicated<>(this, filter);
 	}
 
+	/**
+	 * Create query which lists the same classes as this one, but only if they are subtypes of provided type, and are
+	 * not this type.
+	 *
+	 * @param supertype supertype of the filtered classes
+	 * @return query filtered for subtypes of specified type, excluding it
+	 */
 	public InheritanceQuery<X> upToExcluding(Class<? super X> supertype) {
 		return new BoundingExcluded<>(this, supertype);
 	}
 
+	/**
+	 * Create query which lists the same classes as this one, but only if they are subtypes of provided type.
+	 *
+	 * <p>Note that each type is its own subtype, so if {@code supertype} is actually supertype of initial class
+	 * or interface, it will be included in results.
+	 *
+	 * @param supertype supertype of the filtered classes
+	 * @return query filtered for subtypes of specified type, including it
+	 */
 	public InheritanceQuery<X> upToIncluding(Class<? super X> supertype) {
 		return new BoundingIncluded<>(this, supertype);
 	}
 
+	/**
+	 * Creates query which lists the same classes as this one, but only if they are actually an interface.
+	 *
+	 * @return query filtered for interfaces
+	 */
 	public InheritanceQuery<X> onlyInterfaces() {
 		return new InterfacesOnly<>(this);
 	}
 
+	/**
+	 * Creates query which lists the same classes as this one, but only if they are actually a class (not an interface).
+	 *
+	 * @return query filtered for classes
+	 */
 	public InheritanceQuery<X> onlyClasses() {
 		return new ClassesOnly<>(this);
 	}
