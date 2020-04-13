@@ -6,33 +6,33 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
 
-public final class BeanSlot<T> {
-	private final Class<T> beanClass;
+public final class BeanSchema<B> {
+	private final Class<B> beanClass;
 
-	public static <X> BeanSlot<X> from(Class<X> beanClass) {
+	public static <X> BeanSchema<X> from(Class<X> beanClass) {
 		requireNonNull(beanClass);
-		return new BeanSlot<>(beanClass);
+		return new BeanSchema<>(beanClass);
 	}
 
-	private BeanSlot(Class<T> beanClass) {
+	private BeanSchema(Class<B> beanClass) {
 		this.beanClass = beanClass;
 	}
 
-	public Bean<T> put(T element) {
+	public Bean<B> put(B element) {
 		checkArgument(this.beanClass.isInstance(element));
 		return Bean.from(element);
 	}
 
-	public Class<T> type() {
+	public Class<B> type() {
 		return beanClass;
 	}
 
-	public Bean<T> instantiate() {
-		T instance = introspect(beanClass).instantiate();
+	public Bean<B> instantiate() {
+		B instance = introspect(beanClass).instantiate();
 		return Bean.from(instance);
 	}
 
-	public Property<T, ?> property(String name) {
+	public PropertySchema<B, ?> property(String name) {
 		return Properties.create(this.beanClass, name);
 	}
 
@@ -41,10 +41,10 @@ public final class BeanSlot<T> {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof BeanSlot<?>)) {
+		if (!(obj instanceof BeanSchema<?>)) {
 			return false;
 		}
-		BeanSlot<?> other = (BeanSlot<?>) obj;
+		BeanSchema<?> other = (BeanSchema<?>) obj;
 		return beanClass.equals(other.beanClass);
 	}
 

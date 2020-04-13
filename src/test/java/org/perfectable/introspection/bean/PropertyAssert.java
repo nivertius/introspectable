@@ -4,61 +4,61 @@ import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.internal.Objects;
 
 @SuppressWarnings("BooleanParameter")
-final class BoundPropertyAssert<VALUE>
-	extends AbstractObjectAssert<BoundPropertyAssert<VALUE>, BoundProperty<?, VALUE>> {
+final class PropertyAssert<VALUE>
+	extends AbstractObjectAssert<PropertyAssert<VALUE>, Property<?, VALUE>> {
 	private final Objects objects = Objects.instance();
 
-	private BoundPropertyAssert(BoundProperty<?, VALUE> actual) {
-		super(actual, BoundPropertyAssert.class);
+	private PropertyAssert(Property<?, VALUE> actual) {
+		super(actual, PropertyAssert.class);
 	}
 
-	public static <VALUE> BoundPropertyAssert<VALUE> assertThat(BoundProperty<?, VALUE> actual) {
-		return new BoundPropertyAssert<>(actual);
+	public static <VALUE> PropertyAssert<VALUE> assertThat(Property<?, VALUE> actual) {
+		return new PropertyAssert<>(actual);
 	}
 
-	public BoundPropertyAssert<VALUE> hasName(String expectedName) {
+	public PropertyAssert<VALUE> hasName(String expectedName) {
 		objects.assertNotNull(info, actual);
 		objects.assertEqual(info, actual.name(), expectedName);
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> hasTypeExactly(Class<?> expectedType) {
+	public PropertyAssert<VALUE> hasTypeExactly(Class<?> expectedType) {
 		objects.assertNotNull(info, actual);
 		objects.assertEqual(info, actual.type(), expectedType);
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> isWritable() {
+	public PropertyAssert<VALUE> isWritable() {
 		objects.assertNotNull(info, actual);
 		objects.assertEqual(info, actual.isWritable(), true);
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> isNotWritable() {
+	public PropertyAssert<VALUE> isNotWritable() {
 		objects.assertNotNull(info, actual);
 		objects.assertEqual(info, actual.isWritable(), false);
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> isReadable() {
+	public PropertyAssert<VALUE> isReadable() {
 		objects.assertNotNull(info, actual);
 		objects.assertEqual(info, actual.isReadable(), true);
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> isNotReadable() {
+	public PropertyAssert<VALUE> isNotReadable() {
 		objects.assertNotNull(info, actual);
 		objects.assertEqual(info, actual.isReadable(), false);
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> hasNullValue() {
+	public PropertyAssert<VALUE> hasNullValue() {
 		objects.assertNotNull(info, actual);
 		objects.assertNull(info, actual.get());
 		return this;
 	}
 
-	public BoundPropertyAssert<VALUE> hasValueSameAs(VALUE expectedValue) {
+	public PropertyAssert<VALUE> hasValueSameAs(VALUE expectedValue) {
 		objects.assertNotNull(info, actual);
 		objects.assertSame(info, actual.get(), expectedValue);
 		return this;

@@ -1,37 +1,72 @@
 package org.perfectable.introspection.bean;
 
+import java.lang.reflect.Type;
+import java.util.Objects;
 import javax.annotation.Nullable;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
 
-public abstract class Property<CT, PT> {
+public final class Property<B, T> {
+	private final B bean;
+	private final PropertySchema<B, T> schema;
 
-	public abstract String name();
-
-	public abstract Class<PT> type();
-
-	public abstract boolean isReadable();
-
-	public abstract boolean isWritable();
-
-	public final BoundProperty<CT, PT> bind(CT bean) {
-		return BoundProperty.of(bean, this);
+	static <B, T> Property<B, T> of(B bean, PropertySchema<B, T> schema) {
+		requireNonNull(bean);
+		requireNonNull(schema);
+		return new Property<>(bean, schema);
 	}
 
-	Property() {
-		// package-only inheritance
+	private Property(B bean, PropertySchema<B, T> schema) {
+		this.bean = bean;
+		this.schema = schema;
 	}
 
-	abstract PT get(CT bean);
-
-	abstract void set(CT bean, @Nullable PT value);
-
-	final <X extends PT> Property<CT, X> as(Class<X> propertyClass) {
-		checkArgument(propertyClass.isAssignableFrom(type()));
-		@SuppressWarnings("unchecked")
-		Property<CT, X> casted = (Property<CT, X>) this;
-		return casted;
+	public <X extends T> Property<B, X> as(Class<X> propertyClass) {
+		return schema.as(propertyClass).bind(bean);
 	}
 
+	@Nullable
+	public T get() {
+		return schema.get(this.bean);
+	}
 
+	public void set(@Nullable T value) {
+		schema.set(bean, value);
+	}
+
+	public Type type() {
+		return schema.type();
+	}
+
+	public String name() {
+		return schema.name();
+	}
+
+	public boolean isReadable() {
+		return schema.isReadable();
+	}
+
+	public boolean isWritable() {
+		return schema.isWritable();
+	}
+
+	public void copy(B other) {
+		T value = get();
+		this.schema.set(other, value);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Property<?, ?>)) {
+			return false;
+		}
+		Property<?, ?> other = (Property<?, ?>) obj;
+		return Objects.equals(schema, other.schema)
+			&& Objects.equals(bean, other.bean);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(schema, bean);
+	}
 }

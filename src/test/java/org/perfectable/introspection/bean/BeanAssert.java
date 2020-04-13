@@ -39,7 +39,7 @@ final class BeanAssert<ELEMENT>
 	public BeanAssert<ELEMENT> hasFieldPropertiesWithNames(String... names) {
 		objects.assertNotNull(info, actual);
 		List<String> fieldPropertiesNames =
-			actual.fieldProperties().stream().map(BoundProperty::name).collect(toList());
+			actual.fieldProperties().stream().map(Property::name).collect(toList());
 		iterables.assertContains(info, fieldPropertiesNames, names);
 		return this;
 	}
@@ -71,11 +71,11 @@ final class BeanAssert<ELEMENT>
 	}
 
 
-	public BoundPropertyAssert<Object> property(String one) {
+	public PropertyAssert<Object> property(String one) {
 		objects.assertNotNull(info, actual);
-		BoundProperty<ELEMENT, Object> property = actual.property(one);
+		Property<ELEMENT, Object> property = actual.property(one);
 		objects.assertNotNull(info, property);
-		BoundPropertyAssert<Object> propertyAssert = BoundPropertyAssert.assertThat(property);
+		PropertyAssert<Object> propertyAssert = PropertyAssert.assertThat(property);
 		return propertyAssert;
 	}
 

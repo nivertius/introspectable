@@ -10,11 +10,11 @@ import com.google.common.collect.ImmutableSet;
 import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
 
-public final class Bean<T> {
+public final class Bean<B> {
 
-	private final T instance;
+	private final B instance;
 
-	private Bean(T instance) {
+	private Bean(B instance) {
 		this.instance = instance;
 	}
 
@@ -23,37 +23,37 @@ public final class Bean<T> {
 		return new Bean<>(instance);
 	}
 
-	public T contents() {
+	public B contents() {
 		return instance;
 	}
 
 	@SuppressWarnings("unchecked")
-	public Class<T> type() {
-		return (Class<T>) this.instance.getClass();
+	public Class<B> type() {
+		return (Class<B>) this.instance.getClass();
 	}
 
-	public BoundProperty<T, Object> property(String name) {
+	public Property<B, Object> property(String name) {
 		return Properties.create(type(), name).bind(this.instance);
 	}
 
-	public Bean<T> copy() {
-		T duplicate = introspect(type()).instantiate();
+	public Bean<B> copy() {
+		B duplicate = introspect(type()).instantiate();
 		fieldProperties()
 				.forEach(property -> property.copy(duplicate));
 		return new Bean<>(duplicate);
 	}
 
-	public ImmutableSet<BoundProperty<T, ?>> fieldProperties() {
+	public ImmutableSet<Property<B, ?>> fieldProperties() {
 		return FieldQuery.of(type())
 			.excludingModifier(Modifier.STATIC)
 			.stream()
-			.map(field -> Properties.<T>fromField(field).bind(this.instance))
+			.map(field -> Properties.<B>fromField(field).bind(this.instance))
 			.collect(ImmutableSet.toImmutableSet());
 	}
 
 	public ImmutableSet<Object> related() {
 		return this.fieldProperties().stream()
-				.map(BoundProperty::get)
+				.map(Property::get)
 				.filter(Objects::nonNull)
 				.collect(ImmutableSet.toImmutableSet());
 	}

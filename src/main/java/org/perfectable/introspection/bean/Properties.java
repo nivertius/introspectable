@@ -23,12 +23,12 @@ final class Properties {
 	private static final String STANDARD_GETTER_PREFIX = "get";
 	private static final String SETTER_PREFIX = "set";
 
-	static <T> Property<T, Object> fromField(Field field) {
+	static <T> PropertySchema<T, Object> fromField(Field field) {
 		PrivilegedActions.markAccessible(field);
-		return new FieldProperty<>(field);
+		return new FieldPropertySchema<>(field);
 	}
 
-	static <CX> Property<CX, Object> create(Class<CX> beanClass, String name) {
+	static <CX> PropertySchema<CX, Object> create(Class<CX> beanClass, String name) {
 		requireNonNull(beanClass);
 		Optional<Field> field = introspect(beanClass).fields().named(name).option();
 		if (field.isPresent()) {
@@ -39,18 +39,18 @@ final class Properties {
 		if (setterOption.isPresent() && getterOption.isPresent()) {
 			Method getter = getterOption.get();
 			Method setter = setterOption.get();
-			ReadWriteMethodProperty.checkCompatibility(getter, setter);
-			return new ReadWriteMethodProperty<>(getter, setter);
+			ReadWriteMethodPropertySchema.checkCompatibility(getter, setter);
+			return new ReadWriteMethodPropertySchema<>(getter, setter);
 		}
 		if (getterOption.isPresent()) {
 			Method getter = getterOption.get();
 			PrivilegedActions.markAccessible(getter);
-			return new ReadOnlyMethodProperty<>(getter);
+			return new ReadOnlyMethodPropertySchema<>(getter);
 		}
 		if (setterOption.isPresent()) {
 			Method setter = setterOption.get();
 			PrivilegedActions.markAccessible(setter);
-			return new WriteOnlyMethodProperty<>(setter);
+			return new WriteOnlyMethodPropertySchema<>(setter);
 		}
 		throw new IllegalArgumentException("No property " + name + " for " + beanClass);
 	}
@@ -100,10 +100,10 @@ final class Properties {
 		return name.substring(0, 1).toUpperCase(Locale.ROOT) + name.substring(1);
 	}
 
-	static final class FieldProperty<CT, PT> extends Property<CT, PT> {
+	static final class FieldPropertySchema<CT, PT> extends PropertySchema<CT, PT> {
 		private final Field field;
 
-		FieldProperty(Field field) {
+		FieldPropertySchema(Field field) {
 			this.field = field;
 		}
 
@@ -117,7 +117,6 @@ final class Properties {
 				throw new RuntimeException(e);
 			}
 		}
-
 
 		// checked at construction
 		@Override
@@ -156,10 +155,10 @@ final class Properties {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (!(obj instanceof FieldProperty<?, ?>)) {
+			if (!(obj instanceof FieldPropertySchema<?, ?>)) {
 				return false;
 			}
-			FieldProperty<?, ?> other = (FieldProperty<?, ?>) obj;
+			FieldPropertySchema<?, ?> other = (FieldPropertySchema<?, ?>) obj;
 			return Objects.equals(field, other.field);
 		}
 
@@ -169,10 +168,10 @@ final class Properties {
 		}
 	}
 
-	static final class ReadOnlyMethodProperty<CT, PT> extends Property<CT, PT> {
+	static final class ReadOnlyMethodPropertySchema<CT, PT> extends PropertySchema<CT, PT> {
 		private final Method getter;
 
-		ReadOnlyMethodProperty(Method getter) {
+		ReadOnlyMethodPropertySchema(Method getter) {
 			this.getter = requireNonNull(getter);
 		}
 
@@ -221,10 +220,10 @@ final class Properties {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (!(obj instanceof ReadOnlyMethodProperty<?, ?>)) {
+			if (!(obj instanceof ReadOnlyMethodPropertySchema<?, ?>)) {
 				return false;
 			}
-			ReadOnlyMethodProperty<?, ?> other = (ReadOnlyMethodProperty<?, ?>) obj;
+			ReadOnlyMethodPropertySchema<?, ?> other = (ReadOnlyMethodPropertySchema<?, ?>) obj;
 			return Objects.equals(getter, other.getter);
 		}
 
@@ -234,10 +233,10 @@ final class Properties {
 		}
 	}
 
-	static final class WriteOnlyMethodProperty<CT, PT> extends Property<CT, PT> {
+	static final class WriteOnlyMethodPropertySchema<CT, PT> extends PropertySchema<CT, PT> {
 		private final Method setter;
 
-		WriteOnlyMethodProperty(Method setter) {
+		WriteOnlyMethodPropertySchema(Method setter) {
 			this.setter = requireNonNull(setter);
 		}
 
@@ -287,10 +286,10 @@ final class Properties {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (!(obj instanceof WriteOnlyMethodProperty<?, ?>)) {
+			if (!(obj instanceof WriteOnlyMethodPropertySchema<?, ?>)) {
 				return false;
 			}
-			WriteOnlyMethodProperty<?, ?> other = (WriteOnlyMethodProperty<?, ?>) obj;
+			WriteOnlyMethodPropertySchema<?, ?> other = (WriteOnlyMethodPropertySchema<?, ?>) obj;
 			return Objects.equals(setter, other.setter);
 		}
 
@@ -300,11 +299,11 @@ final class Properties {
 		}
 	}
 
-	static final class ReadWriteMethodProperty<CT, PT> extends Property<CT, PT> {
+	static final class ReadWriteMethodPropertySchema<CT, PT> extends PropertySchema<CT, PT> {
 		private final Method getter;
 		private final Method setter;
 
-		ReadWriteMethodProperty(Method getter, Method setter) {
+		ReadWriteMethodPropertySchema(Method getter, Method setter) {
 			this.getter = getter;
 			this.setter = setter;
 		}
@@ -369,10 +368,10 @@ final class Properties {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (!(obj instanceof ReadWriteMethodProperty<?, ?>)) {
+			if (!(obj instanceof ReadWriteMethodPropertySchema<?, ?>)) {
 				return false;
 			}
-			ReadWriteMethodProperty<?, ?> other = (ReadWriteMethodProperty<?, ?>) obj;
+			ReadWriteMethodPropertySchema<?, ?> other = (ReadWriteMethodPropertySchema<?, ?>) obj;
 			return Objects.equals(getter, other.getter)
 				&& Objects.equals(setter, other.setter);
 		}
