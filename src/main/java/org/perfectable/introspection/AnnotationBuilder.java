@@ -2,7 +2,7 @@ package org.perfectable.introspection;
 
 import org.perfectable.introspection.proxy.InvocationHandler;
 import org.perfectable.introspection.proxy.MethodInvocation;
-import org.perfectable.introspection.proxy.ProxyBuilderFactory;
+import org.perfectable.introspection.proxy.ProxyBuilder;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -28,7 +28,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 		checkArgument(annotationType.getDeclaredMethods().length == 0, "Annotation interface is not a marker");
 		AnnotationInvocationHandler<A> invocationHandler =
 			new AnnotationInvocationHandler<>(annotationType, ImmutableMap.of());
-		return ProxyBuilderFactory.any().ofInterfaces(annotationType)
+		return ProxyBuilder.forInterface(annotationType)
 			.instantiate(invocationHandler);
 	}
 
@@ -59,7 +59,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 		validateMembers();
 		AnnotationInvocationHandler<A> invocationHandler =
 			new AnnotationInvocationHandler<>(annotationType, valueMap);
-		return ProxyBuilderFactory.any().ofInterfaces(annotationType)
+		return ProxyBuilder.forInterface(annotationType)
 			.instantiate(invocationHandler);
 	}
 

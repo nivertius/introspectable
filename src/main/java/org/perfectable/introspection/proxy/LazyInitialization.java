@@ -1,7 +1,5 @@
 package org.perfectable.introspection.proxy;
 
-import org.perfectable.introspection.proxy.ProxyBuilderFactory.Feature;
-
 import java.lang.reflect.Method;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -22,11 +20,8 @@ public final class LazyInitialization {
 
 	public static <T> T createProxy(Class<T> resultClass, Initializer<? extends T> initializer) {
 		LazyInitializationHandler<T> handler = LazyInitializationHandler.create(initializer);
-		return PROXY_BUILDER_FACTORY.ofType(resultClass, Proxy.class).instantiate(handler);
+		return ProxyBuilder.forType(resultClass).withInterface(Proxy.class).instantiate(handler);
 	}
-
-	private static final ProxyBuilderFactory PROXY_BUILDER_FACTORY =
-			ProxyBuilderFactory.withFeature(Feature.SUPERCLASS);
 
 	private static final class LazyInitializationHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 		private static final Method EXTRACT_INSTANCE_METHOD =

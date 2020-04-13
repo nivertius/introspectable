@@ -11,21 +11,22 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 // SUPPRESS FILE MagicNumber
 // SUPPRESS FILE MultipleStringLiterals
-public abstract class AbstractProxyBuilderFactoryTest {
+public abstract class AbstractProxyServiceTest {
 
 	private static final String MESSAGE_ASSUME_SUPERCLASS = "This factory does not support superclass proxies";
 	private static final String MESSAGE_METHOD_CALLED = "Actual method should not be called";
 
-	protected abstract ProxyBuilderFactory createFactory();
+	protected abstract ProxyService createService();
 
 	@Test
-	void testVarargSimple() throws IOException {
-		ProxyBuilderFactory factory = createFactory();
-		ProxyBuilder<TestVarargsInterface> proxyBuilder =
-			factory.ofInterfaces(TestVarargsInterface.class);
+	void testVarargSimple() {
+		ProxyService service = createService();
 		TestHandler<TestVarargsInterface> handler = TestHandler.create();
 
-		TestVarargsInterface proxy = proxyBuilder.instantiate(handler);
+		TestVarargsInterface proxy =
+			ProxyBuilder.forInterface(TestVarargsInterface.class)
+				.usingService(service)
+				.instantiate(handler);
 
 		assertThat(proxy).isInstanceOf(TestVarargsInterface.class);
 
@@ -45,13 +46,13 @@ public abstract class AbstractProxyBuilderFactoryTest {
 	}
 
 	@Test
-	void testVarargPrimitive() throws IOException {
-		ProxyBuilderFactory factory = createFactory();
-		ProxyBuilder<TestVarargsPrimitiveInterface> proxyBuilder =
-			factory.ofInterfaces(TestVarargsPrimitiveInterface.class);
+	void testVarargPrimitive() {
+		ProxyService service = createService();
 		TestHandler<TestVarargsPrimitiveInterface> handler = TestHandler.create();
-
-		TestVarargsPrimitiveInterface proxy = proxyBuilder.instantiate(handler);
+		TestVarargsPrimitiveInterface proxy =
+			ProxyBuilder.forInterface(TestVarargsPrimitiveInterface.class)
+				.usingService(service)
+				.instantiate(handler);
 
 		assertThat(proxy).isInstanceOf(TestVarargsPrimitiveInterface.class);
 
@@ -72,12 +73,12 @@ public abstract class AbstractProxyBuilderFactoryTest {
 	}
 
 	@Test
-	void testCheckedException() throws IOException {
-		ProxyBuilderFactory factory = createFactory();
-		ProxyBuilder<TestInterfaceChecked> proxyBuilder =
-			factory.ofInterfaces(TestInterfaceChecked.class);
+	void testCheckedException() {
+		ProxyService service = createService();
 		TestHandler<TestInterfaceChecked> handler = TestHandler.create();
-		TestInterfaceChecked proxy = proxyBuilder.instantiate(handler);
+		TestInterfaceChecked proxy = ProxyBuilder.forInterface(TestInterfaceChecked.class)
+			.usingService(service)
+			.instantiate(handler);
 
 		assertThat(proxy).isInstanceOf(TestInterfaceChecked.class);
 
@@ -92,12 +93,13 @@ public abstract class AbstractProxyBuilderFactoryTest {
 	}
 
 	@Test
-	void testUncheckedException() throws IOException {
-		ProxyBuilderFactory factory = createFactory();
-		ProxyBuilder<TestFirstInterface> proxyBuilder =
-			factory.ofInterfaces(TestFirstInterface.class);
+	void testUncheckedException() {
+		ProxyService service = createService();
 		TestHandler<TestFirstInterface> handler = TestHandler.create();
-		TestFirstInterface proxy = proxyBuilder.instantiate(handler);
+		TestFirstInterface proxy =
+			ProxyBuilder.forInterface(TestFirstInterface.class)
+				.usingService(service)
+				.instantiate(handler);
 
 		assertThat(proxy).isInstanceOf(TestFirstInterface.class);
 
@@ -113,11 +115,12 @@ public abstract class AbstractProxyBuilderFactoryTest {
 
 	@Test
 	void testOfInterfaces() {
-		ProxyBuilderFactory factory = createFactory();
-		ProxyBuilder<TestFirstInterface> proxyBuilder =
-			factory.ofInterfaces(TestFirstInterface.class);
+		ProxyService service = createService();
 		TestHandler<TestFirstInterface> handler = TestHandler.create();
-		TestFirstInterface proxy = proxyBuilder.instantiate(handler);
+		TestFirstInterface proxy =
+			ProxyBuilder.forInterface(TestFirstInterface.class)
+				.usingService(service)
+				.instantiate(handler);
 
 		assertThat(proxy).isInstanceOf(TestFirstInterface.class);
 		assertThat(proxy).isNotInstanceOf(TestClass.class);
@@ -132,13 +135,14 @@ public abstract class AbstractProxyBuilderFactoryTest {
 
 	@Test
 	void testOfClass() {
-		ProxyBuilderFactory factory = createFactory();
-		assumeTrue(factory.supportsFeature(ProxyBuilderFactory.Feature.SUPERCLASS), MESSAGE_ASSUME_SUPERCLASS);
+		ProxyService service = createService();
+		assumeTrue(service.supportsFeature(ProxyService.Feature.SUPERCLASS), MESSAGE_ASSUME_SUPERCLASS);
 
-		ProxyBuilder<TestClass> proxyBuilder =
-			factory.ofClass(TestClass.class);
 		TestHandler<TestClass> handler = TestHandler.create();
-		TestClass proxy = proxyBuilder.instantiate(handler);
+		TestClass proxy = ProxyBuilder.forClass(TestClass.class)
+			.usingService(service)
+			.instantiate(handler);
+
 
 		assertThat(proxy).isNotInstanceOf(TestFirstInterface.class);
 		assertThat(proxy).isInstanceOf(TestClass.class);
@@ -153,12 +157,13 @@ public abstract class AbstractProxyBuilderFactoryTest {
 
 	@Test
 	void testOfClassWithInterface() {
-		ProxyBuilderFactory factory = createFactory();
-		assumeTrue(factory.supportsFeature(ProxyBuilderFactory.Feature.SUPERCLASS), MESSAGE_ASSUME_SUPERCLASS);
-		ProxyBuilder<TestClass> proxyBuilder =
-			factory.ofClass(TestClass.class, TestFirstInterface.class);
+		ProxyService service = createService();
+		assumeTrue(service.supportsFeature(ProxyService.Feature.SUPERCLASS), MESSAGE_ASSUME_SUPERCLASS);
 		TestHandler<TestClass> handler = TestHandler.create();
-		TestClass proxy = proxyBuilder.instantiate(handler);
+		TestClass proxy = ProxyBuilder.forClass(TestClass.class)
+			.withInterface(TestFirstInterface.class)
+			.usingService(service)
+			.instantiate(handler);
 
 		assertThat(proxy).isInstanceOf(TestFirstInterface.class);
 		assertThat(proxy).isInstanceOf(TestClass.class);

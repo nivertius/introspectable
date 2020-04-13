@@ -113,8 +113,7 @@ Remoting library needs to replace method call on proxy with message transmission
 
 ```java
 Object proxy = 
-    ProxyBuilderFactory.withFeature(Feature.SUPERCLASS)
-        .ofType(stubClass, Remote.class)
+    ProxyBuilder.ofType(stubClass).withInterface(Remote.class)
         .instantiate(invocation -> {
                 Transmission transmission =
                     invocation.decompose((method, target, parameters) ->
@@ -129,8 +128,7 @@ Object proxy =
 
 ```java
 UserService proxy =
-    ProxyBuilderFactory.any()
-        .ofType(UserService.class)
+    ProxyBuilder.ofInterface(UserService.class)
         .instantiate(invocation -> {
                 String source = invocation.decompose((method, target, parameters) ->
                     method.getDeclaringClass() + "#" + method.getName());
