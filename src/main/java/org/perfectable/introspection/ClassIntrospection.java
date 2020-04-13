@@ -5,7 +5,6 @@ import org.perfectable.introspection.query.ConstructorQuery;
 import org.perfectable.introspection.query.FieldQuery;
 import org.perfectable.introspection.query.InheritanceQuery;
 import org.perfectable.introspection.query.MethodQuery;
-import org.perfectable.introspection.query.RelatedTypeQuery;
 import org.perfectable.introspection.type.ClassView;
 
 import java.lang.annotation.Annotation;
@@ -52,10 +51,6 @@ public final class ClassIntrospection<X> {
 
 	public AnnotationQuery<Annotation> annotations() {
 		return AnnotationQuery.of(this.type);
-	}
-
-	public RelatedTypeQuery related() {
-		return RelatedTypeQuery.of(this.type);
 	}
 
 	public boolean isInstantiable() {
