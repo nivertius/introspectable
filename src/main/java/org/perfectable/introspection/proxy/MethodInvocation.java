@@ -11,6 +11,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 
 import com.google.common.primitives.Primitives;
+import com.google.errorprone.annotations.concurrent.LazyInit;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
@@ -24,6 +25,7 @@ public final class MethodInvocation<T> implements Invocation {
 	private final T receiver;
 	private final Object[] arguments;
 
+	@LazyInit
 	private transient MethodHandle handle;
 
 	private static final MethodHandle PRIVATE_LOOKUP_CONSTRUCTOR = findPrivateLookupConstructor();
