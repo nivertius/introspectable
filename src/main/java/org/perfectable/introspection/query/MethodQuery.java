@@ -4,6 +4,7 @@ import org.perfectable.introspection.PrivilegedActions;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -45,7 +46,7 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		return new Parameters(this, parametersFilter);
 	}
 
-	public MethodQuery returning(Class<?> type) {
+	public MethodQuery returning(Type type) {
 		return returning(TypeFilter.subtypeOf(type));
 	}
 

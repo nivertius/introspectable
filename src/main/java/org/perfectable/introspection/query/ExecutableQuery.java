@@ -1,6 +1,7 @@
 package org.perfectable.introspection.query;
 
 import java.lang.reflect.Executable;
+import java.lang.reflect.Type;
 
 import static java.util.Objects.requireNonNull;
 
@@ -9,7 +10,7 @@ abstract class ExecutableQuery<E extends Executable, Q extends ExecutableQuery<E
 
 	public abstract Q parameters(ParametersFilter parametersFilter);
 
-	public Q parameters(Class<?>... parameterTypes) {
+	public Q parameters(Type... parameterTypes) {
 		requireNonNull(parameterTypes);
 		return parameters(ParametersFilter.typesAccepted(parameterTypes));
 	}

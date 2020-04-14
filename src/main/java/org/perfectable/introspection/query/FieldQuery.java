@@ -3,6 +3,7 @@ package org.perfectable.introspection.query;
 import org.perfectable.introspection.PrivilegedActions;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -46,7 +47,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		return new Predicated(this, filter);
 	}
 
-	public FieldQuery typed(Class<?> type) {
+	public FieldQuery typed(Type type) {
 		return typed(TypeFilter.subtypeOf(type));
 	}
 
