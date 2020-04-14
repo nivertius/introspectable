@@ -10,12 +10,43 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Iterable-like container that searches for constructors of a class.
+ *
+ * <p>This is straightforward method to search for class constructor that have specified characteristics
+ * in provided class.
+ *
+ * <p>Instances of this class are immutable, each filtering produces new, modified instance. To obtain unrestricted
+ * query, use {@link #of}.
+ *
+ * <p>To obtain results either iterate this class with {@link #iterator} (or in enhanced-for loop) or use one of
+ * {@link #stream()}, {@link #unique()}, {@link #option()} or {@link #isPresent()}.
+ *
+ * <p>Example usage, which gets a public constructor in class "UserService" that have annotation "Inject" on
+ * them. Before returning constructor, it is marked as {@link Constructor#setAccessible(boolean)}  accessible}.
+ * <pre>
+ *     ConstructorQuery.of(UserService.class)
+ *         .requiringModifier(Modifier.PUBLIC)
+ *         .annotatedBy(Inject.class)
+ *         .asAccessible()
+ *         .unique()
+ * </pre>
+ *
+ * @param <X> class in which to search constructor
+ */
 @SuppressWarnings({
 	"DesignForExtension", // class is closed because of package-private constructor
 	"ClassDataAbstractionCoupling"
 })
 public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>, ConstructorQuery<X>> {
 
+	/**
+	 * Queries for fields in specified class.
+	 *
+	 * @param type class to search constructors in
+	 * @param <X> type of constructed objects
+	 * @return query that returns all constructors in specified class.
+	 */
 	public static <X> ConstructorQuery<X> of(Class<X> type) {
 		requireNonNull(type);
 		return new Complete<>(type);
