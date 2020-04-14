@@ -172,8 +172,12 @@
 							<packages>org.perfectable.introspection.proxy*</packages>
 						</group>
 						<group>
-							<title>Introspections</title>
-							<packages>org.perfectable.introspection.query*:org.perfectable.introspection</packages>
+							<title>Query</title>
+							<packages>org.perfectable.introspection.query*</packages>
+						</group>
+						<group>
+							<title>Type</title>
+							<packages>org.perfectable.introspection.type*</packages>
 						</group>
 					</groups>
 				</configuration>
