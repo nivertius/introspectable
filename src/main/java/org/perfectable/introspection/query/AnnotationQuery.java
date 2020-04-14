@@ -46,7 +46,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 		return new Annotated<>(this, metaAnnotation);
 	}
 
-	public <X extends A> AnnotationQuery<X> typed(Class<X> annotationClass) {
+	public <X extends Annotation> AnnotationQuery<X> typed(Class<X> annotationClass) {
 		requireNonNull(annotationClass);
 		return new Typed<>(this, annotationClass);
 	}
@@ -130,11 +130,11 @@ public abstract class AnnotationQuery<A extends Annotation>
 		}
 	}
 
-	private static final class Typed<A extends Annotation, X extends A> extends AnnotationQuery<X> {
-		private final AnnotationQuery<A> parent;
+	private static final class Typed<X extends Annotation> extends AnnotationQuery<X> {
+		private final AnnotationQuery<?> parent;
 		private final Class<X> type;
 
-		Typed(AnnotationQuery<A> parent, Class<X> type) {
+		Typed(AnnotationQuery<?> parent, Class<X> type) {
 			this.parent = parent;
 			this.type = type;
 		}
