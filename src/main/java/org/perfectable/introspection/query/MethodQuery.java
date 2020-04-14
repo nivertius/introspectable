@@ -14,13 +14,50 @@ import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Iterable-like container that searches for methods in class.
+ *
+ * <p>This is straightforward way to search for methods that have specified characteristics in provided class.
+ *
+ * <p>Instances of this class are immutable, each filtering produces new, modified instance. To obtain unrestricted
+ * query, use {@link #of}.
+ *
+ * <p>To obtain results either iterate this class with {@link #iterator} (or in enhanced-for loop) or use one of
+ * {@link #stream()}, {@link #unique()}, {@link #option()} or {@link #isPresent()}.
+ *
+ * <p>All methods present in class are searched, either declared in it directly, or inherited from parent classes. This
+ * means that even methods that are overridden in the inheritance chain will be returned, so methods with the same
+ * signature but different declaring class might be present multiple times. To avoid this behavior, use
+ * {@link #notOverridden}.
+ *
+ * <p>Example usage, which injects all public instance methods in class "UserService" that have annotation "Inject" on
+ * them, have one parameter, and does not return value (is void). Before passing field to the method, it is marked
+ * as {@link Method#setAccessible accessible}.
+ * <pre>
+ *     MethodQuery.of(UserService.class)
+ *         .requiringModifier(Modifier.PUBLIC)
+ *         .excludingModifier(Modifier.STATIC)
+ *         .annotatedBy(Inject.class)
+ *         .parameters(ParametersFilter.count(1))
+ *         .returningVoid()
+ *         .asAccessible()
+ *         .stream()
+ *         .forEach(this::inject);
+ * </pre>
+ */
 @SuppressWarnings({
 	"DesignForExtension", // class is closed because of package-private constructor
 	"ClassDataAbstractionCoupling"
 })
 public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 
-	public static <X> MethodQuery of(Class<X> type) {
+	/**
+	 * Queries for fields in specified class.
+	 *
+	 * @param type class to search methods in
+	 * @return query that returns all constructors in specified class.
+	 */
+	public static MethodQuery of(Class<?> type) {
 		requireNonNull(type);
 		return new Complete<>(type);
 	}
@@ -49,19 +86,51 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		return new Parameters(this, parametersFilter);
 	}
 
+	/**
+	 * Restricts query to methods that has a return type that is subtype of specified type.
+	 *
+	 * <p>This methods accepts every type, even {@link Void#TYPE}. In latter case, it will filter for methods that
+	 * does not return a value, i.e. void methods. For readability, use {@link #returningVoid}.
+	 *
+	 * @param type return type to restrict
+	 * @return copy of this query that will also filter by return type
+	 */
 	public MethodQuery returning(Type type) {
 		return returning(TypeFilter.subtypeOf(type));
 	}
 
+	/**
+	 * Restricts query to methods that has a return type that match the filter.
+	 *
+	 * @param typeFilter filter to restrict method return type with
+	 * @return copy of this query that will also filter by return type
+	 */
 	public MethodQuery returning(TypeFilter typeFilter) {
 		requireNonNull(typeFilter);
 		return new Returning(this, typeFilter);
 	}
 
+	/**
+	 * Restricts query to methods that doesn't return a value, i.e. are void.
+	 *
+	 * @apiNote This method could be named "notReturning", but its a matter of opinion if it would be more confusing
+	 *     than current name. The void method actually returns, ends normally.
+	 *
+	 * @return copy of this query that will filter methods that have void return
+	 */
 	public MethodQuery returningVoid() {
 		return returning(Void.TYPE);
 	}
 
+	/**
+	 * Restricts query for methods that are not overridden by other in the inheritance chain.
+	 *
+	 * <p>Normally, the query returns methods that are overridden in the inheritance chain - methods with the same
+	 * signature but different declaring class might be present multiple times. Using this method will change that
+	 * behavior.
+	 *
+	 * @return copy of this query that will filter methods that are not overridden
+	 */
 	public MethodQuery notOverridden() {
 		return new NotOverriden(this);
 	}
