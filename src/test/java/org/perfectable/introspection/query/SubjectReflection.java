@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import javax.annotation.Nullable;
+
 import static org.perfectable.introspection.SimpleReflections.getConstructor;
 import static org.perfectable.introspection.SimpleReflections.getField;
 import static org.perfectable.introspection.SimpleReflections.getMethod;
@@ -72,6 +74,17 @@ public final class SubjectReflection {
 		getMethod(Subject.class, "annotatedWithNullable");
 	public static final Method TO_STRING =
 		getMethod(Subject.class, "toString");
+
+	static final Subject.Special INSTANCE_SPECIAL =
+		Subject.class.getAnnotation(Subject.Special.class);
+	static final Subject.OtherAnnotation INSTANCE_OTHER =
+		Subject.class.getAnnotation(Subject.OtherAnnotation.class);
+	static final Subject.RepetitionContainer REPETITION_CONTAINER =
+		Subject.class.getAnnotation(Subject.RepetitionContainer.class);
+	static final Subject.Repetition[] REPETITIONS =
+		Subject.class.getDeclaredAnnotationsByType(Subject.Repetition.class);
+	static final Nullable INSTANCE_NULLABLE =
+		SubjectReflection.ANNOTATED_WITH_NULLABLE.getAnnotation(Nullable.class);
 
 	private SubjectReflection() {
 		// utility class

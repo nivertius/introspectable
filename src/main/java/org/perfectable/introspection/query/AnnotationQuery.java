@@ -1,9 +1,18 @@
 package org.perfectable.introspection.query;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Repeatable;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
@@ -49,6 +58,10 @@ public abstract class AnnotationQuery<A extends Annotation>
 	public <X extends Annotation> AnnotationQuery<X> typed(Class<X> annotationClass) {
 		requireNonNull(annotationClass);
 		return new Typed<>(this, annotationClass);
+	}
+
+	public AnnotationQuery<Annotation> withRepeatableUnroll() {
+		return new RepeatableUnroll(this);
 	}
 
 	private static final class OfElement extends AnnotationQuery<Annotation> {
@@ -174,6 +187,101 @@ public abstract class AnnotationQuery<A extends Annotation>
 		@Override
 		public boolean contains(Object candidate) {
 			return false;
+		}
+	}
+
+	private static final class RepeatableUnroll extends AnnotationQuery<Annotation> {
+		private static final Set<Class<? extends Annotation>> KNOWN_NON_CONTAINERS =
+			Collections.newSetFromMap(new ConcurrentHashMap<>());
+		private static final Map<Class<? extends Annotation>, Method> KNOWN_CONTAINERS =
+			new ConcurrentHashMap<>();
+
+		private final AnnotationQuery<?> parent;
+
+		RepeatableUnroll(AnnotationQuery<?> parent) {
+			this.parent = parent;
+		}
+
+		@Override
+		public Stream<Annotation> stream() {
+			return parent.stream()
+				.flatMap(this::unroll);
+		}
+
+		@Override
+		public boolean contains(Object candidate) {
+			if (parent.contains(candidate)) {
+				return true;
+			}
+			if (!(candidate instanceof Annotation)) {
+				return false;
+			}
+			Annotation candidateAnnotation = (Annotation) candidate;
+			Repeatable repeatableAnnotation =
+				candidateAnnotation.annotationType().getAnnotation(Repeatable.class);
+			if (repeatableAnnotation == null) {
+				return false;
+			}
+			Class<? extends Annotation> containerType = repeatableAnnotation.value();
+			Method extractionMethod = KNOWN_CONTAINERS.computeIfAbsent(containerType,
+				RepeatableUnroll::findContainerMethod);
+			return parent.typed(containerType).stream()
+				.flatMap(container -> extractContents(container, extractionMethod))
+				.anyMatch(candidate::equals);
+		}
+
+		private Stream<Annotation> unroll(Annotation source) {
+			Stream<Annotation> baseResult = Stream.of(source);
+			Class<? extends Annotation> sourceClass = source.annotationType();
+			if (KNOWN_NON_CONTAINERS.contains(sourceClass)) {
+				return baseResult;
+			}
+			try {
+				Method extractionMethod = KNOWN_CONTAINERS.computeIfAbsent(sourceClass,
+					RepeatableUnroll::findContainerMethod);
+				Stream<Annotation> additionalResults = extractContents(source, extractionMethod);
+				return Stream.concat(baseResult, additionalResults);
+			}
+			catch (IllegalArgumentException e) {
+				KNOWN_NON_CONTAINERS.add(sourceClass);
+				return baseResult;
+			}
+		}
+
+		private static Method findContainerMethod(Class<? extends Annotation> candidateContainer)
+				throws IllegalArgumentException {
+			Method[] methods = candidateContainer.getDeclaredMethods();
+			Optional<Method> valueMethodOption =
+				Stream.of(methods).filter(method -> method.getName().equals("value")).findAny();
+			if (!valueMethodOption.isPresent()) {
+				throw new IllegalArgumentException();
+			}
+			Method valueMethod = valueMethodOption.get();
+			Class<?> returnType = valueMethod.getReturnType();
+			if (!returnType.isArray()
+				|| !Annotation.class.isAssignableFrom(returnType.getComponentType())) {
+				throw new IllegalArgumentException();
+			}
+			@SuppressWarnings("unchecked")
+			Class<? extends Annotation> containedClass =
+				(Class<? extends Annotation>) returnType.getComponentType();
+			Repeatable repeatableAnnotation = containedClass.getAnnotation(Repeatable.class);
+			if (!repeatableAnnotation.value().equals(candidateContainer)) {
+				throw new IllegalArgumentException();
+			}
+			return valueMethod;
+		}
+
+		public Stream<Annotation> extractContents(Annotation source, Method extractionMethod) {
+			Object resultArray;
+			try {
+				resultArray = extractionMethod.invoke(source);
+			}
+			catch (IllegalAccessException | InvocationTargetException e) {
+				throw new AssertionError(e);
+			}
+			return IntStream.range(0, Array.getLength(resultArray))
+				.mapToObj(i -> (Annotation) Array.get(resultArray, i));
 		}
 	}
 

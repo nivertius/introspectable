@@ -1,5 +1,6 @@
 package org.perfectable.introspection.query;
 
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import javax.annotation.Nullable;
@@ -10,6 +11,8 @@ import static org.perfectable.introspection.query.SubjectReflection.MESSAGE_METH
 @SuppressWarnings({"unused", "InterfaceWithOnlyStatics"})
 @Subject.Special
 @Subject.OtherAnnotation
+@Subject.Repetition(1)
+@Subject.Repetition(2)
 public class Subject {
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -20,6 +23,17 @@ public class Subject {
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface OtherAnnotation {
 
+	}
+
+	@Repeatable(RepetitionContainer.class)
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface Repetition {
+		int value();
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface RepetitionContainer {
+		Repetition[] value();
 	}
 
 	private String stringField;
