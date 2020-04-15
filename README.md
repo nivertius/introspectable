@@ -57,19 +57,6 @@ Stream<Method> appliers =
         .stream();
 ```
 
-#### Example: Messaging
-
-To convert an incoming message to an appropriate object, messaging needs to know actual type parameter for consumer:  
-
-```java
-Class<?> targetClass = 
-    introspect(Consumer.class)
-        .view()
-        .resolve(messageConsumer.getClass())
-        .parameter(0)
-        .erasure()
-```
-
 #### Example: Dependency injection
 
 To inject new instances with required dependencies, IoC container needs to know which constructor is injected:
@@ -98,6 +85,55 @@ introspect(Application.class.getClassLoader())
     .map(ClassIntrospection::instantiate)
     .forEach(this::registerServlet);
 ```
+
+### Types
+
+Native java `java.lang.reflect.Type` is annoyingly hard to interrogate and reason with. To check subtyping. 
+
+#### Example: Parameterized type injection
+
+Injection framework needs to check if concrete implementation of `Supplier` can be injected into field with
+parameterized type:
+
+```java
+boolean canInject =
+    introspect(targetField)
+        .typeView()
+        .isSuperTypeOf(injectedValue);
+```
+
+This check will fail if `targetField` is declared as `Supplier<Node<C> newNodeSupplier` and `injectedValue` is instance
+of class `StringSupplier` which implements `Supplier<String>`, as it should. But the check will pass when doing
+`targetField.getType().isInstance(injectedValue)`. Using `targetField.getGenericType()` would help, but all the logic
+implemented here would need to be recreated.
+
+#### Example: Messaging
+
+To convert an incoming message to an appropriate object, messaging needs to know actual type parameter for consumer:
+
+```java
+Class<?> targetClass =
+    introspect(MessageConsumer.class)
+        .view()
+        .resolve(messageConsumer.getClass())
+        .parameter(0)
+        .erasure()
+```
+
+Lets say we have following declarations:
+```java
+interface MessageConsumer<M extends Message, S extends State> {}
+class LoginMessageConsumer<S extends LoginState> implements MessageConsumer<LoginMessage, S> {}
+```
+
+Lets say variable `messageConsumer` is of class with erasure `LoginMessageConsumer`. In this case `resolve` allows
+creating new type that uses same type variable substitution. Expression
+`TypeView.of(Consumer.class).resolve(messageConsumer.getClass())` will produce `TypeView` with synthetic
+parameterized type `MessageConsumer<LoginMessage, S>` because parameter `M` in `MessageConsumer` was substituted
+with `LoginMessage` in declaration of class `LoginMessageConsumer`.
+
+This is a simplified case, because in this situation calling `Class#getGenericSuperclass`. But even then, this needs
+to be casted onto `ParameterizedType`, first parameter needs to be extracted, casted to `Class` and so on.
 
 ### Proxies
 
