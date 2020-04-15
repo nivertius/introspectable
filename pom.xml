@@ -8,7 +8,7 @@
 	</parent>
 
 	<artifactId>introspectable</artifactId>
-	<version>4.0.0-SNAPSHOT</version>
+	<version>4.0.0</version>
 
 	<name>Introspectable</name>
 	<description>Easier java reflections</description>
