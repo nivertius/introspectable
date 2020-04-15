@@ -443,7 +443,7 @@ public abstract class TypeView {
 	 * </ul>
 	 * But this can be resolved using this method:
 	 * {@code TypeView.ofTypeOf(Example.class.getDeclaredField("elements")).resolve(ExampleExtension.class)} will wrap
-	 * {@code List<String>}, because variable substitution {@code T} -> {@code String} is used.
+	 * {@code List<String>}, because variable substitution {@code T} -&gt; {@code String} is used.
 	 *
 	 * @param other type to copy substitutions from
 	 * @return TypeView that uses substitutions from provided type

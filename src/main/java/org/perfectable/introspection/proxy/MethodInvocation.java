@@ -157,14 +157,14 @@ public final class MethodInvocation<T> implements Invocation {
 	 *
 	 * <p>For example, decomposition might produce log message of method called:
 	 * <pre>
-	 *     Decomposer&lt;Object, String&gt; stringifingDecomposer = (method, receiver, arguments) ->
+	 *     Decomposer&lt;Object, String&gt; stringifingDecomposer = (method, receiver, arguments) -&gt;
 	 *         String.format("Method %s was called on %s with %s", method, receiver, arguments);
 	 *     LOGGER.debug(invocation.decompose(stringifingDecomposer))
 	 * </pre>
 	 *
 	 * <p>Another example: decomposer might substitute invocation method for another one:
 	 * <pre>
-	 *     Decomposer&ltObject, MethodInvocation&lt;?&gt;&gt; replacingDecomposer = (method, receiver, arguments) ->
+	 *     Decomposer&lt;Object, MethodInvocation&lt;?&gt;&gt; replacingDecomposer = (method, receiver, arguments) -&gt;
 	 *         MethodInvocation.of(anotherMethod, receiver, arguments);
 	 *     MethodInvocation&lt;?&gt; replacedMethodInvocation = invocation.decompose(replacingDecomposer))
 	 *     return replacedMethodInvocation.invoke();

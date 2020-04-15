@@ -37,7 +37,7 @@ public final class ProxyBuilder<I> {
 	 *
 	 * <p>This class will be used as a superclass of a proxy class. The class must not be final or primitive.
 	 *
-	 * <p>>This builder will use service that supports building proxies with superclasses.
+	 * <p>This builder will use service that supports building proxies with superclasses.
 	 *
 	 * @param superclass class to be used as superclass for a proxy
 	 * @param <X> type of proxy
