@@ -4,14 +4,16 @@ Easier Java reflections.
 
 ## Introduction
 
-Reflections, an access to program elements structure from themselves, although not recommended in applications are essential 
-when creating frameworks. Java has somewhat complicated and verbose ways to do reflections, sometimes to the extremes.
+Reflections, an access to program elements structure from themselves, although not recommended in applications are
+essential when creating frameworks. Java has somewhat complicated and verbose ways to do reflections, sometimes to the
+extremes.
 
 Introspectable comes to rescue. This library has few methods that eases common reflection tasks.
 
 ### Queries
 
-Queries allow simpler access to reflections objects from their source: a class.  
+Queries allow simpler access to reflections objects. They are available under the
+`org.perfectable.introspection.query` package. The examples should explain everything.
 
 #### Example: Test framework 
 
@@ -140,8 +142,9 @@ to be casted onto `ParameterizedType`, first parameter needs to be extracted, ca
 Introspectable adds simple facade for creating proxies. Natively, it supports standard JDK proxies and 
 javassist + objenesis.
 
-Proxies are built from <code>ProxyBuilder</code> which in turn is created from <code>ProxyBuilderFactory</code>.
-Then, proxies for specific objects can be created by providing <code>InvocationHandler</code>:
+Proxies are built by `org.perfectable.introspection.proxy.ProxyBuilder`. It allows creating proxy by chaining
+configuration. After configuration is done, proxies for specific objects can be created by providing
+`InvocationHandler`:
 
 #### Example: Remoting
 
