@@ -17,7 +17,7 @@ steps:
   - name: maven-config
     path: /root/.m2
   commands:
-  - mvn -B deploy
+  - mvn -B deploy -DaltDeploymentRepository=perfectable-snapshots::default::https://maven.perfectable.org/libs-snapshot-local
 - name: cleanup-snapshots
   image: arm32v7/bash:5.0
   volumes:
