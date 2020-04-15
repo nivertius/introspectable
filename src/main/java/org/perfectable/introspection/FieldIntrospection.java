@@ -1,6 +1,7 @@
 package org.perfectable.introspection;
 
 import org.perfectable.introspection.query.AnnotationQuery;
+import org.perfectable.introspection.type.TypeView;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -22,6 +23,15 @@ public final class FieldIntrospection {
 	 */
 	public AnnotationQuery<Annotation> annotations() {
 		return AnnotationQuery.of(field);
+	}
+
+	/**
+	 * Extracts actual declared type of field.
+	 *
+	 * @return TypeView of field generic type
+	 */
+	public TypeView typeView() {
+		return TypeView.ofTypeOf(field);
 	}
 
 	private final Field field;
