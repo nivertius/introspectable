@@ -17,6 +17,9 @@ class MethodQueryTest {
 	@SuppressWarnings("UnnecessaryLambda")
 	private static final Predicate<Method> JACOCO_EXCLUSION =
 		method -> !method.getName().equals("$jacocoInit");
+	@SuppressWarnings("UnnecessaryLambda")
+	private static final Predicate<Method> REGISTER_NATIVES_EXCLUSION =
+		method -> !(method.getDeclaringClass().equals(Object.class) && method.getName().equals("registerNatives"));
 	private static final String EXAMPLE_STRING = "testString";
 
 	@Test
@@ -26,6 +29,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.filteredOn(REGISTER_NATIVES_EXCLUSION)
 			.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT,
 				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
@@ -46,7 +50,6 @@ class MethodQueryTest {
 				ObjectMethods.CLONE,
 				ObjectMethods.WAIT, ObjectMethods.WAIT_TIMEOUT,
 				ObjectMethods.WAIT_NANOSECONDS, ObjectMethods.FINALIZE,
-				ObjectMethods.REGISTER_NATIVES,
 				ObjectMethods.NOTIFY, ObjectMethods.NOTIFY_ALL,
 				ObjectMethods.TO_STRING)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.STATIC_FIELD);
@@ -126,14 +129,14 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.filteredOn(REGISTER_NATIVES_EXCLUSION)
 			.containsExactly(ObjectMethods.HASH_CODE, ObjectMethods.EQUALS,
 				ObjectMethods.FINALIZE,
 				ObjectMethods.NOTIFY, ObjectMethods.NOTIFY_ALL,
 				ObjectMethods.WAIT, ObjectMethods.WAIT_TIMEOUT,
 				ObjectMethods.WAIT_NANOSECONDS,
 				ObjectMethods.GET_CLASS, ObjectMethods.CLONE,
-				ObjectMethods.TO_STRING,
-				ObjectMethods.REGISTER_NATIVES)
+				ObjectMethods.TO_STRING)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
 				SubjectReflection.STATIC_FIELD);
 	}
@@ -189,6 +192,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.filteredOn(REGISTER_NATIVES_EXCLUSION)
 			.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT,
 				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
@@ -201,7 +205,7 @@ class MethodQueryTest {
 				SubjectReflection.METHOD_PRIVATE,
 				ObjectMethods.WAIT, ObjectMethods.WAIT_TIMEOUT,
 				ObjectMethods.WAIT_NANOSECONDS,
-				ObjectMethods.FINALIZE, ObjectMethods.REGISTER_NATIVES,
+				ObjectMethods.FINALIZE,
 				ObjectMethods.NOTIFY,
 				ObjectMethods.NOTIFY_ALL)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
@@ -216,6 +220,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.filteredOn(REGISTER_NATIVES_EXCLUSION)
 			.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT,
 				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
@@ -236,7 +241,6 @@ class MethodQueryTest {
 				ObjectMethods.CLONE,
 				ObjectMethods.WAIT, ObjectMethods.WAIT_TIMEOUT,
 				ObjectMethods.WAIT_NANOSECONDS, ObjectMethods.FINALIZE,
-				ObjectMethods.REGISTER_NATIVES,
 				ObjectMethods.NOTIFY, ObjectMethods.NOTIFY_ALL)
 			.doesNotContain(EXAMPLE_STRING, null, ObjectMethods.TO_STRING,
 				SubjectReflection.STATIC_FIELD);
@@ -251,6 +255,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.filteredOn(REGISTER_NATIVES_EXCLUSION)
 			.containsExactly(SubjectReflection.Extension.NO_RESULT_NO_ARGUMENT,
 				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
@@ -272,7 +277,6 @@ class MethodQueryTest {
 				ObjectMethods.CLONE,
 				ObjectMethods.WAIT, ObjectMethods.WAIT_TIMEOUT,
 				ObjectMethods.WAIT_NANOSECONDS, ObjectMethods.FINALIZE,
-				ObjectMethods.REGISTER_NATIVES,
 				ObjectMethods.NOTIFY, ObjectMethods.NOTIFY_ALL)
 			.doesNotContain(EXAMPLE_STRING, null, ObjectMethods.TO_STRING,
 				SubjectReflection.STATIC_FIELD);
@@ -324,8 +328,8 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.filteredOn(REGISTER_NATIVES_EXCLUSION)
 			.containsExactly(ObjectMethods.FINALIZE, ObjectMethods.CLONE,
-				ObjectMethods.REGISTER_NATIVES,
 				SubjectReflection.METHOD_PROTECTED,
 				SubjectReflection.METHOD_PACKAGE,
 				SubjectReflection.METHOD_PRIVATE)

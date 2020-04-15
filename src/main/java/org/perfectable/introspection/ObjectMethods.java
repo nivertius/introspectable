@@ -34,9 +34,6 @@ public final class ObjectMethods {
 	/** Reflection for {@link Object#clone()}. */
 	public static final Method CLONE = getMethod(Object.class, "clone");
 
-	/** Reflection for {@link Object#registerNatives()}. */
-	public static final Method REGISTER_NATIVES = getMethod(Object.class, "registerNatives");
-
 	private ObjectMethods() {
 		// utility
 	}
