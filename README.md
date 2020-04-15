@@ -240,6 +240,19 @@ class FactoryInjector<F, P> {
 }
 ```
 
+### Beans
+
+A lot of code still uses Java Beans as data container. Package `org.perfectable.introspection.bean` helps managing those:
+
+#### Example: Form binding
+
+```java
+Bean<User> userBean = BeanSchema.of(User.class).instantiate();
+form.forEachField((fieldName, value) ->
+    userBean.property(fieldName).set(value));
+User boundUser = userBean.contents();
+```
+
 ## How to use
 
 Add as dependency:
