@@ -1,4 +1,4 @@
-package org.perfectable.introspection.bean; // SUPPRESS LENGTH
+package org.perfectable.introspection.bean;
 
 import org.perfectable.introspection.PrivilegedActions;
 
@@ -187,7 +187,7 @@ final class Properties {
 			}
 			catch (InvocationTargetException e) {
 				Throwables.throwIfUnchecked(e.getTargetException());
-				throw new RuntimeException(e.getTargetException()); // SUPPRESS PreserveStackTrace
+				throw new RuntimeException(e.getTargetException());
 			}
 		}
 
@@ -257,7 +257,7 @@ final class Properties {
 			}
 			catch (InvocationTargetException e) {
 				Throwables.throwIfUnchecked(e.getTargetException());
-				throw new RuntimeException(e.getTargetException()); // SUPPRESS PreserveStackTrace
+				throw new RuntimeException(e.getTargetException());
 			}
 		}
 
@@ -320,7 +320,7 @@ final class Properties {
 			}
 			catch (InvocationTargetException e) {
 				Throwables.throwIfUnchecked(e.getTargetException());
-				throw new RuntimeException(e.getTargetException()); // SUPPRESS PreserveStackTrace
+				throw new RuntimeException(e.getTargetException());
 			}
 		}
 
@@ -335,7 +335,7 @@ final class Properties {
 			}
 			catch (InvocationTargetException e) {
 				Throwables.throwIfUnchecked(e.getTargetException());
-				throw new RuntimeException(e.getTargetException()); // SUPPRESS PreserveStackTrace
+				throw new RuntimeException(e.getTargetException());
 			}
 		}
 

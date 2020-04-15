@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
-final class Invocations { // SUPPRESS MissingStaticMethodInNonInstantiatableClass
+final class Invocations {
 	static final class Returning implements Invocation {
 		@Nullable
 		private final Object result;

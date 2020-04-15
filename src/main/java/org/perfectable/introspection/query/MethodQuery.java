@@ -1,4 +1,4 @@
-package org.perfectable.introspection.query; // SUPPRESS LENGTH
+package org.perfectable.introspection.query;
 
 import org.perfectable.introspection.PrivilegedActions;
 

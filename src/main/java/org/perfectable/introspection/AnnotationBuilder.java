@@ -295,7 +295,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 
 	private static String formatValue(Object value) {
 		if (value instanceof String) {
-			return "\"" + value + "\""; // SUPPRESS MultipleStringLiterals
+			return String.format("\"%s\"", value);
 		}
 		return value.toString();
 	}

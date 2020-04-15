@@ -81,7 +81,7 @@ abstract class AbstractQuery<E, Q extends AbstractQuery<E, ? extends Q>> impleme
 		if (!iterator.hasNext()) {
 			return Optional.empty();
 		}
-		E element = iterator.next(); // SUPPRESS PrematureDeclaration
+		E element = iterator.next();
 		if (iterator.hasNext()) {
 			throw new IllegalArgumentException("Multiple elements were present in the query");
 		}

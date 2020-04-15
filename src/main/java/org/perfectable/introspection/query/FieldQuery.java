@@ -12,7 +12,6 @@ import com.google.common.collect.ImmutableList;
 
 import static java.util.Objects.requireNonNull;
 
-
 /**
  * Iterable-like container that searches for fields in class.
  *

@@ -230,7 +230,7 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 		return Stream.of(upperBounds).map(TypeView::of);
 	}
 
-	private static Type[] removeObjectClass(Type[] upperBounds) { // SUPPRESS UseVarargs
+	private static Type[] removeObjectClass(Type[] upperBounds) {
 		return Stream.of(upperBounds).filter(bound -> !Object.class.equals(bound)).toArray(Type[]::new);
 	}
 }

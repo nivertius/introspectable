@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 /**
  * Convenient holder for reflections of methods in {@link Object}.
  */
+@SuppressWarnings("MultipleStringLiterals")
 public final class ObjectMethods {
 	/** Reflection for {@link Object#equals(Object)}. */
 	public static final Method EQUALS = getMethod(Object.class, "equals", Object.class);
@@ -19,7 +20,6 @@ public final class ObjectMethods {
 	/** Reflection for {@link Object#notifyAll()}. */
 	public static final Method NOTIFY_ALL = getMethod(Object.class, "notifyAll");
 
-	// SUPPRESS NEXT 6 MultipleStringLiterals
 	/** Reflection for {@link Object#wait()}. */
 	public static final Method WAIT = getMethod(Object.class, "wait");
 	/** Reflection for {@link Object#wait(long)}. */

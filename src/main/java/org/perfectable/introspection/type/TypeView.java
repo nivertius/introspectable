@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 	"DesignForExtension", // class is closed because of package-private constructor
 	"MethodCount"
 })
-public abstract class TypeView { // SUPPRESS MethodCount
+public abstract class TypeView {
 
 	/**
 	 * Creates view over provided type.

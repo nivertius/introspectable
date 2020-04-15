@@ -1,4 +1,4 @@
-package org.perfectable.introspection; // SUPPRESS LENGTH
+package org.perfectable.introspection;
 
 import org.perfectable.introspection.query.ConstructorQuery;
 import org.perfectable.introspection.query.MethodQuery;
@@ -38,7 +38,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		}
 	}
 
-	private static FunctionalReferenceIntrospection ofNativeImplementation(// SUPPRESS CyclomaticComplexity
+	private static FunctionalReferenceIntrospection ofNativeImplementation(
 			FunctionalReference marker, Method writeReplace, ClassLoader classLoader) {
 		SerializedLambda serializedForm;
 		try {
@@ -81,7 +81,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 
 	protected final SerializedLambda serializedForm;
 	protected final Class<?> implementationClass;
-	protected final Class<?> capturingType; // SUPPRESS AvoidFieldNameMatchingMethodName
+	protected final Class<?> capturingType;
 
 	FunctionalReferenceIntrospection(SerializedLambda serializedForm, ClassLoader classLoader) {
 		this.serializedForm = serializedForm;
@@ -97,6 +97,11 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 
 	protected Class<?> getImplementationClass() {
 		return implementationClass;
+	}
+
+	protected void checkParameterNumber(int number) {
+		checkArgument(number >= 0, "Parameter number must be non-negative");
+		checkArgument(number < parametersCount(), "Executable has no parameter with index %s", number);
 	}
 
 	private abstract static class OfMethod extends FunctionalReferenceIntrospection {
@@ -143,10 +148,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 			return implementationMethod.getGenericReturnType();
 		}
 
-		void checkParameterNumber(int number) {
-			checkArgument(number >= 0, "Parameter number must be non-negative"); // SUPPRESS MultipleStringLiterals
-			checkArgument(number < parametersCount(), "Method has no parameter with index %s", number);
-		}
+
 	}
 
 	private static final class OfInstanceMethod extends OfMethod {
@@ -229,11 +231,11 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 			return visitor.visitLambda(implementationMethod, captures);
 		}
 
-		// SUPPRESS MultipleStringLiterals
+		@SuppressWarnings("MultipleStringLiterals")
 		@Override
 		public Method referencedMethod() throws IllegalStateException {
 			throw new IllegalStateException(
-				"Interface implementation is not a method reference"); // SUPPRESS MultipleStringLiterals
+				"Interface implementation is not a method reference");
 		}
 	}
 
@@ -249,10 +251,11 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 				.unique();
 		}
 
+		@SuppressWarnings("MultipleStringLiterals")
 		@Override
 		public Method referencedMethod() throws IllegalStateException {
 			throw new IllegalStateException(
-				"Interface implementation is not a method reference"); // SUPPRESS MultipleStringLiterals
+				"Interface implementation is not a method reference");
 		}
 
 		@Override
@@ -286,11 +289,6 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 			checkParameterNumber(index);
 			Annotation[] annotations = implementationConstructor.getParameterAnnotations()[index];
 			return ImmutableSet.copyOf(annotations);
-		}
-
-		private void checkParameterNumber(int number) {
-			checkArgument(number >= 0, "Parameter number must be non-negative"); // SUPPRESS MultipleStringLiterals
-			checkArgument(number < parametersCount(), "Constructor has no parameter with index %s", number);
 		}
 	}
 }

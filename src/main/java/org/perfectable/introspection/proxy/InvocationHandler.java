@@ -23,6 +23,7 @@ public interface InvocationHandler<I extends Invocation> {
 	 * @return successful result of invocation processing
 	 * @throws Throwable exception that will be thrown on the call site
 	 */
+	@SuppressWarnings("IllegalThrows")
 	@Nullable
 	Object handle(I invocation) throws Throwable; // SUPPRESS IllegalThrows
 }

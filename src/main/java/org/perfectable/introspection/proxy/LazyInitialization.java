@@ -96,7 +96,7 @@ public final class LazyInitialization {
 		}
 
 		private Invocation replaceInvocation(Method method,
-				@SuppressWarnings("unused") @Nullable T receiver, // SUPPRESS AnnotationLocation
+				@SuppressWarnings("unused") @Nullable T receiver,
 				Object... arguments) {
 			if (EXTRACT_INSTANCE_METHOD.equals(method)) {
 				return () -> Optional.ofNullable(instance);

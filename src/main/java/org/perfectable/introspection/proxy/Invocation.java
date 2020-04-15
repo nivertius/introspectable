@@ -26,8 +26,9 @@ public interface Invocation {
 	 * @return result of an invocation.
 	 * @throws Throwable exception that was thrown by invocation
 	 */
+	@SuppressWarnings("IllegalThrows")
 	@Nullable
-	Object invoke() throws Throwable; // SUPPRESS IllegalThrows
+	Object invoke() throws Throwable;
 
 	/**
 	 * Adapts {@link Runnable} to this interface.

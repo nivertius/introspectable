@@ -166,9 +166,10 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		return asClass().asArray();
 	}
 
-	@Override // SUPPRESS MethodLength
-	public boolean isSubTypeOf(TypeView other) { // SUPPRESS NcssCount
-		return other.visit(new Visitor<Boolean>() { // SUPPRESS AnonInnerLength
+	@SuppressWarnings({"AnonInnerLength", "MethodLength"})
+	@Override
+	public boolean isSubTypeOf(TypeView other) {
+		return other.visit(new Visitor<Boolean>() {
 			@Override
 			public Boolean visitParameterized(ParameterizedTypeView view) {
 				Class<?> thisRaw = erasure();

@@ -107,8 +107,9 @@ public final class MethodInvocation<T> implements Invocation {
 		return new MethodInvocation<>(method, receiver, argumentsClone);
 	}
 
+	@SuppressWarnings("ArrayIsStoredDirectly")
 	private MethodInvocation(Method method, @Nullable T receiver,
-							 Object... arguments) { // SUPPRESS ArrayIsStoredDirectly
+							 Object... arguments) {
 		this.method = method;
 		this.receiver = receiver;
 		this.arguments = arguments;
@@ -294,7 +295,7 @@ public final class MethodInvocation<T> implements Invocation {
 		}
 	}
 
-	private static Object[] flattenVariableArguments(Method method, @Nullable Object[] actuals) { // SUPPRESS UseVarargs
+	private static Object[] flattenVariableArguments(Method method, @Nullable Object[] actuals) {
 		if (actuals == null) {
 			return EMPTY_ARGUMENTS;
 		}
@@ -313,12 +314,13 @@ public final class MethodInvocation<T> implements Invocation {
 		return result;
 	}
 
+	@SuppressWarnings("IllegalCatch")
 	private MethodHandle createHandle() {
 		MethodHandles.Lookup lookup;
 		try {
 			lookup = (MethodHandles.Lookup) PRIVATE_LOOKUP_CONSTRUCTOR.invoke(method.getDeclaringClass());
 		}
-		catch (Throwable throwable) { // SUPPRESS IllegalCatch will not fail
+		catch (Throwable throwable) {
 			throw new AssertionError(throwable);
 		}
 		MethodHandle methodHandle;

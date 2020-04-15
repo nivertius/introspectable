@@ -110,9 +110,10 @@ public final class ArrayTypeView extends AbstractTypeView<GenericArrayType> {
 		return this;
 	}
 
-	@Override // SUPPRESS MethodLength
+	@SuppressWarnings({"AnonInnerLength", "MethodLength"})
+	@Override
 	public boolean isSubTypeOf(TypeView other) {
-		return other.visit(new PartialVisitor<Boolean>() { // SUPPRESS AnonInnerLength
+		return other.visit(new PartialVisitor<Boolean>() {
 			@Override
 			public Boolean visitParameterized(ParameterizedTypeView view) {
 				if (!view.arguments().isEmpty()) {

@@ -1,4 +1,4 @@
-package org.perfectable.introspection; // SUPPRESS LENGTH
+package org.perfectable.introspection;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -355,7 +355,8 @@ final class MethodSignature {
 	private static final class PrimitiveType implements FieldType {
 		static final CharMatcher CHARACTERS = CharMatcher.anyOf("BCDFIJSZ");
 
-		static PrimitiveType readPrimitiveSignature(CharacterReader reader) { // SUPPRESS NPathComplexity
+		@SuppressWarnings("NPathComplexity")
+		static PrimitiveType readPrimitiveSignature(CharacterReader reader) {
 			if (reader.currentIsThenSkip('B')) {
 				return PrimitiveType.BYTE;
 			}

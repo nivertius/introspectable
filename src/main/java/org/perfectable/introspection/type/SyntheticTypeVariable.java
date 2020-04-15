@@ -14,7 +14,7 @@ final class SyntheticTypeVariable<D extends GenericDeclaration> implements TypeV
 	private final D declaration;
 	private final Type[] bounds;
 
-	SyntheticTypeVariable(String name, D declaration, Type[] bounds) { // SUPPRESS UseVarargs
+	SyntheticTypeVariable(String name, D declaration, Type[] bounds) {
 		this.name = name;
 		this.declaration = declaration;
 		this.bounds = bounds.clone();

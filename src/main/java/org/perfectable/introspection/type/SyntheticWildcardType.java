@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 final class SyntheticWildcardType implements WildcardType {
 	private static final Collector<CharSequence, ?, String> BOUND_JOINER = Collectors.joining(" & ");
 
-	SyntheticWildcardType(Type[] lowerBounds, Type[] upperBounds) { // SUPPRESS UseVararg
+	SyntheticWildcardType(Type[] lowerBounds, Type[] upperBounds) {
 		this.lowerBounds = lowerBounds.clone();
 		this.upperBounds = upperBounds.clone();
 	}

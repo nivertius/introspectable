@@ -17,7 +17,7 @@ final class SyntheticParameterizedType implements ParameterizedType {
 	private final Type[] typeArguments;
 
 	SyntheticParameterizedType(Class<?> rawType, @Nullable Type ownerType,
-							   Type[] typeArguments) { // SUPPRESS UseVarargs
+							   Type[] typeArguments) {
 		checkArgument(typeArguments.length == rawType.getTypeParameters().length);
 		this.rawType = rawType;
 		this.ownerType = ownerType;

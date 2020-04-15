@@ -66,7 +66,7 @@ final class ParameterFilters {
 
 		}
 
-		private boolean matchesVarargs(Parameter[] parameters) { // SUPPRESS UseVarargs
+		private boolean matchesVarargs(Parameter[] parameters) {
 			checkArgument(parameters.length > 0);
 			Parameter lastParameter = parameters[parameters.length - 1];
 			Iterator<TypeFilter> expectedFilterIterator = parameterTypes.iterator();
@@ -90,7 +90,7 @@ final class ParameterFilters {
 				|| parameterIterator.next().equals(lastParameter);
 		}
 
-		private boolean matchesNormal(Parameter[] parameters) { // SUPPRESS UseVarargs
+		private boolean matchesNormal(Parameter[] parameters) {
 			Iterator<TypeFilter> expectedFilterIterator = parameterTypes.iterator();
 			Iterator<Parameter> parameterIterator = Iterators.forArray(parameters);
 			while (expectedFilterIterator.hasNext()) {

@@ -80,7 +80,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 
 	private static final String CLASS_FILE_SUFFIX = ".class";
 
-	private static final ClassQuery<Object> SYSTEM =  // SUPPRESS AvoidFieldNameMatchingMethodName
+	private static final ClassQuery<Object> SYSTEM =
 		new ClassQuery<>(Object.class, ClassPathResourceSource.INSTANCE, ClassPool.getDefault(),
 			name -> ClassLoader.getSystemClassLoader().loadClass(name),
 			DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER, DEFAULT_POST_LOAD_FILTER);
@@ -116,7 +116,8 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			loader::loadClass, DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER, DEFAULT_POST_LOAD_FILTER);
 	}
 
-	private ClassQuery(Class<? extends C> castedType, // SUPPRESS ParameterNumber
+	@SuppressWarnings("ParameterNumber")
+	private ClassQuery(Class<? extends C> castedType,
 					   ResourceSource resources, ClassPool classPool,
 					   TypeLoader loader, Predicate<? super String> classNameFilter,
 					   Predicate<? super CtClass> preLoadFilter,
@@ -286,13 +287,14 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		}
 	}
 
+	@SuppressWarnings("IllegalCatch")
 	private Optional<Class<? extends C>> load(CtClass preloadedClass) {
 		try {
 			Class<? extends C> loaded = loader.load(preloadedClass.getName())
 				.asSubclass(castedType);
 			return Optional.of(loaded);
 		}
-		catch (Throwable e) { // SUPPRESS IllegalCatch
+		catch (Throwable e) {
 			// although this should only throw ClassNotFoundException or NoClassDefFoundError,
 			// lot of different exception occurs while loading classes and if it happens, Class is not loadable anyway
 			return Optional.empty();
@@ -352,23 +354,25 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 				|| testInterfaces(ctClass);
 		}
 
+		@SuppressWarnings("IllegalCatch")
 		private boolean testSuperclass(CtClass ctClass) {
 			CtClass superclass;
 			try {
 				superclass = ctClass.getSuperclass();
 			}
-			catch (Exception ignored) { // SUPPRESS IllegalCatch
+			catch (Exception ignored) {
 				return false;
 			}
 			return superclass != null && test(superclass);
 		}
 
+		@SuppressWarnings("IllegalCatch")
 		private boolean testInterfaces(CtClass ctClass) {
 			CtClass[] ctInterfaces;
 			try {
 				ctInterfaces = ctClass.getInterfaces();
 			}
-			catch (Exception ignored) { // SUPPRESS IllegalCatch
+			catch (Exception ignored) {
 				return false;
 			}
 			for (CtClass ctInterface : ctInterfaces) {
@@ -422,7 +426,6 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			}
 		}
 
-		// SUPPRESS NEXT 1 MethodLength
 		private static void generateJarEntries(File jarPath,
 											   ImmutableSet.Builder<String> resultBuilder,
 											   Set<File> visited) {
@@ -551,13 +554,13 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		}
 
 		@Nullable
-		@SuppressWarnings("unchecked")
+		@SuppressWarnings({"unchecked", "IllegalCatch"})
 		@Override
 		public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
 			try {
 				return (T) ctClass.getAnnotation(annotationClass);
 			}
-			catch (Exception e) { // SUPPRESS IllegalCatch
+			catch (Exception e) {
 				return null;
 			}
 		}
