@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.perfectable</groupId>
 		<artifactId>perfectable</artifactId>
-		<version>24-SNAPSHOT</version>
+		<version>24</version>
 	</parent>
 
 	<artifactId>introspectable</artifactId>
@@ -93,21 +93,6 @@
 			<!-- compilaton only -->
 		</dependency>
 	</dependencies>
-
-	<repositories>
-		<repository>
-			<id>perfectable-all</id>
-			<name>Perfectable</name>
-			<url>https://maven.perfectable.org/repo</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>perfectable-all</id>
-			<name>Perfectable</name>
-			<url>https://maven.perfectable.org/repo</url>
-		</pluginRepository>
-	</pluginRepositories>
 
 	<build>
 		<pluginManagement>
