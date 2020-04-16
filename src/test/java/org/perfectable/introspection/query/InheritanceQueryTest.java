@@ -33,7 +33,7 @@ class InheritanceQueryTest {
 		InheritanceQuery<String> chain = InheritanceQuery.of(String.class);
 
 		assertThat(chain)
-			.containsExactly(String.class, Serializable.class, Comparable.class, CharSequence.class, Object.class);
+			.contains(String.class, Serializable.class, Comparable.class, CharSequence.class, Object.class);
 	}
 
 	@Test
@@ -41,7 +41,7 @@ class InheritanceQueryTest {
 		InheritanceQuery<String> chain = InheritanceQuery.of(String.class).onlyInterfaces();
 
 		assertThat(chain)
-			.containsExactly(Serializable.class, Comparable.class, CharSequence.class);
+			.contains(Serializable.class, Comparable.class, CharSequence.class);
 	}
 
 	@Test
