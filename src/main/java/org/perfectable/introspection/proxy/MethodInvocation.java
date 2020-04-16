@@ -1,5 +1,7 @@
 package org.perfectable.introspection.proxy;
 
+import org.perfectable.introspection.query.ConstructorQuery;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Array;
@@ -8,6 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.google.common.primitives.Primitives;
@@ -343,22 +346,43 @@ public final class MethodInvocation<T> implements Invocation {
 	}
 
 	private static MethodHandle findPrivateLookupConstructor() {
-		Constructor<MethodHandles.Lookup> unique = introspect(MethodHandles.Lookup.class)
-			.constructors()
-			.parameters(Class.class, int.class)
-			.asAccessible()
-			.unique();
-		MethodHandle methodHandle;
-		MethodHandles.Lookup lookup = MethodHandles.lookup();
-		try {
-			methodHandle = lookup.unreflectConstructor(unique);
-		}
-		catch (IllegalAccessException e) {
-			throw new AssertionError(e);
-		}
 		int allModifiers = MethodHandles.Lookup.PUBLIC | MethodHandles.Lookup.PROTECTED
 			| MethodHandles.Lookup.PACKAGE | MethodHandles.Lookup.PRIVATE;
-		return MethodHandles.insertArguments(methodHandle, 1, allModifiers);
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+		ConstructorQuery<MethodHandles.Lookup> generalConstructorQuery = introspect(MethodHandles.Lookup.class)
+			.constructors();
+		Optional<Constructor<MethodHandles.Lookup>> noPreviousClassConstructorOption =
+			generalConstructorQuery
+				.parameters(Class.class, int.class)
+				.asAccessible()
+				.option();
+		if (noPreviousClassConstructorOption.isPresent()) {
+			Constructor<MethodHandles.Lookup> lookupConstructor = noPreviousClassConstructorOption.get();
+			MethodHandle methodHandle;
+			try {
+				methodHandle = lookup.unreflectConstructor(lookupConstructor);
+			}
+			catch (IllegalAccessException e) {
+				throw new AssertionError(e);
+			}
+			return MethodHandles.insertArguments(methodHandle, 1, allModifiers);
+		}
+		Optional<Constructor<MethodHandles.Lookup>> withPreviousClassConstructorOption = generalConstructorQuery
+			.parameters(Class.class, Class.class, int.class)
+			.asAccessible()
+			.option();
+		if (withPreviousClassConstructorOption.isPresent()) {
+			Constructor<MethodHandles.Lookup> lookupConstructor = withPreviousClassConstructorOption.get();
+			MethodHandle methodHandle;
+			try {
+				methodHandle = lookup.unreflectConstructor(lookupConstructor);
+			}
+			catch (IllegalAccessException e) {
+				throw new AssertionError(e);
+			}
+			return MethodHandles.insertArguments(methodHandle, 1, null, allModifiers);
+		}
+		throw new AssertionError("Finding private lookup constructor was unsuccessful");
 	}
 
 }
