@@ -75,7 +75,7 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
  * way of representing it.
  * <pre>
  *     private static final String SUMMARY_GETTER_NAME =
- *         ((Getter&gt;Person,String&gt;) Person::getSelfDescription).introspect().getReferencedMethodName();
+ *         ((Getter&lt;Person,String&gt;) Person::getSelfDescription).introspect().getReferencedMethodName();
  * </pre>
  *
  * <p>Introspected reference can be on of either of five 'modes'. Three of those are method references,
@@ -87,7 +87,7 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
  *     (ex. {@code System::identityHashCode})</li>
  *     <li>Reference to instance method without primary identifier (named "instance"). This mode is expression
  *     in form {@literal ReferenceType::Identifier} and matches instance method in {@literal ReferenceType}
- *     (ex {@code Object::hashCode}</li>
+ *     (ex {@code Object::hashCode})</li>
  *     <li>Reference to instance method with primary identifier (named "bound", as the instance will be bound to the
  *     reference). This mode is expression in form {@literal Primary::Identifier} and matches instance method in
  *     {@literal ReferenceType} (ex. {@code specificPerson::getSelfDescription})</li>
