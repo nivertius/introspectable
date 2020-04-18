@@ -8,7 +8,7 @@
 	</parent>
 
 	<artifactId>introspectable</artifactId>
-	<version>4.0.2-SNAPSHOT</version>
+	<version>4.0.2</version>
 
 	<name>Introspectable</name>
 	<description>Easier java reflections</description>
@@ -35,7 +35,7 @@
 	<scm>
 		<connection>scm:git:https://source.perfectable.org/nivertius/introspectable.git</connection>
 		<developerConnection>scm:git:git@source.perfectable.org:nivertius/introspectable.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>v4.0.2</tag>
 		<url>https://source.perfectable.org/nivertius/introspectable</url>
 	</scm>
 

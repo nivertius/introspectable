@@ -264,7 +264,7 @@ Add as dependency:
 <dependency>
     <groupId>org.perfectable</groupId>
     <artifactId>introspectable</artifactId>
-    <version>4.0.2-SNAPSHOT</version>
+    <version>4.0.2</version>
 </dependency>
 ```
 
