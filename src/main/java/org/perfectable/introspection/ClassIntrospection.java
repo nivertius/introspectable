@@ -103,6 +103,18 @@ public final class ClassIntrospection<X> {
 	}
 
 	/**
+	 * Introspect a classloader of this type.
+	 *
+	 * <p>This method deals with {@link Class#getClassLoader} returning potentially null, which indicates that
+	 * this class was loaded by bootstrap classloader.
+	 *
+	 * @return introspection of this type classloader
+	 */
+	public ClassLoaderIntrospection classLoader() {
+		return ClassLoaderIntrospection.of(type.getClassLoader());
+	}
+
+	/**
 	 * Tests if the class is instantiable.
 	 *
 	 * <p>This checks if there is way to instantiate this class using some of its constructor.

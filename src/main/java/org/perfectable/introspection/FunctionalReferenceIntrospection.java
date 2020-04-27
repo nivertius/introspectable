@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static org.perfectable.introspection.Introspections.introspect;
 
 abstract class FunctionalReferenceIntrospection implements FunctionalReference.Introspection {
 	static FunctionalReferenceIntrospection of(FunctionalReference marker) {
@@ -30,7 +31,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 			.option();
 		if (writeReplaceOption.isPresent()) {
 			Method writeReplace = writeReplaceOption.get();
-			ClassLoader classLoader = markerClass.getClassLoader();
+			ClassLoaderIntrospection classLoader = introspect(markerClass).classLoader();
 			return ofNativeImplementation(marker, writeReplace, classLoader);
 		}
 		else {
@@ -39,7 +40,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	}
 
 	private static FunctionalReferenceIntrospection ofNativeImplementation(
-			FunctionalReference marker, Method writeReplace, ClassLoader classLoader) {
+			FunctionalReference marker, Method writeReplace, ClassLoaderIntrospection classLoader) {
 		SerializedLambda serializedForm;
 		try {
 			serializedForm = (SerializedLambda) writeReplace.invoke(marker);
@@ -83,12 +84,12 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	protected final Class<?> implementationClass;
 	protected final Class<?> capturingType;
 
-	FunctionalReferenceIntrospection(SerializedLambda serializedForm, ClassLoader classLoader) {
+	FunctionalReferenceIntrospection(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
 		this.serializedForm = serializedForm;
 		String declaringTypeName = formatClassName(serializedForm.getImplClass());
 		String capturingClassName = formatClassName(serializedForm.getCapturingClass());
-		this.capturingType = ClassLoaderIntrospection.of(classLoader).loadSafe(capturingClassName);
-		this.implementationClass = ClassLoaderIntrospection.of(classLoader).loadSafe(declaringTypeName);
+		this.capturingType = classLoader.loadSafe(capturingClassName);
+		this.implementationClass = classLoader.loadSafe(declaringTypeName);
 	}
 
 	private static String formatClassName(String capturingClass) {
@@ -107,7 +108,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	private abstract static class OfMethod extends FunctionalReferenceIntrospection {
 		protected final Method implementationMethod;
 
-		OfMethod(SerializedLambda serializedForm, ClassLoader classLoader) {
+		OfMethod(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
 			super(serializedForm, classLoader);
 			String methodName = serializedForm.getImplMethodName();
 			MethodSignature signature = MethodSignature.read(serializedForm.getImplMethodSignature());
@@ -152,7 +153,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	}
 
 	private static final class OfInstanceMethod extends OfMethod {
-		OfInstanceMethod(SerializedLambda serializedForm, ClassLoader classLoader) {
+		OfInstanceMethod(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
 			super(serializedForm, classLoader);
 		}
 
@@ -191,7 +192,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	}
 
 	private static final class OfBoundMethod extends OfMethod {
-		OfBoundMethod(SerializedLambda serializedForm, ClassLoader classLoader) {
+		OfBoundMethod(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
 			super(serializedForm, classLoader);
 		}
 
@@ -203,7 +204,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	}
 
 	private static final class OfStaticMethod extends OfMethod {
-		OfStaticMethod(SerializedLambda serializedForm, ClassLoader classLoader) {
+		OfStaticMethod(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
 			super(serializedForm, classLoader);
 		}
 
@@ -216,7 +217,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	private static final class OfLambda extends OfMethod {
 		private final ImmutableList<Object> captures;
 
-		OfLambda(SerializedLambda serializedForm, ClassLoader classLoader) {
+		OfLambda(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
 			super(serializedForm, classLoader);
 			ImmutableList.Builder<Object> result = ImmutableList.builder();
 			for (int i = 0; i < this.serializedForm.getCapturedArgCount(); i++) {
@@ -242,7 +243,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	private static final class OfConstructorReference extends FunctionalReferenceIntrospection {
 		private final Constructor<?> implementationConstructor;
 
-		OfConstructorReference(SerializedLambda serializedForm, ClassLoader classLoader) {
+		OfConstructorReference(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
 			super(serializedForm, classLoader);
 			MethodSignature signature = MethodSignature.read(this.serializedForm.getInstantiatedMethodType());
 			implementationConstructor = ConstructorQuery.of(getImplementationClass())

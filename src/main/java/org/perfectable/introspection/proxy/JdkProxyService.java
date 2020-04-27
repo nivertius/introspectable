@@ -29,7 +29,7 @@ public final class JdkProxyService implements ProxyService {
 	}
 
 	@Override
-	public <I> I instantiate(ClassLoader classLoader, Class<?> baseClass, List<? extends Class<?>> interfaces,
+	public <I> I instantiate(@Nullable ClassLoader classLoader, Class<?> baseClass, List<? extends Class<?>> interfaces,
 							 InvocationHandler<? super MethodInvocation<I>> handler)
 		throws UnsupportedFeatureException {
 		if (!baseClass.getName().equals(Object.class.getName())) {

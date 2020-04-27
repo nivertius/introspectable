@@ -36,7 +36,7 @@ public final class JavassistProxyService implements ProxyService {
 	}
 
 	@Override
-	public <I> I instantiate(ClassLoader classLoader, Class<?> baseClass, List<? extends Class<?>> interfaces,
+	public <I> I instantiate(@Nullable ClassLoader classLoader, Class<?> baseClass, List<? extends Class<?>> interfaces,
 							 InvocationHandler<? super MethodInvocation<I>> handler)
 			throws UnsupportedFeatureException {
 		checkArgument(!Modifier.isFinal(baseClass.getModifiers()));

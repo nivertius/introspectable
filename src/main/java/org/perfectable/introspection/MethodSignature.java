@@ -34,17 +34,17 @@ final class MethodSignature {
 		this.thrownTypes = thrownTypes;
 	}
 
-	public Class<?>[] runtimeParameterTypes(ClassLoader loader) {
+	public Class<?>[] runtimeParameterTypes(ClassLoaderIntrospection loader) {
 		return formalParameters.stream()
 			.map(typeSignature -> typeSignature.asRuntimeClass(loader, formalTypeParameters))
 			.toArray(Class<?>[]::new);
 	}
 
-	public Class<?> runtimeResultType(ClassLoader loader) {
+	public Class<?> runtimeResultType(ClassLoaderIntrospection loader) {
 		return returnType.asRuntimeClass(loader, formalTypeParameters);
 	}
 
-	public Class<?>[] runtimeDeclaredExceptionTypes(ClassLoader loader) {
+	public Class<?>[] runtimeDeclaredExceptionTypes(ClassLoaderIntrospection loader) {
 		return thrownTypes.stream()
 			.map(fieldType -> fieldType.asRuntimeClass(loader, formalTypeParameters))
 			.toArray(Class<?>[]::new);
@@ -176,12 +176,12 @@ final class MethodSignature {
 	private interface ReturnType {
 		ReturnType VOID = new ReturnType() {
 			@Override
-			public Class<?> asRuntimeClass(ClassLoader loader, Collection<TypeParameter> formals) {
+			public Class<?> asRuntimeClass(ClassLoaderIntrospection loader, Collection<TypeParameter> formals) {
 				return void.class;
 			}
 		};
 
-		Class<?> asRuntimeClass(ClassLoader loader, Collection<TypeParameter> formals);
+		Class<?> asRuntimeClass(ClassLoaderIntrospection loader, Collection<TypeParameter> formals);
 
 		static ReturnType readReturnTypeFrom(CharacterReader reader) {
 			if (reader.currentIsThenSkip('V')) {
@@ -217,7 +217,7 @@ final class MethodSignature {
 		}
 
 		@Override
-		public Class<?> asRuntimeClass(ClassLoader loader, Collection<TypeParameter> formals) {
+		public Class<?> asRuntimeClass(ClassLoaderIntrospection loader, Collection<TypeParameter> formals) {
 			Class<?> componentType = nested.asRuntimeClass(loader, formals);
 			return Array.newInstance(componentType, 0).getClass();
 		}
@@ -317,13 +317,8 @@ final class MethodSignature {
 		}
 
 		@Override
-		public Class<?> asRuntimeClass(ClassLoader loader, Collection<TypeParameter> formals) {
-			try {
-				return loader.loadClass(className);
-			}
-			catch (ClassNotFoundException e) {
-				throw new AssertionError(e);
-			}
+		public Class<?> asRuntimeClass(ClassLoaderIntrospection loader, Collection<TypeParameter> formals) {
+			return loader.loadSafe(className);
 		}
 	}
 
@@ -343,7 +338,7 @@ final class MethodSignature {
 		}
 
 		@Override
-		public Class<?> asRuntimeClass(ClassLoader loader, Collection<TypeParameter> formals) {
+		public Class<?> asRuntimeClass(ClassLoaderIntrospection loader, Collection<TypeParameter> formals) {
 			TypeParameter typeParameter = formals.stream()
 				.filter(formal -> formal.hasIdentifier(identifier))
 				.findAny()
@@ -400,7 +395,7 @@ final class MethodSignature {
 		}
 
 		@Override
-		public Class<?> asRuntimeClass(ClassLoader loader, Collection<TypeParameter> formals) {
+		public Class<?> asRuntimeClass(ClassLoaderIntrospection loader, Collection<TypeParameter> formals) {
 			return type;
 		}
 	}

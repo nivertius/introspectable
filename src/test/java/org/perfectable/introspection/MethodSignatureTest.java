@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MethodSignatureTest {
-	private final ClassLoader loader = ClassLoader.getSystemClassLoader();
+	private final ClassLoaderIntrospection loader = ClassLoaderIntrospection.SYSTEM;
 
 	@Nested
 	class Base {

@@ -2,6 +2,7 @@ package org.perfectable.introspection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import javax.annotation.Nullable;
 
 /**
  * Convenient entry point for introspections.
@@ -44,10 +45,14 @@ public final class Introspections {
 	/**
 	 * Introspect a classloader.
 	 *
-	 * @param classLoader class loader to introspect
+	 * <p>Java uses {@code null} classloader in most places to indicate bootstrap classloader. This is why this
+	 * method actually accepts null as a parameter. In this case, a special introspection that deals with bootstrap
+	 * classloader is returned.
+	 *
+	 * @param classLoader class loader to introspect, or null, if introspected classloader is bootstrap.
 	 * @return classloader introspections
 	 */
-	public static ClassLoaderIntrospection introspect(ClassLoader classLoader) {
+	public static ClassLoaderIntrospection introspect(@Nullable ClassLoader classLoader) {
 		return ClassLoaderIntrospection.of(classLoader);
 	}
 

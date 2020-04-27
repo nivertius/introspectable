@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import com.google.errorprone.annotations.Immutable;
 
 /**
@@ -76,8 +78,8 @@ public interface ProxyService {
 	 * @throws UnsupportedFeatureException when this service cannot create proxy with requested parameters, because
 	 *     it doesn't support some feature required to do so
 	 */
-	<I> I instantiate(ClassLoader classLoader, Class<?> baseClass, List<? extends Class<?>> interfaces,
-							  InvocationHandler<? super MethodInvocation<I>> handler)
+	<I> I instantiate(@Nullable ClassLoader classLoader, Class<?> baseClass, List<? extends Class<?>> interfaces,
+					  InvocationHandler<? super MethodInvocation<I>> handler)
 		throws UnsupportedFeatureException;
 
 	/** Thrown when factory cannot create a builder with requested features. */
