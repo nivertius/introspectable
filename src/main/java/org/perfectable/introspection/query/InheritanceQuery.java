@@ -159,7 +159,6 @@ public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>
 					.filter(this::matches);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public boolean contains(@Nullable Object candidate) {
 			if (!(candidate instanceof Class<?>)) {

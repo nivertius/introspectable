@@ -408,7 +408,6 @@ public abstract class AnnotationQuery<A extends Annotation>
 			return new Composite<Annotation>(newComponents);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public boolean contains(@Nullable Object candidate) {
 			return components.stream().anyMatch(component -> component.contains(candidate));

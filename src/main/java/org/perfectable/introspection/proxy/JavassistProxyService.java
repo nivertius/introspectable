@@ -91,7 +91,6 @@ public final class JavassistProxyService implements ProxyService {
 			}
 			@SuppressWarnings("unchecked")
 			T castedSelf = (T) self;
-			@SuppressWarnings("unchecked")
 			MethodInvocation<T> invocation = MethodInvocation.intercepted(thisMethod, castedSelf, args);
 			return this.handler.handle(invocation);
 		}

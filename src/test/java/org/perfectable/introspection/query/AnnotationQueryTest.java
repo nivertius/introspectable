@@ -46,7 +46,6 @@ class AnnotationQueryTest {
 			.doesNotContain(EXAMPLE_STRING, SubjectReflection.INSTANCE_SPECIAL, SubjectReflection.INSTANCE_OTHER);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void testSubjectUnrestricted() {
 		AnnotationQuery<Annotation> query = AnnotationQuery.of(Subject.class);
@@ -57,7 +56,6 @@ class AnnotationQueryTest {
 			.doesNotContain(EXAMPLE_STRING, SubjectReflection.INSTANCE_NULLABLE, SubjectReflection.REPETITIONS[0]);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void testSubjectTyped() {
 		AnnotationQuery<?> query = AnnotationQuery.of(Subject.class)
@@ -68,7 +66,6 @@ class AnnotationQueryTest {
 			.doesNotContain(EXAMPLE_STRING, SubjectReflection.INSTANCE_OTHER, SubjectReflection.INSTANCE_NULLABLE);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void testPredicated() {
 		AnnotationQuery<?> query = AnnotationQuery.of(Subject.class)
@@ -79,7 +76,6 @@ class AnnotationQueryTest {
 			.doesNotContain(EXAMPLE_STRING, SubjectReflection.INSTANCE_SPECIAL, SubjectReflection.INSTANCE_NULLABLE);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void testAnnotatedWith() {
 		AnnotationQuery<Annotation> query = AnnotationQuery.of(Subject.class)
@@ -91,7 +87,6 @@ class AnnotationQueryTest {
 			.doesNotContain(EXAMPLE_STRING, SubjectReflection.INSTANCE_NULLABLE);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void testRepeatableUnroll() {
 		AnnotationQuery<Annotation> query = AnnotationQuery.of(Subject.class)
@@ -104,7 +99,6 @@ class AnnotationQueryTest {
 			.doesNotContain(EXAMPLE_STRING);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void testFromElementsUnrestricted() {
 		AnnotationQuery<Annotation> query =
@@ -116,7 +110,6 @@ class AnnotationQueryTest {
 			.doesNotContain(SubjectReflection.INSTANCE_SPECIAL);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void testJoin() {
 		AnnotationQuery<Subject.Special> first =
@@ -131,7 +124,6 @@ class AnnotationQueryTest {
 				SubjectReflection.INSTANCE_NULLABLE);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void testJoinMultiple() {
 		AnnotationQuery<Annotation> query = AnnotationQuery.empty()

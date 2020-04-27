@@ -69,7 +69,6 @@ public final class JdkProxyService implements ProxyService {
 			}
 			@SuppressWarnings("unchecked")
 			T castedProxy = (T) proxy;
-			@SuppressWarnings("unchecked")
 			MethodInvocation<T> invocation = MethodInvocation.intercepted(method, castedProxy, args);
 			return this.handler.handle(invocation);
 		}

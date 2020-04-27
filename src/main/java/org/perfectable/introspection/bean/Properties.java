@@ -246,7 +246,7 @@ final class Properties {
 			throw new IllegalStateException("Property is not readable");
 		}
 
-		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
+		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
 		@Override
 		public void set(CT bean, @Nullable PT value) {
 			try {
