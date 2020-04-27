@@ -15,13 +15,13 @@ Introspectable comes to rescue. This library has few methods that eases common r
 Queries allow simpler access to reflections objects. They are available under the
 `org.perfectable.introspection.query` package. The examples should explain everything.
 
-#### Example: Test framework 
+#### Example: Test framework
 
-To inject created mocks, it needs to find all non-static fields in test object, that have annotation <code>@Mock</code> 
+To inject created mocks, it needs to find all non-static fields in test object, that have annotation `@Mock`
 present.
 
 ```java
-Stream<Field> injectedMocks = 
+Stream<Field> injectedMocks =
     introspect(testObject.getClass())
         .fields()
         .excludingModifier(Modifier.STATIC)
@@ -29,13 +29,13 @@ Stream<Field> injectedMocks =
         .stream();
 ```
 
-#### Example: Remoting library 
+#### Example: Remoting library
 
-To create remote proxy, it needs to know all the interfaces implemented by provided class, that extend 
-<code>Remote</code> interface, but excluding remote, and their name ends with <code>Rpc</code>.
+To create remote proxy, it needs to know all the interfaces implemented by provided class, that extend
+`Remote` interface, but excluding remote, and their name ends with `Rpc`.
 
 ```java
-Iterable<? extends Class<?>> interfaces = 
+Iterable<? extends Class<?>> interfaces =
     introspect(proxiedClass)
         .interfaces()
         .filter(candidate -> candidate.getSimpleName().endsWith("Rpc"))
@@ -45,11 +45,11 @@ Iterable<? extends Class<?>> interfaces =
 
 #### Example: Form binding
 
-To clear form, binding library needs to know all single-parameter void non-static method that are named 
-<code>apply</code>: 
+To clear form, binding library needs to know all single-parameter void non-static method that are named
+`apply`:
 
 ```java
-Stream<Method> appliers = 
+Stream<Method> appliers =
     introspect(target.getClass())
         .methods()
         .named("apply")
@@ -90,7 +90,7 @@ introspect(Application.class.getClassLoader())
 
 ### Types
 
-Native java `java.lang.reflect.Type` is annoyingly hard to interrogate and reason with. To check subtyping. 
+Native java `java.lang.reflect.Type` is annoyingly hard to interrogate and reason with. To check subtyping.
 
 #### Example: Parameterized type injection
 
@@ -123,6 +123,7 @@ Class<?> targetClass =
 ```
 
 Lets say we have following declarations:
+
 ```java
 interface MessageConsumer<M extends Message, S extends State> {}
 class LoginMessageConsumer<S extends LoginState> implements MessageConsumer<LoginMessage, S> {}
@@ -139,7 +140,7 @@ to be casted onto `ParameterizedType`, first parameter needs to be extracted, ca
 
 ### Proxies
 
-Introspectable adds simple facade for creating proxies. Natively, it supports standard JDK proxies and 
+Introspectable adds simple facade for creating proxies. Natively, it supports standard JDK proxies and
 javassist + objenesis.
 
 Proxies are built by `org.perfectable.introspection.proxy.ProxyBuilder`. It allows creating proxy by chaining
@@ -151,7 +152,7 @@ configuration. After configuration is done, proxies for specific objects can be 
 Remoting library needs to replace method call on proxy with message transmission:
 
 ```java
-Object proxy = 
+Object proxy =
     ProxyBuilder.ofType(stubClass).withInterface(Remote.class)
         .instantiate(invocation -> {
                 Transmission transmission =
@@ -247,7 +248,7 @@ class FactoryInjector<F, P> {
 
 A lot of code still uses Java Beans as data container. Package `org.perfectable.introspection.bean` helps managing those:
 
-#### Example: Form binding
+#### Example: Binding form values to bean
 
 ```java
 Bean<User> userBean = BeanSchema.of(User.class).instantiate();
@@ -267,4 +268,3 @@ Add as dependency:
     <version>4.0.3-SNAPSHOT</version>
 </dependency>
 ```
-
