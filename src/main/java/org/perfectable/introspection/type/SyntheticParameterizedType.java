@@ -54,7 +54,7 @@ final class SyntheticParameterizedType implements ParameterizedType {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (!(obj instanceof ParameterizedType)) {
 			return false;
 		}

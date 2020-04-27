@@ -62,7 +62,7 @@ final class SyntheticTypeVariable<D extends GenericDeclaration> implements TypeV
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (!(obj instanceof TypeVariable<?>)) {
 			return false;
 		}

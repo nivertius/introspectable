@@ -154,7 +154,7 @@ final class Properties {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			if (!(obj instanceof FieldPropertySchema<?, ?>)) {
 				return false;
 			}
@@ -219,7 +219,7 @@ final class Properties {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			if (!(obj instanceof ReadOnlyMethodPropertySchema<?, ?>)) {
 				return false;
 			}
@@ -285,7 +285,7 @@ final class Properties {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			if (!(obj instanceof WriteOnlyMethodPropertySchema<?, ?>)) {
 				return false;
 			}
@@ -367,7 +367,7 @@ final class Properties {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(@Nullable Object obj) {
 			if (!(obj instanceof ReadWriteMethodPropertySchema<?, ?>)) {
 				return false;
 			}

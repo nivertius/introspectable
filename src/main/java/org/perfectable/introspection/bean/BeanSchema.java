@@ -2,6 +2,8 @@ package org.perfectable.introspection.bean;
 
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
@@ -77,7 +79,7 @@ public final class BeanSchema<B> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

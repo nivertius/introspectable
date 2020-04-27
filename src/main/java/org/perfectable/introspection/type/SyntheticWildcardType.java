@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 final class SyntheticWildcardType implements WildcardType {
 	private static final Collector<CharSequence, ?, String> BOUND_JOINER = Collectors.joining(" & ");
@@ -51,7 +52,7 @@ final class SyntheticWildcardType implements WildcardType {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (!(obj instanceof WildcardType)) {
 			return false;
 		}

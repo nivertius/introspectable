@@ -5,6 +5,8 @@ import org.perfectable.introspection.query.FieldQuery;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.ImmutableSet;
 
 import static java.util.Objects.requireNonNull;
@@ -110,7 +112,7 @@ public final class Bean<B> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}

@@ -108,7 +108,7 @@ public final class Property<B, T> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (!(obj instanceof Property<?, ?>)) {
 			return false;
 		}

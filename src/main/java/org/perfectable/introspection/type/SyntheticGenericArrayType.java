@@ -3,6 +3,7 @@ package org.perfectable.introspection.type;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 import java.util.Objects;
+import javax.annotation.Nullable;
 
 final class SyntheticGenericArrayType implements GenericArrayType {
 	private final Type componentType;
@@ -22,7 +23,7 @@ final class SyntheticGenericArrayType implements GenericArrayType {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (this == obj) {
 			return true;
 		}
