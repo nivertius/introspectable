@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -131,7 +133,7 @@ public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			if (!(candidate instanceof Class<?>)) {
 				return false;
 			}
@@ -159,7 +161,7 @@ public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			if (!(candidate instanceof Class<?>)) {
 				return false;
 			}

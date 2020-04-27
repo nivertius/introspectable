@@ -15,6 +15,8 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
@@ -203,7 +205,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			if (!(candidate instanceof Annotation)) {
 				return false;
 			}
@@ -256,7 +258,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			return type.isInstance(candidate) && parent.contains(candidate);
 		}
 	}
@@ -281,7 +283,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			return false;
 		}
 	}
@@ -305,7 +307,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			if (parent.contains(candidate)) {
 				return true;
 			}
@@ -408,7 +410,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			return components.stream().anyMatch(component -> component.contains(candidate));
 		}
 	}

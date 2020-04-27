@@ -1,6 +1,7 @@
 package org.perfectable.introspection.type;
 
 import java.lang.reflect.Type;
+import javax.annotation.Nullable;
 
 abstract class AbstractTypeView<T extends Type> extends TypeView {
 	protected final T type;
@@ -15,7 +16,7 @@ abstract class AbstractTypeView<T extends Type> extends TypeView {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(@Nullable Object obj) {
 		if (obj == null) {
 			return false;
 		}

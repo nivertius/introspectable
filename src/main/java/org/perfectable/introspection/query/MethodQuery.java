@@ -12,6 +12,8 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -174,7 +176,7 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			if (!(candidate instanceof Method)) {
 				return false;
 			}
@@ -201,7 +203,7 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			if (!(candidate instanceof Method)) {
 				return false;
 			}
@@ -336,7 +338,7 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			return parent.contains(candidate);
 		}
 	}
@@ -359,7 +361,7 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			if (!(candidate instanceof Method)) {
 				return false;
 			}

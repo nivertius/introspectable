@@ -8,6 +8,8 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -116,7 +118,7 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			if (!(candidate instanceof Constructor<?>)) {
 				return false;
 			}
@@ -142,7 +144,7 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			if (!(candidate instanceof Constructor<?>)) {
 				return false;
 			}
@@ -264,7 +266,7 @@ public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			return parent.contains(candidate);
 		}
 	}

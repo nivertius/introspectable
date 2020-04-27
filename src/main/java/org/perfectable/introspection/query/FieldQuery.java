@@ -8,6 +8,8 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.ImmutableList;
 
 import static java.util.Objects.requireNonNull;
@@ -179,7 +181,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			if (!(candidate instanceof Field)) {
 				return false;
 			}
@@ -206,7 +208,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			if (!(candidate instanceof Field)) {
 				return false;
 			}
@@ -327,7 +329,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			return parent.contains(candidate);
 		}
 	}
@@ -341,7 +343,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			return false;
 		}
 	}
@@ -363,7 +365,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		}
 
 		@Override
-		public boolean contains(Object candidate) {
+		public boolean contains(@Nullable Object candidate) {
 			return components.stream().anyMatch(component -> component.contains(candidate));
 		}
 

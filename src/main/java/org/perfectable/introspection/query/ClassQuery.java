@@ -225,7 +225,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean contains(Object candidate) {
+	public boolean contains(@Nullable Object candidate) {
 		if (!(candidate instanceof Class<?>)) {
 			return false;
 		}
