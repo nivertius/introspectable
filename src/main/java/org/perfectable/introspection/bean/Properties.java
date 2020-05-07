@@ -12,8 +12,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
-import com.google.common.base.Throwables;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
@@ -186,8 +184,7 @@ final class Properties {
 				throw new RuntimeException(e);
 			}
 			catch (InvocationTargetException e) {
-				Throwables.throwIfUnchecked(e.getTargetException());
-				throw new RuntimeException(e.getTargetException());
+				throw unwrapInvocationTargetException(e);
 			}
 		}
 
@@ -256,8 +253,7 @@ final class Properties {
 				throw new RuntimeException(e);
 			}
 			catch (InvocationTargetException e) {
-				Throwables.throwIfUnchecked(e.getTargetException());
-				throw new RuntimeException(e.getTargetException());
+				throw unwrapInvocationTargetException(e);
 			}
 		}
 
@@ -319,8 +315,7 @@ final class Properties {
 				throw new RuntimeException(e);
 			}
 			catch (InvocationTargetException e) {
-				Throwables.throwIfUnchecked(e.getTargetException());
-				throw new RuntimeException(e.getTargetException());
+				throw unwrapInvocationTargetException(e);
 			}
 		}
 
@@ -334,8 +329,7 @@ final class Properties {
 				throw new RuntimeException(e);
 			}
 			catch (InvocationTargetException e) {
-				Throwables.throwIfUnchecked(e.getTargetException());
-				throw new RuntimeException(e.getTargetException());
+				throw unwrapInvocationTargetException(e);
 			}
 		}
 
@@ -380,6 +374,21 @@ final class Properties {
 		public int hashCode() {
 			return Objects.hash(getter, setter);
 		}
+	}
+
+	@SuppressWarnings("ThrowSpecificExceptions")
+	private static RuntimeException unwrapInvocationTargetException(InvocationTargetException source) {
+		@Nullable Throwable target = source.getTargetException();
+		if (target == null) {
+			throw new RuntimeException(source);
+		}
+		if (target instanceof RuntimeException) {
+			throw (RuntimeException) target;
+		}
+		if (target instanceof Error) {
+			throw (Error) target;
+		}
+		throw new RuntimeException(target);
 	}
 
 	private Properties() {
