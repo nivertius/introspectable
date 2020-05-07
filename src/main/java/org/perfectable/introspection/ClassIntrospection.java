@@ -147,7 +147,7 @@ public final class ClassIntrospection<X> {
 			return parameterlessConstructor().newInstance();
 		}
 		catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e); // SUPPRESS JavadocMethod
 		}
 	}
 
@@ -170,7 +170,7 @@ public final class ClassIntrospection<X> {
 			return constructor;
 		}
 		catch (NoSuchMethodException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e); // SUPPRESS JavadocMethod
 		}
 	}
 
