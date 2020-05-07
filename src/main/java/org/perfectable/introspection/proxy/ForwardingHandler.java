@@ -1,6 +1,6 @@
 package org.perfectable.introspection.proxy;
 
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Invocation handler that delegates all calls to actual object.
@@ -37,9 +37,8 @@ public final class ForwardingHandler<T> implements InvocationHandler<MethodInvoc
 		this.target = newTarget;
 	}
 
-	@Nullable
 	@Override
-	public Object handle(MethodInvocation<T> invocation) throws Throwable {
+	public @Nullable Object handle(MethodInvocation<T> invocation) throws Throwable {
 		return invocation.withReceiver(target).invoke();
 	}
 

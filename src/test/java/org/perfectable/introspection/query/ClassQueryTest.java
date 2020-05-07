@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.net.URLClassLoader;
 
 import javassist.CtClass;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -78,9 +80,11 @@ class ClassQueryTest {
 	class OfClassLoader extends Methods {
 		@Override
 		protected ClassQuery<Object> createQuery() {
-			ClassLoader classLoader = ClassQueryTest.class.getClassLoader();
+			@Nullable ClassLoader classLoader = ClassQueryTest.class.getClassLoader();
 			Assumptions.assumeTrue(classLoader instanceof URLClassLoader);
-			return ClassQuery.of(classLoader);
+			@SuppressWarnings("cast.unsafe")
+			ClassLoader castedClassLoader = (@NonNull ClassLoader) classLoader;
+			return ClassQuery.of(castedClassLoader);
 		}
 	}
 }

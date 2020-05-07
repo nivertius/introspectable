@@ -38,6 +38,7 @@ final class TypeExamples {
 		<Y extends X> void methodWithExtendsTypeParameter(Y parameter);
 	}
 
+	@SuppressWarnings("initialization.fields.uninitialized")
 	abstract static class Unbounded<U extends Number> implements Root<U> {
 		static final TypeVariable<?> CLASS_FIRST_VARIABLE = Unbounded.class.getTypeParameters()[0];
 

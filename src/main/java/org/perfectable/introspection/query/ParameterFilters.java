@@ -8,14 +8,16 @@ import java.util.stream.Stream;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.primitives.Primitives;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 final class ParameterFilters {
-	static ParametersFilter matchingArguments(Object... arguments) {
+	static ParametersFilter matchingArguments(@Nullable Object... arguments) {
 		ImmutableList.Builder<TypeFilter> filters = ImmutableList.builder();
-		for (Object argument : arguments) {
+		for (@Nullable Object argument : arguments) {
 			TypeFilter filter;
 			if (argument == null) {
 				filter = TypeFilter.PRIMITIVE.negated();
@@ -80,8 +82,9 @@ final class ParameterFilters {
 				else {
 					parameter = lastParameter;
 				}
+				@SuppressWarnings("cast.unsafe")
 				Class<?> actualParameterType = parameter.equals(lastParameter) ?
-					parameter.getType().getComponentType() : parameter.getType();
+					(@NonNull Class<?>) parameter.getType().getComponentType() : parameter.getType();
 				if (!typeFilter.matches(actualParameterType)) {
 					return false;
 				}

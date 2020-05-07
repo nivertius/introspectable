@@ -6,14 +6,14 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 final class SyntheticParameterizedType implements ParameterizedType {
 	private final Class<?> rawType;
-	@Nullable
-	private final Type ownerType;
+	private final @Nullable Type ownerType;
 	private final Type[] typeArguments;
 
 	SyntheticParameterizedType(Class<?> rawType, @Nullable Type ownerType,
@@ -34,9 +34,9 @@ final class SyntheticParameterizedType implements ParameterizedType {
 		return rawType;
 	}
 
-	@Nullable
+	@SuppressWarnings("override.return.invalid")
 	@Override
-	public Type getOwnerType() {
+	public @Nullable Type getOwnerType() {
 		return ownerType;
 	}
 

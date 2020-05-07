@@ -67,6 +67,7 @@ class BeanTest {
 			.hasValueSameAs(oneValue);
 	}
 
+	@SuppressWarnings({"initialization.static.fields.uninitialized", "initialization.fields.uninitialized"})
 	static class SingleFieldSubject {
 		static final String PROPERTY_ONE_NAME = "one";
 

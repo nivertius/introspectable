@@ -4,8 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import javax.annotation.Nullable;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat;
@@ -13,8 +13,10 @@ import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat
 class AnnotationQueryTest {
 	private static final String EXAMPLE_STRING = "testString";
 
+	@SuppressWarnings("assignment.type.incompatible")
 	private static final Documented INSTANCE_DOCUMENTED =
 		Nullable.class.getAnnotation(Documented.class);
+	@SuppressWarnings("assignment.type.incompatible")
 	private static final Retention INSTANCE_RETENTION =
 		Nullable.class.getAnnotation(Retention.class);
 

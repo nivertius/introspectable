@@ -9,13 +9,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Primitives;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.errorprone.annotations.Immutable;
 import com.google.errorprone.annotations.concurrent.LazyInit;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.perfectable.introspection.Introspections.introspect;
@@ -139,7 +142,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 	 * @throws IllegalArgumentException when member is not a method reference to member of this builders annotation type
 	 *     or when value is not actually instance of member type
 	 */
-	public <X> AnnotationBuilder<A> with(MemberExtractor<A, X> member, X value) {
+	public <X extends @NonNull Object> AnnotationBuilder<A> with(MemberExtractor<A, X> member, X value) {
 		Method method;
 		try {
 			method = member.introspect().referencedMethod();
@@ -205,7 +208,6 @@ public final class AnnotationBuilder<A extends Annotation> {
 
 	@Immutable
 	private static final class AnnotationInvocationHandler<A> implements InvocationHandler<MethodInvocation<A>> {
-		private static final int UNCALCULATED_HASH_CODE = -1;
 		private static final int MEMBER_NAME_HASH_MULTIPLIER = 127;
 
 		private final Class<A> annotationType;
@@ -215,23 +217,24 @@ public final class AnnotationBuilder<A extends Annotation> {
 		private final ImmutableMap<Method, Object> valueMap;
 
 		@LazyInit
-		private volatile int cachedHashCode = UNCALCULATED_HASH_CODE;
-
+		private volatile @MonotonicNonNull Integer cachedHashCode;
 		@LazyInit
-		private volatile String cachedRepresentation;
+		private volatile @MonotonicNonNull String cachedRepresentation;
 
 		AnnotationInvocationHandler(Class<A> annotationType, ImmutableMap<Method, Object> valueMap) {
 			this.annotationType = annotationType;
 			this.valueMap = valueMap;
 		}
 
-		@Nullable
 		@Override
-		public Object handle(MethodInvocation<A> invocation) {
-			return invocation.decompose(this::calculateMethodResult);
+		public @Nullable Object handle(MethodInvocation<A> invocation) {
+			MethodInvocation.Decomposer<A, @Nullable Object> decomposer = this::calculateMethodResult;
+			@Nullable Object result = invocation.decompose(decomposer);
+			return result;
 		}
 
-		Object calculateMethodResult(Method method, @SuppressWarnings("unused") A receiver, Object... arguments) {
+		private @Nullable Object calculateMethodResult(Method method, @SuppressWarnings("unused") A receiver,
+									 @Nullable Object... arguments) {
 			if (ObjectMethods.EQUALS.equals(method)) {
 				return calculateEquals(arguments[0]);
 			}
@@ -247,7 +250,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 			return valueMap.getOrDefault(method, method.getDefaultValue());
 		}
 
-		boolean calculateEquals(Object other) {
+		boolean calculateEquals(@Nullable Object other) {
 			if (!(other instanceof Annotation)) {
 				return false;
 			}
@@ -257,8 +260,8 @@ public final class AnnotationBuilder<A extends Annotation> {
 				return false;
 			}
 			for (Method method : annotationType.getDeclaredMethods()) {
-				Object thisValue = valueMap.getOrDefault(method, method.getDefaultValue());
-				Object otherValue = safeInvoke(method, other);
+				@Nullable Object thisValue = valueMap.getOrDefault(method, method.getDefaultValue());
+				@Nullable Object otherValue = safeInvoke(method, other);
 				if (!Objects.equals(thisValue, otherValue)) {
 					return false;
 				}
@@ -266,8 +269,9 @@ public final class AnnotationBuilder<A extends Annotation> {
 			return true;
 		}
 
+		@EnsuresNonNull("cachedHashCode")
 		private int calculateHash() {
-			if (cachedHashCode == UNCALCULATED_HASH_CODE) {
+			if (cachedHashCode == null) {
 				synchronized (this) {
 					int current = 0;
 					for (Method method : annotationType.getDeclaredMethods()) {
@@ -281,7 +285,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 			return cachedHashCode;
 		}
 
-		@SuppressWarnings("ReturnMissingNullable")
+		@EnsuresNonNull("cachedRepresentation")
 		private String calculateRepresentation() {
 			if (cachedRepresentation == null) {
 				String elements = valueMap.entrySet().stream()
@@ -300,7 +304,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 		return value.toString();
 	}
 
-	private static Object safeInvoke(Method method, Object target) {
+	private static @Nullable Object safeInvoke(Method method, Object target) {
 		try {
 			return method.invoke(target);
 		}

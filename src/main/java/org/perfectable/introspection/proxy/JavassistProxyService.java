@@ -7,13 +7,14 @@ import java.lang.reflect.Modifier;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 import com.google.auto.service.AutoService;
 import com.google.errorprone.annotations.Immutable;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.Proxy;
 import javassist.util.proxy.ProxyFactory;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.objenesis.ObjenesisStd;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -28,6 +29,7 @@ public final class JavassistProxyService implements ProxyService {
 	private static final ObjenesisStd OBJENESIS = new ObjenesisStd();
 	private static final Class<?>[] EMPTY_CLASS_ARRAY = new Class<?>[0];
 
+	@SuppressWarnings("FieldMissingNullable") // bug in error-prone checks
 	private static final Set<Feature> SUPPORTED_FEATURES = EnumSet.of(Feature.SUPERCLASS);
 
 	@Override
@@ -55,7 +57,7 @@ public final class JavassistProxyService implements ProxyService {
 			if (!baseClass.getName().equals(Object.class.getName())) {
 				factory.setSuperclass(baseClass);
 			}
-			Class<?>[] interfacesArray = interfaces.toArray(EMPTY_CLASS_ARRAY);
+			Class<?>[] interfacesArray = (@NonNull Class<?>[]) interfaces.toArray(EMPTY_CLASS_ARRAY);
 			factory.setInterfaces(interfacesArray);
 			return (Class<I>) factory.createClass();
 		}
@@ -64,7 +66,8 @@ public final class JavassistProxyService implements ProxyService {
 	private static <I> I instantiateProxyClass(Class<I> proxyClass,
 											   InvocationHandler<? super MethodInvocation<I>> handler) {
 		MethodHandler handlerAdapter = JavassistInvocationHandlerAdapter.adapt(handler);
-		I proxy = OBJENESIS.newInstance(proxyClass);
+		@SuppressWarnings("cast.unsafe")
+		I proxy = (@NonNull I) OBJENESIS.newInstance(proxyClass);
 		((Proxy) proxy).setHandler(handlerAdapter);
 		return proxy;
 	}
@@ -80,17 +83,17 @@ public final class JavassistProxyService implements ProxyService {
 			this.handler = handler;
 		}
 
-		@Nullable
+		@SuppressWarnings("override.return.invalid")
 		@Override
-		public Object invoke(@Nullable Object self, Method thisMethod, Method proceed,
-							 @Nullable Object[] args)
+		public @Nullable Object invoke(Object self, Method thisMethod, Method proceed,
+							 @Nullable Object @Nullable [] args)
 			throws Throwable {
 			requireNonNull(thisMethod);
 			if (thisMethod.equals(ObjectMethods.FINALIZE)) {
 				return null; // ignore proxy finalization
 			}
-			@SuppressWarnings("unchecked")
-			T castedSelf = (T) self;
+			@SuppressWarnings({"unchecked"})
+			@NonNull T castedSelf = (@NonNull T) self;
 			MethodInvocation<T> invocation = MethodInvocation.intercepted(thisMethod, castedSelf, args);
 			return this.handler.handle(invocation);
 		}

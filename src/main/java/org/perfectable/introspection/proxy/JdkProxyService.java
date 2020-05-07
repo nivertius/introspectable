@@ -7,10 +7,11 @@ import java.lang.reflect.Proxy;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 import com.google.auto.service.AutoService;
 import com.google.errorprone.annotations.Immutable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -36,10 +37,10 @@ public final class JdkProxyService implements ProxyService {
 			throw new UnsupportedFeatureException("JDK proxy cannot be created with superclass other than Object");
 		}
 		java.lang.reflect.InvocationHandler adapterHandler = JdkInvocationHandlerAdapter.adapt(handler);
-		Class<?>[] interfacesArray = interfaces.toArray(EMPTY_CLASS_ARRAY);
+		Class<?>[] interfacesArray = (@NonNull Class<?>[]) interfaces.toArray(EMPTY_CLASS_ARRAY);
 		try {
-			@SuppressWarnings("unchecked")
-			I instance = (I) Proxy.newProxyInstance(classLoader, interfacesArray, adapterHandler);
+			@SuppressWarnings({"unchecked", "argument.type.incompatible"})
+			I instance = (@NonNull I) Proxy.newProxyInstance(classLoader, interfacesArray, adapterHandler);
 			return instance;
 		}
 		catch (IllegalArgumentException e) {
@@ -58,17 +59,17 @@ public final class JdkProxyService implements ProxyService {
 			this.handler = handler;
 		}
 
-		@Nullable
+		@SuppressWarnings("override.return.invalid")
 		@Override
-		public Object invoke(@Nullable Object proxy, Method method,
-							 @Nullable Object[] args)
+		public @Nullable Object invoke(Object proxy, Method method,
+							 @Nullable Object @Nullable [] args)
 			throws Throwable {
 			requireNonNull(method);
 			if (method.equals(ObjectMethods.FINALIZE)) {
 				return null; // ignore proxy finalization
 			}
 			@SuppressWarnings("unchecked")
-			T castedProxy = (T) proxy;
+			@Nullable T castedProxy = (T) proxy;
 			MethodInvocation<T> invocation = MethodInvocation.intercepted(method, castedProxy, args);
 			return this.handler.handle(invocation);
 		}

@@ -3,12 +3,11 @@ package org.perfectable.introspection.query;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import javax.annotation.Nullable;
 
 import static org.perfectable.introspection.query.SubjectReflection.MESSAGE_CONSTRUCTOR_CALLED;
 import static org.perfectable.introspection.query.SubjectReflection.MESSAGE_METHOD_CALLED;
 
-@SuppressWarnings({"unused", "InterfaceWithOnlyStatics"})
+@SuppressWarnings({"unused", "InterfaceWithOnlyStatics", "initialization.static.fields.uninitialized"})
 @Subject.Special
 @Subject.OtherAnnotation
 @Subject.Repetition(1)
@@ -38,13 +37,13 @@ public class Subject {
 
 	private String stringField;
 
-	@Nullable
+	@Deprecated
 	private Object objectField;
 
 	protected final Number protectedNumberField = 191; // SUPPRESS used for testing
 
 	// SUPPRESS NEXT 2 StaticVariableName used for testing
-	@Nullable
+	@Deprecated
 	public static Subject staticField; // SUPPRESS VisibilityModifier used for testing
 
 	public Subject() {
@@ -134,8 +133,8 @@ public class Subject {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);
 	}
 
-	@Nullable
-	public Object annotatedWithNullable() {
+	@Deprecated
+	public Object annotatedWithDeprecated() {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);
 	}
 

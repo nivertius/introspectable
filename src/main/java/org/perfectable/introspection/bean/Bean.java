@@ -2,14 +2,15 @@ package org.perfectable.introspection.bean;
 
 import org.perfectable.introspection.query.FieldQuery;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
-
-import javax.annotation.Nullable;
+import java.util.Optional;
+import java.util.function.Function;
 
 import com.google.common.collect.ImmutableSet;
-
-import static java.util.Objects.requireNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents a view of an instance as its property values, typically containing a proper Java Bean.
@@ -22,7 +23,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @param <B> type of instance contained in this bean
  */
-public final class Bean<B> {
+public final class Bean<B extends @NonNull Object> {
 
 	private final B instance;
 
@@ -37,8 +38,7 @@ public final class Bean<B> {
 	 * @param <X> Instance type
 	 * @return Bean containing specified instance
 	 */
-	public static <X> Bean<X> from(X instance) {
-		requireNonNull(instance);
+	public static <X extends @NonNull Object> Bean<X> from(X instance) {
 		return new Bean<>(instance);
 	}
 
@@ -68,7 +68,7 @@ public final class Bean<B> {
 	 * @return property with provided name
 	 * @throws IllegalArgumentException when there is no property with provided name
 	 */
-	public Property<B, Object> property(String name) {
+	public Property<B, @Nullable Object> property(String name) {
 		return Properties.create(type(), name).bind(this.instance);
 	}
 
@@ -91,11 +91,13 @@ public final class Bean<B> {
 	 *
 	 * @return all properties backed by a field.
 	 */
-	public ImmutableSet<Property<B, ?>> fieldProperties() {
+	public ImmutableSet<Property<B, @Nullable Object>> fieldProperties() {
 		return FieldQuery.of(type())
 			.excludingModifier(Modifier.STATIC)
 			.stream()
-			.map(field -> Properties.<B>fromField(field).bind(this.instance))
+			.map((Function<Field, PropertySchema<B, @Nullable Object>>) Properties::fromField)
+			.map((Function<PropertySchema<B, @Nullable Object>, Property<B, @Nullable Object>>)
+				schema -> schema.bind(instance))
 			.collect(ImmutableSet.toImmutableSet());
 	}
 
@@ -106,8 +108,9 @@ public final class Bean<B> {
 	 */
 	public ImmutableSet<Object> related() {
 		return this.fieldProperties().stream()
-				.map(Property::get)
-				.filter(Objects::nonNull)
+				.map(Property::getAsOptional)
+				.filter(Optional::isPresent)
+				.map(Optional::get)
 				.collect(ImmutableSet.toImmutableSet());
 	}
 

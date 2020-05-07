@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
-
 import com.google.errorprone.annotations.Immutable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Method of producing proxies.

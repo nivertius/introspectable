@@ -9,9 +9,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import org.assertj.core.api.Assertions;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -270,7 +269,7 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 			FunctionalReference.Introspection introspect = marker.introspect();
 			introspect.visit(new TestVisitor() {
 				@Override
-				public Void visitInstance(Method method) {
+				public @Nullable Void visitInstance(Method method) {
 					assertThat(method).isEqualTo(markerMethod);
 					return null;
 				}
@@ -670,6 +669,7 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 	class MethodParameterAnnotations {
 		private final TestSingleParameter marker = Declarator::staticSingle;
 
+		@SuppressWarnings("argument.type.incompatible")
 		@Test
 		void parametersZeroAnnotations() {
 			assertThat(marker.introspect())
@@ -677,7 +677,7 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 					.satisfies(annotations -> assertThat(annotations).extracting(Annotation::annotationType)
 						.satisfies(annotationTypes ->
 							Assertions.<Class<? extends Annotation>>assertThat(annotationTypes)
-								.containsExactly(Nullable.class))));
+								.containsExactly(TestAnnotation.class))));
 		}
 	}
 
@@ -810,11 +810,11 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 	}
 
 
-	@SuppressWarnings("NullableProblems")
 	@Nested
 	class AnnotatedParameterLambda {
-		private final TestSingleParameter marker = (@Nullable Object parameter1) -> { /* empty */ };
+		private final TestSingleParameter marker = (@TestAnnotation Object parameter1) -> { /* empty */ };
 
+		@SuppressWarnings("argument.type.incompatible")
 		@Disabled("Bug in JDK results in non-retention of annotations")
 		@Test
 		void parametersZeroAnnotations() {
@@ -823,7 +823,7 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 					.satisfies(annotations -> assertThat(annotations).extracting(Annotation::annotationType)
 						.satisfies(annotationTypes ->
 							Assertions.<Class<? extends Annotation>>assertThat(annotationTypes)
-								.containsExactly(Nullable.class))));
+								.containsExactly(TestAnnotation.class))));
 		}
 	}
 
@@ -885,11 +885,11 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 		}
 	}
 
-	private static class TestVisitor extends FunctionalReference.PartialVisitor<Void> {
+	private static class TestVisitor extends FunctionalReference.PartialVisitor<@Nullable Void> {
 		static final String INVALID_VISIT_MESSAGE = "Invalid visit";
 
 		@Override
-		protected Void fallback() {
+		protected @Nullable Void fallback() {
 			fail(INVALID_VISIT_MESSAGE);
 			return null;
 		}
@@ -927,8 +927,14 @@ class FunctionalReferenceTest { // SUPPRESS ExcessiveClassLength NcssCount
 
 	@SuppressWarnings("PMD.UseUtilityClass")
 	private static class Declarator {
-		static void staticSingle(@Nullable Object parameter1) {
+		@SuppressWarnings("Deprecated")
+		static void staticSingle(@TestAnnotation Object parameter1) {
 			// empty
 		}
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface TestAnnotation {
+
 	}
 }

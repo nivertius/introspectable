@@ -2,7 +2,8 @@ package org.perfectable.introspection.proxy;
 
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Invocation of execution point.
@@ -26,9 +27,8 @@ public interface Invocation {
 	 * @return result of an invocation.
 	 * @throws Throwable exception that was thrown by invocation
 	 */
-	@SuppressWarnings("IllegalThrows")
-	@Nullable
-	Object invoke() throws Throwable;
+	@SuppressWarnings({"IllegalThrows", "AnnotationLocation"})
+	@Nullable Object invoke() throws Throwable;
 
 	/**
 	 * Adapts {@link Runnable} to this interface.

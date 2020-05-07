@@ -6,10 +6,10 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Iterators;
 import com.google.errorprone.annotations.CompatibleWith;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Base class for all queries, which defines all convenient usage methods.
@@ -17,7 +17,8 @@ import com.google.errorprone.annotations.CompatibleWith;
  * @param <E> type of element this query will return/contain
  * @param <Q> type of queries returned by restrictions
  */
-abstract class AbstractQuery<E, Q extends AbstractQuery<E, ? extends Q>> implements Iterable<E> {
+abstract class AbstractQuery<E extends @NonNull Object, Q extends AbstractQuery<E, ? extends Q>>
+	implements Iterable<E> {
 
 	/**
 	 * Filter query elements by arbitrary predicate.
@@ -41,7 +42,7 @@ abstract class AbstractQuery<E, Q extends AbstractQuery<E, ? extends Q>> impleme
 	 * @param candidate object to check if it is contained in this query.
 	 * @return if object would be returned by the query
 	 */
-	public boolean contains(@Nullable @CompatibleWith("E") Object candidate) {
+	public boolean contains(@CompatibleWith("E") @Nullable Object candidate) {
 		return Iterators.contains(iterator(), candidate);
 	}
 

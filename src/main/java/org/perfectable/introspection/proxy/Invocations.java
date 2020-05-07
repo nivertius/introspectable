@@ -2,22 +2,20 @@ package org.perfectable.introspection.proxy;
 
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class Invocations {
 	static final class Returning implements Invocation {
-		@Nullable
-		private final Object result;
+		private final @Nullable Object result;
 
 		Returning(@Nullable Object result) {
 			this.result = result;
 		}
 
-		@Nullable
 		@Override
-		public Object invoke() {
+		public @Nullable Object invoke() {
 			return result;
 		}
 	}
@@ -30,11 +28,9 @@ final class Invocations {
 		}
 
 		@CanIgnoreReturnValue
-		@Nullable
 		@Override
-		public Object invoke() throws Throwable {
-			Throwable thrown = thrownSupplier.get();
-			throw thrown;
+		public @Nullable Object invoke() throws Throwable {
+			throw thrownSupplier.get();
 		}
 	}
 
@@ -45,9 +41,8 @@ final class Invocations {
 			this.callable = callable;
 		}
 
-		@Nullable
 		@Override
-		public Object invoke() throws Throwable {
+		public @Nullable Object invoke() throws Throwable {
 			return callable.call();
 		}
 	}
@@ -59,9 +54,8 @@ final class Invocations {
 			this.runnable = runnable;
 		}
 
-		@Nullable
 		@Override
-		public Object invoke() {
+		public @Nullable Object invoke() {
 			runnable.run();
 			return null;
 		}

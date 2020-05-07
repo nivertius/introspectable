@@ -8,7 +8,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import javax.annotation.Nullable;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.nullness.qual.UnknownKeyFor;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -49,10 +51,10 @@ public abstract class TypeView {
 			return of((Class<?>) type);
 		}
 		if (type instanceof TypeVariable<?>) {
-			return new TypeVariableView<>((TypeVariable<?>) type);
+			return of((TypeVariable<@UnknownKeyFor ?>) type);
 		}
 		if (type instanceof WildcardType) {
-			return new WildcardTypeView((WildcardType) type);
+			return of((WildcardType) type);
 		}
 		if (type instanceof GenericArrayType) {
 			return of((GenericArrayType) type);

@@ -2,10 +2,10 @@ package org.perfectable.introspection.query;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 import com.google.common.collect.ImmutableSet;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class AnnotationFilters {
 	private AnnotationFilters() {
@@ -13,26 +13,33 @@ final class AnnotationFilters {
 	}
 
 	static final class Single<A extends Annotation> implements AnnotationFilter.Singular<A> {
+		public static final Predicate<Annotation> ALWAYS_TRUE = element -> true;
+
 		private final Class<A> annotationClass;
-		private final Predicate<A> predicate;
+		private final Predicate<? super A> predicate;
 
 		public static <A extends Annotation> Single<A> create(Class<A> annotationClass) {
-			return new Single<>(annotationClass, Objects::nonNull);
+			return new Single<>(annotationClass, ALWAYS_TRUE);
 		}
 
-		private Single(Class<A> annotationClass, Predicate<A> predicate) {
+		private Single(Class<A> annotationClass, Predicate<? super A> predicate) {
 			this.annotationClass = annotationClass;
 			this.predicate = predicate;
 		}
 
 		@Override
 		public Singular<A> andMatching(Predicate<? super A> addedPredicate) {
-			return new Single<>(this.annotationClass, this.predicate.and(addedPredicate));
+			@SuppressWarnings("unchecked")
+			Predicate<? super A> newPredicate = ((Predicate<A>) this.predicate).and(addedPredicate);
+			return new Single<A>(this.annotationClass, newPredicate);
 		}
 
 		@Override
 		public boolean matches(AnnotatedElement element) {
-			A annotation = element.getAnnotation(this.annotationClass);
+			@Nullable A annotation = element.getAnnotation(this.annotationClass);
+			if (annotation == null) {
+				return false;
+			}
 			return this.predicate.test(annotation);
 		}
 	}

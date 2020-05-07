@@ -2,9 +2,10 @@ package org.perfectable.introspection.proxy;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
-import javax.annotation.Nullable;
 
-import com.google.errorprone.annotations.concurrent.LazyInit;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static org.perfectable.introspection.Introspections.introspect;
 
@@ -34,7 +35,7 @@ public final class LazyInitialization {
 	 * @param <T> type of target
 	 */
 	@FunctionalInterface
-	public interface Initializer<T> {
+	public interface Initializer<T extends @NonNull Object> {
 		/**
 		 * Initializes the actual target and returns it.
 		 *
@@ -67,21 +68,22 @@ public final class LazyInitialization {
 	 * @param <T> type of proxy
 	 * @return proxy object
 	 */
-	public static <T> T createProxy(Class<T> resultClass, Initializer<? extends T> initializer) {
+	public static <T extends @NonNull Object> T createProxy(Class<T> resultClass,
+															Initializer<? extends T> initializer) {
 		LazyInitializationHandler<T> handler = LazyInitializationHandler.create(initializer);
 		return ProxyBuilder.forType(resultClass).withInterface(Proxy.class).instantiate(handler);
 	}
 
-	private static final class LazyInitializationHandler<T> implements InvocationHandler<MethodInvocation<T>> {
+	private static final class LazyInitializationHandler<T extends @NonNull Object>
+		implements InvocationHandler<MethodInvocation<T>> {
 		private static final Method EXTRACT_INSTANCE_METHOD =
 				introspect(Proxy.class).methods().named("extractInstance").parameters().unique();
 
 		private final Initializer<? extends T> initializer;
 
-		@LazyInit
-		private transient T instance;
+		private transient @MonotonicNonNull T instance;
 
-		public static <T> LazyInitializationHandler<T> create(Initializer<? extends T> initializer) {
+		static <T extends @NonNull Object> LazyInitializationHandler<T> create(Initializer<? extends T> initializer) {
 			return new LazyInitializationHandler<>(initializer);
 		}
 
@@ -89,15 +91,14 @@ public final class LazyInitialization {
 			this.initializer = initializer;
 		}
 
-		@Nullable
 		@Override
-		public Object handle(MethodInvocation<T> invocation) throws Throwable {
+		public @Nullable Object handle(MethodInvocation<T> invocation) throws Throwable {
 			return invocation.decompose(this::replaceInvocation).invoke();
 		}
 
 		private Invocation replaceInvocation(Method method,
-				@SuppressWarnings("unused") @Nullable T receiver,
-				Object... arguments) {
+				@SuppressWarnings("unused") T receiver,
+				@Nullable Object... arguments) {
 			if (EXTRACT_INSTANCE_METHOD.equals(method)) {
 				return () -> Optional.ofNullable(instance);
 			}

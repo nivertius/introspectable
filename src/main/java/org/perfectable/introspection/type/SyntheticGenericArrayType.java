@@ -3,7 +3,8 @@ package org.perfectable.introspection.type;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 import java.util.Objects;
-import javax.annotation.Nullable;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class SyntheticGenericArrayType implements GenericArrayType {
 	private final Type componentType;

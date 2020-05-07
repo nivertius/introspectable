@@ -15,10 +15,10 @@ import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -315,7 +315,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 				return false;
 			}
 			Annotation candidateAnnotation = (Annotation) candidate;
-			Repeatable repeatableAnnotation =
+			@Nullable Repeatable repeatableAnnotation =
 				candidateAnnotation.annotationType().getAnnotation(Repeatable.class);
 			if (repeatableAnnotation == null) {
 				return false;
@@ -363,17 +363,18 @@ public abstract class AnnotationQuery<A extends Annotation>
 			@SuppressWarnings("unchecked")
 			Class<? extends Annotation> containedClass =
 				(Class<? extends Annotation>) returnType.getComponentType();
-			Repeatable repeatableAnnotation = containedClass.getAnnotation(Repeatable.class);
-			if (!repeatableAnnotation.value().equals(candidateContainer)) {
+			@Nullable Repeatable repeatableAnnotation = containedClass.getAnnotation(Repeatable.class);
+			if (repeatableAnnotation == null || !repeatableAnnotation.value().equals(candidateContainer)) {
 				throw new IllegalArgumentException();
 			}
 			return valueMethod;
 		}
 
+		@SuppressWarnings("cast.unsafe")
 		public Stream<Annotation> extractContents(Annotation source, Method extractionMethod) {
 			Object resultArray;
 			try {
-				resultArray = extractionMethod.invoke(source);
+				resultArray = (@NonNull Object) extractionMethod.invoke(source);
 			}
 			catch (IllegalAccessException | InvocationTargetException e) {
 				throw new AssertionError(e);

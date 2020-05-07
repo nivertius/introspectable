@@ -2,6 +2,8 @@ package org.perfectable.introspection.proxy; // SUPPRESS LENGTH
 
 import java.lang.reflect.Method;
 
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -88,7 +90,7 @@ class MethodInvocationTest {
 
 		MethodInvocation<NoArguments> invocation = MethodInvocation.of(NoArguments.METHOD1, instance);
 
-		Object result = invocation.invoke();
+		@Nullable Object result = invocation.invoke();
 
 		assertThat(result).isNull();
 		instance.assertExecuted1();
@@ -102,7 +104,7 @@ class MethodInvocationTest {
 		MethodInvocation<NoArguments> invocation =
 			MethodInvocation.of(NoArguments.METHOD1, instance).withReceiver(replaced);
 
-		Object result = invocation.invoke();
+		@Nullable Object result = invocation.invoke();
 
 		assertThat(result).isNull();
 		instance.assertNotExecuted();
@@ -116,7 +118,7 @@ class MethodInvocationTest {
 		MethodInvocation<NoArguments> invocation =
 			MethodInvocation.of(NoArguments.METHOD1, instance).withMethod(NoArguments.METHOD2);
 
-		Object result = invocation.invoke();
+		@Nullable Object result = invocation.invoke();
 
 		assertThat(result).isNull();
 		instance.assertExecuted2();
@@ -135,7 +137,7 @@ class MethodInvocationTest {
 		MethodInvocation<SimpleArguments> replaced =
 			invocation.withArguments(replacedFirstArgument, replacedSecondArgument);
 
-		Object result = replaced.invoke();
+		@Nullable Object result = replaced.invoke();
 
 		assertThat(result).isNull();
 		instance.assertExecutedWith(replacedFirstArgument, replacedSecondArgument);
@@ -150,7 +152,7 @@ class MethodInvocationTest {
 		MethodInvocation<SimpleArguments> invocation =
 			MethodInvocation.of(SimpleArguments.METHOD, instance, firstArgument, secondArgument);
 
-		Object result = invocation.invoke();
+		@Nullable Object result = invocation.invoke();
 
 		assertThat(result).isNull();
 		instance.assertExecutedWith(firstArgument, secondArgument);
@@ -166,7 +168,7 @@ class MethodInvocationTest {
 		MethodInvocation<VariableArguments> invocation =
 			MethodInvocation.of(VariableArguments.METHOD, instance, firstArgument, secondArgument, thirdArgument);
 
-		Object result = invocation.invoke();
+		@Nullable Object result = invocation.invoke();
 
 		assertThat(result).isNull();
 		instance.assertExecutedWith(firstArgument, new String[] { secondArgument, thirdArgument });
@@ -183,12 +185,13 @@ class MethodInvocationTest {
 			MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
 				firstArgument, secondArgument, thirdArgument);
 
-		Object result = invocation.invoke();
+		@Nullable Object result = invocation.invoke();
 
 		assertThat(result).isNull();
 		instance.assertExecutedWith(firstArgument, new int[] {secondArgument, thirdArgument});
 	}
 
+	@SuppressWarnings("argument.type.incompatible")
 	@Test
 	void testEquality() {
 		VariablePrimitiveArguments instance = new VariablePrimitiveArguments();
@@ -238,6 +241,7 @@ class MethodInvocationTest {
 		result.assertArguments(firstArgument, secondArgument, thirdArgument);
 	}
 
+
 	static class NoArguments {
 		private static final Method METHOD1 = getMethod(NoArguments.class, "executeNoArgument1");
 		private static final Method METHOD2 = getMethod(NoArguments.class, "executeNoArgument2");
@@ -279,8 +283,8 @@ class MethodInvocationTest {
 			getMethod(SimpleArguments.class, "executeSimple", String.class, String.class);
 
 		private boolean executed;
-		private String first;
-		private String second;
+		private @MonotonicNonNull String first;
+		private @MonotonicNonNull String second;
 
 
 		void executeSimple(String actualFirst, String actualSecond) {
@@ -290,6 +294,7 @@ class MethodInvocationTest {
 			second = actualSecond;
 		}
 
+		@SuppressWarnings("argument.type.incompatible")
 		void assertExecutedWith(String expectedFirst, String expectedSecond) {
 			assertThat(executed).isTrue();
 			assertThat(first).isEqualTo(expectedFirst);
@@ -303,8 +308,8 @@ class MethodInvocationTest {
 			getMethod(VariableArguments.class, "executeVariable", String.class, String[].class);
 
 		private boolean executed;
-		private String first;
-		private String[] variable;
+		private @MonotonicNonNull String first;
+		private String @MonotonicNonNull [] variable;
 
 		void executeVariable(String actualFirst, String... actualVariable) { // SUPPRESS ArrayIsStoredDirectly
 			assertThat(executed).isFalse();
@@ -313,6 +318,7 @@ class MethodInvocationTest {
 			variable = actualVariable;
 		}
 
+		@SuppressWarnings("argument.type.incompatible")
 		void assertExecutedWith(String expectedFirst, String[] expectedVariable) { // SUPPRESS UseVarargs
 			assertThat(executed).isTrue();
 			assertThat(first).isEqualTo(expectedFirst);
@@ -327,8 +333,8 @@ class MethodInvocationTest {
 			getMethod(VariablePrimitiveArguments.class, "assertExecutedWith", String.class, int[].class);
 
 		private boolean executed;
-		private String first;
-		private int[] variable;
+		private @MonotonicNonNull String first;
+		private int @MonotonicNonNull [] variable;
 
 		void executePrimitive(String actualFirst, int... actualVariable) { // SUPPRESS ArrayIsStoredDirectly
 			assertThat(executed).isFalse();
@@ -337,6 +343,7 @@ class MethodInvocationTest {
 			variable = actualVariable;
 		}
 
+		@SuppressWarnings("argument.type.incompatible")
 		void assertExecutedWith(String expectedFirst, int[] expectedVariable) { // SUPPRESS UseVarargs
 			assertThat(executed).isTrue();
 			assertThat(first).isEqualTo(expectedFirst);
@@ -346,10 +353,10 @@ class MethodInvocationTest {
 
 	private static final class Decomposition {
 		private final Method method;
-		private final Object receiver;
-		private final Object[] arguments;
+		private final @Nullable Object receiver;
+		private final @Nullable Object[] arguments;
 
-		Decomposition(Method method, Object receiver, Object[] arguments) { // SUPPRESS UseVarargs
+		Decomposition(Method method, @Nullable Object receiver, @Nullable Object[] arguments) { // SUPPRESS UseVarargs
 			this.method = method;
 			this.receiver = receiver;
 			this.arguments = arguments;
@@ -359,12 +366,13 @@ class MethodInvocationTest {
 			assertThat(this.method).isEqualTo(expectedMethod);
 		}
 
-		public void assertReceiver(Object expectedReceiver) {
+		@SuppressWarnings("argument.type.incompatible")
+		public void assertReceiver(@Nullable Object expectedReceiver) {
 			assertThat(this.receiver).isEqualTo(expectedReceiver);
 		}
 
 
-		public void assertArguments(Object... expectedArguments) {
+		public void assertArguments(@Nullable Object... expectedArguments) {
 			assertThat(this.arguments).isEqualTo(expectedArguments);
 		}
 	}

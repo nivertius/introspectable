@@ -3,7 +3,8 @@ package org.perfectable.introspection.bean;
 import org.perfectable.introspection.type.TypeView;
 
 import java.lang.reflect.Type;
-import javax.annotation.Nullable;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -16,7 +17,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * @param <B> bean class for this property
  * @param <T> type of property values
  */
-public abstract class PropertySchema<B, T> {
+public abstract class PropertySchema<B extends @NonNull Object, T> {
 	/**
 	 * Extracts name of the property.
 	 *
@@ -55,7 +56,7 @@ public abstract class PropertySchema<B, T> {
 
 	abstract T get(B bean);
 
-	abstract void set(B bean, @Nullable T value);
+	abstract void set(B bean, T value);
 
 	final <X extends T> PropertySchema<B, X> as(Class<X> propertyClass) {
 		checkArgument(TypeView.of(type()).isSuperTypeOf(propertyClass));

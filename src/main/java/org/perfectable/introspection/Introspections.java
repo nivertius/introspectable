@@ -2,7 +2,8 @@ package org.perfectable.introspection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import javax.annotation.Nullable;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Convenient entry point for introspections.

@@ -5,7 +5,6 @@ import org.perfectable.introspection.ObjectMethods;
 import java.lang.reflect.Method;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 
 import javassist.Modifier;
 import org.junit.jupiter.api.Test;
@@ -14,10 +13,10 @@ import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat
 
 class MethodQueryTest {
 
-	@SuppressWarnings("UnnecessaryLambda")
+	@SuppressWarnings({"UnnecessaryLambda", "Indentation"})
 	private static final Predicate<Method> JACOCO_EXCLUSION =
 		method -> !method.getName().equals("$jacocoInit");
-	@SuppressWarnings("UnnecessaryLambda")
+	@SuppressWarnings({"UnnecessaryLambda", "Indentation"})
 	private static final Predicate<Method> REGISTER_NATIVES_EXCLUSION =
 		method -> !(method.getDeclaringClass().equals(Object.class) && method.getName().equals("registerNatives"));
 	private static final String EXAMPLE_STRING = "testString";
@@ -43,7 +42,7 @@ class MethodQueryTest {
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
-				SubjectReflection.ANNOTATED_WITH_NULLABLE,
+				SubjectReflection.ANNOTATED_WITH_DEPRECATED,
 				SubjectReflection.TO_STRING,
 				ObjectMethods.EQUALS, ObjectMethods.HASH_CODE,
 				ObjectMethods.GET_CLASS,
@@ -151,7 +150,7 @@ class MethodQueryTest {
 			.containsExactly(
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
-				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
+				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_DEPRECATED,
 				SubjectReflection.TO_STRING,
 				ObjectMethods.CLONE, ObjectMethods.TO_STRING,
 				ObjectMethods.GET_CLASS)
@@ -168,7 +167,7 @@ class MethodQueryTest {
 			.containsExactly(
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
-				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_NULLABLE,
+				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_DEPRECATED,
 				ObjectMethods.CLONE)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
 				SubjectReflection.STATIC_FIELD);
@@ -234,7 +233,7 @@ class MethodQueryTest {
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
-				SubjectReflection.ANNOTATED_WITH_NULLABLE,
+				SubjectReflection.ANNOTATED_WITH_DEPRECATED,
 				SubjectReflection.TO_STRING,
 				ObjectMethods.EQUALS, ObjectMethods.HASH_CODE,
 				ObjectMethods.GET_CLASS,
@@ -270,7 +269,7 @@ class MethodQueryTest {
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
-				SubjectReflection.ANNOTATED_WITH_NULLABLE,
+				SubjectReflection.ANNOTATED_WITH_DEPRECATED,
 				SubjectReflection.TO_STRING,
 				ObjectMethods.EQUALS, ObjectMethods.HASH_CODE,
 				ObjectMethods.GET_CLASS,
@@ -285,11 +284,11 @@ class MethodQueryTest {
 	@Test
 	void testAnnotatedWithClass() {
 		MethodQuery extracted =
-			MethodQuery.of(Subject.class).annotatedWith(Nullable.class);
+			MethodQuery.of(Subject.class).annotatedWith(Deprecated.class);
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactly(SubjectReflection.ANNOTATED_WITH_NULLABLE)
+			.containsExactly(ObjectMethods.FINALIZE, SubjectReflection.ANNOTATED_WITH_DEPRECATED)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
 				SubjectReflection.STATIC_FIELD);
 	}
@@ -297,11 +296,11 @@ class MethodQueryTest {
 	@Test
 	void testAnnotatedWith() {
 		MethodQuery extracted =
-			MethodQuery.of(Subject.class).annotatedWith(AnnotationFilter.single(Nullable.class));
+			MethodQuery.of(Subject.class).annotatedWith(AnnotationFilter.single(Deprecated.class));
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactly(SubjectReflection.ANNOTATED_WITH_NULLABLE)
+			.containsExactly(ObjectMethods.FINALIZE, SubjectReflection.ANNOTATED_WITH_DEPRECATED)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
 				SubjectReflection.STATIC_FIELD);
 	}

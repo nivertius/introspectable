@@ -7,7 +7,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.Objects;
-import javax.annotation.Nullable;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class SyntheticTypeVariable<D extends GenericDeclaration> implements TypeVariable<D> {
 	private final String name;
@@ -46,8 +47,7 @@ final class SyntheticTypeVariable<D extends GenericDeclaration> implements TypeV
 	}
 
 	@Override
-	@Nullable
-	public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+	public <T extends @Nullable Annotation> @Nullable T getAnnotation(Class<T> annotationClass) {
 		return null;
 	}
 

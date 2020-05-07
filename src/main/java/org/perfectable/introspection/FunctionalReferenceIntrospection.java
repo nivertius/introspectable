@@ -17,6 +17,7 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.perfectable.introspection.Introspections.introspect;
@@ -41,13 +42,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 
 	private static FunctionalReferenceIntrospection ofNativeImplementation(
 			FunctionalReference marker, Method writeReplace, ClassLoaderIntrospection classLoader) {
-		SerializedLambda serializedForm;
-		try {
-			serializedForm = (SerializedLambda) writeReplace.invoke(marker);
-		}
-		catch (IllegalAccessException | InvocationTargetException e) {
-			throw new AssertionError(e);
-		}
+		SerializedLambda serializedForm = extractSerializedLambda(marker, writeReplace);
 		switch (serializedForm.getImplMethodKind()) {
 			case MethodHandleInfo.REF_invokeInterface:
 			case MethodHandleInfo.REF_invokeVirtual:
@@ -96,8 +91,16 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		return capturingClass.replaceAll("/", ".");
 	}
 
-	protected Class<?> getImplementationClass() {
-		return implementationClass;
+	@SuppressWarnings("cast.unsafe")
+	private static SerializedLambda extractSerializedLambda(FunctionalReference marker, Method writeReplace) {
+		SerializedLambda serializedForm;
+		try {
+			serializedForm = (@NonNull SerializedLambda) writeReplace.invoke(marker);
+		}
+		catch (IllegalAccessException | InvocationTargetException e) {
+			throw new AssertionError(e);
+		}
+		return serializedForm;
 	}
 
 	protected void checkParameterNumber(int number) {
@@ -246,7 +249,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		OfConstructorReference(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
 			super(serializedForm, classLoader);
 			MethodSignature signature = MethodSignature.read(this.serializedForm.getInstantiatedMethodType());
-			implementationConstructor = ConstructorQuery.of(getImplementationClass())
+			implementationConstructor = ConstructorQuery.of(implementationClass)
 				.parameters(signature.runtimeParameterTypes(classLoader))
 				.asAccessible()
 				.unique();

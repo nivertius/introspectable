@@ -3,5 +3,5 @@
  *
  * <p>Use {@link org.perfectable.introspection.proxy.ProxyBuilder} as an entry point.
  */
-@javax.annotation.ParametersAreNonnullByDefault
 package org.perfectable.introspection.proxy;
+

@@ -2,7 +2,10 @@ package org.perfectable.introspection.bean;
 
 import java.lang.reflect.Type;
 import java.util.Objects;
-import javax.annotation.Nullable;
+import java.util.Optional;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -12,11 +15,11 @@ import static java.util.Objects.requireNonNull;
  * @param <B> Bean type that has this property
  * @param <T> Type of property value
  */
-public final class Property<B, T> {
+public final class Property<B extends @NonNull Object, T> {
 	private final B bean;
 	private final PropertySchema<B, T> schema;
 
-	static <B, T> Property<B, T> of(B bean, PropertySchema<B, T> schema) {
+	static <B extends @NonNull Object, T> Property<B, T> of(B bean, PropertySchema<B, T> schema) {
 		requireNonNull(bean);
 		requireNonNull(schema);
 		return new Property<>(bean, schema);
@@ -45,9 +48,18 @@ public final class Property<B, T> {
 	 * @return Property value
 	 * @throws IllegalStateException when this property is not readable
 	 */
-	@Nullable
 	public T get() {
 		return schema.get(this.bean);
+	}
+
+	/**
+	 * Extracts value of this property as a non-null optional.
+	 *
+	 * @return Property value, empty if property is null
+	 * @throws IllegalStateException when this property is not readable
+	 */
+	public Optional<@NonNull T> getAsOptional() {
+		return Optional.ofNullable(get());
 	}
 
 	/**
@@ -56,7 +68,7 @@ public final class Property<B, T> {
 	 * @param value new value for this property
 	 * @throws IllegalStateException when this property is not writeable
 	 */
-	public void set(@Nullable T value) {
+	public void set(T value) {
 		schema.set(bean, value);
 	}
 
@@ -103,7 +115,7 @@ public final class Property<B, T> {
 	 * @throws IllegalStateException when this property is either not readable or not writeable
 	 */
 	public void copy(Bean<B> other) {
-		T value = get();
+		@Nullable T value = get();
 		this.schema.set(other.contents(), value);
 	}
 

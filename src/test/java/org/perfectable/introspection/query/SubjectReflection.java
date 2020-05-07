@@ -4,7 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static org.perfectable.introspection.SimpleReflections.getConstructor;
 import static org.perfectable.introspection.SimpleReflections.getField;
@@ -70,21 +70,26 @@ public final class SubjectReflection {
 		getMethod(Subject.class, "methodPackage"); // SUPPRESS MultipleStringLiterals
 	public static final Method METHOD_PRIVATE =
 		getMethod(Subject.class, "methodPrivate"); // SUPPRESS MultipleStringLiterals
-	public static final Method ANNOTATED_WITH_NULLABLE =
-		getMethod(Subject.class, "annotatedWithNullable");
+	public static final Method ANNOTATED_WITH_DEPRECATED =
+		getMethod(Subject.class, "annotatedWithDeprecated");
 	public static final Method TO_STRING =
 		getMethod(Subject.class, "toString");
 
+	@SuppressWarnings("assignment.type.incompatible")
 	static final Subject.Special INSTANCE_SPECIAL =
 		Subject.class.getAnnotation(Subject.Special.class);
+	@SuppressWarnings("assignment.type.incompatible")
 	static final Subject.OtherAnnotation INSTANCE_OTHER =
 		Subject.class.getAnnotation(Subject.OtherAnnotation.class);
+	@SuppressWarnings("assignment.type.incompatible")
 	static final Subject.RepetitionContainer REPETITION_CONTAINER =
 		Subject.class.getAnnotation(Subject.RepetitionContainer.class);
+	@SuppressWarnings("assignment.type.incompatible")
 	static final Subject.Repetition[] REPETITIONS =
 		Subject.class.getDeclaredAnnotationsByType(Subject.Repetition.class);
+	@SuppressWarnings("assignment.type.incompatible")
 	static final Nullable INSTANCE_NULLABLE =
-		SubjectReflection.ANNOTATED_WITH_NULLABLE.getAnnotation(Nullable.class);
+		SubjectReflection.ANNOTATED_WITH_DEPRECATED.getAnnotation(Nullable.class);
 
 	private SubjectReflection() {
 		// utility class

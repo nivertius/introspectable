@@ -10,7 +10,9 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
@@ -21,12 +23,12 @@ final class Properties {
 	private static final String STANDARD_GETTER_PREFIX = "get";
 	private static final String SETTER_PREFIX = "set";
 
-	static <T> PropertySchema<T, Object> fromField(Field field) {
+	static <T> PropertySchema<T, @Nullable Object> fromField(Field field) {
 		PrivilegedActions.markAccessible(field);
 		return new FieldPropertySchema<>(field);
 	}
 
-	static <CX> PropertySchema<CX, Object> create(Class<CX> beanClass, String name) {
+	static <CX> PropertySchema<CX, @Nullable Object> create(Class<CX> beanClass, String name) {
 		requireNonNull(beanClass);
 		Optional<Field> field = introspect(beanClass).fields().named(name).option();
 		if (field.isPresent()) {
@@ -98,7 +100,7 @@ final class Properties {
 		return name.substring(0, 1).toUpperCase(Locale.ROOT) + name.substring(1);
 	}
 
-	static final class FieldPropertySchema<CT, PT> extends PropertySchema<CT, PT> {
+	static final class FieldPropertySchema<CT extends @NonNull Object, PT> extends PropertySchema<CT, PT> {
 		private final Field field;
 
 		FieldPropertySchema(Field field) {
@@ -107,7 +109,7 @@ final class Properties {
 
 		@Override
 		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
-		void set(CT bean, @Nullable PT value) {
+		void set(CT bean, PT value) {
 			try {
 				this.field.set(bean, value);
 			}
@@ -118,7 +120,6 @@ final class Properties {
 
 		// checked at construction
 		@Override
-		@Nullable
 		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
 		PT get(CT bean) {
 			try {
@@ -166,16 +167,16 @@ final class Properties {
 		}
 	}
 
-	static final class ReadOnlyMethodPropertySchema<CT, PT> extends PropertySchema<CT, PT> {
+	static final class ReadOnlyMethodPropertySchema<CT extends @NonNull Object, PT> extends PropertySchema<CT, PT> {
 		private final Method getter;
 
 		ReadOnlyMethodPropertySchema(Method getter) {
 			this.getter = requireNonNull(getter);
 		}
 
-		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
+		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions",
+			"argument.type.incompatible"})
 		@Override
-		@Nullable
 		public PT get(CT bean) {
 			try {
 				return (PT) this.getter.invoke(bean);
@@ -189,7 +190,7 @@ final class Properties {
 		}
 
 		@Override
-		public void set(CT bean, @Nullable PT value) {
+		public void set(CT bean, PT value) {
 			throw new IllegalStateException("Property is not writable");
 		}
 
@@ -230,7 +231,7 @@ final class Properties {
 		}
 	}
 
-	static final class WriteOnlyMethodPropertySchema<CT, PT> extends PropertySchema<CT, PT> {
+	static final class WriteOnlyMethodPropertySchema<CT extends @NonNull Object, PT> extends PropertySchema<CT, PT> {
 		private final Method setter;
 
 		WriteOnlyMethodPropertySchema(Method setter) {
@@ -238,14 +239,14 @@ final class Properties {
 		}
 
 		@Override
-		@Nullable
 		public PT get(CT bean) {
 			throw new IllegalStateException("Property is not readable");
 		}
 
-		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
+		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions",
+			"argument.type.incompatible"})
 		@Override
-		public void set(CT bean, @Nullable PT value) {
+		public void set(CT bean, PT value) {
 			try {
 				this.setter.invoke(bean, value);
 			}
@@ -295,7 +296,7 @@ final class Properties {
 		}
 	}
 
-	static final class ReadWriteMethodPropertySchema<CT, PT> extends PropertySchema<CT, PT> {
+	static final class ReadWriteMethodPropertySchema<CT extends @NonNull Object, PT> extends PropertySchema<CT, PT> {
 		private final Method getter;
 		private final Method setter;
 
@@ -304,9 +305,9 @@ final class Properties {
 			this.setter = setter;
 		}
 
-		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
+		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions",
+			"argument.type.incompatible"})
 		@Override
-		@Nullable
 		public PT get(CT bean) {
 			try {
 				return (PT) this.getter.invoke(bean);
@@ -320,8 +321,9 @@ final class Properties {
 		}
 
 		@Override
-		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
-		public void set(CT bean, @Nullable PT value) {
+		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions",
+			"argument.type.incompatible"})
+		public void set(CT bean, PT value) {
 			try {
 				this.setter.invoke(bean, value);
 			}

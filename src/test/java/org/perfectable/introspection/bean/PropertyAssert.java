@@ -2,6 +2,7 @@ package org.perfectable.introspection.bean;
 
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.internal.Objects;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 @SuppressWarnings("BooleanParameter")
 final class PropertyAssert<VALUE>
@@ -52,13 +53,15 @@ final class PropertyAssert<VALUE>
 		return this;
 	}
 
+	@SuppressWarnings("argument.type.incompatible")
 	public PropertyAssert<VALUE> hasNullValue() {
 		objects.assertNotNull(info, actual);
 		objects.assertNull(info, actual.get());
 		return this;
 	}
 
-	public PropertyAssert<VALUE> hasValueSameAs(VALUE expectedValue) {
+	@SuppressWarnings("argument.type.incompatible")
+	public PropertyAssert<VALUE> hasValueSameAs(@Nullable Object expectedValue) {
 		objects.assertNotNull(info, actual);
 		objects.assertSame(info, actual.get(), expectedValue);
 		return this;

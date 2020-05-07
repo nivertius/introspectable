@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -34,7 +34,8 @@ import static java.util.Objects.requireNonNull;
 @SuppressWarnings({
 	"DesignForExtension" // class is closed because of package-private constructor
 })
-public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>, InheritanceQuery<X>> {
+public abstract class InheritanceQuery<X>
+	extends AbstractQuery<Class<? super X>, InheritanceQuery<X>> {
 	/**
 	 * Creates unrestricted query that will list all the supertypes that this class or interface extends/implements.
 	 *
@@ -258,7 +259,7 @@ public abstract class InheritanceQuery<X> extends AbstractQuery<Class<? super X>
 		@SuppressWarnings("unchecked")
 		Class<? super X>[] interfaceArray = (Class<? super X>[]) type.getInterfaces();
 		Stream.of(interfaceArray).forEach(builder);
-		Class<? super X> superclass = type.getSuperclass();
+		@Nullable Class<? super X> superclass = type.getSuperclass();
 		if (superclass != null) {
 			builder.accept(superclass);
 		}

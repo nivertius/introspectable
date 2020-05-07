@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 // SUPPRESS FILE MagicNumber
 // SUPPRESS FILE MultipleStringLiterals
-@SuppressWarnings("ClassCanBeStatic")
+@SuppressWarnings({"ClassCanBeStatic", "argument.type.incompatible"})
 class AnnotationBuilderTest {
 
 	@Test
@@ -41,6 +41,7 @@ class AnnotationBuilderTest {
 			.hasMessage("Annotation interface is not a marker");
 	}
 
+	@SuppressWarnings("argument.type.incompatible")
 	@Test
 	void nullValue() {
 		AnnotationBuilder<Single> builder = AnnotationBuilder.of(Single.class);
@@ -246,6 +247,7 @@ class AnnotationBuilderTest {
 
 	@Marker
 	private static class MarkerHolder {
+		@SuppressWarnings("assignment.type.incompatible")
 		static final Marker HELD = MarkerHolder.class.getAnnotation(Marker.class);
 	}
 
@@ -257,6 +259,7 @@ class AnnotationBuilderTest {
 	@Single(SingleHolder.VALUE)
 	private static class SingleHolder {
 		static final String VALUE = "testValue";
+		@SuppressWarnings("assignment.type.incompatible")
 		static final Single HELD = SingleHolder.class.getAnnotation(Single.class);
 	}
 
@@ -276,6 +279,7 @@ class AnnotationBuilderTest {
 	private static class MultipleHolder {
 		static final String TWO_VALUE = "testValue";
 		static final int TRHEE_VALUE = 3;
+		@SuppressWarnings("assignment.type.incompatible")
 		static final Multiple HELD = MultipleHolder.class.getAnnotation(Multiple.class);
 	}
 }

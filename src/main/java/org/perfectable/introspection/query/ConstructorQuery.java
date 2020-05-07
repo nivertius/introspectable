@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -40,7 +40,8 @@ import static java.util.Objects.requireNonNull;
 	"DesignForExtension", // class is closed because of package-private constructor
 	"ClassDataAbstractionCoupling"
 })
-public abstract class ConstructorQuery<X> extends ExecutableQuery<Constructor<X>, ConstructorQuery<X>> {
+public abstract class ConstructorQuery<X>
+	extends ExecutableQuery<Constructor<X>, ConstructorQuery<X>> {
 
 	/**
 	 * Queries for fields in specified class.

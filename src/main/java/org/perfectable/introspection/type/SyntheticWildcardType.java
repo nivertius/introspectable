@@ -7,7 +7,8 @@ import java.util.Objects;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class SyntheticWildcardType implements WildcardType {
 	private static final Collector<CharSequence, ?, String> BOUND_JOINER = Collectors.joining(" & ");

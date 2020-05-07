@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.google.common.base.Preconditions.checkState;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * {@link TypeView} that handles {@link Class}.
@@ -89,7 +90,7 @@ public final class ClassView<X> extends AbstractTypeView<Class<X>> {
 	@Override
 	public ParameterizedTypeView asParameterized() {
 		Type[] typeArguments = type.getTypeParameters();
-		Class<?> ownerType = type.getEnclosingClass();
+		@Nullable Class<?> ownerType = type.getEnclosingClass();
 		SyntheticParameterizedType replaced = new SyntheticParameterizedType(type, ownerType, typeArguments);
 		return new ParameterizedTypeView(replaced);
 	}
@@ -144,12 +145,16 @@ public final class ClassView<X> extends AbstractTypeView<Class<X>> {
 	 */
 	@Override
 	public ArrayTypeView asArray() throws IllegalStateException {
-		checkState(type.isArray());
-		Class<?> componentType = type.getComponentType();
-		SyntheticGenericArrayType arrayType = new SyntheticGenericArrayType(componentType);
+		@Nullable Class<?> componentType = type.getComponentType();
+		if (componentType == null) {
+			throw new IllegalStateException("Type has no array component");
+		}
+		@NonNull Class<?> checkedComponentType = componentType;
+		SyntheticGenericArrayType arrayType = new SyntheticGenericArrayType(checkedComponentType);
 		return new ArrayTypeView(arrayType);
 	}
 
+	@SuppressWarnings("type.argument.type.incompatible")
 	@Override
 	public boolean isSubTypeOf(TypeView other) {
 		return other.visit(new Visitor<Boolean>() {
@@ -178,7 +183,8 @@ public final class ClassView<X> extends AbstractTypeView<Class<X>> {
 				if (!type.isArray()) {
 					return false;
 				}
-				return of(type.getComponentType()).isSubTypeOf(view.component());
+				@NonNull Class<?> componentType = (@NonNull Class<?>) type.getComponentType();
+				return of(componentType).isSubTypeOf(view.component());
 			}
 		});
 	}

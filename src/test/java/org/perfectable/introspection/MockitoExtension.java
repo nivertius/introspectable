@@ -1,8 +1,8 @@
 package org.perfectable.introspection;
 
 import java.lang.reflect.Parameter;
-import javax.annotation.Nullable;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;
@@ -16,12 +16,12 @@ import org.mockito.MockitoAnnotations;
 // adding testable would make circular dependency and this is really simple extension which should be in mockito
 public class MockitoExtension implements TestInstancePostProcessor, ParameterResolver, AfterEachCallback {
 	@Override
-	public void postProcessTestInstance(@Nullable Object testInstance, @Nullable ExtensionContext context) {
+	public void postProcessTestInstance(Object testInstance, ExtensionContext context) {
 		MockitoAnnotations.initMocks(testInstance);
 	}
 
 	@Override
-	public void afterEach(@Nullable ExtensionContext context) {
+	public void afterEach(ExtensionContext context) {
 		Mockito.validateMockitoUsage();
 	}
 
@@ -35,6 +35,8 @@ public class MockitoExtension implements TestInstancePostProcessor, ParameterRes
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 		throws ParameterResolutionException {
 		Parameter parameter = parameterContext.getParameter();
-		return Mockito.mock(parameter.getType(), parameter.getName());
+		@SuppressWarnings("cast.unsafe")
+		Object casted = (@NonNull Object) Mockito.mock(parameter.getType(), parameter.getName());
+		return casted;
 	}
 }

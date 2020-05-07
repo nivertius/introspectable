@@ -7,12 +7,13 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -389,9 +390,9 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 			}
 			Class<?> declaringClass = method.getDeclaringClass();
 			Class<?> potentialOverrideDeclaringClass = potentialOverride.getDeclaringClass();
-			Package methodPackage = declaringClass.getPackage();
-			Package potentialOverridePackage = potentialOverrideDeclaringClass.getPackage();
-			boolean samePackage = methodPackage.equals(potentialOverridePackage);
+			@Nullable Package methodPackage = declaringClass.getPackage();
+			@Nullable Package potentialOverridePackage = potentialOverrideDeclaringClass.getPackage();
+			boolean samePackage = Objects.equals(methodPackage, potentialOverridePackage);
 			if (!Modifier.isProtected(modifiers) && !Modifier.isPublic(modifiers) && !samePackage) {
 				return false;
 			}

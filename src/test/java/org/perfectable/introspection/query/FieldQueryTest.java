@@ -5,14 +5,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
 
 import org.junit.jupiter.api.Test;
 
 import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat;
 
 class FieldQueryTest {
-	@SuppressWarnings("UnnecessaryLambda")
+	@SuppressWarnings({"UnnecessaryLambda", "Indentation"})
 	private static final Predicate<Field> JACOCO_EXCLUSION =
 		method -> !method.getName().equals("$jacocoData");
 	private static final String EXAMPLE_STRING = "testString";
@@ -131,7 +130,7 @@ class FieldQueryTest {
 	void testAnnotatedWith() {
 		FieldQuery extracted =
 			FieldQuery.of(Subject.class)
-				.annotatedWith(Nullable.class);
+				.annotatedWith(Deprecated.class);
 
 		assertThat(extracted)
 			.containsExactly(SubjectReflection.OBJECT_FIELD, SubjectReflection.STATIC_FIELD)

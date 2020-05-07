@@ -9,14 +9,15 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
-import javax.annotation.Nullable;
 
 import com.google.common.primitives.Primitives;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import com.google.errorprone.annotations.concurrent.LazyInit;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Objects.requireNonNull;
 import static org.perfectable.introspection.Introspections.introspect;
 
 /**
@@ -43,12 +44,10 @@ public final class MethodInvocation<T> implements Invocation {
 	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
 
 	private final Method method;
-	@Nullable
 	private final T receiver;
-	private final Object[] arguments;
+	private final @Nullable Object[] arguments;
 
-	@LazyInit
-	private transient MethodHandle handle;
+	private transient @MonotonicNonNull MethodHandle handle;
 
 	private static final MethodHandle PRIVATE_LOOKUP_CONSTRUCTOR = findPrivateLookupConstructor();
 
@@ -74,8 +73,14 @@ public final class MethodInvocation<T> implements Invocation {
 	 *     or arguments are not matching method parameter types.
 	 */
 	public static <T> MethodInvocation<T> intercepted(Method method,
-													  @Nullable T receiver, @Nullable Object... arguments) {
-		Object[] actualArguments = flattenVariableArguments(method, arguments);
+													  T receiver, @Nullable Object @Nullable... arguments) {
+		@Nullable Object[] actualArguments;
+		if (arguments == null) {
+			actualArguments = EMPTY_ARGUMENTS;
+		}
+		else {
+			actualArguments = flattenVariableArguments(method, arguments);
+		}
 		return of(method, receiver, actualArguments);
 	}
 
@@ -99,18 +104,15 @@ public final class MethodInvocation<T> implements Invocation {
 	 *     and receiver was provided (or other way around), receiver is of wrong type for the provided method,
 	 *     or arguments are not matching method parameter types.
 	 */
-	public static <T> MethodInvocation<T> of(Method method, @Nullable T receiver, Object... arguments) {
-		requireNonNull(method);
-		// receiver might be null
-		requireNonNull(arguments);
+	public static <T> MethodInvocation<T> of(Method method, T receiver, @Nullable Object... arguments) {
 		verifyCallability(method, receiver, arguments);
-		Object[] argumentsClone = arguments.clone();
+		@Nullable Object[] argumentsClone = arguments.clone();
 		return new MethodInvocation<>(method, receiver, argumentsClone);
 	}
 
 	@SuppressWarnings("ArrayIsStoredDirectly")
-	private MethodInvocation(Method method, @Nullable T receiver,
-							 Object... arguments) {
+	private MethodInvocation(Method method, T receiver,
+							 @Nullable Object... arguments) {
 		this.method = method;
 		this.receiver = receiver;
 		this.arguments = arguments;
@@ -123,12 +125,9 @@ public final class MethodInvocation<T> implements Invocation {
 	 * @throws Throwable result of throwing invocation. This will be exactly the exception that method thrown.
 	 */
 	@CanIgnoreReturnValue
-	@Nullable
 	@Override
-	public Object invoke() throws Throwable {
-		if (handle == null) {
-			handle = createHandle();
-		}
+	public @Nullable Object invoke() throws Throwable {
+		createHandleIfNeeded();
 		return handle.invoke();
 	}
 
@@ -148,7 +147,7 @@ public final class MethodInvocation<T> implements Invocation {
 		 * @param arguments arguments passed to the method, in source (<i>flat</i>) representation
 		 * @return result of decomposition
 		 */
-		R decompose(Method method, @Nullable T receiver, Object... arguments);
+		R decompose(Method method, T receiver, @Nullable Object... arguments);
 	}
 
 	/**
@@ -243,7 +242,7 @@ public final class MethodInvocation<T> implements Invocation {
 				&& Arrays.equals(this.arguments, other.arguments);
 	}
 
-	private static void verifyCallability(Method method, @Nullable Object receiver, Object... arguments) {
+	private static void verifyCallability(Method method, @Nullable Object receiver, @Nullable Object... arguments) {
 		verifyReceiverCompatibility(method, receiver);
 		verifyArgumentsCompatibility(method, arguments);
 	}
@@ -262,7 +261,7 @@ public final class MethodInvocation<T> implements Invocation {
 		}
 	}
 
-	private static void verifyArgumentsCompatibility(Method method, Object... arguments) {
+	private static void verifyArgumentsCompatibility(Method method, @Nullable Object... arguments) {
 		Class<?>[] formals = method.getParameterTypes();
 		boolean isVarArgs = method.isVarArgs();
 		if (isVarArgs) {
@@ -274,14 +273,18 @@ public final class MethodInvocation<T> implements Invocation {
 				"Method %s requires %s arguments, got %s", method, formals.length, arguments.length);
 		}
 		for (int i = 0; i < arguments.length; i++) {
-			Class<?> parameterType;
+			@NonNull Class<?> parameterType;
 			if (isVarArgs && i >= formals.length - 1) {
-				parameterType = formals[formals.length - 1].getComponentType();
+				@Nullable Class<?> componentType = formals[formals.length - 1].getComponentType();
+				if (componentType == null) {
+					throw new AssertionError("Method was variable arity, but its last parameter type has no component");
+				}
+				parameterType = (@NonNull Class<?>) componentType;
 			}
 			else {
 				parameterType = formals[i];
 			}
-			Object argument = arguments[i];
+			@Nullable Object argument = arguments[i];
 			if (argument == null) {
 				checkArgument(!parameterType.isPrimitive(),
 					"Method %s has primitive %s as parameter %s, got null argument", method, parameterType, i + 1);
@@ -296,18 +299,16 @@ public final class MethodInvocation<T> implements Invocation {
 		}
 	}
 
-	private static Object[] flattenVariableArguments(Method method, @Nullable Object[] actuals) {
-		if (actuals == null) {
-			return EMPTY_ARGUMENTS;
-		}
+	private static @Nullable Object[] flattenVariableArguments(Method method, @Nullable Object[] actuals) {
 		if (!method.isVarArgs()) {
 			return actuals;
 		}
 		Class<?>[] formals = method.getParameterTypes();
-		Object variableActual = actuals[actuals.length - 1];
+		@SuppressWarnings("cast.unsafe")
+		Object variableActual = (@NonNull Object) actuals[actuals.length - 1];
 		int variableLength = Array.getLength(variableActual);
 		int resultSize = (formals.length - 1) + variableLength;
-		Object[] result = new Object[resultSize];
+		@Nullable Object[] result = new Object[resultSize];
 		System.arraycopy(actuals, 0, result, 0, formals.length - 1);
 		for (int i = 0; i < variableLength; i++) {
 			result[formals.length - 1 + i] = Array.get(variableActual, i);
@@ -316,7 +317,11 @@ public final class MethodInvocation<T> implements Invocation {
 	}
 
 	@SuppressWarnings("IllegalCatch")
-	private MethodHandle createHandle() {
+	@EnsuresNonNull("handle")
+	private void createHandleIfNeeded() {
+		if (handle != null) {
+			return;
+		}
 		MethodHandles.Lookup lookup;
 		try {
 			lookup = (MethodHandles.Lookup) PRIVATE_LOOKUP_CONSTRUCTOR.invoke(method.getDeclaringClass());
@@ -340,7 +345,9 @@ public final class MethodInvocation<T> implements Invocation {
 			int overflowArguments = arguments.length - parameterTypes.length + 1;
 			methodHandle = methodHandle.asCollector(lastParameterType, overflowArguments);
 		}
-		return MethodHandles.insertArguments(methodHandle, 0, arguments);
+		@SuppressWarnings("argument.type.incompatible")
+		MethodHandle createdHandle = MethodHandles.insertArguments(methodHandle, 0, arguments);
+		this.handle = createdHandle;
 	}
 
 	@SuppressWarnings("MethodLength")

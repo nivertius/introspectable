@@ -9,12 +9,13 @@ import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.internal.Iterables;
 import org.assertj.core.internal.Objects;
 import org.assertj.core.internal.TypeComparators;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.internal.TypeComparators.defaultTypeComparators;
 
-final class BeanAssert<ELEMENT>
+final class BeanAssert<ELEMENT extends @NonNull Object>
 	extends AbstractObjectAssert<BeanAssert<ELEMENT>, Bean<ELEMENT>> {
 
 	private final Objects objects = Objects.instance();
@@ -26,7 +27,7 @@ final class BeanAssert<ELEMENT>
 		super(actual, BeanAssert.class);
 	}
 
-	public static <ELEMENT> BeanAssert<ELEMENT> assertThat(Bean<ELEMENT> actual) {
+	public static <ELEMENT extends @NonNull Object> BeanAssert<ELEMENT> assertThat(Bean<ELEMENT> actual) {
 		return new BeanAssert<>(actual);
 	}
 
@@ -71,12 +72,11 @@ final class BeanAssert<ELEMENT>
 	}
 
 
-	public PropertyAssert<Object> property(String one) {
+	public PropertyAssert<?> property(String one) {
 		objects.assertNotNull(info, actual);
-		Property<ELEMENT, Object> property = actual.property(one);
+		Property<ELEMENT, ?> property = actual.property(one);
 		objects.assertNotNull(info, property);
-		PropertyAssert<Object> propertyAssert = PropertyAssert.assertThat(property);
-		return propertyAssert;
+		return PropertyAssert.assertThat(property);
 	}
 
 	public BeanAssert<ELEMENT> hasContentsSameAs(ELEMENT expectedContents) {

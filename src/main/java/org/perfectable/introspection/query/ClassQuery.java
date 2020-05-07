@@ -23,7 +23,6 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
-import javax.annotation.Nullable;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
@@ -31,6 +30,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.LoaderClassPath;
 import javassist.NotFoundException;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -82,8 +82,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 
 	private static final ClassQuery<Object> SYSTEM =
 		new ClassQuery<>(Object.class, ClassPathResourceSource.INSTANCE, ClassPool.getDefault(),
-			name -> ClassLoader.getSystemClassLoader().loadClass(name),
-			DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER, DEFAULT_POST_LOAD_FILTER);
+			ClassQuery::loadSystemClass, DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER, DEFAULT_POST_LOAD_FILTER);
 
 	private final ResourceSource resources;
 	private final ClassPool classPool;
@@ -245,8 +244,6 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		return resources.contains(getClassPath(candidateClass));
 	}
 
-
-
 	private ClassQuery<C> withClassNameFilter(Predicate<? super String> additionalClassNameFilter) {
 		@SuppressWarnings("unchecked")
 		Predicate<? super String> newClassNameFilter =
@@ -299,6 +296,10 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			// lot of different exception occurs while loading classes and if it happens, Class is not loadable anyway
 			return Optional.empty();
 		}
+	}
+
+	private static Class<?> loadSystemClass(String name) throws ClassNotFoundException {
+		return ClassLoader.getSystemClassLoader().loadClass(name);
 	}
 
 	private static final class PackageNamePredicate implements Predicate<String> {
@@ -460,9 +461,8 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			}
 		}
 
-		@Nullable
-		private static String getManifestClassPathString(JarFile jarFile) throws IOException {
-			Manifest manifest = jarFile.getManifest();
+		private static @Nullable String getManifestClassPathString(JarFile jarFile) throws IOException {
+			@Nullable Manifest manifest = jarFile.getManifest();
 			if (manifest == null) {
 				return null;
 			}
@@ -529,7 +529,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 
 		@Override
 		protected void generateUrls(Consumer<URL> urlAction) {
-			ClassLoader currentClassLoader = classLoader;
+			@Nullable ClassLoader currentClassLoader = classLoader;
 			while (currentClassLoader != null) {
 				if (currentClassLoader instanceof URLClassLoader) {
 					URLClassLoader urlClassLoader = (URLClassLoader) currentClassLoader;
@@ -553,10 +553,9 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			this.ctClass = ctClass;
 		}
 
-		@Nullable
 		@SuppressWarnings({"unchecked", "IllegalCatch"})
 		@Override
-		public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+		public <T extends @Nullable Annotation> @Nullable T getAnnotation(Class<T> annotationClass) {
 			try {
 				return (T) ctClass.getAnnotation(annotationClass);
 			}

@@ -2,7 +2,7 @@ package org.perfectable.introspection;
 
 import org.perfectable.introspection.query.ClassQuery;
 
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Entry point for {@link ClassLoader} introspections.

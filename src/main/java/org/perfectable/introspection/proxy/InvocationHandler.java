@@ -1,6 +1,6 @@
 package org.perfectable.introspection.proxy;
 
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Handles an invocation of a execution point on a proxy and returns response.
@@ -23,7 +23,6 @@ public interface InvocationHandler<I extends Invocation> {
 	 * @return successful result of invocation processing
 	 * @throws Throwable exception that will be thrown on the call site
 	 */
-	@SuppressWarnings("IllegalThrows")
-	@Nullable
-	Object handle(I invocation) throws Throwable; // SUPPRESS IllegalThrows
+	@SuppressWarnings({"IllegalThrows", "AnnotationLocation"})
+	@Nullable Object handle(I invocation) throws Throwable;
 }

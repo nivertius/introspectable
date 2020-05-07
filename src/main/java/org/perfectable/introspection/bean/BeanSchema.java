@@ -2,7 +2,8 @@ package org.perfectable.introspection.bean;
 
 import java.util.Objects;
 
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
@@ -16,7 +17,7 @@ import static org.perfectable.introspection.Introspections.introspect;
  *
  * @param <B> class that this schema covers
  */
-public final class BeanSchema<B> {
+public final class BeanSchema<B extends @NonNull Object> {
 	private final Class<B> beanClass;
 
 	/**
@@ -26,7 +27,7 @@ public final class BeanSchema<B> {
 	 * @param <X> type of schema
 	 * @return Bean schema for provided class
 	 */
-	public static <X> BeanSchema<X> from(Class<X> beanClass) {
+	public static <X extends @NonNull Object> BeanSchema<X> from(Class<X> beanClass) {
 		requireNonNull(beanClass);
 		return new BeanSchema<>(beanClass);
 	}
@@ -41,7 +42,7 @@ public final class BeanSchema<B> {
 	 * @param element element to convert to bean
 	 * @return bean from the element
 	 */
-	public Bean<B> put(B element) {
+	public Bean<B> put(@NonNull B element) {
 		checkArgument(this.beanClass.isInstance(element));
 		return Bean.from(element);
 	}

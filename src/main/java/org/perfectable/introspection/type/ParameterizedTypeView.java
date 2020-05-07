@@ -10,18 +10,20 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.errorprone.annotations.concurrent.LazyInit;
+import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static com.google.common.base.Preconditions.checkState;
 
 /**
  * {@link TypeView} that handles {@link ParameterizedType}.
  */
+@SuppressWarnings("ClassFanOutComplexity")
 public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedType> {
-	@LazyInit
-	private ImmutableMap<TypeVariable<? extends Class<?>>, Type> calculatedSubstitutions;
-	@LazyInit
-	private ImmutableList<TypeView> correctedArguments;
+	private @MonotonicNonNull ImmutableMap<TypeVariable<? extends Class<?>>, Type> calculatedSubstitutions;
+	private @MonotonicNonNull ImmutableList<TypeView> correctedArguments;
 
 	ParameterizedTypeView(ParameterizedType parameterizedType) {
 		super(parameterizedType);
@@ -59,6 +61,7 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 	 *
 	 * @return types used as arguments for this parameterized type.
 	 */
+	@EnsuresNonNull("correctedArguments")
 	public List<TypeView> arguments() {
 		if (correctedArguments == null) {
 			correctedArguments = calculateArguments(type);
@@ -72,7 +75,7 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 	 * @return superclass wrapped in {@link TypeView}, empty if this class has no superclass
 	 */
 	public Optional<ParameterizedTypeView> superclass() {
-		Type genericSuperclass = erasure().getGenericSuperclass();
+		@Nullable Type genericSuperclass = erasure().getGenericSuperclass();
 		if (genericSuperclass == null) {
 			return Optional.empty();
 		}
@@ -123,7 +126,7 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		ImmutableMap<TypeVariable<? extends Class<?>>, Type> substitutions = substitutions();
 		checkState(substitutions.isEmpty(), "There are substitutions defined in this type, %s", substitutions);
 		Class<?> rawType = (Class<?>) baseType;
-		return new ClassView<>(rawType);
+		return ClassView.of(rawType);
 	}
 
 	/**
@@ -166,7 +169,7 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		return asClass().asArray();
 	}
 
-	@SuppressWarnings({"AnonInnerLength", "MethodLength"})
+	@SuppressWarnings({"AnonInnerLength", "MethodLength", "JavaNCSS"})
 	@Override
 	public boolean isSubTypeOf(TypeView other) {
 		return other.visit(new Visitor<Boolean>() {
@@ -178,7 +181,8 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 					return false;
 				}
 				if (otherRaw.isArray()) {
-					return checkArray(thisRaw, of(otherRaw.getComponentType()));
+					@NonNull Class<?> componentType = (@NonNull Class<?>) otherRaw.getComponentType();
+					return checkArray(thisRaw, of(componentType));
 				}
 				if (otherRaw.equals(thisRaw)) {
 					Iterator<TypeView> thisParameterIterator = arguments().iterator();
@@ -210,7 +214,8 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 						return false;
 					}
 					Class<?> thisClass = (Class<?>) thisRaw;
-					return checkArray(thisClass, of(otherRaw.getComponentType()));
+					Class<?> componentType = (@NonNull Class<?>) otherRaw.getComponentType();
+					return checkArray(thisClass, of(componentType));
 				}
 				if (otherRaw.equals(thisRaw)) {
 					return true;
@@ -302,6 +307,7 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		return variable;
 	}
 
+	@EnsuresNonNull("calculatedSubstitutions")
 	private ImmutableMap<TypeVariable<? extends Class<?>>, Type> substitutions() {
 		if (calculatedSubstitutions == null) {
 			calculatedSubstitutions = calculateSubstitutions(type);

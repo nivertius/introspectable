@@ -4,6 +4,8 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 /**
  * Filter for method or constructor parameters.
  *
@@ -38,7 +40,7 @@ public interface ParametersFilter {
 	 * @param arguments arguments that would be checked for passing to executable
 	 * @return filter that checks if the executable would accept specified arguments
 	 */
-	static ParametersFilter matchingArguments(Object... arguments) {
+	static ParametersFilter matchingArguments(@Nullable Object... arguments) {
 		return ParameterFilters.matchingArguments(arguments);
 	}
 

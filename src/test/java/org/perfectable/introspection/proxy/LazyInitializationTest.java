@@ -5,6 +5,7 @@ import org.perfectable.introspection.proxy.LazyInitialization.Initializer;
 
 import java.util.Optional;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -14,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
 class LazyInitializationTest {
 
+	@SuppressWarnings("initialization.fields.uninitialized")
 	@Mock
 	private TestFirstInterface firstMock;
 
@@ -50,7 +52,7 @@ class LazyInitializationTest {
 		assertThat(initializedOption).contains(this.firstMock);
 	}
 
-	private static final class TestInitializer<T> implements Initializer<T> {
+	private static final class TestInitializer<T extends @NonNull Object> implements Initializer<T> {
 		private final T target;
 		private boolean wasExecuted; // = false
 

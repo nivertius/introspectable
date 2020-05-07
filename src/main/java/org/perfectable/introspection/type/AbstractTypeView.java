@@ -1,7 +1,8 @@
 package org.perfectable.introspection.type;
 
 import java.lang.reflect.Type;
-import javax.annotation.Nullable;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 abstract class AbstractTypeView<T extends Type> extends TypeView {
 	protected final T type;
