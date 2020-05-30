@@ -81,6 +81,7 @@ final class Streams {
 		}
 	}
 
+	@SuppressWarnings("JdkObsolete")
 	private static final class EnumerationSpliterator<E> extends Spliterators.AbstractSpliterator<E> {
 		private static final int ADDITIONAL_CHARACTERISTICS = 0;
 

@@ -27,7 +27,6 @@ import static java.util.Objects.requireNonNull;
 public final class JavassistProxyService implements ProxyService {
 
 	private static final ObjenesisStd OBJENESIS = new ObjenesisStd();
-	private static final Class<?>[] EMPTY_CLASS_ARRAY = new Class<?>[0];
 
 	@SuppressWarnings("FieldMissingNullable") // bug in error-prone checks
 	private static final Set<Feature> SUPPORTED_FEATURES = EnumSet.of(Feature.SUPERCLASS);
@@ -57,7 +56,7 @@ public final class JavassistProxyService implements ProxyService {
 			if (!baseClass.getName().equals(Object.class.getName())) {
 				factory.setSuperclass(baseClass);
 			}
-			Class<?>[] interfacesArray = (@NonNull Class<?>[]) interfaces.toArray(EMPTY_CLASS_ARRAY);
+			Class<?>[] interfacesArray = (@NonNull Class<?>[]) interfaces.toArray(new Class<?>[0]);
 			factory.setInterfaces(interfacesArray);
 			return (Class<I>) factory.createClass();
 		}

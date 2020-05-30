@@ -69,12 +69,6 @@
 			<artifactId>checker-qual</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.checkerframework</groupId>
-			<artifactId>jdk8</artifactId>
-			<optional>true</optional>
-			<!-- used in compilation -->
-		</dependency>
 
 		<dependency>
 			<groupId>org.assertj</groupId>

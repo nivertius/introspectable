@@ -20,9 +20,7 @@ import static java.util.Objects.requireNonNull;
 @Immutable
 @AutoService(ProxyService.class)
 public final class JdkProxyService implements ProxyService {
-
 	private static final Set<Feature> SUPPORTED_FEATURES = EnumSet.noneOf(Feature.class);
-	private static final Class<?>[] EMPTY_CLASS_ARRAY = new Class<?>[0];
 
 	@Override
 	public boolean supportsFeature(Feature feature) {
@@ -37,7 +35,7 @@ public final class JdkProxyService implements ProxyService {
 			throw new UnsupportedFeatureException("JDK proxy cannot be created with superclass other than Object");
 		}
 		java.lang.reflect.InvocationHandler adapterHandler = JdkInvocationHandlerAdapter.adapt(handler);
-		Class<?>[] interfacesArray = (@NonNull Class<?>[]) interfaces.toArray(EMPTY_CLASS_ARRAY);
+		Class<?>[] interfacesArray = (@NonNull Class<?>[]) interfaces.toArray(new Class<?>[0]);
 		try {
 			@SuppressWarnings({"unchecked", "argument.type.incompatible"})
 			I instance = (@NonNull I) Proxy.newProxyInstance(classLoader, interfacesArray, adapterHandler);

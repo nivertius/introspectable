@@ -8,7 +8,6 @@ import java.util.Queue;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestHandler<T> implements InvocationHandler<MethodInvocation<T>> {
@@ -37,7 +36,6 @@ public class TestHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 	}
 
 	private Invocation replaceInvocation(Method method, @Nullable T receiver, @Nullable Object... arguments) {
-		requireNonNull(receiver);
 		if (ObjectMethods.EQUALS.equals(method)) {
 			return new EqualsInvocation(receiver, arguments[0]);
 		}

@@ -108,7 +108,8 @@ final class Properties {
 		}
 
 		@Override
-		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
+		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions",
+			"argument.type.incompatible"})
 		void set(CT bean, PT value) {
 			try {
 				this.field.set(bean, value);
