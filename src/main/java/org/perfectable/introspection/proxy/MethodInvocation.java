@@ -40,7 +40,7 @@ import static org.perfectable.introspection.Introspections.introspect;
  *
  * @param <T> Type of method receiver (i.e. {@code this})
  */
-public final class MethodInvocation<T> implements Invocation {
+public final class MethodInvocation<T> implements Invocation<@Nullable Object, Throwable> {
 	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
 
 	private final Method method;

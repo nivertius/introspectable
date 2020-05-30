@@ -78,7 +78,7 @@ public interface ProxyService {
 	 *     it doesn't support some feature required to do so
 	 */
 	<I> I instantiate(@Nullable ClassLoader classLoader, Class<?> baseClass, List<? extends Class<?>> interfaces,
-					  InvocationHandler<? super MethodInvocation<I>> handler)
+					  InvocationHandler<?, ?, ? super MethodInvocation<I>> handler)
 		throws UnsupportedFeatureException;
 
 	/** Thrown when factory cannot create a builder with requested features. */

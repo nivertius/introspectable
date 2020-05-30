@@ -3,8 +3,6 @@ package org.perfectable.introspection.proxy;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 /**
  * Invocation of execution point.
  *
@@ -14,21 +12,22 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * <p>Depending on the proxy mechanism, this potentially could be any point in program, but most implementations only
  * support capturing method calls into {@link MethodInvocation}.
  *
+ * @param <R> Type of value returned by invocation
+ * @param <X> Type of exception thrown by invocation
  * @see InvocationHandler
  * @see MethodInvocation
  */
 @FunctionalInterface
-public interface Invocation {
+public interface Invocation<R, X extends Throwable> {
 	/**
 	 * Invokes the execution point.
 	 *
 	 * <p>It will either succeed and return a result, possibly null, or fail and throw an exception.
 	 *
 	 * @return result of an invocation.
-	 * @throws Throwable exception that was thrown by invocation
+	 * @throws X exception that was thrown by invocation
 	 */
-	@SuppressWarnings({"IllegalThrows", "AnnotationLocation"})
-	@Nullable Object invoke() throws Throwable;
+	R invoke() throws X;
 
 	/**
 	 * Adapts {@link Runnable} to this interface.
@@ -37,7 +36,7 @@ public interface Invocation {
 	 * @return invocation that when invoked, will call the runnable and if it doesn't throw runtime exception, it will
 	 *     return null.
 	 */
-	static Invocation fromRunnable(Runnable runnable) {
+	static Invocation<?, RuntimeException> fromRunnable(Runnable runnable) {
 		return new Invocations.RunnableAdapter(runnable);
 	}
 
@@ -45,21 +44,23 @@ public interface Invocation {
 	 * Adapts {@link Callable} to this interface.
 	 *
 	 * @param callable runnable to run
+	 * @param <R> type returned from callable
 	 * @return invocation that when invoked, will call the runnable and if it doesn't throw exception, it will
 	 *     return whatever callable execution returns.
 	 */
-	static Invocation fromCallable(Callable<?> callable) {
-		return new Invocations.CallableAdapter(callable);
+	static <R> Invocation<R, Exception> fromCallable(Callable<R> callable) {
+		return new Invocations.CallableAdapter<>(callable);
 	}
 
 	/**
 	 * Creates invocation that does only one thing: returns the provided argument.
 	 *
 	 * @param result what the invocation should return
+	 * @param <T> type of result returned from invocation
 	 * @return invocation that returns provided result.
 	 */
-	static Invocation returning(@Nullable Object result) {
-		return new Invocations.Returning(result);
+	static <T> Invocation<T, RuntimeException> returning(T result) {
+		return new Invocations.Returning<>(result);
 	}
 
 	/**
@@ -67,11 +68,12 @@ public interface Invocation {
 	 *
 	 * <p>Each execution of the invocation will fetch new exception.
 	 *
+	 * @param <X> type of exception thrown
 	 * @param thrownSupplier supplier that will produce exceptions to throw
 	 * @return invocation that throws exception
 	 */
-	static Invocation throwing(Supplier<Throwable> thrownSupplier) {
-		return new Invocations.Throwing(thrownSupplier);
+	static <X extends Throwable> Invocation<?, X> throwing(Supplier<X> thrownSupplier) {
+		return new Invocations.Throwing<>(thrownSupplier);
 	}
 
 }

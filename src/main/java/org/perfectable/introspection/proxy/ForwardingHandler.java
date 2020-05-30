@@ -9,7 +9,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * @param <T> type of objects handled
  */
-public final class ForwardingHandler<T> implements InvocationHandler<MethodInvocation<T>> {
+public final class ForwardingHandler<T> implements InvocationHandler<@Nullable Object, Throwable, MethodInvocation<T>> {
 
 	private T target;
 

@@ -76,7 +76,7 @@ public final class LazyInitialization {
 	}
 
 	private static final class LazyInitializationHandler<T extends @NonNull Object>
-		implements InvocationHandler<MethodInvocation<T>> {
+		implements InvocationHandler<@Nullable Object, Throwable, MethodInvocation<T>> {
 		private static final Method EXTRACT_INSTANCE_METHOD =
 				introspect(Proxy.class).methods().named("extractInstance").parameters().unique();
 
@@ -96,10 +96,13 @@ public final class LazyInitialization {
 
 		@Override
 		public @Nullable Object handle(MethodInvocation<T> invocation) throws Throwable {
-			return invocation.decompose(this::replaceInvocation).invoke();
+			MethodInvocation.Decomposer<T, Invocation<@Nullable Object, Throwable>> decomposer =
+				this::replaceInvocation;
+			Invocation<@Nullable Object, Throwable> replaced = invocation.decompose(decomposer);
+			return replaced.invoke();
 		}
 
-		private Invocation replaceInvocation(Method method,
+		private Invocation<@Nullable Object, Throwable> replaceInvocation(Method method,
 				@SuppressWarnings("unused") T receiver,
 				@Nullable Object... arguments) {
 			if (EXTRACT_INSTANCE_METHOD.equals(method)) {

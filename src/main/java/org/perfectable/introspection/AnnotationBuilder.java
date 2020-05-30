@@ -207,7 +207,8 @@ public final class AnnotationBuilder<A extends Annotation> {
 		.unique();
 
 	@Immutable
-	private static final class AnnotationInvocationHandler<A> implements InvocationHandler<MethodInvocation<A>> {
+	private static final class AnnotationInvocationHandler<A>
+			implements InvocationHandler<@Nullable Object, RuntimeException, MethodInvocation<A>> {
 		private static final int MEMBER_NAME_HASH_MULTIPLIER = 127;
 
 		private final Class<A> annotationType;
@@ -229,8 +230,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 		@Override
 		public @Nullable Object handle(MethodInvocation<A> invocation) {
 			MethodInvocation.Decomposer<A, @Nullable Object> decomposer = this::calculateMethodResult;
-			@Nullable Object result = invocation.decompose(decomposer);
-			return result;
+			return invocation.decompose(decomposer);
 		}
 
 		private @Nullable Object calculateMethodResult(Method method, @SuppressWarnings("unused") A receiver,

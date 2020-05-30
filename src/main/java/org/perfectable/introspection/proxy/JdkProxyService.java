@@ -29,7 +29,7 @@ public final class JdkProxyService implements ProxyService {
 
 	@Override
 	public <I> I instantiate(@Nullable ClassLoader classLoader, Class<?> baseClass, List<? extends Class<?>> interfaces,
-							 InvocationHandler<? super MethodInvocation<I>> handler)
+							 InvocationHandler<?, ?, ? super MethodInvocation<I>> handler)
 		throws UnsupportedFeatureException {
 		if (!baseClass.getName().equals(Object.class.getName())) {
 			throw new UnsupportedFeatureException("JDK proxy cannot be created with superclass other than Object");
@@ -47,13 +47,13 @@ public final class JdkProxyService implements ProxyService {
 	}
 
 	private static final class JdkInvocationHandlerAdapter<T> implements java.lang.reflect.InvocationHandler {
-		private final InvocationHandler<? super MethodInvocation<T>> handler;
+		private final InvocationHandler<?, ?, ? super MethodInvocation<T>> handler;
 
-		static <T> JdkInvocationHandlerAdapter<T> adapt(InvocationHandler<? super MethodInvocation<T>> handler) {
+		static <T> JdkInvocationHandlerAdapter<T> adapt(InvocationHandler<?, ?, ? super MethodInvocation<T>> handler) {
 			return new JdkInvocationHandlerAdapter<>(handler);
 		}
 
-		private JdkInvocationHandlerAdapter(InvocationHandler<? super MethodInvocation<T>> handler) {
+		private JdkInvocationHandlerAdapter(InvocationHandler<?, ?, ? super MethodInvocation<T>> handler) {
 			this.handler = handler;
 		}
 

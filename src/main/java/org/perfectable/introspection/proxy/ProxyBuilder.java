@@ -121,7 +121,7 @@ public final class ProxyBuilder<I> {
 	 * @param handler method that proxy will delegate its calls to
 	 * @return proxy instance
 	 */
-	public I instantiate(InvocationHandler<? super MethodInvocation<I>> handler) {
+	public I instantiate(InvocationHandler<?, ?, ? super MethodInvocation<I>> handler) {
 		return service.instantiate(classLoader, baseClass, interfaces, handler);
 	}
 }

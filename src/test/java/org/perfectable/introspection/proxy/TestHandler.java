@@ -10,7 +10,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TestHandler<T> implements InvocationHandler<MethodInvocation<T>> {
+public class TestHandler<T> implements InvocationHandler<@Nullable Object, Throwable, MethodInvocation<T>> {
 	private final Queue<Expectance> expected = new ArrayDeque<>();
 
 	static <T> TestHandler<T> create() {
@@ -19,8 +19,7 @@ public class TestHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 
 	@Override
 	public @Nullable Object handle(MethodInvocation<T> invocation) throws Throwable {
-		MethodInvocation.Decomposer<T, Invocation> decomposer = this::replaceInvocation;
-		return invocation.decompose(decomposer).invoke();
+		return invocation.decompose(this::replaceInvocation).invoke();
 	}
 
 	public Expectance expectInvocation(@Nullable T proxy, Method method, @Nullable Object... arguments) {
@@ -35,7 +34,7 @@ public class TestHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 			.isEmpty();
 	}
 
-	private Invocation replaceInvocation(Method method, @Nullable T receiver, @Nullable Object... arguments) {
+	private Invocation<?, ?> replaceInvocation(Method method, @Nullable T receiver, @Nullable Object... arguments) {
 		if (ObjectMethods.EQUALS.equals(method)) {
 			return new EqualsInvocation(receiver, arguments[0]);
 		}
@@ -46,14 +45,7 @@ public class TestHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 			return new ToStringInvocation(receiver);
 		}
 		Expectance expectance = expected.remove();
-		Invocation result = expectance.process(method, receiver, arguments);
-		return result;
-	}
-
-	@FunctionalInterface
-	interface InvocationResult {
-		@SuppressWarnings({"IllegalThrows", "AnnotationLocation"})
-		@Nullable Object resolve() throws Throwable;
+		return expectance.process(method, receiver, arguments);
 	}
 
 	class Expectance {
@@ -61,7 +53,7 @@ public class TestHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 		private final Method expectedMethod;
 		private final @Nullable Object[] expectedArguments;
 
-		private Invocation result = () -> new AssertionError("Result has not been set");
+		private Invocation<?, ?> result = Invocation.throwing(() -> new AssertionError("Result has not been set"));
 
 		Expectance(@Nullable T expectedProxy, Method expectedMethod, @Nullable Object... expectedArguments) {
 			this.expectedProxy = expectedProxy;
@@ -78,7 +70,7 @@ public class TestHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 		}
 
 		@SuppressWarnings("argument.type.incompatible")
-		public Invocation process(Method method, @Nullable T receiver, @Nullable Object... arguments) {
+		public Invocation<?, ?> process(Method method, @Nullable T receiver, @Nullable Object... arguments) {
 			assertThat(receiver).isEqualTo(expectedProxy);
 			assertThat(method).isEqualTo(expectedMethod);
 			assertThat(arguments).isEqualTo(expectedArguments);
@@ -86,7 +78,7 @@ public class TestHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 		}
 	}
 
-	private static class EqualsInvocation implements Invocation {
+	private static class EqualsInvocation implements Invocation<Boolean, RuntimeException> {
 		private final @Nullable Object receiver;
 		private final @Nullable Object other;
 
@@ -96,12 +88,12 @@ public class TestHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 		}
 
 		@Override
-		public Object invoke() {
+		public Boolean invoke() {
 			return receiver == other; // SUPPRESS CompareObjectsWithEquals
 		}
 	}
 
-	private static class HashCodeInvocation implements Invocation {
+	private static class HashCodeInvocation implements Invocation<Integer, RuntimeException> {
 		private final @Nullable Object receiver;
 
 		HashCodeInvocation(@Nullable Object receiver) {
@@ -109,12 +101,12 @@ public class TestHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 		}
 
 		@Override
-		public @Nullable Object invoke() {
+		public Integer invoke() {
 			return System.identityHashCode(receiver);
 		}
 	}
 
-	private static class ToStringInvocation implements Invocation {
+	private static class ToStringInvocation implements Invocation<String, RuntimeException> {
 		private final @Nullable Object receiver;
 
 		ToStringInvocation(@Nullable Object receiver) {
@@ -122,7 +114,7 @@ public class TestHandler<T> implements InvocationHandler<MethodInvocation<T>> {
 		}
 
 		@Override
-		public @Nullable Object invoke() {
+		public String invoke() {
 			if (receiver == null) {
 				return "null";
 			}

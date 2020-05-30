@@ -1,7 +1,5 @@
 package org.perfectable.introspection.proxy;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 /**
  * Handles an invocation of a execution point on a proxy and returns response.
  *
@@ -10,19 +8,20 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * @param <I> type of invocation supported. This is usually {@link MethodInvocation}
 
+ * @param <R> type of values returned from handler
+ * @param <X> type of exceptions thrown from handler
  * @see ProxyBuilder#instantiate
  * @see MethodInvocation
  */
 @FunctionalInterface
-public interface InvocationHandler<I extends Invocation> {
+public interface InvocationHandler<R, X extends Throwable, I extends Invocation<?, ?>> {
 
 	/**
 	 * Catches invocation executed on proxy and returns result that should be passed to the client.
 	 *
 	 * @param invocation invocation captured
 	 * @return successful result of invocation processing
-	 * @throws Throwable exception that will be thrown on the call site
+	 * @throws X exception that will be thrown on the call site
 	 */
-	@SuppressWarnings({"IllegalThrows", "AnnotationLocation"})
-	@Nullable Object handle(I invocation) throws Throwable;
+	R handle(I invocation) throws X;
 }

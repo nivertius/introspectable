@@ -38,7 +38,7 @@ public final class JavassistProxyService implements ProxyService {
 
 	@Override
 	public <I> I instantiate(@Nullable ClassLoader classLoader, Class<?> baseClass, List<? extends Class<?>> interfaces,
-							 InvocationHandler<? super MethodInvocation<I>> handler)
+							 InvocationHandler<?, ?, ? super MethodInvocation<I>> handler)
 			throws UnsupportedFeatureException {
 		checkArgument(!Modifier.isFinal(baseClass.getModifiers()));
 		Class<I> proxyClass = createProxyClass(baseClass, interfaces);
@@ -63,7 +63,7 @@ public final class JavassistProxyService implements ProxyService {
 	}
 
 	private static <I> I instantiateProxyClass(Class<I> proxyClass,
-											   InvocationHandler<? super MethodInvocation<I>> handler) {
+											   InvocationHandler<?, ?, ? super MethodInvocation<I>> handler) {
 		MethodHandler handlerAdapter = JavassistInvocationHandlerAdapter.adapt(handler);
 		@SuppressWarnings("cast.unsafe")
 		I proxy = (@NonNull I) OBJENESIS.newInstance(proxyClass);
@@ -72,13 +72,14 @@ public final class JavassistProxyService implements ProxyService {
 	}
 
 	private static final class JavassistInvocationHandlerAdapter<T> implements MethodHandler {
-		private final InvocationHandler<? super MethodInvocation<T>> handler;
+		private final InvocationHandler<?, ?, ? super MethodInvocation<T>> handler;
 
-		static <X> JavassistInvocationHandlerAdapter<X> adapt(InvocationHandler<? super MethodInvocation<X>> handler) {
+		static <X> JavassistInvocationHandlerAdapter<X> adapt(
+			InvocationHandler<?, ?, ? super MethodInvocation<X>> handler) {
 			return new JavassistInvocationHandlerAdapter<>(handler);
 		}
 
-		private JavassistInvocationHandlerAdapter(InvocationHandler<? super MethodInvocation<T>> handler) {
+		private JavassistInvocationHandlerAdapter(InvocationHandler<?, ?, ? super MethodInvocation<T>> handler) {
 			this.handler = handler;
 		}
 
