@@ -62,6 +62,15 @@ public final class Bean<B extends @NonNull Object> {
 	}
 
 	/**
+	 * Extracts schema of this bean.
+	 *
+	 * @return schema of this bean
+	 */
+	public BeanSchema<B> schema() {
+		return BeanSchema.from(type());
+	}
+
+	/**
 	 * Finds property by name.
 	 *
 	 * @param name name of the property to look for.
