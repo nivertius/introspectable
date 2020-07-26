@@ -70,8 +70,8 @@ public final class SubjectReflection {
 		getMethod(Subject.class, "methodPackage"); // SUPPRESS MultipleStringLiterals
 	public static final Method METHOD_PRIVATE =
 		getMethod(Subject.class, "methodPrivate"); // SUPPRESS MultipleStringLiterals
-	public static final Method ANNOTATED_WITH_DEPRECATED =
-		getMethod(Subject.class, "annotatedWithDeprecated");
+	public static final Method ANNOTATED_METHOD =
+		getMethod(Subject.class, "annotatedMethod");
 	public static final Method TO_STRING =
 		getMethod(Subject.class, "toString");
 
@@ -89,7 +89,7 @@ public final class SubjectReflection {
 		Subject.class.getDeclaredAnnotationsByType(Subject.Repetition.class);
 	@SuppressWarnings("assignment.type.incompatible")
 	static final Nullable INSTANCE_NULLABLE =
-		SubjectReflection.ANNOTATED_WITH_DEPRECATED.getAnnotation(Nullable.class);
+		SubjectReflection.ANNOTATED_METHOD.getAnnotation(Nullable.class);
 
 	private SubjectReflection() {
 		// utility class

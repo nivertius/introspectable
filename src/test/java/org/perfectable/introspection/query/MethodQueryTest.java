@@ -42,7 +42,7 @@ class MethodQueryTest {
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
-				SubjectReflection.ANNOTATED_WITH_DEPRECATED,
+				SubjectReflection.ANNOTATED_METHOD,
 				SubjectReflection.TO_STRING,
 				ObjectMethods.EQUALS, ObjectMethods.HASH_CODE,
 				ObjectMethods.GET_CLASS,
@@ -150,7 +150,7 @@ class MethodQueryTest {
 			.containsExactly(
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
-				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_DEPRECATED,
+				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_METHOD,
 				SubjectReflection.TO_STRING,
 				ObjectMethods.CLONE, ObjectMethods.TO_STRING,
 				ObjectMethods.GET_CLASS)
@@ -167,7 +167,7 @@ class MethodQueryTest {
 			.containsExactly(
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
-				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_WITH_DEPRECATED,
+				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT, SubjectReflection.ANNOTATED_METHOD,
 				ObjectMethods.CLONE)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
 				SubjectReflection.STATIC_FIELD);
@@ -233,7 +233,7 @@ class MethodQueryTest {
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
-				SubjectReflection.ANNOTATED_WITH_DEPRECATED,
+				SubjectReflection.ANNOTATED_METHOD,
 				SubjectReflection.TO_STRING,
 				ObjectMethods.EQUALS, ObjectMethods.HASH_CODE,
 				ObjectMethods.GET_CLASS,
@@ -269,7 +269,7 @@ class MethodQueryTest {
 				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
-				SubjectReflection.ANNOTATED_WITH_DEPRECATED,
+				SubjectReflection.ANNOTATED_METHOD,
 				SubjectReflection.TO_STRING,
 				ObjectMethods.EQUALS, ObjectMethods.HASH_CODE,
 				ObjectMethods.GET_CLASS,
@@ -284,11 +284,11 @@ class MethodQueryTest {
 	@Test
 	void testAnnotatedWithClass() {
 		MethodQuery extracted =
-			MethodQuery.of(Subject.class).annotatedWith(Deprecated.class);
+			MethodQuery.of(Subject.class).annotatedWith(Subject.OtherAnnotation.class);
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactly(ObjectMethods.FINALIZE, SubjectReflection.ANNOTATED_WITH_DEPRECATED)
+			.containsExactly(SubjectReflection.ANNOTATED_METHOD)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
 				SubjectReflection.STATIC_FIELD);
 	}
@@ -296,11 +296,11 @@ class MethodQueryTest {
 	@Test
 	void testAnnotatedWith() {
 		MethodQuery extracted =
-			MethodQuery.of(Subject.class).annotatedWith(AnnotationFilter.single(Deprecated.class));
+			MethodQuery.of(Subject.class).annotatedWith(AnnotationFilter.single(Subject.OtherAnnotation.class));
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.containsExactly(ObjectMethods.FINALIZE, SubjectReflection.ANNOTATED_WITH_DEPRECATED)
+			.contains(SubjectReflection.ANNOTATED_METHOD)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
 				SubjectReflection.STATIC_FIELD);
 	}

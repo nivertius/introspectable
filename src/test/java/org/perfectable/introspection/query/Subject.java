@@ -133,8 +133,8 @@ public class Subject {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);
 	}
 
-	@Deprecated
-	public Object annotatedWithDeprecated() {
+	@OtherAnnotation
+	public Object annotatedMethod() {
 		throw new AssertionError(MESSAGE_METHOD_CALLED);
 	}
 
