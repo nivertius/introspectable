@@ -9,21 +9,45 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandleInfo;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import kotlin.jvm.internal.CallableReference;
+import kotlin.reflect.jvm.internal.KClassImpl;
+import kotlin.reflect.jvm.internal.KFunctionImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.perfectable.introspection.Introspections.introspect;
 
 abstract class FunctionalReferenceIntrospection implements FunctionalReference.Introspection {
+	private static final boolean KOTLIN_REFLECT_AVAILABLE = determineKotlinAvailability();
+
 	static FunctionalReferenceIntrospection of(FunctionalReference marker) {
+		if (KOTLIN_REFLECT_AVAILABLE) {
+			if (marker instanceof CallableReference) {
+				return ofKotlinCallable((CallableReference) marker);
+			}
+			try {
+				Field functionField = marker.getClass().getDeclaredField("function");
+				PrivilegedActions.markAccessible(functionField);
+				Object function = functionField.get(marker);
+				if (function != null) {
+					return ofKotlinCallable((CallableReference) function);
+				}
+			}
+			catch (NoSuchFieldException | IllegalAccessException e) {
+				// pass
+			}
+ 		}
 		Class<? extends FunctionalReference> markerClass = marker.getClass();
 		Optional<Method> writeReplaceOption = MethodQuery.of(markerClass)
 			.named("writeReplace")
@@ -37,6 +61,38 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		}
 		else {
 			throw new IllegalArgumentException("Unsupported functional interface implementation " + marker);
+		}
+	}
+
+	static FunctionalReferenceIntrospection ofKotlin(Object function) {
+		if (function instanceof CallableReference) {
+			return ofKotlinCallable((CallableReference) function);
+		}
+		// SUPPRESS NEXT MultipleStringLiterals
+		throw new IllegalArgumentException("Unsupported functional interface implementation " + function);
+	}
+
+	private static FunctionalReferenceIntrospection ofKotlinCallable(CallableReference function) {
+		KClassImpl<?> owner = (KClassImpl<?>) function.getOwner();
+		String methodName = function.getName();
+		String signature = function.getSignature();
+		KFunctionImpl computed = (KFunctionImpl) function.compute();
+		Class<?> declaringClass = computed.getContainer().getJClass();
+		@SuppressWarnings("cast.unsafe")
+		Method implementationMethod = (@NonNull Method) owner.findMethodBySignature(methodName, signature);
+		checkArgument(implementationMethod != null, "Method with name %s and signature %s not found in %s",
+			methodName, signature, owner);
+		Object receiver = function.getBoundReceiver();
+		if (receiver == CallableReference.NO_RECEIVER) {
+			if (Modifier.isStatic(implementationMethod.getModifiers())) {
+				return new OfStaticMethod(implementationMethod, declaringClass, declaringClass);
+			}
+			else {
+				return new OfInstanceMethod(implementationMethod, declaringClass, declaringClass);
+			}
+		}
+		else {
+			return new OfBoundMethod(receiver, implementationMethod, declaringClass, declaringClass);
 		}
 	}
 
@@ -115,14 +171,31 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	static Method findImplementationMethod(SerializedLambda serializedForm,
 										   ClassLoaderIntrospection classLoader, Class<?> implementationClass) {
 		String methodName = serializedForm.getImplMethodName();
-		MethodSignature signature = MethodSignature.read(serializedForm.getImplMethodSignature());
+		String signatureString = serializedForm.getImplMethodSignature();
+		return findBySignature(classLoader, implementationClass, methodName, signatureString);
+	}
+
+	private static Method findBySignature(ClassLoaderIntrospection classLoader, Class<?> implementationClass, String methodName, String signatureString) {
+		MethodSignature signature = MethodSignature.read(signatureString);
+		String signatureName = signature.name();
+		String actualName = signatureName.isEmpty() ? methodName : signatureName;
 		return MethodQuery.of(implementationClass)
-			.named(methodName)
+			.named(actualName)
 			.parameters(ParametersFilter.typesExact(signature.runtimeParameterTypes(classLoader)))
 			.returning(TypeFilter.exact(signature.runtimeResultType(classLoader)))
 			.notOverridden()
 			.asAccessible()
 			.unique();
+	}
+
+	private static boolean determineKotlinAvailability() {
+		try {
+			Class.forName("kotlin.jvm.internal.CallableReference");
+			return true;
+		}
+		catch (ClassNotFoundException e) {
+			return false;
+		}
 	}
 
 	private abstract static class OfMethod extends FunctionalReferenceIntrospection {
@@ -244,7 +317,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 			return new OfStaticMethod(implementationMethod, implementationClass, capturingType);
 		}
 
-		private OfStaticMethod(Method implementationMethod, Class<?> implementationClass, Class<?> capturingType) {
+		OfStaticMethod(Method implementationMethod, Class<?> implementationClass, Class<?> capturingType) {
 			super(implementationMethod, implementationClass, capturingType);
 		}
 

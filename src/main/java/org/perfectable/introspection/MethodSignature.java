@@ -10,6 +10,7 @@ final class MethodSignature {
 	static final CharMatcher IDENTIFIER_BREAKING = CharMatcher.anyOf(";.[:><").or(CharMatcher.whitespace());
 
 	private final ImmutableList<TypeParameter> formalTypeParameters;
+	private final String name;
 	private final ImmutableList<FieldType> formalParameters;
 	private final ReturnType returnType;
 	private final ImmutableList<FieldType> thrownTypes;
@@ -18,17 +19,20 @@ final class MethodSignature {
 		CharacterReader reader = new CharacterReader(signatureString);
 		ImmutableList<TypeParameter> typeParameters =
 			TypeParameter.readFormalTypeParametersFrom(reader);
+		String name = parseName(reader);
 		ImmutableList<FieldType> formalParameters = parseFormalParameters(reader);
 		ReturnType returnType = ReturnType.readReturnTypeFrom(reader);
 		ImmutableList<FieldType> thrownTypes = parseThrownTypes(reader);
-		return new MethodSignature(typeParameters, formalParameters, returnType, thrownTypes);
+		return new MethodSignature(typeParameters, name, formalParameters, returnType, thrownTypes);
 	}
 
 	private MethodSignature(ImmutableList<TypeParameter> typeParameters,
+							String name,
 							ImmutableList<FieldType> formalParameters,
 							ReturnType returnType,
 							ImmutableList<FieldType> thrownTypes) {
 		this.formalTypeParameters = typeParameters;
+		this.name = name;
 		this.formalParameters = formalParameters;
 		this.returnType = returnType;
 		this.thrownTypes = thrownTypes;
@@ -40,6 +44,10 @@ final class MethodSignature {
 			.toArray(Class<?>[]::new);
 	}
 
+	public String name() {
+		return name;
+	}
+
 	public Class<?> runtimeResultType(ClassLoaderIntrospection loader) {
 		return returnType.asRuntimeClass(loader, formalTypeParameters);
 	}
@@ -48,6 +56,10 @@ final class MethodSignature {
 		return thrownTypes.stream()
 			.map(fieldType -> fieldType.asRuntimeClass(loader, formalTypeParameters))
 			.toArray(Class<?>[]::new);
+	}
+
+	private static String parseName(CharacterReader reader) {
+		return reader.readUntil(CharMatcher.is('('));
 	}
 
 	private static ImmutableList<FieldType> parseFormalParameters(CharacterReader reader) {

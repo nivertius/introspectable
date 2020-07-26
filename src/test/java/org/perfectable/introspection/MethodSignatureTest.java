@@ -25,9 +25,45 @@ class MethodSignatureTest {
 		}
 
 		@Test
+		void name() {
+			assertThat(signature.name())
+				.isEmpty();
+		}
+
+		@Test
 		void runtimeResultType() {
 			assertThat(signature.runtimeResultType(loader))
 				.isEqualTo(long.class);
+		}
+
+		@Test
+		void runtimeDeclaredExceptionTypes() {
+			assertThat(signature.runtimeDeclaredExceptionTypes(loader))
+				.isEmpty();
+		}
+	}
+	@Nested
+	class Named {
+		private static final String SIGNATURE_STRING =
+			"<F:Ljava/lang/Number;>testMethod(Ljava/lang/Class<TF;>;Ljava/lang/String;)TF;";
+		private final MethodSignature signature = MethodSignature.read(SIGNATURE_STRING);
+
+		@Test
+		void name() {
+			assertThat(signature.name())
+				.isEqualTo("testMethod");
+		}
+
+		@Test
+		void runtimeParameterTypes() {
+			assertThat(signature.runtimeParameterTypes(loader))
+				.containsExactly(Class.class, String.class);
+		}
+
+		@Test
+		void runtimeResultType() {
+			assertThat(signature.runtimeResultType(loader))
+				.isEqualTo(Number.class);
 		}
 
 		@Test
@@ -42,6 +78,12 @@ class MethodSignatureTest {
 		private static final String SIGNATURE_STRING =
 			"<F:Ljava/lang/Number;>(Ljava/lang/Class<TF;>;Ljava/lang/String;)TF;";
 		private final MethodSignature signature = MethodSignature.read(SIGNATURE_STRING);
+
+		@Test
+		void name() {
+			assertThat(signature.name())
+				.isEmpty();
+		}
 
 		@Test
 		void runtimeParameterTypes() {
@@ -75,6 +117,12 @@ class MethodSignatureTest {
 		}
 
 		@Test
+		void name() {
+			assertThat(signature.name())
+				.isEmpty();
+		}
+
+		@Test
 		void runtimeResultType() {
 			assertThat(signature.runtimeResultType(loader))
 				.isEqualTo(Function.class);
@@ -98,6 +146,12 @@ class MethodSignatureTest {
 			assertThatThrownBy(() -> signature.runtimeParameterTypes(loader))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessage("Cannot resolve parameter S");
+		}
+
+		@Test
+		void name() {
+			assertThat(signature.name())
+				.isEmpty();
 		}
 
 		@Test
@@ -126,6 +180,12 @@ class MethodSignatureTest {
 		}
 
 		@Test
+		void name() {
+			assertThat(signature.name())
+				.isEmpty();
+		}
+
+		@Test
 		void runtimeResultType() {
 			assertThat(signature.runtimeResultType(loader))
 				.isEqualTo(Function.class);
@@ -148,6 +208,12 @@ class MethodSignatureTest {
 		void runtimeParameterTypes() {
 			assertThat(signature.runtimeParameterTypes(loader))
 				.containsExactly(Long.class);
+		}
+
+		@Test
+		void name() {
+			assertThat(signature.name())
+				.isEmpty();
 		}
 
 		@Test
@@ -176,6 +242,12 @@ class MethodSignatureTest {
 		}
 
 		@Test
+		void name() {
+			assertThat(signature.name())
+				.isEmpty();
+		}
+
+		@Test
 		void runtimeResultType() {
 			assertThat(signature.runtimeResultType(loader))
 				.isEqualTo(void.class);
@@ -198,6 +270,12 @@ class MethodSignatureTest {
 		void runtimeParameterTypes() {
 			assertThat(signature.runtimeParameterTypes(loader))
 				.containsExactly(Long.class);
+		}
+
+		@Test
+		void name() {
+			assertThat(signature.name())
+				.isEmpty();
 		}
 
 		@Test
@@ -226,6 +304,11 @@ class MethodSignatureTest {
 		void runtimeParameterTypes() {
 			assertThat(signature.runtimeParameterTypes(loader))
 				.containsExactly(BiFunction.class, Function.class, Class.class);
+		}
+		@Test
+		void name() {
+			assertThat(signature.name())
+				.isEmpty();
 		}
 
 		@Test
