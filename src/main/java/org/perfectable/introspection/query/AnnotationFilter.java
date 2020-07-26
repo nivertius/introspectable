@@ -25,7 +25,7 @@ public interface AnnotationFilter {
 	 *
 	 * @param annotationClass type of annotation to look for
 	 * @param <A> annotation type
-	 * @return filter for single annotation of speciefied type
+	 * @return filter for single annotation of specified type
 	 */
 	static <A extends Annotation> Singular<A> single(Class<A> annotationClass) {
 		return AnnotationFilters.Single.create(annotationClass);

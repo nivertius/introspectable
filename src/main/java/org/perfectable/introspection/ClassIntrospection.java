@@ -185,7 +185,7 @@ public final class ClassIntrospection<X> {
 	 * <p>Example:
 	 * <pre>
 	 * ClassIntrospection&lt;List&gt; rawIntrospection = ClassIntrospection.of(List.class);
-	 * ClassIntrospection&lt;List&lt;?&gt;&gt; genericntrospection = rawView.adjustWildcards();
+	 * ClassIntrospection&lt;List&lt;?&gt;&gt; genericIntrospection = rawView.adjustWildcards();
 	 * </pre>
 	 *
 	 * <p>This method is equivalent to just casting to parameterized class with wildcards,

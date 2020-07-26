@@ -61,7 +61,7 @@
 			<groupId>com.google.auto.service</groupId>
 			<artifactId>auto-service</artifactId>
 			<optional>true</optional>
-			<!-- compilaton only -->
+			<!-- compilation only -->
 		</dependency>
 
 		<dependency>

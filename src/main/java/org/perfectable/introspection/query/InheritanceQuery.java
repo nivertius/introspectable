@@ -11,7 +11,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * Iterable-like container that allows access to supertypes of a class.
  *
- * <p>This of course only lists types that are actually defined (transitively) by initially-provided class. Altrough
+ * <p>This of course only lists types that are actually defined (transitively) by initially-provided class. Although
  * wildcard types, type variables might be supertype or supertype of specified type, they are not listed.
  *
  * <p>Instances of this class are immutable, each filtering produces new, modified instance. To obtain query for

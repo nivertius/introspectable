@@ -35,7 +35,7 @@ public interface ParametersFilter {
 	}
 
 	/**
-	 * Creates filter that checks if specified arguments by thier value could be passed to checked executable.
+	 * Creates filter that checks if specified arguments by their value could be passed to checked executable.
 	 *
 	 * @param arguments arguments that would be checked for passing to executable
 	 * @return filter that checks if the executable would accept specified arguments

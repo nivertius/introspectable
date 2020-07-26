@@ -4,7 +4,7 @@ Easier Java reflections.
 
 ## Introduction
 
-Reflections, an access to program elements structure from themselves, although not recommended in applications are
+Reflections, access to program elements structure from themselves, although not recommended in applications are
 essential when creating frameworks. Java has somewhat complicated and verbose ways to do reflections, sometimes to the
 extremes.
 
@@ -122,14 +122,14 @@ Class<?> targetClass =
         .erasure()
 ```
 
-Lets say we have following declarations:
+Let's say we have following declarations:
 
 ```java
 interface MessageConsumer<M extends Message, S extends State> {}
 class LoginMessageConsumer<S extends LoginState> implements MessageConsumer<LoginMessage, S> {}
 ```
 
-Lets say variable `messageConsumer` is of class with erasure `LoginMessageConsumer`. In this case `resolve` allows
+Let's say variable `messageConsumer` is of class with erasure `LoginMessageConsumer`. In this case `resolve` allows
 creating new type that uses same type variable substitution. Expression
 `TypeView.of(Consumer.class).resolve(messageConsumer.getClass())` will produce `TypeView` with synthetic
 parameterized type `MessageConsumer<LoginMessage, S>` because parameter `M` in `MessageConsumer` was substituted
@@ -140,11 +140,11 @@ to be casted onto `ParameterizedType`, first parameter needs to be extracted, ca
 
 ### Proxies
 
-Introspectable adds simple facade for creating proxies. Natively, it supports standard JDK proxies and
+Introspectable adds a simple facade for creating proxies. Natively, it supports standard JDK proxies and
 javassist + objenesis.
 
 Proxies are built by `org.perfectable.introspection.proxy.ProxyBuilder`. It allows creating proxy by chaining
-configuration. After configuration is done, proxies for specific objects can be created by providing
+configuration. After the configuration is done, proxies for specific objects can be created by providing
 `InvocationHandler`:
 
 #### Example: Remoting
@@ -185,8 +185,8 @@ UserService proxy =
 ### Annotation building
 
 Sometimes you just need to get instance of annotation type. Be it library interface which assumes that you will extract
-the annotation from element, or some method call just requires annotation, assuming that you extract. In either case, you
-can build it using `AnnotationBuilder`.
+the annotation from element, or some method call just requires annotation, assuming you extract. In either case, 
+you can build it using `AnnotationBuilder`.
 
 #### Example: Named injection
 
@@ -246,7 +246,8 @@ class FactoryInjector<F, P> {
 
 ### Beans
 
-A lot of code still uses Java Beans as data container. Package `org.perfectable.introspection.bean` helps managing those:
+A lot of code still uses Java Beans as data container. Package `org.perfectable.introspection.bean` helps manage 
+those:
 
 #### Example: Binding form values to bean
 
