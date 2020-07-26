@@ -114,7 +114,7 @@ public final class Property<B extends @NonNull Object, T> {
 	 * @param other bean to set value on
 	 * @throws IllegalStateException when this property is either not readable or not writeable
 	 */
-	public void copy(Bean<B> other) {
+	public void copy(Bean<? extends B> other) {
 		@Nullable T value = get();
 		this.schema.set(other.contents(), value);
 	}
