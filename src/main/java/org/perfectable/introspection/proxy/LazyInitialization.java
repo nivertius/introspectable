@@ -82,7 +82,9 @@ public final class LazyInitialization {
 
 		private final Initializer<? extends T> initializer;
 
-		private transient @MonotonicNonNull T instance;
+		private final Object initializationMonitor = new Object();
+
+		private @MonotonicNonNull T instance;
 
 		static <T extends @NonNull Object> LazyInitializationHandler<T> create(Initializer<? extends T> initializer) {
 			return new LazyInitializationHandler<>(initializer);
@@ -103,8 +105,10 @@ public final class LazyInitialization {
 			if (EXTRACT_INSTANCE_METHOD.equals(method)) {
 				return () -> Optional.ofNullable(instance);
 			}
-			if (this.instance == null) {
-				this.instance = this.initializer.initialize();
+			synchronized (initializationMonitor) {
+				if (this.instance == null) {
+					this.instance = this.initializer.initialize();
+				}
 			}
 			return MethodInvocation.of(method, this.instance, arguments);
 		}
