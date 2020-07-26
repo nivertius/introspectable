@@ -57,6 +57,23 @@ final class Invocations {
 		}
 	}
 
+	static final class Casting<R, S, X extends Throwable> implements Invocation<S, X> {
+		private final Invocation<R, X> parent;
+		private final Class<S> targetCast;
+
+		Casting(Invocation<R, X> parent, Class<S> targetCast) {
+			this.parent = parent;
+			this.targetCast = targetCast;
+		}
+
+		@Override
+		public S invoke() throws X {
+			@SuppressWarnings("assignment.type.incompatible")
+			R result = parent.invoke();
+			return targetCast.cast(result);
+		}
+	}
+
 	private Invocations() {
 		// utility class
 	}

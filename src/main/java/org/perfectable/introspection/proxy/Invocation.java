@@ -30,6 +30,17 @@ public interface Invocation<R, X extends Throwable> {
 	R invoke() throws X;
 
 	/**
+	 * Creates invocation that calls this one, and casts result to specified type.
+	 *
+	 * @param <S> type to cast the result
+	 * @param castedType representation type to cast the result
+	 * @return Invocation that calls this one, and casts result to specified type.
+	 */
+	default <S> Invocation<S, X> casted(Class<S> castedType) {
+		return new Invocations.Casting<>(this, castedType);
+	}
+
+	/**
 	 * Adapts {@link Runnable} to this interface.
 	 *
 	 * @param runnable runnable to run
