@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import kotlin.annotations.jvm.ReadOnly;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -61,6 +62,7 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 	 *
 	 * @return types used as arguments for this parameterized type.
 	 */
+	@ReadOnly
 	@EnsuresNonNull("correctedArguments")
 	public List<TypeView> arguments() {
 		if (correctedArguments == null) {
@@ -89,7 +91,7 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 	 *
 	 * @return interfaces wrapped in {@link TypeView}
 	 */
-	@SuppressWarnings("MutableMethodReturnType")
+	@ReadOnly
 	public List<ParameterizedTypeView> interfaces() {
 		ImmutableList.Builder<ParameterizedTypeView> builder = ImmutableList.builder();
 		for (Type genericInterface : erasure().getGenericInterfaces()) {

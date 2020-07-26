@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import kotlin.annotations.jvm.ReadOnly;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -70,6 +71,7 @@ public final class ClassView<X> extends AbstractTypeView<Class<X>> {
 	 *
 	 * @return variables declared by class
 	 */
+	@ReadOnly
 	public List<TypeVariableView<Class<X>>> parameters() {
 		return Stream.of(type.getTypeParameters())
 			.map(TypeView::of)

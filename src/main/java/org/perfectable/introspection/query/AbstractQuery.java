@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.Iterators;
 import com.google.errorprone.annotations.CompatibleWith;
+import kotlin.annotations.jvm.ReadOnly;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -91,6 +92,7 @@ abstract class AbstractQuery<E extends @NonNull Object, Q extends AbstractQuery<
 		return Optional.of(element);
 	}
 
+	@ReadOnly
 	@Override
 	public Iterator<E> iterator() {
 		return stream().iterator();

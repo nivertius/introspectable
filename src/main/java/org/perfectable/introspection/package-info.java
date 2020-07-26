@@ -14,6 +14,7 @@
 	TypeUseLocation.LOCAL_VARIABLE,
 	TypeUseLocation.IMPLICIT_LOWER_BOUND
 })
+@TypesAreNotNullableByDefault
 package org.perfectable.introspection;
 
 import org.checkerframework.checker.nullness.qual.NonNull;

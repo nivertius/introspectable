@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import kotlin.annotations.jvm.ReadOnly;
+
 /**
  * {@link TypeView} that handles {@link WildcardType}.
  */
@@ -48,6 +50,7 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 	 *
 	 * @return upper bounds of this wildcard, wrapped in {@link TypeView}
 	 */
+	@ReadOnly
 	public Collection<TypeView> upperBounds() {
 		return upperBoundsStream().collect(Collectors.toList());
 	}
@@ -64,6 +67,7 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 	 *
 	 * @return lower bounds of this wildcard, wrapped in {@link TypeView}
 	 */
+	@ReadOnly
 	public Collection<TypeView> lowerBounds() {
 		return lowerBoundsStream().collect(Collectors.toList());
 	}

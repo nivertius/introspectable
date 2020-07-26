@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import kotlin.annotations.jvm.ReadOnly;
 
 /**
  * Interface that allows passing compile-time safe information around.
@@ -217,6 +218,7 @@ public interface FunctionalReference extends Serializable {
 		 * @param index index of parameter to extract, counting from 0
 		 * @return annotations on parameter type
 		 */
+		@ReadOnly
 		Set<Annotation> parameterAnnotations(int index);
 
 		/**

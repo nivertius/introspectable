@@ -3,5 +3,7 @@
  *
  * <p>Use {@link org.perfectable.introspection.proxy.ProxyBuilder} as an entry point.
  */
+@TypesAreNotNullableByDefault
 package org.perfectable.introspection.proxy;
 
+import org.perfectable.introspection.TypesAreNotNullableByDefault;
