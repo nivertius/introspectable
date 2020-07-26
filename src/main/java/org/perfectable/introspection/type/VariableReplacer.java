@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 
+@FunctionalInterface
 interface VariableReplacer {
 	static VariableReplacer map(ImmutableMap<TypeVariable<? extends Class<?>>, Type> substitutions) {
 		return new ForMap(substitutions);

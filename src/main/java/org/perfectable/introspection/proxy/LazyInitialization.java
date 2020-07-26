@@ -20,6 +20,7 @@ public final class LazyInitialization {
 	 *
 	 * @param <T> type of actual delegation target.
 	 */
+	@SuppressWarnings("InterfaceMayBeAnnotatedFunctional")
 	public interface Proxy<T> {
 		/**
 		 * Extracts delegation target.

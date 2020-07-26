@@ -385,6 +385,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		}
 	}
 
+	@FunctionalInterface
 	private interface TypeLoader {
 		Class<?> load(String typeName) throws ClassNotFoundException;
 	}
