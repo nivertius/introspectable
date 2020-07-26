@@ -48,18 +48,18 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 			case MethodHandleInfo.REF_invokeVirtual:
 				switch (serializedForm.getCapturedArgCount()) {
 					case 0:
-						return new OfInstanceMethod(serializedForm, classLoader);
+						return OfInstanceMethod.fromSerializedLambda(serializedForm, classLoader);
 					case 1:
-						return new OfBoundMethod(serializedForm, classLoader);
+						return OfBoundMethod.fromSerializedLambda(serializedForm, classLoader);
 					default:
 						throw new AssertionError("Illegal number of captures for invokevirtual");
 				}
 			case MethodHandleInfo.REF_invokeStatic:
-				return new OfStaticMethod(serializedForm, classLoader);
+				return OfStaticMethod.fromSerializedLambda(serializedForm, classLoader);
 			case MethodHandleInfo.REF_invokeSpecial:
-				return new OfLambda(serializedForm, classLoader);
+				return OfLambda.fromSerializedLambda(serializedForm, classLoader);
 			case MethodHandleInfo.REF_newInvokeSpecial:
-				return new OfConstructorReference(serializedForm, classLoader);
+				return OfConstructorReference.fromSerializedLambda(serializedForm, classLoader);
 			default:
 				throw new AssertionError("Illegal MethodHandleInfo for lambda");
 		}
@@ -75,16 +75,12 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		throw new IllegalStateException("Interface implementation is not a constructor reference");
 	}
 
-	protected final SerializedLambda serializedForm;
 	protected final Class<?> implementationClass;
 	protected final Class<?> capturingType;
 
-	FunctionalReferenceIntrospection(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
-		this.serializedForm = serializedForm;
-		String declaringTypeName = formatClassName(serializedForm.getImplClass());
-		String capturingClassName = formatClassName(serializedForm.getCapturingClass());
-		this.capturingType = classLoader.loadSafe(capturingClassName);
-		this.implementationClass = classLoader.loadSafe(declaringTypeName);
+	FunctionalReferenceIntrospection(Class<?> implementationClass, Class<?> capturingType) {
+		this.implementationClass = implementationClass;
+		this.capturingType = capturingType;
 	}
 
 	private static String formatClassName(String capturingClass) {
@@ -108,20 +104,33 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		checkArgument(number < parametersCount(), "Executable has no parameter with index %s", number);
 	}
 
+	static Class<?> findImplementationClass(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
+		return classLoader.loadSafe(formatClassName(serializedForm.getImplClass()));
+	}
+
+	static Class<?> findCapturingType(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
+		return classLoader.loadSafe(formatClassName(serializedForm.getCapturingClass()));
+	}
+
+	static Method findImplementationMethod(SerializedLambda serializedForm,
+										   ClassLoaderIntrospection classLoader, Class<?> implementationClass) {
+		String methodName = serializedForm.getImplMethodName();
+		MethodSignature signature = MethodSignature.read(serializedForm.getImplMethodSignature());
+		return MethodQuery.of(implementationClass)
+			.named(methodName)
+			.parameters(ParametersFilter.typesExact(signature.runtimeParameterTypes(classLoader)))
+			.returning(TypeFilter.exact(signature.runtimeResultType(classLoader)))
+			.notOverridden()
+			.asAccessible()
+			.unique();
+	}
+
 	private abstract static class OfMethod extends FunctionalReferenceIntrospection {
 		protected final Method implementationMethod;
 
-		OfMethod(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
-			super(serializedForm, classLoader);
-			String methodName = serializedForm.getImplMethodName();
-			MethodSignature signature = MethodSignature.read(serializedForm.getImplMethodSignature());
-			implementationMethod = MethodQuery.of(implementationClass)
-				.named(methodName)
-				.parameters(ParametersFilter.typesExact(signature.runtimeParameterTypes(classLoader)))
-				.returning(TypeFilter.exact(signature.runtimeResultType(classLoader)))
-				.notOverridden()
-				.asAccessible()
-				.unique();
+		OfMethod(Method implementationMethod, Class<?> implementationClass, Class<?> captureType) {
+			super(implementationClass, captureType);
+			this.implementationMethod = implementationMethod;
 		}
 
 		@Override
@@ -156,8 +165,16 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	}
 
 	private static final class OfInstanceMethod extends OfMethod {
-		OfInstanceMethod(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
-			super(serializedForm, classLoader);
+		static OfInstanceMethod fromSerializedLambda(SerializedLambda serializedForm,
+													 ClassLoaderIntrospection classLoader) {
+			Class<?> implementationClass = findImplementationClass(serializedForm, classLoader);
+			Class<?> capturingType = findCapturingType(serializedForm, classLoader);
+			Method implementationMethod = findImplementationMethod(serializedForm, classLoader, implementationClass);
+			return new OfInstanceMethod(implementationMethod, implementationClass, capturingType);
+		}
+
+		OfInstanceMethod(Method implementationMethod, Class<?> implementationClass, Class<?> capturingType) {
+			super(implementationMethod, implementationClass, capturingType);
 		}
 
 		@Override
@@ -195,20 +212,40 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	}
 
 	private static final class OfBoundMethod extends OfMethod {
-		OfBoundMethod(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
-			super(serializedForm, classLoader);
+		private final Object boundInstance;
+
+		static OfBoundMethod fromSerializedLambda(SerializedLambda serializedForm,
+												  ClassLoaderIntrospection classLoader) {
+			Object boundInstance = serializedForm.getCapturedArg(0);
+			Class<?> implementationClass = findImplementationClass(serializedForm, classLoader);
+			Class<?> capturingType = findCapturingType(serializedForm, classLoader);
+			Method implementationMethod = findImplementationMethod(serializedForm, classLoader, implementationClass);
+			return new OfBoundMethod(boundInstance, implementationMethod, implementationClass, capturingType);
+		}
+
+		OfBoundMethod(Object boundInstance, Method implementationMethod, Class<?> implementationClass,
+							 Class<?> capturingType) {
+			super(implementationMethod, implementationClass, capturingType);
+			this.boundInstance = boundInstance;
 		}
 
 		@Override
 		public <T> T visit(FunctionalReference.Visitor<T> visitor) {
-			Object boundInstance = serializedForm.getCapturedArg(0);
 			return visitor.visitBound(implementationMethod, boundInstance);
 		}
 	}
 
 	private static final class OfStaticMethod extends OfMethod {
-		OfStaticMethod(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
-			super(serializedForm, classLoader);
+		static FunctionalReferenceIntrospection fromSerializedLambda(
+			SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
+			Class<?> implementationClass = findImplementationClass(serializedForm, classLoader);
+			Class<?> capturingType = findCapturingType(serializedForm, classLoader);
+			Method implementationMethod = findImplementationMethod(serializedForm, classLoader, implementationClass);
+			return new OfStaticMethod(implementationMethod, implementationClass, capturingType);
+		}
+
+		private OfStaticMethod(Method implementationMethod, Class<?> implementationClass, Class<?> capturingType) {
+			super(implementationMethod, implementationClass, capturingType);
 		}
 
 		@Override
@@ -220,14 +257,24 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	private static final class OfLambda extends OfMethod {
 		private final ImmutableList<Object> captures;
 
-		OfLambda(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
-			super(serializedForm, classLoader);
-			ImmutableList.Builder<Object> result = ImmutableList.builder();
-			for (int i = 0; i < this.serializedForm.getCapturedArgCount(); i++) {
-				Object capturedArg = this.serializedForm.getCapturedArg(i);
-				result.add(capturedArg);
+		static FunctionalReferenceIntrospection fromSerializedLambda(SerializedLambda serializedForm,
+																	 ClassLoaderIntrospection classLoader) {
+			Class<?> implementationClass = findImplementationClass(serializedForm, classLoader);
+			Class<?> capturingType = findCapturingType(serializedForm, classLoader);
+			Method implementationMethod = findImplementationMethod(serializedForm, classLoader, implementationClass);
+			ImmutableList.Builder<Object> capturesBuilder = ImmutableList.builder();
+			for (int i = 0; i < serializedForm.getCapturedArgCount(); i++) {
+				Object capturedArg = serializedForm.getCapturedArg(i);
+				capturesBuilder.add(capturedArg);
 			}
-			this.captures = result.build();
+			ImmutableList<Object> captures = capturesBuilder.build();
+			return new OfLambda(captures, implementationMethod, implementationClass, capturingType);
+		}
+
+		private OfLambda(ImmutableList<Object> captures, Method implementationMethod, Class<?> implementationClass,
+						 Class<?> capturingType) {
+			super(implementationMethod, implementationClass, capturingType);
+			this.captures = captures;
 		}
 
 		@Override
@@ -246,13 +293,22 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	private static final class OfConstructorReference extends FunctionalReferenceIntrospection {
 		private final Constructor<?> implementationConstructor;
 
-		OfConstructorReference(SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
-			super(serializedForm, classLoader);
-			MethodSignature signature = MethodSignature.read(this.serializedForm.getInstantiatedMethodType());
-			implementationConstructor = ConstructorQuery.of(implementationClass)
+		static FunctionalReferenceIntrospection fromSerializedLambda(SerializedLambda serializedForm,
+																			ClassLoaderIntrospection classLoader) {
+			MethodSignature signature = MethodSignature.read(serializedForm.getInstantiatedMethodType());
+			Class<?> implementationClass = findImplementationClass(serializedForm, classLoader);
+			Class<?> capturingType = findCapturingType(serializedForm, classLoader);
+			Constructor<?> implementationConstructor = ConstructorQuery.of(implementationClass)
 				.parameters(signature.runtimeParameterTypes(classLoader))
 				.asAccessible()
 				.unique();
+			return new OfConstructorReference(implementationConstructor, implementationClass, capturingType);
+		}
+
+		private OfConstructorReference(Constructor<?> implementationConstructor,
+									   Class<?> implementationClass, Class<?> capturingType) {
+			super(implementationClass, capturingType);
+			this.implementationConstructor = implementationConstructor;
 		}
 
 		@SuppressWarnings("MultipleStringLiterals")
