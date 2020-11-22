@@ -45,5 +45,5 @@ volumes:
     path: /site/build/m2
 
 trigger:
-  branch:
-  - master
+  event:
+  - push
