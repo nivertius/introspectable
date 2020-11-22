@@ -8,24 +8,32 @@ platform:
   arch: arm
 
 workspace:
-  base: /maven/
+  base: /root/maven
+
+clone:
+  disable: true
 
 steps:
+- name: clone
+  image: images.perfectable.org/git-arm32v7:2.13.1-2.26.2-r0
+  commands:
+    - git clone $DRONE_GIT_HTTP_URL .
+    - git checkout $DRONE_COMMIT
 - name: build
   image: arm32v7/maven:3.6-jdk-11-slim
   volumes:
   - name: maven-config
-    path: /root/.m2
+    path: /m2
   commands:
-  - mvn -B deploy -DaltDeploymentRepository=perfectable-snapshots::default::https://maven.perfectable.org/libs-snapshot-local
+  - mvn -B deploy -s /m2/settings.xml -DaltDeploymentRepository=perfectable-snapshots::default::https://maven.perfectable.org/libs-snapshot-local
 - name: cleanup-snapshots
   image: arm32v7/bash:5.0
   volumes:
   - name: maven-config
-    path: /root/.m2
+    path: /m2
   commands:
-  - rm -rf /root/.m2/repository/**/*-SNAPSHOT.*
-  - rm -rf /root/.m2/repository/**/*.lastUpdated
+  - rm -rf /m2/repository/**/*-SNAPSHOT.*
+  - rm -rf /m2/repository/**/*.lastUpdated
   when:
     status:
     - success
