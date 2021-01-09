@@ -1,6 +1,7 @@
 package org.perfectable.introspection.proxy;
 
 import org.perfectable.introspection.ObjectMethods;
+import org.perfectable.restricted.Restricted;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -15,10 +16,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
-// THIS IS NOT A PUBLIC API: class must be public because of ServiceLoader
 @SuppressWarnings("javadoc")
 @Immutable
 @AutoService(ProxyService.class)
+@Restricted(use = Restricted.Use.NONE)
 public final class JdkProxyService implements ProxyService {
 	private static final Set<Feature> SUPPORTED_FEATURES = EnumSet.noneOf(Feature.class);
 

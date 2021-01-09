@@ -1,6 +1,7 @@
 package org.perfectable.introspection.proxy;
 
 import org.perfectable.introspection.ObjectMethods;
+import org.perfectable.restricted.Restricted;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -20,10 +21,10 @@ import org.objenesis.ObjenesisStd;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
-// THIS IS NOT A PUBLIC API: class must be public because of ServiceLoader
 @SuppressWarnings("javadoc")
 @Immutable
 @AutoService(ProxyService.class)
+@Restricted(use = Restricted.Use.NONE)
 public final class JavassistProxyService implements ProxyService {
 
 	private static final ObjenesisStd OBJENESIS = new ObjenesisStd();

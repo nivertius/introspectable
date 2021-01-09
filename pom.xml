@@ -37,8 +37,18 @@
 		<tag>HEAD</tag>
 		<url>https://source.perfectable.org/nivertius/introspectable</url>
 	</scm>
+	
+	<properties>
+		<version.restricted>1.0.0-SNAPSHOT</version.restricted>
+	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.perfectable.restricted</groupId>
+			<artifactId>restricted-annotations</artifactId>
+			<version>${version.restricted}</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
@@ -64,6 +74,13 @@
 		<dependency>
 			<groupId>com.google.auto.service</groupId>
 			<artifactId>auto-service</artifactId>
+			<optional>true</optional>
+			<!-- compilation only -->
+		</dependency>
+		<dependency>
+			<groupId>org.perfectable.restricted</groupId>
+			<artifactId>restricted-processor</artifactId>
+			<version>${version.restricted}</version>
 			<optional>true</optional>
 			<!-- compilation only -->
 		</dependency>
@@ -125,12 +142,18 @@
 					<configuration>
 						<annotationProcessors combine.children="append">
 							<processor>com.google.auto.service.processor.AutoServiceProcessor</processor>
+							<processor>org.perfectable.restricted.processor.RestrictedAnnotationProcessor</processor>
 						</annotationProcessors>
 						<annotationProcessorPaths combine.children="append">
 							<path>
 								<groupId>com.google.auto.service</groupId>
 								<artifactId>auto-service</artifactId>
 								<version>${version.autoservice}</version>
+							</path>
+							<path>
+								<groupId>org.perfectable.restricted</groupId>
+								<artifactId>restricted-processor</artifactId>
+								<version>${version.restricted}</version>
 							</path>
 						</annotationProcessorPaths>
 					</configuration>
