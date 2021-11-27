@@ -1,12 +1,17 @@
-package org.perfectable.introspection.type;
+package org.perfectable.introspection.type; // SUPPRESS FILE FileLength
 
+import org.perfectable.introspection.AnnotationBuilder;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -290,7 +295,10 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 			updatedArguments[i] = replacement;
 		}
 		ParameterizedType updated =
-			new SyntheticParameterizedType((Class<?>) type.getRawType(), type.getOwnerType(), updatedArguments);
+			new SyntheticParameterizedType((Class<?>) type.getRawType(),
+				SyntheticAnnotatedType.wrap(type.getOwnerType()),
+				AnnotationContainer.extract(type),
+				SyntheticAnnotatedType.wrap(updatedArguments));
 		return of(updated);
 	}
 
@@ -356,18 +364,41 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 	public static final class Builder {
 		private final Class<?> baseType;
 
-		private @Nullable Type ownerType;
+		private @Nullable SyntheticAnnotatedType ownerType;
 
-		private final Type[] typeArguments;
+		private final SyntheticAnnotatedType[] typeArguments;
+		private final Set<Annotation> annotationSet = new HashSet<>();
 
 		@SuppressWarnings("assignment.type.incompatible")
 		Builder(Class<?> baseType) {
 			this.baseType = baseType;
-			this.ownerType = baseType.getDeclaringClass();
-			// type parameters cannot be just cloned, because it will have array component type TypeParameter,
-			// and we want just Type
-			TypeVariable<? extends Class<?>>[] typeParameters = baseType.getTypeParameters();
-			typeArguments = Arrays.copyOf(typeParameters, typeParameters.length, Type[].class);
+			this.ownerType = SyntheticAnnotatedType.wrap(baseType.getDeclaringClass());
+			this.typeArguments = SyntheticAnnotatedType.wrap(baseType.getTypeParameters());
+		}
+
+		/**
+		 * Adds marker type annotation to generated type.
+		 *
+		 * @param annotationClass annotation class without members to add
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder withTypeAnnotation(Class<Annotation> annotationClass) {
+			return withTypeAnnotation(AnnotationBuilder.marker(annotationClass));
+		}
+
+		/**
+		 * Adds type annotation to generated type.
+		 *
+		 * <p>You can use {@link AnnotationBuilder} to create annotation instances on the fly.
+		 *
+		 * @param annotation annotation to add
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder withTypeAnnotation(Annotation annotation) {
+			annotationSet.add(annotation);
+			return this;
 		}
 
 		/**
@@ -375,11 +406,12 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		 *
 		 * @see ParameterizedType#getOwnerType
 		 * @param newOwnerType new owner type for produced parameterized type
+		 * @param annotations type annotations to be placed on the owner
 		 * @return this, for chaining
 		 */
 		@CanIgnoreReturnValue
-		public Builder withOwner(Type newOwnerType) {
-			ownerType = newOwnerType;
+		public Builder withOwner(Type newOwnerType, Annotation... annotations) {
+			ownerType = SyntheticAnnotatedType.create(newOwnerType, annotations);
 			return this;
 		}
 
@@ -388,19 +420,20 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		 *
 		 * @param parameterName name of parameter to replace
 		 * @param substitute new value type for specified parameter name
+		 * @param annotations type annotations to be placed on the substitute
 		 * @throws IllegalArgumentException when there is no type parameter named with provided name in base class
 		 * @throws IllegalArgumentException when provided type is outside bounds of matching parameter
 		 * @return this, for chaining
 		 */
 		@CanIgnoreReturnValue
-		public Builder withSubstitution(String parameterName, Type substitute) {
+		public Builder withSubstitution(String parameterName, Type substitute, Annotation... annotations) {
 			TypeVariable<? extends Class<?>>[] typeParameters = baseType.getTypeParameters();
 			int parameterNumber = IntStream.range(0, typeParameters.length)
 				.filter(i -> typeParameters[i].getName().equals(parameterName))
 				.findFirst()
 				.orElseThrow(() -> new IllegalArgumentException(
 					String.format("Type %s has no parameter with name %s", baseType, parameterName)));
-			return withSubstitution(parameterNumber, substitute);
+			return withSubstitution(parameterNumber, substitute, annotations);
 		}
 
 		/**
@@ -408,13 +441,14 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		 *
 		 * @param parameterName name of parameter to replace
 		 * @param substitute new value type for specified parameter name
+		 * @param annotations type annotations to be placed on the substitute
 		 * @throws IllegalArgumentException when there is no type parameter named with provided name in base class
 		 * @throws IllegalArgumentException when provided type is outside bounds of matching parameter
 		 * @return this, for chaining
 		 */
 		@CanIgnoreReturnValue
-		public Builder withSubstitution(String parameterName, TypeView substitute) {
-			return withSubstitution(parameterName, substitute.unwrap());
+		public Builder withSubstitution(String parameterName, TypeView substitute, Annotation... annotations) {
+			return withSubstitution(parameterName, substitute.unwrap(), annotations);
 		}
 
 		/**
@@ -424,12 +458,13 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		 *
 		 * @param parameterNumber index of parameter to replace
 		 * @param substitute new value type for specified parameter index
+		 * @param annotations type annotations to be placed on the substitute
 		 * @throws IllegalArgumentException when type parameter index is out of range
 		 * @throws IllegalArgumentException when provided type is outside bounds of matching parameter
 		 * @return this, for chaining
 		 */
 		@CanIgnoreReturnValue
-		public Builder withSubstitution(int parameterNumber, Type substitute) {
+		public Builder withSubstitution(int parameterNumber, Type substitute, Annotation... annotations) {
 			checkArgument(parameterNumber >= 0, "Parameter number must be non-negative");
 			checkArgument(parameterNumber < typeArguments.length,
 				"Type %s has no parameter with index %s", baseType, parameterNumber);
@@ -440,7 +475,7 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 				String message = "Substitute " + substitute + " is outside bound " + exceededBound.get();
 				throw new IllegalArgumentException(message);
 			}
-			typeArguments[parameterNumber] = substitute;
+			typeArguments[parameterNumber] = SyntheticAnnotatedType.create(substitute, annotations);
 			return this;
 		}
 
@@ -451,13 +486,14 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		 *
 		 * @param parameterNumber index of parameter to replace
 		 * @param substitute new value type for specified parameter index
+		 * @param annotations type annotations to be placed on the substitute
 		 * @throws IllegalArgumentException when type parameter index is out of range
 		 * @throws IllegalArgumentException when provided type is outside bounds of matching parameter
 		 * @return this, for chaining
 		 */
 		@CanIgnoreReturnValue
-		public Builder withSubstitution(int parameterNumber, TypeView substitute) {
-			return withSubstitution(parameterNumber, substitute.unwrap());
+		public Builder withSubstitution(int parameterNumber, TypeView substitute, Annotation... annotations) {
+			return withSubstitution(parameterNumber, substitute.unwrap(), annotations);
 		}
 
 		/**
@@ -466,7 +502,9 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		 * @return new custom parameterized type based on previous builder configuration
 		 */
 		public ParameterizedTypeView build() {
-			ParameterizedType parameterizedType = new SyntheticParameterizedType(baseType, ownerType, typeArguments);
+			AnnotationContainer annotations = AnnotationContainer.create(annotationSet);
+			ParameterizedType parameterizedType =
+				new SyntheticParameterizedType(baseType, ownerType, annotations, typeArguments);
 			return new ParameterizedTypeView(parameterizedType);
 		}
 	}

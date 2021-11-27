@@ -1,11 +1,17 @@
 package org.perfectable.introspection.type;
 
+import org.perfectable.introspection.AnnotationBuilder;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -190,7 +196,9 @@ public final class TypeVariableView<D extends GenericDeclaration> extends Abstra
 			return this;
 		}
 		TypeVariable<D> updated =
-			new SyntheticTypeVariable<>(type.getName(), type.getGenericDeclaration(), updatedBounds);
+			new SyntheticTypeVariable<>(type.getName(), type.getGenericDeclaration(),
+				AnnotationContainer.extract((AnnotatedElement) type),
+				SyntheticAnnotatedType.wrap(updatedBounds));
 		return of(updated);
 	}
 
@@ -224,11 +232,37 @@ public final class TypeVariableView<D extends GenericDeclaration> extends Abstra
 	public static final class Builder<D extends GenericDeclaration> {
 		private final D declaration;
 		private final String name;
-		private final List<Type> bounds = new ArrayList<>();
+		private final Set<Annotation> annotationSet = new HashSet<>();
+		private final List<SyntheticAnnotatedType> bounds = new ArrayList<>();
 
 		Builder(String name, D declaration) {
 			this.name = name;
 			this.declaration = declaration;
+		}
+
+		/**
+		 * Adds marker type annotation to generated type.
+		 *
+		 * @param annotationClass annotation class without members to add
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder<D> withTypeAnnotation(Class<Annotation> annotationClass) {
+			return withTypeAnnotation(AnnotationBuilder.marker(annotationClass));
+		}
+
+		/**
+		 * Adds type annotation to generated type.
+		 *
+		 * <p>You can use {@link AnnotationBuilder} to create annotation instances on the fly.
+		 *
+		 * @param annotation annotation to add
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder<D> withTypeAnnotation(Annotation annotation) {
+			annotationSet.add(annotation);
+			return this;
 		}
 
 		/**
@@ -240,11 +274,12 @@ public final class TypeVariableView<D extends GenericDeclaration> extends Abstra
 		 * its first bound, or {@link Object} if there are no bounds.
 		 *
 		 * @param addedBound added bound
+		 * @param annotations type annotations to be placed on bound
 		 * @return this, for chaining
 		 */
 		@CanIgnoreReturnValue
-		public Builder<D> withUpperBound(Type addedBound) {
-			bounds.add(addedBound);
+		public Builder<D> withUpperBound(Type addedBound, Annotation... annotations) {
+			bounds.add(SyntheticAnnotatedType.create(addedBound, annotations));
 			return this;
 		}
 
@@ -255,8 +290,9 @@ public final class TypeVariableView<D extends GenericDeclaration> extends Abstra
 		 */
 		public TypeVariableView<D> build() {
 			@SuppressWarnings("assignment.type.incompatible")
-			Type[] finalBounds = bounds.toArray(new Type[0]);
-			TypeVariable<D> typeVariable = new SyntheticTypeVariable<>(name, declaration, finalBounds);
+			SyntheticAnnotatedType[] finalBounds = bounds.toArray(new SyntheticAnnotatedType[0]);
+			AnnotationContainer annotations = AnnotationContainer.create(annotationSet);
+			TypeVariable<D> typeVariable = new SyntheticTypeVariable<>(name, declaration, annotations, finalBounds);
 			return new TypeVariableView<>(typeVariable);
 		}
 	}

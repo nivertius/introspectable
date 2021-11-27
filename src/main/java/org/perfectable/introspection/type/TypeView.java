@@ -1,5 +1,6 @@
 package org.perfectable.introspection.type; // SUPPRESS FILE FileLength
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
@@ -458,11 +459,13 @@ public abstract class TypeView {
 	/**
 	 * Creates generic array type where this type is its component.
 	 *
+	 * @param componentAnnotations type annotations to be placed on the array component type
 	 * @return array type with this as component
 	 */
-	public ArrayTypeView buildArray() {
+	public ArrayTypeView buildArray(Annotation... componentAnnotations) {
 		Type componentType = unwrap();
-		GenericArrayType type = new SyntheticGenericArrayType(componentType);
+		GenericArrayType type = new SyntheticGenericArrayType(SyntheticAnnotatedType.wrap(componentType),
+			AnnotationContainer.create(componentAnnotations));
 		return new ArrayTypeView(type);
 	}
 	

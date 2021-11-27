@@ -1,12 +1,17 @@
 package org.perfectable.introspection.type;
 
+import org.perfectable.introspection.AnnotationBuilder;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,10 +39,14 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 	/**
 	 * Produces view for unbounded wildcard.
 	 *
+	 * @param annotations type annotation placed on wildcard
 	 * @return view of an unbounded wildcard type.
 	 */
-	public static WildcardTypeView unbounded() {
-		return new WildcardTypeView(SyntheticWildcardType.UNBOUNDED);
+	public static WildcardTypeView unbounded(Annotation... annotations) {
+		SyntheticWildcardType type = new SyntheticWildcardType(AnnotationContainer.create(annotations),
+			new SyntheticAnnotatedType[0],
+			new SyntheticAnnotatedType[0]);
+		return new WildcardTypeView(type);
 	}
 
 	/**
@@ -210,7 +219,9 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 			upperBounds.add(Object.class);
 		}
 		Type[] upperBoundsArray = upperBounds.toArray(new Type[0]);
-		SyntheticWildcardType resultType = new SyntheticWildcardType(type.getLowerBounds(), upperBoundsArray);
+		SyntheticWildcardType resultType =
+			new SyntheticWildcardType(AnnotationContainer.EMPTY, SyntheticAnnotatedType.wrap(type.getLowerBounds()),
+			SyntheticAnnotatedType.wrap(upperBoundsArray));
 		return of(resultType);
 	}
 
@@ -228,7 +239,9 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 			&& Arrays.equals(type.getUpperBounds(), newUpperBounds)) {
 			return this;
 		}
-		SyntheticWildcardType newWildcard = new SyntheticWildcardType(newLowerBounds, newUpperBounds);
+		SyntheticWildcardType newWildcard = new SyntheticWildcardType(AnnotationContainer.EMPTY,
+			SyntheticAnnotatedType.wrap(newLowerBounds),
+			SyntheticAnnotatedType.wrap(newUpperBounds));
 		return of(newWildcard);
 	}
 
@@ -248,7 +261,8 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 	}
 
 	Stream<TypeView> lowerBoundsStream() {
-		return Stream.of(type.getLowerBounds()).map(TypeView::of);
+		Type[] lowerBounds = type.getLowerBounds();
+		return Stream.of(lowerBounds).map(TypeView::of);
 	}
 
 	Stream<TypeView> upperBoundsStream() {
@@ -273,10 +287,36 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 	 * bounds were defined.
 	 */
 	public static final class Builder {
-		private final List<Type> lowerBounds = new ArrayList<>();
-		private final List<Type> upperBounds = new ArrayList<>();
+		private final Set<Annotation> annotationSet = new HashSet<>();
+		private final List<SyntheticAnnotatedType> lowerBounds = new ArrayList<>();
+		private final List<SyntheticAnnotatedType> upperBounds = new ArrayList<>();
 
 		Builder() {
+		}
+
+		/**
+		 * Adds marker type annotation to generated type.
+		 *
+		 * @param annotationClass annotation class without members to add
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder withTypeAnnotation(Class<Annotation> annotationClass) {
+			return withTypeAnnotation(AnnotationBuilder.marker(annotationClass));
+		}
+
+		/**
+		 * Adds type annotation to generated type.
+		 *
+		 * <p>You can use {@link AnnotationBuilder} to create annotation instances on the fly.
+		 *
+		 * @param annotation annotation to add
+		 * @return this, for chaining
+		 */
+		@CanIgnoreReturnValue
+		public Builder withTypeAnnotation(Annotation annotation) {
+			annotationSet.add(annotation);
+			return this;
 		}
 
 		/**
@@ -288,11 +328,12 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 		 * its first bound, or {@link Object} if there are no bounds.
 		 *
 		 * @param addedBound bound to add
+		 * @param boundAnnotations type annotations to be placed on the bound
 		 * @return this, for chaining
 		 */
 		@CanIgnoreReturnValue
-		public Builder withLowerBound(Type addedBound) {
-			lowerBounds.add(addedBound);
+		public Builder withLowerBound(Type addedBound, Annotation... boundAnnotations) {
+			lowerBounds.add(SyntheticAnnotatedType.create(addedBound, boundAnnotations));
 			return this;
 		}
 
@@ -304,11 +345,12 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 		 * <p>Bounds will be returned in the same order as added in builder.
 		 *
 		 * @param addedBound bound to add
+		 * @param boundAnnotations type annotations to be placed on the bound
 		 * @return this, for chaining
 		 */
 		@CanIgnoreReturnValue
-		public Builder withUpperBound(Type addedBound) {
-			upperBounds.add(addedBound);
+		public Builder withUpperBound(Type addedBound, Annotation... boundAnnotations) {
+			upperBounds.add(SyntheticAnnotatedType.create(addedBound, boundAnnotations));
 			return this;
 		}
 
@@ -319,10 +361,11 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 		 */
 		public WildcardTypeView build() {
 			@SuppressWarnings("assignment.type.incompatible")
-			Type[] finalLowerBounds = lowerBounds.toArray(new Type[0]);
+			SyntheticAnnotatedType[] finalLowerBounds = lowerBounds.toArray(new SyntheticAnnotatedType[0]);
 			@SuppressWarnings("assignment.type.incompatible")
-			Type[] finalUpperBounds = upperBounds.toArray(new Type[0]);
-			WildcardType type = new SyntheticWildcardType(finalLowerBounds, finalUpperBounds);
+			SyntheticAnnotatedType[] finalUpperBounds = upperBounds.toArray(new SyntheticAnnotatedType[0]);
+			AnnotationContainer annotations = AnnotationContainer.create(annotationSet);
+			WildcardType type = new SyntheticWildcardType(annotations, finalLowerBounds, finalUpperBounds);
 			return new WildcardTypeView(type);
 		}
 	}

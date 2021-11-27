@@ -1,5 +1,6 @@
 package org.perfectable.introspection.type;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -109,9 +110,12 @@ public final class ClassView<X> extends AbstractTypeView<Class<X>> {
 	 */
 	@Override
 	public ParameterizedTypeView asParameterized() {
-		Type[] typeArguments = type.getTypeParameters();
-		@Nullable Class<?> ownerType = type.getEnclosingClass();
-		SyntheticParameterizedType replaced = new SyntheticParameterizedType(type, ownerType, typeArguments);
+		@Nullable SyntheticAnnotatedType ownerType =
+			type.getEnclosingClass() == null ? null : SyntheticAnnotatedType.wrap(type.getEnclosingClass());
+		AnnotationContainer annotations = AnnotationContainer.extract((AnnotatedElement) type);
+		SyntheticAnnotatedType[] annotatedTypeArguments = SyntheticAnnotatedType.wrap(type.getTypeParameters());
+		SyntheticParameterizedType replaced =
+			new SyntheticParameterizedType(type, ownerType, annotations, annotatedTypeArguments);
 		return new ParameterizedTypeView(replaced);
 	}
 
@@ -170,7 +174,9 @@ public final class ClassView<X> extends AbstractTypeView<Class<X>> {
 			throw new IllegalStateException("Type has no array component");
 		}
 		@NonNull Class<?> checkedComponentType = componentType;
-		SyntheticGenericArrayType arrayType = new SyntheticGenericArrayType(checkedComponentType);
+		SyntheticGenericArrayType arrayType =
+			new SyntheticGenericArrayType(SyntheticAnnotatedType.wrap(checkedComponentType),
+				AnnotationContainer.extract((AnnotatedElement) unwrap()));
 		return new ArrayTypeView(arrayType);
 	}
 

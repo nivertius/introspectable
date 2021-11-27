@@ -2,6 +2,7 @@ package org.perfectable.introspection.type;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
+import java.lang.reflect.AnnotatedTypeVariable;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -10,15 +11,18 @@ import java.util.Objects;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-final class SyntheticTypeVariable<D extends GenericDeclaration> implements TypeVariable<D> {
+final class SyntheticTypeVariable<D extends GenericDeclaration> implements TypeVariable<D>, AnnotatedTypeVariable {
 	private final String name;
 	private final D declaration;
-	private final Type[] bounds;
+	private final AnnotationContainer annotations;
+	private final SyntheticAnnotatedType[] bounds;
 
-	SyntheticTypeVariable(String name, D declaration, Type[] bounds) {
+	SyntheticTypeVariable(String name, D declaration, AnnotationContainer annotations,
+						  SyntheticAnnotatedType[] bounds) {
 		this.name = name;
 		this.declaration = declaration;
-		this.bounds = bounds.clone();
+		this.annotations = annotations;
+		this.bounds = bounds;
 	}
 
 	@Override
@@ -33,7 +37,7 @@ final class SyntheticTypeVariable<D extends GenericDeclaration> implements TypeV
 
 	@Override
 	public Type[] getBounds() {
-		return bounds.clone();
+		return SyntheticAnnotatedType.typeCopy(bounds);
 	}
 
 	@Override
@@ -43,22 +47,16 @@ final class SyntheticTypeVariable<D extends GenericDeclaration> implements TypeV
 
 	@Override
 	public AnnotatedType[] getAnnotatedBounds() {
-		return new AnnotatedType[0];
+		return bounds.clone();
 	}
 
-	@Override
-	public <T extends @Nullable Annotation> @Nullable T getAnnotation(Class<T> annotationClass) {
+	public @Nullable AnnotatedType getAnnotatedOwnerType() {
 		return null;
 	}
 
 	@Override
-	public Annotation[] getAnnotations() {
-		return new Annotation[0];
-	}
-
-	@Override
-	public Annotation[] getDeclaredAnnotations() {
-		return new Annotation[0];
+	public Type getType() {
+		return this;
 	}
 
 	@Override
@@ -80,5 +78,40 @@ final class SyntheticTypeVariable<D extends GenericDeclaration> implements TypeV
 	@Override
 	public String toString() {
 		return getTypeName();
+	}
+
+	@Override
+	public boolean isAnnotationPresent(Class<? extends @Nullable Annotation> annotationClass) {
+		return annotations.isAnnotationPresent(annotationClass);
+	}
+
+	@Override
+	public <T extends @Nullable Annotation> @Nullable T getAnnotation(Class<T> annotationClass) {
+		return annotations.getAnnotation(annotationClass);
+	}
+
+	@Override
+	public Annotation[] getAnnotations() {
+		return annotations.getAnnotations();
+	}
+
+	@Override
+	public Annotation[] getDeclaredAnnotations() {
+		return annotations.getDeclaredAnnotations();
+	}
+
+	@Override
+	public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
+		return annotations.getAnnotationsByType(annotationClass);
+	}
+
+	@Override
+	public <T extends Annotation> @Nullable T getDeclaredAnnotation(Class<T> annotationClass) {
+		return annotations.getDeclaredAnnotation(annotationClass);
+	}
+
+	@Override
+	public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
+		return annotations.getDeclaredAnnotationsByType(annotationClass);
 	}
 }

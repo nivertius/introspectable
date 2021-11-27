@@ -176,7 +176,13 @@ public final class ArrayTypeView extends AbstractTypeView<GenericArrayType> {
 	TypeView replaceVariables(VariableReplacer substitutions) {
 		TypeView component = component();
 		TypeView replaced = component.replaceVariables(substitutions);
-		return replaced.equals(component) ? this : of(new SyntheticGenericArrayType(replaced.unwrap()));
+		if (replaced.equals(component)) {
+			return this;
+		}
+		SyntheticGenericArrayType createdReplacement =
+			new SyntheticGenericArrayType(SyntheticAnnotatedType.wrap(replaced.unwrap()),
+				AnnotationContainer.extract(type));
+		return of(createdReplacement);
 	}
 
 	@Override
