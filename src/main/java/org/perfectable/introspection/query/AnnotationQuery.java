@@ -323,7 +323,8 @@ public abstract class AnnotationQuery<A extends Annotation>
 			Class<? extends Annotation> containerType = repeatableAnnotation.value();
 			Method extractionMethod = KNOWN_CONTAINERS.computeIfAbsent(containerType,
 				RepeatableUnroll::findContainerMethod);
-			return parent.typed(containerType).stream()
+			AnnotationQuery<? extends Annotation> typed = parent.typed(containerType);
+			return typed.stream()
 				.flatMap(container -> extractContents(container, extractionMethod))
 				.anyMatch(candidate::equals);
 		}

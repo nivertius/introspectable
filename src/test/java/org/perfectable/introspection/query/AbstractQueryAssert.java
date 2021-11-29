@@ -15,26 +15,28 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.util.Preconditions.checkArgument;
 
-final class AbstractQueryAssert<ELEMENT extends @NonNull Object, MAPPED extends @Nullable Object>
-	extends AbstractObjectAssert<AbstractQueryAssert<ELEMENT, MAPPED>, AbstractQuery<? extends ELEMENT, ?>> {
+//@SuppressWarnings("type.argument.type.incompatible")
+final class AbstractQueryAssert<ELEMENT extends @NonNull Object, MAPPED extends @NonNull Object,
+	QUERY extends AbstractQuery<ELEMENT, QUERY>>
+	extends AbstractObjectAssert<AbstractQueryAssert<ELEMENT, MAPPED, QUERY>, QUERY> {
 
 	private final Iterables iterables = Iterables.instance();
 	private final Function<ELEMENT, ? extends MAPPED> mapper;
 	private final Predicate<? super ELEMENT> filter;
 
-	private AbstractQueryAssert(AbstractQuery<? extends ELEMENT, ?> actual,
+	private AbstractQueryAssert(QUERY actual,
 								Function<ELEMENT, ? extends MAPPED> mapper, Predicate<? super ELEMENT> filter) {
 		super(actual, AbstractQueryAssert.class);
 		this.mapper = mapper;
 		this.filter = filter;
 	}
 
-	static <ELEMENT extends @NonNull Object> AbstractQueryAssert<ELEMENT, ELEMENT> assertThat(
-		AbstractQuery<? extends ELEMENT, ?> actual) {
+	static <ELEMENT extends @NonNull Object, QUERY extends AbstractQuery<ELEMENT, QUERY>> 
+			AbstractQueryAssert<ELEMENT, ELEMENT, QUERY> assertThat(QUERY actual) {
 		return new AbstractQueryAssert<>(actual, Function.identity(), element -> true);
 	}
 
-	AbstractQueryAssert<ELEMENT, MAPPED> isEmpty() {
+	AbstractQueryAssert<ELEMENT, MAPPED, QUERY> isEmpty() {
 		isNotNull();
 		iterables.assertEmpty(info, actual);
 		if (actual.isPresent()) {
@@ -49,7 +51,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, MAPPED extends 
 		return myself;
 	}
 
-	AbstractQueryAssert<ELEMENT, MAPPED> isSingleton(MAPPED onlyElement) {
+	AbstractQueryAssert<ELEMENT, MAPPED, QUERY> isSingleton(MAPPED onlyElement) {
 		isNotNull();
 		containsExactly(onlyElement);
 		hasOption(onlyElement);
@@ -58,7 +60,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, MAPPED extends 
 	}
 
 	@SuppressWarnings("argument.type.incompatible")
-	AbstractQueryAssert<ELEMENT, MAPPED> hasOption(MAPPED onlyElement) {
+	AbstractQueryAssert<ELEMENT, MAPPED, QUERY> hasOption(MAPPED onlyElement) {
 		checkOptionPresent();
 		Optional<? extends ELEMENT> option = actual.option();
 		MAPPED optionValue = option.map(mapper).get();
@@ -69,7 +71,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, MAPPED extends 
 	}
 
 	@SuppressWarnings("argument.type.incompatible")
-	AbstractQueryAssert<ELEMENT, MAPPED> hasUnique(MAPPED onlyElement) {
+	AbstractQueryAssert<ELEMENT, MAPPED, QUERY> hasUnique(MAPPED onlyElement) {
 		isNotNull();
 		try {
 			ELEMENT uniqueResult = this.actual.unique();
@@ -84,14 +86,14 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, MAPPED extends 
 		return myself;
 	}
 
-	AbstractQueryAssert<ELEMENT, MAPPED> doesNotHaveDuplicates() {
+	AbstractQueryAssert<ELEMENT, MAPPED, QUERY> doesNotHaveDuplicates() {
 		iterables.assertDoesNotHaveDuplicates(info, actual);
 		return myself;
 	}
 
 	@SafeVarargs
 	@SuppressWarnings({"varargs", "argument.type.incompatible"})
-	final AbstractQueryAssert<ELEMENT, MAPPED> contains(@Nullable MAPPED... elements) {
+	final AbstractQueryAssert<ELEMENT, MAPPED, QUERY> contains(@Nullable MAPPED... elements) {
 		checkArgument(elements.length > 0, "use isEmpty instead"); // SUPPRESS MultipleStringLiterals
 		List<? extends MAPPED> mapped = convertElements();
 		iterables.assertContains(info, mapped, elements);
@@ -101,7 +103,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, MAPPED extends 
 
 	@SafeVarargs
 	@SuppressWarnings({"varargs", "argument.type.incompatible"})
-	final AbstractQueryAssert<ELEMENT, MAPPED> containsExactly(@Nullable MAPPED... elements) {
+	final AbstractQueryAssert<ELEMENT, MAPPED, QUERY> containsExactly(@Nullable MAPPED... elements) {
 		checkArgument(elements.length > 0, "use isEmpty instead"); // SUPPRESS MultipleStringLiterals
 		List<? extends MAPPED> mapped = convertElements();
 		iterables.assertContainsExactlyInAnyOrder(info, mapped, elements);
@@ -110,7 +112,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, MAPPED extends 
 	}
 
 	@SuppressWarnings("argument.type.incompatible")
-	AbstractQueryAssert<ELEMENT, MAPPED> doesNotContain(@Nullable Object... elements) {
+	AbstractQueryAssert<ELEMENT, MAPPED, QUERY> doesNotContain(@Nullable Object... elements) {
 		iterables.assertDoesNotContain(info, actual, elements);
 		for (@Nullable Object element : elements) {
 			if (actual.contains(element)) {
@@ -120,12 +122,12 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, MAPPED extends 
 		return myself;
 	}
 
-	<X> AbstractQueryAssert<ELEMENT, X> extracting(Function<? super MAPPED, ? extends X> nextMapper) {
+	<X> AbstractQueryAssert<ELEMENT, X, QUERY> extracting(Function<? super MAPPED, ? extends X> nextMapper) {
 		Function<ELEMENT, ? extends X> newMapper = mapper.andThen(nextMapper);
 		return new AbstractQueryAssert<>(actual, newMapper, filter);
 	}
 
-	AbstractQueryAssert<ELEMENT, MAPPED> filteredOn(Predicate<? super ELEMENT> nextFilter) {
+	AbstractQueryAssert<ELEMENT, MAPPED, QUERY> filteredOn(Predicate<? super ELEMENT> nextFilter) {
 		@SuppressWarnings("unchecked")
 		Predicate<? super ELEMENT> newFilter = ((Predicate<ELEMENT>) filter).and(nextFilter);
 		return new AbstractQueryAssert<>(actual, mapper, newFilter);

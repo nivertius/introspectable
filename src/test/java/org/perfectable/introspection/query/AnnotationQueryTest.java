@@ -60,20 +60,20 @@ class AnnotationQueryTest {
 
 	@Test
 	void testSubjectTyped() {
-		AnnotationQuery<?> query = AnnotationQuery.of(Subject.class)
+		AnnotationQuery<Subject.Special> query = AnnotationQuery.of(Subject.class)
 			.typed(Subject.Special.class);
 
-		AbstractQueryAssert.<Annotation>assertThat(query)
+		AbstractQueryAssert.assertThat(query)
 			.isSingleton(SubjectReflection.INSTANCE_SPECIAL)
 			.doesNotContain(EXAMPLE_STRING, SubjectReflection.INSTANCE_OTHER, SubjectReflection.INSTANCE_NULLABLE);
 	}
 
 	@Test
 	void testPredicated() {
-		AnnotationQuery<?> query = AnnotationQuery.of(Subject.class)
+		AnnotationQuery<Annotation> query = AnnotationQuery.of(Subject.class)
 			.filter(annotation -> annotation.annotationType().getSimpleName().charAt(0) == 'O');
 
-		AbstractQueryAssert.<Annotation>assertThat(query)
+		AbstractQueryAssert.assertThat(query)
 			.isSingleton(SubjectReflection.INSTANCE_OTHER)
 			.doesNotContain(EXAMPLE_STRING, SubjectReflection.INSTANCE_SPECIAL, SubjectReflection.INSTANCE_NULLABLE);
 	}
