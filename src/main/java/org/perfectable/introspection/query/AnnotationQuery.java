@@ -377,7 +377,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 				resultArray = (@NonNull Object) extractionMethod.invoke(source);
 			}
 			catch (IllegalAccessException | InvocationTargetException e) {
-				throw new AssertionError(e);
+				throw new LinkageError(e.getMessage(), e);
 			}
 			return IntStream.range(0, Array.getLength(resultArray))
 				.mapToObj(i -> (Annotation) Array.get(resultArray, i));

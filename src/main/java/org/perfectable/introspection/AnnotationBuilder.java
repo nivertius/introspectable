@@ -309,7 +309,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 			return method.invoke(target);
 		}
 		catch (IllegalAccessException | InvocationTargetException e) {
-			throw new AssertionError(e);
+			throw new LinkageError(e.getMessage(), e);
 		}
 	}
 }

@@ -13,6 +13,7 @@ import static org.perfectable.introspection.SimpleReflections.getMethod;
 // SUPPRESS FILE MultipleStringLiterals
 // SUPPRESS FILE MagicNumber
 // SUPPRESS FILE IllegalThrows
+@SuppressWarnings("DoNotCallSuggester")
 class MethodInvocationTest {
 
 	private static final String EXAMPLE_FIRST_ARGUMENT = "firstArgument";

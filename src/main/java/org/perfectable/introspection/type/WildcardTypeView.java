@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.DoNotCall;
+import com.google.errorprone.annotations.InlineMe;
 import kotlin.annotations.jvm.ReadOnly;
 
 /**
@@ -102,6 +104,7 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a wildcard type, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public ParameterizedTypeView asParameterized() throws IllegalStateException {
@@ -116,6 +119,7 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a wildcard type, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public ClassView<?> asClass() throws IllegalStateException {
@@ -130,6 +134,7 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a wildcard type, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public TypeVariableView<?> asVariable() {
@@ -142,6 +147,7 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 	 * @return this, as this is already variable view
 	 * @deprecated the type system already knows this is a variable, and this call does not change the type
 	 */
+	@InlineMe(replacement = "this")
 	@Deprecated
 	@Override
 	public WildcardTypeView asWildcard() {
@@ -156,6 +162,7 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a wildcard type, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public ArrayTypeView asArray() throws IllegalStateException {
@@ -282,7 +289,7 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 		/**
 		 * Adds lower bound to constructed type.
 		 *
-		 * <p>This is equivalent for adding {@code extends X} in code, where @{code X} is added bound.
+		 * <p>This is equivalent for adding {@code extends X} in code, where {@code X} is added bound.
 		 *
 		 * <p>Bounds will be returned in the same order as added in builder. Note that erasure of type variable is
 		 * its first bound, or {@link Object} if there are no bounds.
@@ -299,7 +306,7 @@ public final class WildcardTypeView extends AbstractTypeView<WildcardType> {
 		/**
 		 * Adds upper bound to constructed type.
 		 *
-		 * <p>This is equivalent for adding {@code super X} in code, where @{code X} is added bound.
+		 * <p>This is equivalent for adding {@code super X} in code, where {@code X} is added bound.
 		 *
 		 * <p>Bounds will be returned in the same order as added in builder.
 		 *

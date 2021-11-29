@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.DoNotCall;
+import com.google.errorprone.annotations.InlineMe;
 import kotlin.annotations.jvm.ReadOnly;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -112,6 +114,7 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 	 * @return this, as this is already parameterized view
 	 * @deprecated the type system already knows this is a parameterized type, and this call does not change the type
 	 */
+	@InlineMe(replacement = "this")
 	@Deprecated
 	@Override
 	public ParameterizedTypeView asParameterized() {
@@ -143,6 +146,7 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a parameterized type, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public TypeVariableView<?> asVariable() throws IllegalStateException {
@@ -157,6 +161,7 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a parameterized type, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public WildcardTypeView asWildcard() throws IllegalStateException {

@@ -5,6 +5,9 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
+import com.google.errorprone.annotations.DoNotCall;
+import com.google.errorprone.annotations.InlineMe;
+
 import static com.google.common.base.Preconditions.checkState;
 
 /**
@@ -79,6 +82,7 @@ public final class ArrayTypeView extends AbstractTypeView<GenericArrayType> {
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a array type, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public TypeVariableView<?> asVariable() throws IllegalStateException {
@@ -93,6 +97,7 @@ public final class ArrayTypeView extends AbstractTypeView<GenericArrayType> {
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a array type, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public WildcardTypeView asWildcard() throws IllegalStateException {
@@ -105,6 +110,7 @@ public final class ArrayTypeView extends AbstractTypeView<GenericArrayType> {
 	 * @return this, as this is already array type view
 	 * @deprecated the type system already knows this is a array type, and this call does not change the type
 	 */
+	@InlineMe(replacement = "this")
 	@Deprecated
 	@Override
 	public ArrayTypeView asArray() {
