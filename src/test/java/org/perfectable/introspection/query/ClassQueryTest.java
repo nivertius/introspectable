@@ -18,7 +18,12 @@ class ClassQueryTest {
 	abstract static class Methods {
 		private static final String EXAMPLE_STRING = "testString";
 
-		protected abstract ClassQuery<Object> createQuery();
+		protected abstract ClassQuery<Object> createRawQuery();
+
+		final ClassQuery<Object> createQuery() {
+			return createRawQuery()
+				.notInPackage("groovyjarjarantlr4"); // problematic package with big classes
+		}
 
 		@Test
 		void inPackage() {
@@ -70,7 +75,7 @@ class ClassQueryTest {
 	@Nested
 	class SystemClassLoader extends Methods {
 		@Override
-		protected ClassQuery<Object> createQuery() {
+		protected ClassQuery<Object> createRawQuery() {
 			return ClassQuery.system();
 		}
 	}
@@ -79,7 +84,7 @@ class ClassQueryTest {
 	@Nested
 	class OfClassLoader extends Methods {
 		@Override
-		protected ClassQuery<Object> createQuery() {
+		protected ClassQuery<Object> createRawQuery() {
 			@Nullable ClassLoader classLoader = ClassQueryTest.class.getClassLoader();
 			Assumptions.assumeTrue(classLoader instanceof URLClassLoader);
 			@SuppressWarnings("cast.unsafe")

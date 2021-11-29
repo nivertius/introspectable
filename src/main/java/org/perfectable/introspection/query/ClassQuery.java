@@ -172,6 +172,30 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 	}
 
 	/**
+	 * Restricts query to classes that are <em>not</em> in specified package or its descendants.
+	 *
+	 * <p>This restriction works on class names and gives some speedup when obtaining results of query.
+	 *
+	 * @param excludedPackageName name of the package which will not be included in results
+	 * @return query that returns classes not in specified package
+	 */
+	public ClassQuery<C> notInPackage(String excludedPackageName) {
+		return withClassNameFilter(PackageNamePredicate.of(excludedPackageName).negate());
+	}
+
+	/**
+	 * Restricts query to classes that are <em>not</em> in specified package or its descendants.
+	 *
+	 * <p>This restriction works on class names and gives some speedup when obtaining results of query.
+	 *
+	 * @param excludedPackage package which will not be included in results
+	 * @return query that returns classes not in specified package
+	 */
+	public ClassQuery<C> notInPackage(Package excludedPackage) {
+		return notInPackage(excludedPackage.getName());
+	}
+
+	/**
 	 * Restricts query to classes that matches specified predicate.
 	 *
 	 * <p>This restriction works on loaded classes and gives no speedup when obtaining results of query.
