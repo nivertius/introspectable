@@ -24,6 +24,7 @@ import kotlin.jvm.internal.CallableReference;
 import kotlin.reflect.jvm.internal.KClassImpl;
 import kotlin.reflect.jvm.internal.KFunctionImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.perfectable.introspection.Introspections.introspect;
@@ -60,6 +61,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 			return ofNativeImplementation(marker, writeReplace, classLoader);
 		}
 		else {
+			// SUPPRESS NEXT MultipleStringLiterals
 			throw new IllegalArgumentException("Unsupported functional interface implementation " + marker);
 		}
 	}

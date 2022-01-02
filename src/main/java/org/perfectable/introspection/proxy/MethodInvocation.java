@@ -175,7 +175,7 @@ public final class MethodInvocation<T> implements Invocation {
 	 * @return whatever decomposer returned on its {@link Decomposer#decompose} call
 	 */
 	@CanIgnoreReturnValue
-	public <R> R decompose(Decomposer<? super T, R> decomposer) {
+	public <R extends @Nullable Object> R decompose(Decomposer<? super T, R> decomposer) {
 		return decomposer.decompose(method, receiver, arguments.clone());
 	}
 
