@@ -7,8 +7,7 @@ import org.perfectable.introspection.proxy.ProxyBuilder;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Primitives;
@@ -153,8 +152,11 @@ public final class AnnotationBuilder<A extends Annotation> {
 		checkArgument(method.getDeclaringClass().equals(annotationType),
 			"Extractor should be a reference to method declared by annotation " + annotationType);
 		Class<?> memberType = Primitives.wrap(method.getReturnType());
+		checkArgument(value != null,
+			"Null cannot be provided for member %s of type %s", method.getName(), memberType);
 		checkArgument(memberType.isInstance(value),
-			"Value %s cannot be provided for member %s of type %s", value, method.getName(), memberType);
+			"Value %s (%s) cannot be provided for member %s of type %s", value, value.getClass(),
+			method.getName(), memberType);
 		ImmutableMap<Method, Object> newValueMap = ImmutableMap.<Method, Object>builder()
 			.putAll(valueMap).put(method, value).build();
 		return new AnnotationBuilder<>(annotationType, newValueMap);
@@ -228,9 +230,8 @@ public final class AnnotationBuilder<A extends Annotation> {
 
 		@Override
 		public @Nullable Object handle(MethodInvocation<A> invocation) {
-			MethodInvocation.Decomposer<A, @Nullable Object> decomposer = this::calculateMethodResult;
-			@Nullable Object result = invocation.decompose(decomposer);
-			return result;
+			return invocation.decompose(
+				(MethodInvocation.Decomposer<A, @Nullable Object>) this::calculateMethodResult);
 		}
 
 		private @Nullable Object calculateMethodResult(Method method, @SuppressWarnings("unused") A receiver,
@@ -260,9 +261,12 @@ public final class AnnotationBuilder<A extends Annotation> {
 				return false;
 			}
 			for (Method method : annotationType.getDeclaredMethods()) {
-				@Nullable Object thisValue = valueMap.getOrDefault(method, method.getDefaultValue());
+				Object thisValue = valueMap.getOrDefault(method, method.getDefaultValue());
 				@Nullable Object otherValue = safeInvoke(method, other);
-				if (!Objects.equals(thisValue, otherValue)) {
+				if (otherValue == null) {
+					return false;
+				}
+				if (!memberEquals(thisValue, otherValue)) {
 					return false;
 				}
 			}
@@ -275,9 +279,9 @@ public final class AnnotationBuilder<A extends Annotation> {
 				synchronized (this) {
 					int current = 0;
 					for (Method method : annotationType.getDeclaredMethods()) {
-						Object value = valueMap.getOrDefault(method, method.getDefaultValue());
 						String name = method.getName();
-						current += MEMBER_NAME_HASH_MULTIPLIER * name.hashCode() ^ Objects.hashCode(value);
+						Object value = (@NonNull Object) valueMap.getOrDefault(method, method.getDefaultValue());
+						current += MEMBER_NAME_HASH_MULTIPLIER * name.hashCode() ^ memberHashCode(value);
 					}
 					cachedHashCode = current;
 				}
@@ -285,23 +289,92 @@ public final class AnnotationBuilder<A extends Annotation> {
 			return cachedHashCode;
 		}
 
+		@SuppressWarnings("MultipleStringLiterals")
 		@EnsuresNonNull("cachedRepresentation")
 		private String calculateRepresentation() {
 			if (cachedRepresentation == null) {
-				String elements = valueMap.entrySet().stream()
-					.map(entry -> entry.getKey() + "=" + formatValue(entry.getValue()))
-					.collect(Collectors.joining(", "));
-				cachedRepresentation = "@" + annotationType.getName() + '(' + elements + ')';
+				synchronized (this) {
+					StringBuilder builder = new StringBuilder("@").append(annotationType.getName()).append("(");
+					boolean written = false;
+					for (Method method : annotationType.getDeclaredMethods()) {
+						builder.append(written ? ", " : "");
+						written = true;
+						Object value = (@NonNull Object) valueMap.getOrDefault(method, method.getDefaultValue());
+						builder.append(method.getName()).append("=").append(formatValue(value));
+					}
+					builder.append(")");
+					cachedRepresentation = builder.toString();
+				}
 			}
 			return cachedRepresentation;
 		}
 	}
 
-	private static String formatValue(Object value) {
-		if (value instanceof String) {
-			return String.format("\"%s\"", value);
+
+	@SuppressWarnings({"OverlyComplexMethod", "NeedBraces", "NPathComplexity", "CyclomaticComplexity"})
+	private static int memberHashCode(Object value) {
+		Class<@NonNull ?> valueClass = value.getClass();
+		if (!valueClass.isArray()) return value.hashCode();
+		Class<@Nullable ?> componentType = valueClass.getComponentType();
+		if (componentType.equals(byte.class)) return Arrays.hashCode((byte[]) value);
+		if (componentType.equals(char.class)) return Arrays.hashCode((char[]) value);
+		if (componentType.equals(double.class)) return Arrays.hashCode((double[]) value);
+		if (componentType.equals(float.class)) return Arrays.hashCode((float[]) value);
+		if (componentType.equals(int.class)) return Arrays.hashCode((int[]) value);
+		if (componentType.equals(long.class)) return Arrays.hashCode((long[]) value);
+		if (componentType.equals(short.class)) return Arrays.hashCode((short[]) value);
+		if (componentType.equals(boolean.class)) return Arrays.hashCode((boolean[]) value);
+		return Arrays.hashCode((Object[]) value);
+	}
+
+
+	@SuppressWarnings({"OverlyComplexMethod", "NeedBraces", "NPathComplexity", "CyclomaticComplexity"})
+	private static boolean memberEquals(Object current, Object other) {
+		Class<@NonNull ?> valueClass = current.getClass();
+		if (!valueClass.equals(other.getClass())) {
+			return false;
 		}
+		if (!valueClass.isArray()) return current.equals(other);
+		Class<@Nullable ?> componentType = valueClass.getComponentType();
+		if (componentType.equals(byte.class)) return Arrays.equals((byte[]) current, (byte[]) other);
+		if (componentType.equals(char.class)) return Arrays.equals((char[]) current, (char[]) other);
+		if (componentType.equals(double.class)) return Arrays.equals((double[]) current, (double[]) other);
+		if (componentType.equals(float.class)) return Arrays.equals((float[]) current, (float[]) other);
+		if (componentType.equals(int.class)) return Arrays.equals((int[]) current, (int[]) other);
+		if (componentType.equals(long.class)) return Arrays.equals((long[]) current, (long[]) other);
+		if (componentType.equals(short.class)) return Arrays.equals((short[]) current, (short[]) other);
+		if (componentType.equals(boolean.class)) return Arrays.equals((boolean[]) current, (boolean[]) other);
+		return Arrays.equals((Object[]) current, (Object[]) other);
+	}
+
+	@SuppressWarnings({"OverlyComplexMethod", "NeedBraces", "NPathComplexity", "CyclomaticComplexity"})
+	private static String formatValue(Object value) {
+		if (value instanceof String) return String.format("\"%s\"", value);
+		if (value instanceof byte[]) return Arrays.toString((byte[]) value);
+		if (value instanceof char[]) return Arrays.toString((char[]) value);
+		if (value instanceof double[]) return Arrays.toString((double[]) value);
+		if (value instanceof float[]) return Arrays.toString((float[]) value);
+		if (value instanceof int[]) return Arrays.toString((int[]) value);
+		if (value instanceof long[]) return Arrays.toString((long[]) value);
+		if (value instanceof short[]) return Arrays.toString((short[]) value);
+		if (value instanceof boolean[]) return Arrays.toString((boolean[]) value);
+		if (value instanceof Object[]) return arrayFormat((Object[]) value);
 		return value.toString();
+	}
+
+	@SuppressWarnings("MultipleStringLiterals")
+	private static String arrayFormat(Object[] value) {
+		StringBuilder builder = new StringBuilder("{");
+		boolean written = false;
+		for (Object element : value) {
+			if (written) {
+				builder.append(", ");
+			}
+			written = true;
+			builder.append(formatValue(element));
+		}
+		builder.append("}");
+		return builder.toString();
 	}
 
 	private static @Nullable Object safeInvoke(Method method, Object target) {
