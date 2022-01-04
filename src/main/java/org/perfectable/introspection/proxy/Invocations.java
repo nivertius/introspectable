@@ -17,7 +17,7 @@ final class Invocations {
 		}
 	}
 
-	static final class Throwing<X extends Throwable> implements Invocation<Void, X> {
+	static final class Throwing<X extends Exception> implements Invocation<Void, X> {
 		private final Supplier<X> thrownSupplier;
 
 		Throwing(Supplier<X> thrownSupplier) {
@@ -57,7 +57,7 @@ final class Invocations {
 		}
 	}
 
-	static final class Casting<R, S, X extends Throwable> implements Invocation<S, X> {
+	static final class Casting<R, S, X extends Exception> implements Invocation<S, X> {
 		private final Invocation<R, X> parent;
 		private final Class<S> targetCast;
 

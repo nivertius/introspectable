@@ -14,7 +14,7 @@ package org.perfectable.introspection.proxy;
  * @see MethodInvocation
  */
 @FunctionalInterface
-public interface InvocationHandler<R, X extends Throwable, I extends Invocation<?, ?>> {
+public interface InvocationHandler<R, X extends Exception, I extends Invocation<?, ?>> {
 
 	/**
 	 * Catches invocation executed on proxy and returns result that should be passed to the client.

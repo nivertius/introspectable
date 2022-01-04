@@ -49,7 +49,7 @@ public final class InvocationHandlerBuilder<T> {
 	 * @return Binder that will produce partially configured builder with specified method configured.
 	 */
 	@SuppressWarnings("FunctionalInterfaceClash")
-	public <X extends Throwable>
+	public <X extends Exception>
 		Binder.Replacing<T, Signatures.Procedure1<T, X>> bind(Signatures.Procedure1<T, X> reference) {
 		return bindReplacement(reference);
 	}
@@ -63,7 +63,7 @@ public final class InvocationHandlerBuilder<T> {
 	 * @return Binder that will produce partially configured builder with specified method configured.
 	 */
 	@SuppressWarnings("FunctionalInterfaceClash")
-	public <P1, X extends Throwable>
+	public <P1, X extends Exception>
 		Binder.Replacing<T, Signatures.Procedure2<T, P1, X>> bind(Signatures.Procedure2<T, P1, X> reference) {
 		return bindReplacement(reference);
 	}
@@ -77,7 +77,7 @@ public final class InvocationHandlerBuilder<T> {
 	 * @return Binder that will produce partially configured builder with specified method configured.
 	 */
 	@SuppressWarnings("FunctionalInterfaceClash")
-	public <R, X extends Throwable>
+	public <R, X extends Exception>
 		Binder.Replacing<T, Signatures.Function1<R, T, X>> bind(Signatures.Function1<R, T, X> reference) {
 		return bindReplacement(reference);
 	}
@@ -93,7 +93,7 @@ public final class InvocationHandlerBuilder<T> {
 	 * @return Binder that will produce partially configured builder with specified method configured.
 	 */
 	@SuppressWarnings("FunctionalInterfaceClash")
-	public <R, P1, X extends Throwable>
+	public <R, P1, X extends Exception>
 		Binder.Replacing<T, Signatures.Function2<R, T, P1, X>> bind(Signatures.Function2<R, T, P1, X> reference) {
 		return bindReplacement(reference);
 	}
@@ -124,9 +124,9 @@ public final class InvocationHandlerBuilder<T> {
 	 * @return Invocation handler configured from this builder
 	 */
 	public InvocationHandler<?, ?, MethodInvocation<T>> build() {
-		return new InvocationHandler<@Nullable Object, Throwable, MethodInvocation<T>>() {
+		return new InvocationHandler<@Nullable Object, Exception, MethodInvocation<T>>() {
 			@Override
-			public @Nullable Object handle(MethodInvocation<T> invocation) throws Throwable {
+			public @Nullable Object handle(MethodInvocation<T> invocation) throws Exception {
 				InvocationHandler<?, ?, MethodInvocation<T>> replacement =
 					invocation.decompose((method, receiver, arguments) -> mapping.getOrDefault(method, fallback));
 				return replacement.handle(invocation);
@@ -146,7 +146,8 @@ public final class InvocationHandlerBuilder<T> {
 	}
 
 	@SuppressWarnings("PMD.UnusedPrivateMethod") // false positive
-	private <R extends Signatures.Curryable<T, ? extends Signatures.InvocationConvertible<?, ?>> & FunctionalReference>
+	private <R extends Signatures.HeadCurryable<T, ? extends Signatures.InvocationConvertible<?, ?>>
+					& FunctionalReference>
 	Binder.Replacing<T, R> bindReplacement(R target) {
 		Method method = target.introspect().referencedMethod();
 		return replacement -> delegateTo(method, replacement);
@@ -181,7 +182,7 @@ public final class InvocationHandlerBuilder<T> {
 		 * @param <T> type of proxy
 		 * @param <F> method signature to be accepted
 		 */
-		interface Replacing<T, F extends Signatures.Curryable<T, ? extends Signatures.InvocationConvertible<?, ?>>>
+		interface Replacing<T, F extends Signatures.HeadCurryable<T, ? extends Signatures.InvocationConvertible<?, ?>>>
 			extends Binder<T> {
 
 			/**
@@ -191,9 +192,9 @@ public final class InvocationHandlerBuilder<T> {
 			 * @return Invocation handler builder with configured method
 			 */
 			default InvocationHandlerBuilder<T> as(F replacement) {
-				InvocationHandler<@Nullable Object, Throwable, MethodInvocation<T>> handler = invocation -> {
+				InvocationHandler<@Nullable Object, Exception, MethodInvocation<T>> handler = invocation -> {
 					Invocation<?, ?> decompose = invocation.decompose((method, receiver, arguments) -> {
-						Signatures.InvocationConvertible<?, ?> curried = replacement.curry(receiver);
+						Signatures.InvocationConvertible<?, ?> curried = replacement.curryHead(receiver);
 						return curried.toInvocation(arguments);
 					});
 					return decompose.invoke();

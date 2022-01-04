@@ -10,7 +10,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TestHandler<T> implements InvocationHandler<@Nullable Object, Throwable, MethodInvocation<T>> {
+public class TestHandler<T> implements InvocationHandler<@Nullable Object, Exception, MethodInvocation<T>> {
 	private final Queue<Expectance> expected = new ArrayDeque<>();
 
 	static <T> TestHandler<T> create() {
@@ -18,7 +18,7 @@ public class TestHandler<T> implements InvocationHandler<@Nullable Object, Throw
 	}
 
 	@Override
-	public @Nullable Object handle(MethodInvocation<T> invocation) throws Throwable {
+	public @Nullable Object handle(MethodInvocation<T> invocation) throws Exception {
 		return invocation.decompose(this::replaceInvocation).invoke();
 	}
 
@@ -53,19 +53,22 @@ public class TestHandler<T> implements InvocationHandler<@Nullable Object, Throw
 		private final Method expectedMethod;
 		private final @Nullable Object[] expectedArguments;
 
-		private Invocation<?, ?> result = Invocation.throwing(() -> new AssertionError("Result has not been set"));
+		private Invocation<?, ?> result;
 
 		Expectance(@Nullable T expectedProxy, Method expectedMethod, @Nullable Object... expectedArguments) {
 			this.expectedProxy = expectedProxy;
 			this.expectedMethod = expectedMethod;
 			this.expectedArguments = expectedArguments.clone();
+			result = () -> {
+				throw new AssertionError("Result has not been set");
+			};
 		}
 
 		public void andReturn(@Nullable Object value) {
 			this.result = Invocation.returning(value);
 		}
 
-		public void andThrow(Throwable thrown) {
+		public void andThrow(Exception thrown) {
 			this.result = Invocation.throwing(() -> thrown);
 		}
 

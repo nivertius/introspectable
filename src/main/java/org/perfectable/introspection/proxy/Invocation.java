@@ -12,13 +12,17 @@ import java.util.function.Supplier;
  * <p>Depending on the proxy mechanism, this potentially could be any point in program, but most implementations only
  * support capturing method calls into {@link MethodInvocation}.
  *
+ * <p>Upper bound for exception type was chosen to be {@link Exception} rather than {@link Throwable} for convenience
+ * reasons, which should not matter in regular use. Calling unbounded wildcard parameterized type of this class would
+ * require handling of {@link Throwable}, which is something to be avoided.
+ *
  * @param <R> Type of value returned by invocation
  * @param <X> Type of exception thrown by invocation
  * @see InvocationHandler
  * @see MethodInvocation
  */
 @FunctionalInterface
-public interface Invocation<R, X extends Throwable> {
+public interface Invocation<R, X extends Exception> {
 	/**
 	 * Invokes the execution point.
 	 *
@@ -79,11 +83,15 @@ public interface Invocation<R, X extends Throwable> {
 	 *
 	 * <p>Each execution of the invocation will fetch new exception.
 	 *
+	 * <p>Because Invocation throws {@link Exception} and subclasses, this allows only those types, and not just
+	 * general Throwables. If your really need to throw {@link Error} of some kind (ex. {@link AssertionError})
+	 * create a lambda that throws it, it will have type {@code Invocation<?, RuntimeException>}.
+	 *
 	 * @param <X> type of exception thrown
 	 * @param thrownSupplier supplier that will produce exceptions to throw
 	 * @return invocation that throws exception
 	 */
-	static <X extends Throwable> Invocation<?, X> throwing(Supplier<X> thrownSupplier) {
+	static <X extends Exception> Invocation<?, X> throwing(Supplier<X> thrownSupplier) {
 		return new Invocations.Throwing<>(thrownSupplier);
 	}
 

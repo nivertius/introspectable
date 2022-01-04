@@ -40,7 +40,7 @@ import static org.perfectable.introspection.Introspections.introspect;
  *
  * @param <T> Type of method receiver (i.e. {@code this})
  */
-public final class MethodInvocation<T> implements Invocation<@Nullable Object, Throwable> {
+public final class MethodInvocation<T> implements Invocation<@Nullable Object, Exception> {
 	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
 
 	private final Method method;
@@ -122,13 +122,22 @@ public final class MethodInvocation<T> implements Invocation<@Nullable Object, T
 	 * Executes the configured invocation.
 	 *
 	 * @return result of non-throwing invocation. If the method was {@code void}, the result will be null.
-	 * @throws Throwable result of throwing invocation. This will be exactly the exception that method thrown.
+	 * @throws Exception result of throwing invocation. This will be exactly the exception that method thrown.
 	 */
 	@CanIgnoreReturnValue
 	@Override
-	public @Nullable Object invoke() throws Throwable {
+	@SuppressWarnings("IllegalCatch")
+	public @Nullable Object invoke() throws Exception {
 		createHandleIfNeeded();
-		return handle.invoke();
+		try {
+			return handle.invoke();
+		}
+		catch (Exception | Error e) {
+			throw e;
+		}
+		catch (Throwable e) {
+			throw new AssertionError("Caught Throwable that is neither Exception or Error", e);
+		}
 	}
 
 	/**
