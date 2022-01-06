@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -81,6 +82,12 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 	public MethodQuery filter(Predicate<? super Method> filter) {
 		requireNonNull(filter);
 		return new Predicated(this, filter);
+	}
+
+	@Override
+	public MethodQuery sorted(Comparator<? super Method> comparator) {
+		requireNonNull(comparator);
+		return new Sorted(this, comparator);
 	}
 
 	@Override
@@ -224,6 +231,33 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		@Override
 		protected boolean matches(Method candidate) {
 			return this.filter.test(candidate);
+		}
+	}
+
+	private static final class Sorted extends MethodQuery {
+		private final MethodQuery parent;
+		private final Comparator<? super Method> comparator;
+
+		Sorted(MethodQuery parent, Comparator<? super Method> comparator) {
+			this.parent = parent;
+			this.comparator = comparator;
+		}
+
+		@Override
+		public MethodQuery sorted(Comparator<? super Method> nextComparator) {
+			@SuppressWarnings("unchecked")
+			Comparator<@Nullable Object> casted = (Comparator<@Nullable Object>) nextComparator;
+			return new Sorted(parent, this.comparator.thenComparing(casted));
+		}
+
+		@Override
+		public Stream<Method> stream() {
+			return parent.stream().sorted(comparator);
+		}
+
+		@Override
+		public boolean contains(@Nullable Object candidate) {
+			return parent.contains(candidate);
 		}
 	}
 

@@ -4,6 +4,7 @@ import org.perfectable.introspection.PrivilegedActions;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.Comparator;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -103,6 +104,12 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 	public FieldQuery filter(Predicate<? super Field> filter) {
 		requireNonNull(filter);
 		return new Predicated(this, filter);
+	}
+
+	@Override
+	public FieldQuery sorted(Comparator<? super Field> comparator) {
+		requireNonNull(comparator);
+		return new Sorted(this, comparator);
 	}
 
 	/**
@@ -213,6 +220,34 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 			}
 			Field candidateField = (Field) candidate;
 			return matches(candidateField) && parent.contains(candidate);
+		}
+	}
+
+	private static final class Sorted extends FieldQuery {
+		private final FieldQuery parent;
+		private final Comparator<? super Field> comparator;
+
+		Sorted(FieldQuery parent, Comparator<? super Field> comparator) {
+			this.parent = parent;
+			this.comparator = comparator;
+		}
+
+		@Override
+		public FieldQuery sorted(Comparator<? super Field> nextComparator) {
+			@SuppressWarnings("unchecked")
+			Comparator<@Nullable Object> casted = (Comparator<@Nullable Object>) nextComparator;
+			return new Sorted(parent, this.comparator.thenComparing(casted));
+		}
+
+		@Override
+		public Stream<Field> stream() {
+			return this.parent.stream()
+				.sorted(comparator);
+		}
+
+		@Override
+		public boolean contains(@Nullable Object candidate) {
+			return parent.contains(candidate);
 		}
 	}
 

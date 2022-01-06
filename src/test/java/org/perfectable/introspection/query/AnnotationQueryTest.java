@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.Comparator;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,7 @@ class AnnotationQueryTest {
 		AnnotationQuery<Annotation> query = AnnotationQuery.of(Subject.class);
 
 		assertThat(query)
+			.sortsCorrectlyWith(Comparator.comparing(Annotation::toString))
 			.contains(SubjectReflection.INSTANCE_SPECIAL, SubjectReflection.INSTANCE_OTHER,
 				SubjectReflection.REPETITION_CONTAINER)
 			.doesNotContain(EXAMPLE_STRING, SubjectReflection.INSTANCE_NULLABLE, SubjectReflection.REPETITIONS[0]);
@@ -84,6 +86,7 @@ class AnnotationQueryTest {
 			.annotatedWith(Retention.class);
 
 		assertThat(query)
+			.sortsCorrectlyWith(Comparator.comparing(Annotation::toString))
 			.contains(SubjectReflection.INSTANCE_SPECIAL, SubjectReflection.INSTANCE_OTHER,
 				SubjectReflection.REPETITION_CONTAINER)
 			.doesNotContain(EXAMPLE_STRING, SubjectReflection.INSTANCE_NULLABLE);
@@ -95,6 +98,7 @@ class AnnotationQueryTest {
 			.withRepeatableUnroll();
 
 		assertThat(query)
+			.sortsCorrectlyWith(Comparator.comparing(Annotation::toString))
 			.contains(SubjectReflection.INSTANCE_SPECIAL, SubjectReflection.INSTANCE_OTHER,
 				SubjectReflection.REPETITION_CONTAINER,
 				SubjectReflection.REPETITIONS[0], SubjectReflection.REPETITIONS[1])
@@ -108,6 +112,7 @@ class AnnotationQueryTest {
 				.annotatedWith(Target.class);
 
 		assertThat(query)
+			.sortsCorrectlyWith(Comparator.comparing(Annotation::toString))
 			.contains(INSTANCE_DOCUMENTED, INSTANCE_RETENTION)
 			.doesNotContain(SubjectReflection.INSTANCE_SPECIAL);
 	}
@@ -121,6 +126,7 @@ class AnnotationQueryTest {
 		AnnotationQuery<Annotation> query = first.join(second);
 
 		assertThat(query)
+			.sortsCorrectlyWith(Comparator.comparing(Annotation::toString))
 			.contains(SubjectReflection.INSTANCE_SPECIAL, INSTANCE_DOCUMENTED)
 			.doesNotContain(EXAMPLE_STRING, SubjectReflection.INSTANCE_OTHER, INSTANCE_RETENTION,
 				SubjectReflection.INSTANCE_NULLABLE);
@@ -134,6 +140,7 @@ class AnnotationQueryTest {
 			.join(AnnotationQuery.of(Documented.class).typed(Documented.class));
 
 		assertThat(query)
+			.sortsCorrectlyWith(Comparator.comparing(Annotation::toString))
 			.contains(INSTANCE_DOCUMENTED, SubjectReflection.INSTANCE_SPECIAL, INSTANCE_DOCUMENTED)
 			.doesNotContain(EXAMPLE_STRING, SubjectReflection.INSTANCE_OTHER, INSTANCE_RETENTION,
 				SubjectReflection.INSTANCE_NULLABLE);

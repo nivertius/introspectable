@@ -1,5 +1,6 @@
 package org.perfectable.introspection.query;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -46,6 +47,14 @@ abstract class AbstractQuery<E extends @NonNull Object, Q extends AbstractQuery<
 	public boolean contains(@CompatibleWith("E") @Nullable Object candidate) {
 		return Iterators.contains(iterator(), candidate);
 	}
+
+	/**
+	 * Requests specific order of elements returned by this query.
+	 *
+	 * @param comparator how to compare elements of this query for requested order
+	 * @return query returning the same elements as this one, but in specified order
+	 */
+	public abstract Q sorted(Comparator<? super E> comparator);
 
 	/**
 	 * Adapts this query to a Stream.

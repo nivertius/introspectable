@@ -3,6 +3,7 @@ package org.perfectable.introspection.query; // SUPPRESS LENGTH
 import org.perfectable.introspection.ObjectMethods;
 
 import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -29,6 +30,7 @@ class MethodQueryTest {
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
 			.filteredOn(REGISTER_NATIVES_EXCLUSION)
+			.sortsCorrectlyWith(Comparator.comparing(Method::toString))
 			.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT,
 				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
@@ -71,6 +73,7 @@ class MethodQueryTest {
 			MethodQuery.of(Subject.class).nameMatching(Pattern.compile(".*ResultDouble.*"));
 
 		assertThat(extracted)
+			.sortsCorrectlyWith(Comparator.comparing(Method::toString))
 			.containsExactly(SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
@@ -84,6 +87,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.sortsCorrectlyWith(Comparator.comparing(Method::toString))
 			.containsExactly(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
@@ -100,6 +104,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.sortsCorrectlyWith(Comparator.comparing(Method::toString))
 			.containsExactly(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
@@ -220,6 +225,7 @@ class MethodQueryTest {
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
 			.filteredOn(REGISTER_NATIVES_EXCLUSION)
+			.sortsCorrectlyWith(Comparator.comparing(Method::toString))
 			.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT,
 				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
@@ -313,6 +319,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.sortsCorrectlyWith(Comparator.comparing(Method::toString))
 			.containsExactly(ObjectMethods.FINALIZE, ObjectMethods.CLONE,
 				SubjectReflection.METHOD_PROTECTED)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,

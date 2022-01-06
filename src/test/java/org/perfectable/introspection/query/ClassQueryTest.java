@@ -2,6 +2,7 @@ package org.perfectable.introspection.query;
 
 import java.io.Serializable;
 import java.net.URLClassLoader;
+import java.util.Comparator;
 
 import javassist.CtClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -31,6 +32,7 @@ class ClassQueryTest {
 				.inPackage(PACKAGE_NAME);
 
 			assertThat(query)
+				.sortsCorrectlyWith(Comparator.comparing(Class::toString))
 				.contains(Subject.OtherAnnotation.class, AnnotationFilter.class,
 					ClassQueryTest.class, ClassQuery.class, Subject.class, SubjectReflection.class)
 				.doesNotContain(Serializable.class, String.class, CtClass.class, EXAMPLE_STRING);
@@ -53,6 +55,7 @@ class ClassQueryTest {
 				.subtypeOf(AbstractQuery.class);
 
 			assertThat(query)
+				.sortsCorrectlyWith(Comparator.comparing(Class::toString))
 				.contains(ClassQuery.class, MethodQuery.class)
 				.doesNotContain(Serializable.class, AnnotationFilter.class, String.class, CtClass.class,
 					ClassQueryTest.class, Subject.class, SubjectReflection.class, EXAMPLE_STRING);
@@ -64,6 +67,7 @@ class ClassQueryTest {
 				.filter(Class::isInterface);
 
 			assertThat(query)
+				.sortsCorrectlyWith(Comparator.comparing(Class::toString))
 				.contains(AnnotationFilter.class)
 				.doesNotContain(String.class, CtClass.class, ClassQueryTest.class,
 					ClassQuery.class, Subject.class, SubjectReflection.class, EXAMPLE_STRING);
