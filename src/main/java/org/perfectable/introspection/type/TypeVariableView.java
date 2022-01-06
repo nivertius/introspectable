@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.DoNotCall;
+import com.google.errorprone.annotations.InlineMe;
 
 /**
  * {@link TypeView} that handles {@link TypeVariable}.
@@ -81,6 +83,7 @@ public final class TypeVariableView<D extends GenericDeclaration> extends Abstra
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a type variable, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public ParameterizedTypeView asParameterized() throws IllegalStateException {
@@ -95,6 +98,7 @@ public final class TypeVariableView<D extends GenericDeclaration> extends Abstra
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a type variable, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public ClassView<?> asClass() throws IllegalStateException {
@@ -107,6 +111,7 @@ public final class TypeVariableView<D extends GenericDeclaration> extends Abstra
 	 * @return this, as this is already variable view
 	 * @deprecated the type system already knows this is a variable, and this call does not change the type
 	 */
+	@InlineMe(replacement = "this")
 	@Deprecated
 	@Override
 	public TypeVariableView<?> asVariable() {
@@ -121,6 +126,7 @@ public final class TypeVariableView<D extends GenericDeclaration> extends Abstra
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a type variable, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public WildcardTypeView asWildcard() throws IllegalStateException {
@@ -135,6 +141,7 @@ public final class TypeVariableView<D extends GenericDeclaration> extends Abstra
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a type variable, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public ArrayTypeView asArray() throws IllegalStateException {

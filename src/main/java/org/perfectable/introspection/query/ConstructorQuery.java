@@ -4,6 +4,7 @@ import org.perfectable.introspection.PrivilegedActions;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -71,6 +72,11 @@ public abstract class ConstructorQuery<X>
 	public ConstructorQuery<X> filter(Predicate<? super Constructor<X>> filter) {
 		requireNonNull(filter);
 		return new Predicated<>(this, filter);
+	}
+
+	@Override
+	public ConstructorQuery<X> sorted(Comparator<? super Constructor<X>> comparator) {
+		return new Sorted<>(this, comparator);
 	}
 
 	@Override
@@ -166,6 +172,33 @@ public abstract class ConstructorQuery<X>
 		@Override
 		protected boolean matches(Constructor<X> candidate) {
 			return this.filter.test(candidate);
+		}
+	}
+
+	private static final class Sorted<X> extends ConstructorQuery<X> {
+		private final ConstructorQuery<X> parent;
+		private final Comparator<? super Constructor<X>> comparator;
+
+		Sorted(ConstructorQuery<X> parent, Comparator<? super Constructor<X>> comparator) {
+			this.parent = parent;
+			this.comparator = comparator;
+		}
+
+		@Override
+		public ConstructorQuery<X> sorted(Comparator<? super Constructor<X>> nextComparator) {
+			@SuppressWarnings("unchecked")
+			Comparator<@Nullable Object> casted = (Comparator<@Nullable Object>) nextComparator;
+			return new Sorted<>(parent, this.comparator.thenComparing(casted));
+		}
+
+		@Override
+		public Stream<Constructor<X>> stream() {
+			return parent.stream().sorted(comparator);
+		}
+
+		@Override
+		public boolean contains(@Nullable Object candidate) {
+			return parent.contains(candidate);
 		}
 	}
 

@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import static org.perfectable.introspection.SimpleReflections.getField;
 import static org.perfectable.introspection.SimpleReflections.getMethod;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "initialization.field.uninitialized"})
 final class TypeExamples {
 	interface Root<X> {
 		TypeVariable<?> CLASS_FIRST_VARIABLE = Root.class.getTypeParameters()[0];

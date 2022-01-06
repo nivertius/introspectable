@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.errorprone.annotations.DoNotCall;
+import com.google.errorprone.annotations.InlineMe;
 import kotlin.annotations.jvm.ReadOnly;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -121,6 +123,7 @@ public final class ClassView<X> extends AbstractTypeView<Class<X>> {
 	 * @return this, as this is already class view
 	 * @deprecated the type system already knows this is a class, and this call does not change the type
 	 */
+	@InlineMe(replacement = "this")
 	@Deprecated
 	@Override
 	public ClassView<?> asClass() {
@@ -135,6 +138,7 @@ public final class ClassView<X> extends AbstractTypeView<Class<X>> {
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a class view, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public TypeVariableView<?> asVariable() throws IllegalStateException {
@@ -149,6 +153,7 @@ public final class ClassView<X> extends AbstractTypeView<Class<X>> {
 	 * @throws IllegalStateException always
 	 * @deprecated the type system already knows this is a class view, and this call will fail
 	 */
+	@DoNotCall
 	@Deprecated
 	@Override
 	public WildcardTypeView asWildcard() throws IllegalStateException {

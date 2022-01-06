@@ -3,6 +3,7 @@ package org.perfectable.introspection.query;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Comparator;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -32,6 +33,7 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.sortsCorrectlyWith(Comparator.comparing(Field::toString))
 			.containsExactly(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
 				SubjectReflection.PROTECTED_NUMBER_FIELD, SubjectReflection.STATIC_FIELD)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
@@ -64,6 +66,7 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.sortsCorrectlyWith(Comparator.comparing(Field::toString))
 			.containsExactly(SubjectReflection.STRING_FIELD, SubjectReflection.OBJECT_FIELD,
 				SubjectReflection.PROTECTED_NUMBER_FIELD, SubjectReflection.STATIC_FIELD,
 				SubjectReflection.NESTED_INTERFACE_FIELD)
@@ -86,6 +89,7 @@ class FieldQueryTest {
 			FieldQuery.of(Subject.class).nameMatching(Pattern.compile(".*Field"));
 
 		assertThat(extracted)
+			.sortsCorrectlyWith(Comparator.comparing(Field::toString))
 			.containsExactly(SubjectReflection.STRING_FIELD, SubjectReflection.STATIC_FIELD,
 				SubjectReflection.OBJECT_FIELD, SubjectReflection.PROTECTED_NUMBER_FIELD)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
@@ -99,6 +103,7 @@ class FieldQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.sortsCorrectlyWith(Comparator.comparing(Field::toString))
 			.containsExactly(SubjectReflection.STATIC_FIELD)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
@@ -133,6 +138,7 @@ class FieldQueryTest {
 				.annotatedWith(Deprecated.class);
 
 		assertThat(extracted)
+			.sortsCorrectlyWith(Comparator.comparing(Field::toString))
 			.containsExactly(SubjectReflection.OBJECT_FIELD, SubjectReflection.STATIC_FIELD)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}

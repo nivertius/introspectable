@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import static org.perfectable.introspection.query.SubjectReflection.MESSAGE_CONSTRUCTOR_CALLED;
 import static org.perfectable.introspection.query.SubjectReflection.MESSAGE_METHOD_CALLED;
 
-@SuppressWarnings({"unused", "InterfaceWithOnlyStatics", "initialization.static.fields.uninitialized"})
+@SuppressWarnings({"unused", "InterfaceWithOnlyStatics", "initialization.static.field.uninitialized"})
 @Subject.Special
 @Subject.OtherAnnotation
 @Subject.Repetition(1)

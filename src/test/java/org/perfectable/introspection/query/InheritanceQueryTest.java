@@ -3,6 +3,7 @@ package org.perfectable.introspection.query;
 import java.io.Serializable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,6 +42,7 @@ class InheritanceQueryTest {
 		InheritanceQuery<String> chain = InheritanceQuery.of(String.class).onlyInterfaces();
 
 		assertThat(chain)
+			.sortsCorrectlyWith(Comparator.comparing(Class::toString))
 			.contains(Serializable.class, Comparable.class, CharSequence.class);
 	}
 
@@ -49,6 +51,7 @@ class InheritanceQueryTest {
 		InheritanceQuery<String> chain = InheritanceQuery.of(String.class).onlyClasses();
 
 		assertThat(chain)
+			.sortsCorrectlyWith(Comparator.comparing(Class::toString))
 			.containsExactly(String.class, Object.class);
 	}
 
@@ -59,6 +62,7 @@ class InheritanceQueryTest {
 			.filter(type -> type.getPackage().getName().startsWith("org.perfectable"));
 
 		assertThat(chain)
+			.sortsCorrectlyWith(Comparator.comparing(Class::toString))
 			.containsExactly(Leaf.class, Branch.class, Root.class);
 	}
 
@@ -77,6 +81,7 @@ class InheritanceQueryTest {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class);
 
 		assertThat(chain)
+			.sortsCorrectlyWith(Comparator.comparing(Class::toString))
 			.containsExactly(Leaf.class, Branch.class, Root.class, Object.class);
 	}
 
@@ -85,6 +90,7 @@ class InheritanceQueryTest {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class).upToExcluding(Root.class);
 
 		assertThat(chain)
+			.sortsCorrectlyWith(Comparator.comparing(Class::toString))
 			.containsExactly(Leaf.class, Branch.class);
 	}
 
@@ -93,6 +99,7 @@ class InheritanceQueryTest {
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class).upToIncluding(Root.class);
 
 		assertThat(chain)
+			.sortsCorrectlyWith(Comparator.comparing(Class::toString))
 			.containsExactly(Leaf.class, Branch.class, Root.class);
 	}
 }

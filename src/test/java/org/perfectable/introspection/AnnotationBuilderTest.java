@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,8 @@ class AnnotationBuilderTest {
 		AnnotationBuilder<Single> builder = AnnotationBuilder.of(Single.class);
 
 		assertThatThrownBy(() -> builder.with(Single::value, null))
-			.isInstanceOf(IllegalArgumentException.class);
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage("Null cannot be provided for member value of type class java.lang.String");
 	}
 
 	@Test
@@ -60,7 +62,8 @@ class AnnotationBuilderTest {
 
 		assertThatThrownBy(() -> builder.with(extractor, fakeValue))
 			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessage("Value " + fakeValue + " cannot be provided for member value of type class java.lang.String");
+			.hasMessage("Value " + fakeValue + " (" + fakeValue.getClass() + ")"
+				+ " cannot be provided for member value of type class java.lang.String");
 	}
 
 	@Nested
@@ -83,6 +86,8 @@ class AnnotationBuilderTest {
 				.isEqualTo(MarkerHolder.HELD)
 				.isNotEqualTo(SingleHolder.HELD)
 				.isNotEqualTo(MultipleHolder.HELD);
+			assertThat(MarkerHolder.HELD)
+				.isEqualTo(annotation);
 		}
 
 		@Test
@@ -96,6 +101,14 @@ class AnnotationBuilderTest {
 			assertThat(annotation)
 				.returns(0, Object::hashCode)
 				.returns(MarkerHolder.HELD.hashCode(), Object::hashCode);
+		}
+
+		@Test
+		void hasRepresentation() {
+			String expected = String.format("@%s$Marker()", AnnotationBuilderTest.class.getName());
+			assertThat(annotation)
+				.returns(expected, Object::toString)
+				.returns(MarkerHolder.HELD.toString(), Object::toString);
 		}
 	}
 
@@ -128,6 +141,8 @@ class AnnotationBuilderTest {
 				.isNotEqualTo(1)
 				.isEqualTo(annotation)
 				.isEqualTo(SingleHolder.HELD);
+			assertThat(SingleHolder.HELD)
+				.isEqualTo(annotation);
 		}
 
 		@Test
@@ -143,6 +158,14 @@ class AnnotationBuilderTest {
 			assertThat(annotation)
 				.returns(expectedHashCode, Object::hashCode)
 				.returns(SingleHolder.HELD.hashCode(), Object::hashCode);
+		}
+
+		@Test
+		void hasRepresentation() {
+			String expected = String.format("@%s$Single(value=\"testValue\")", AnnotationBuilderTest.class.getName());
+			assertThat(annotation)
+				.returns(SingleHolder.HELD.toString(), Object::toString)
+				.returns(expected, Object::toString);
 		}
 	}
 
@@ -174,6 +197,8 @@ class AnnotationBuilderTest {
 					.isNotEqualTo(MarkerHolder.HELD)
 					.isNotEqualTo(SingleHolder.HELD)
 					.isEqualTo(MultipleHolder.HELD);
+				assertThat(MultipleHolder.HELD)
+					.isEqualTo(annotation);
 			}
 
 			@Test
@@ -191,6 +216,15 @@ class AnnotationBuilderTest {
 				assertThat(annotation)
 					.returns(expectedHashCode, Object::hashCode)
 					.returns(MultipleHolder.HELD.hashCode(), Object::hashCode);
+			}
+
+			@Test
+			void hasRepresentation() {
+				String expected = String.format("@%s$Multiple(one=\"defaultOne\", two=\"testValue\", three=3)",
+					AnnotationBuilderTest.class.getName());
+				assertThat(annotation)
+					.returns(MultipleHolder.HELD.toString(), Object::toString)
+					.returns(expected, Object::toString);
 			}
 		}
 
@@ -218,7 +252,16 @@ class AnnotationBuilderTest {
 					.isEqualTo(annotation)
 					.isNotEqualTo(MarkerHolder.HELD)
 					.isNotEqualTo(SingleHolder.HELD)
-					.isNotEqualTo(MultipleHolder.HELD);
+					.isNotEqualTo(MultipleHolder.HELD)
+					.isNotEqualTo(ArrayElementsHolder.HELD);
+				assertThat(MarkerHolder.HELD)
+					.isNotEqualTo(annotation);
+				assertThat(SingleHolder.HELD)
+					.isNotEqualTo(annotation);
+				assertThat(MultipleHolder.HELD)
+					.isNotEqualTo(annotation);
+				assertThat(ArrayElementsHolder.HELD)
+					.isNotEqualTo(annotation);
 			}
 
 			@Test
@@ -236,9 +279,68 @@ class AnnotationBuilderTest {
 				assertThat(annotation)
 					.returns(expectedHashCode, Object::hashCode);
 			}
+
+
+			@Test
+			void hasRepresentation() {
+				String expected = String.format("@%s$Multiple(one=\"defaultOne\", two=\"twoOther\", three=100)",
+					AnnotationBuilderTest.class.getName());
+				assertThat(annotation)
+					.returns(expected, Object::toString);
+			}
 		}
 
 	}
+
+	@Nested
+	class OfArrayElements {
+		private final ArrayElements annotation = AnnotationBuilder.of(ArrayElements.class)
+			.with(ArrayElements::value, new String[] {"one", "two", "three"})
+			.build();
+
+		@Test
+		void isInstanceOf() {
+			assertThat(annotation)
+				.isInstanceOf(ArrayElements.class);
+		}
+
+		@Test
+		void isEquals() {
+			assertThat(annotation)
+				.isNotEqualTo(new Object())
+				.isNotEqualTo(null)
+				.isNotEqualTo(1)
+				.isEqualTo(annotation)
+				.isEqualTo(ArrayElementsHolder.HELD);
+			assertThat(ArrayElementsHolder.HELD)
+				.isEqualTo(annotation);
+		}
+
+		@Test
+		void hasAnnotationType() {
+			assertThat(annotation)
+				.returns(ArrayElements.class, Annotation::annotationType);
+		}
+
+		@Test
+		void hasHashCode() {
+			int expectedHashCode = 127 * "value".hashCode() ^ Arrays.hashCode(ArrayElementsHolder.VALUE);
+
+			assertThat(annotation)
+				.returns(expectedHashCode, Object::hashCode)
+				.returns(ArrayElementsHolder.HELD.hashCode(), Object::hashCode);
+		}
+
+		@Test
+		void hasRepresentation() {
+			String expected = String.format("@%s$ArrayElements(value={\"one\", \"two\", \"three\"})",
+				AnnotationBuilderTest.class.getName());
+			assertThat(annotation)
+				.returns(expected, Object::toString)
+				.returns(ArrayElementsHolder.HELD.toString(), Object::toString);
+		}
+	}
+
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface Marker {
@@ -282,4 +384,17 @@ class AnnotationBuilderTest {
 		@SuppressWarnings("assignment.type.incompatible")
 		static final Multiple HELD = MultipleHolder.class.getAnnotation(Multiple.class);
 	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface ArrayElements {
+		String[] value() default {};
+	}
+
+	@ArrayElements({"one", "two", "three"})
+	private static class ArrayElementsHolder {
+		static final String[] VALUE = new String[] {"one", "two", "three"};
+		@SuppressWarnings("assignment.type.incompatible")
+		static final ArrayElements HELD = ArrayElementsHolder.class.getAnnotation(ArrayElements.class);
+	}
+
 }

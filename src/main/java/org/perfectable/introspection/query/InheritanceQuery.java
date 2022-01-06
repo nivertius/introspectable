@@ -1,6 +1,7 @@
 package org.perfectable.introspection.query;
 
 import java.lang.annotation.Annotation;
+import java.util.Comparator;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -32,7 +33,8 @@ import static java.util.Objects.requireNonNull;
  * @param <X> lower bound of the searched types
  */
 @SuppressWarnings({
-	"DesignForExtension" // class is closed because of package-private constructor
+	"DesignForExtension", // class is closed because of package-private constructor
+	"ClassDataAbstractionCoupling"
 })
 public abstract class InheritanceQuery<X>
 	extends AbstractQuery<Class<? super X>, InheritanceQuery<X>> {
@@ -72,6 +74,11 @@ public abstract class InheritanceQuery<X>
 	@Override
 	public InheritanceQuery<X> filter(Predicate<? super Class<? super X>> filter) {
 		return new Predicated<>(this, filter);
+	}
+
+	@Override
+	public InheritanceQuery<X> sorted(Comparator<? super Class<? super X>> comparator) {
+		return new Sorted<>(this, comparator);
 	}
 
 	/**
@@ -198,6 +205,35 @@ public abstract class InheritanceQuery<X>
 		protected boolean matches(Class<? super X> candidate) {
 			return filter.test(candidate);
 		}
+	}
+
+	private static class Sorted<X> extends InheritanceQuery<X> {
+		private final InheritanceQuery<X> parent;
+		private final Comparator<? super Class<? super X>> comparator;
+
+		Sorted(InheritanceQuery<X> parent, Comparator<? super Class<? super X>> comparator) {
+			this.parent = parent;
+			this.comparator = comparator;
+		}
+
+		@Override
+		public InheritanceQuery<X> sorted(Comparator<? super Class<? super X>> nextComparator) {
+			@SuppressWarnings("unchecked")
+			Comparator<@Nullable Object> casted = (Comparator<@Nullable Object>) nextComparator;
+			return new Sorted<>(parent, this.comparator.thenComparing(casted));
+		}
+
+		@Override
+		public Stream<Class<? super X>> stream() {
+			return this.parent.stream()
+				.sorted(comparator);
+		}
+
+		@Override
+		public boolean contains(@Nullable Object candidate) {
+			return parent.contains(candidate);
+		}
+
 	}
 
 	private static final class BoundingExcluded<X> extends Filtered<X> {

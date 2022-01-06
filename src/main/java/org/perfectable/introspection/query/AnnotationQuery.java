@@ -7,6 +7,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -113,6 +114,12 @@ public abstract class AnnotationQuery<A extends Annotation>
 	public AnnotationQuery<A> filter(Predicate<? super A> filter) {
 		requireNonNull(filter);
 		return new Predicated<>(this, filter);
+	}
+
+	@Override
+	public AnnotationQuery<A> sorted(Comparator<? super A> comparator) {
+		requireNonNull(comparator);
+		return new Sorted<>(this, comparator);
 	}
 
 	/**
@@ -227,6 +234,33 @@ public abstract class AnnotationQuery<A extends Annotation>
 		}
 	}
 
+	private static final class Sorted<A extends Annotation> extends AnnotationQuery<A> {
+		private final AnnotationQuery<A> parent;
+		private final Comparator<? super A> comparator;
+
+		Sorted(AnnotationQuery<A> parent, Comparator<? super A> comparator) {
+			this.parent = parent;
+			this.comparator = comparator;
+		}
+
+		@Override
+		public AnnotationQuery<A> sorted(Comparator<? super A> nextComparator) {
+			@SuppressWarnings("unchecked")
+			Comparator<@Nullable Object> casted = (Comparator<@Nullable Object>) nextComparator;
+			return new Sorted<>(parent, this.comparator.thenComparing(casted));
+		}
+
+		@Override
+		public Stream<A> stream() {
+			return parent.stream().sorted(comparator);
+		}
+
+		@Override
+		public boolean contains(@Nullable Object candidate) {
+			return parent.contains(candidate);
+		}
+	}
+
 	private static final class Annotated<A extends Annotation> extends Filtered<A> {
 		private final Class<? extends Annotation> metaAnnotation;
 
@@ -323,7 +357,8 @@ public abstract class AnnotationQuery<A extends Annotation>
 			Class<? extends Annotation> containerType = repeatableAnnotation.value();
 			Method extractionMethod = KNOWN_CONTAINERS.computeIfAbsent(containerType,
 				RepeatableUnroll::findContainerMethod);
-			return parent.typed(containerType).stream()
+			AnnotationQuery<? extends Annotation> typed = parent.typed(containerType);
+			return typed.stream()
 				.flatMap(container -> extractContents(container, extractionMethod))
 				.anyMatch(candidate::equals);
 		}
@@ -377,7 +412,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 				resultArray = (@NonNull Object) extractionMethod.invoke(source);
 			}
 			catch (IllegalAccessException | InvocationTargetException e) {
-				throw new AssertionError(e);
+				throw new LinkageError(e.getMessage(), e);
 			}
 			return IntStream.range(0, Array.getLength(resultArray))
 				.mapToObj(i -> (Annotation) Array.get(resultArray, i));

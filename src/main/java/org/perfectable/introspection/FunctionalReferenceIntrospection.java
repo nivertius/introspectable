@@ -94,7 +94,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 			serializedForm = (@NonNull SerializedLambda) writeReplace.invoke(marker);
 		}
 		catch (IllegalAccessException | InvocationTargetException e) {
-			throw new AssertionError(e);
+			throw new LinkageError(e.getMessage(), e);
 		}
 		return serializedForm;
 	}

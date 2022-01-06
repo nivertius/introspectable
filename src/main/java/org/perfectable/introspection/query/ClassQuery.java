@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -77,12 +78,14 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 	private static final Predicate<? super String> DEFAULT_CLASSNAME_FILTER = className -> true;
 	private static final Predicate<? super CtClass> DEFAULT_PRE_LOAD_FILTER = ctClass -> true;
 	private static final Predicate<? super Class<?>> DEFAULT_POST_LOAD_FILTER = type -> true;
+	private static final Comparator<? super Class<?>> DEFAULT_SORTING = (l, r) -> 0; // all equal
 
 	private static final String CLASS_FILE_SUFFIX = ".class";
 
 	private static final ClassQuery<Object> SYSTEM =
 		new ClassQuery<>(Object.class, ClassPathResourceSource.INSTANCE, ClassPool.getDefault(),
-			ClassQuery::loadSystemClass, DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER, DEFAULT_POST_LOAD_FILTER);
+			ClassQuery::loadSystemClass, DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER, DEFAULT_POST_LOAD_FILTER,
+			DEFAULT_SORTING);
 
 	private final ResourceSource resources;
 	private final ClassPool classPool;
@@ -91,6 +94,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 	private final Predicate<? super String> classNameFilter;
 	private final Predicate<? super CtClass> preLoadFilter;
 	private final Predicate<? super Class<? extends C>> postLoadFilter;
+	private final Comparator<? super Class<? extends C>> sorting;
 
 	/**
 	 * Queries for all classes reachable from declared classpath.
@@ -112,7 +116,8 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		ClassPool classPool1 = new ClassPool();
 		classPool1.appendClassPath(new LoaderClassPath(loader));
 		return new ClassQuery<>(Object.class, ClassLoaderResourceSource.of(loader), classPool1,
-			loader::loadClass, DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER, DEFAULT_POST_LOAD_FILTER);
+			loader::loadClass, DEFAULT_CLASSNAME_FILTER, DEFAULT_PRE_LOAD_FILTER, DEFAULT_POST_LOAD_FILTER,
+			DEFAULT_SORTING);
 	}
 
 	@SuppressWarnings("ParameterNumber")
@@ -120,7 +125,8 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 					   ResourceSource resources, ClassPool classPool,
 					   TypeLoader loader, Predicate<? super String> classNameFilter,
 					   Predicate<? super CtClass> preLoadFilter,
-					   Predicate<? super Class<? extends C>> postLoadFilter) {
+					   Predicate<? super Class<? extends C>> postLoadFilter,
+					   Comparator<? super Class<? extends C>> sorting) {
 		this.castedType = castedType;
 		this.resources = resources;
 		this.classPool = classPool;
@@ -128,6 +134,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		this.classNameFilter = classNameFilter;
 		this.preLoadFilter = preLoadFilter;
 		this.postLoadFilter = postLoadFilter;
+		this.sorting = sorting;
 	}
 
 	/**
@@ -144,7 +151,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		Predicate<? super CtClass> newPreLoadFilter =
 			((Predicate<CtClass>) preLoadFilter).and(SubtypePredicate.of(supertype));
 		return new ClassQuery<X>(supertype, resources, classPool, loader,
-			classNameFilter, newPreLoadFilter, DEFAULT_POST_LOAD_FILTER);
+			classNameFilter, newPreLoadFilter, postLoadFilter, sorting);
 	}
 
 	/**
@@ -172,6 +179,30 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 	}
 
 	/**
+	 * Restricts query to classes that are <em>not</em> in specified package or its descendants.
+	 *
+	 * <p>This restriction works on class names and gives some speedup when obtaining results of query.
+	 *
+	 * @param excludedPackageName name of the package which will not be included in results
+	 * @return query that returns classes not in specified package
+	 */
+	public ClassQuery<C> notInPackage(String excludedPackageName) {
+		return withClassNameFilter(PackageNamePredicate.of(excludedPackageName).negate());
+	}
+
+	/**
+	 * Restricts query to classes that are <em>not</em> in specified package or its descendants.
+	 *
+	 * <p>This restriction works on class names and gives some speedup when obtaining results of query.
+	 *
+	 * @param excludedPackage package which will not be included in results
+	 * @return query that returns classes not in specified package
+	 */
+	public ClassQuery<C> notInPackage(Package excludedPackage) {
+		return notInPackage(excludedPackage.getName());
+	}
+
+	/**
 	 * Restricts query to classes that matches specified predicate.
 	 *
 	 * <p>This restriction works on loaded classes and gives no speedup when obtaining results of query.
@@ -182,7 +213,16 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		Predicate<? super Class<? extends C>> newPostLoadFilter =
 			((Predicate<Class<? extends C>>) postLoadFilter).and(filter);
 		return new ClassQuery<C>(castedType, resources, classPool, loader,
-			classNameFilter, preLoadFilter, newPostLoadFilter);
+			classNameFilter, preLoadFilter, newPostLoadFilter, sorting);
+	}
+
+	@Override
+	public ClassQuery<C> sorted(Comparator<? super Class<? extends C>> nextComparator) {
+		@SuppressWarnings("unchecked")
+		Comparator<@Nullable Object> castedComparator = (Comparator<@Nullable Object>) nextComparator;
+		Comparator<? super Class<? extends C>> newSorting = sorting.thenComparing(castedComparator);
+		return new ClassQuery<C>(castedType, resources, classPool, loader,
+			classNameFilter, preLoadFilter, postLoadFilter, newSorting);
 	}
 
 	/**
@@ -211,15 +251,21 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 
 	@Override
 	public Stream<Class<? extends C>> stream() {
-		return resources.entries()
+		Stream<String> allClassesNames = resources.entries()
 			.filter(ClassQuery::isClass)
-			.map(ClassQuery::getClassName)
-			.filter(classNameFilter)
-			.map(this::preload)
-			.filter(preLoadFilter)
+			.map(ClassQuery::getClassName);
+		Stream<String> classNameFiltered = classNameFilter == DEFAULT_CLASSNAME_FILTER ?
+			allClassesNames : allClassesNames.filter(classNameFilter);
+		Stream<String> preLoadFiltered = preLoadFilter == DEFAULT_PRE_LOAD_FILTER ?
+			classNameFiltered : classNameFiltered.map(this::preload).filter(preLoadFilter).map(CtClass::getName);
+		Stream<Class<? extends C>> loadedClasses = preLoadFiltered
 			.map(this::load)
-			.flatMap(com.google.common.collect.Streams::stream)
-			.filter(postLoadFilter);
+			.flatMap(com.google.common.collect.Streams::stream);
+		Stream<Class<? extends C>> postLoadFiltered = postLoadFilter == DEFAULT_POST_LOAD_FILTER ?
+			loadedClasses : loadedClasses.filter(postLoadFilter);
+		Stream<Class<? extends C>> sorted = sorting == DEFAULT_SORTING ?
+			postLoadFiltered : postLoadFiltered.sorted(sorting);
+		return sorted;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -249,7 +295,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		Predicate<? super String> newClassNameFilter =
 			((Predicate<String>) classNameFilter).and(additionalClassNameFilter);
 		return new ClassQuery<>(castedType, resources, classPool, loader,
-			newClassNameFilter, preLoadFilter, DEFAULT_POST_LOAD_FILTER);
+			newClassNameFilter, preLoadFilter, postLoadFilter, sorting);
 	}
 
 	private ClassQuery<C> withPreLoadFilter(Predicate<? super CtClass> additionalPreLoadFilter) {
@@ -257,7 +303,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		Predicate<? super CtClass> newPreLoadFilter =
 			((Predicate<CtClass>) preLoadFilter).and(additionalPreLoadFilter);
 		return new ClassQuery<>(castedType, resources, classPool, loader,
-			classNameFilter, newPreLoadFilter, DEFAULT_POST_LOAD_FILTER);
+			classNameFilter, newPreLoadFilter, postLoadFilter, sorting);
 	}
 
 	private static boolean isClass(String path) {
@@ -285,9 +331,9 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 	}
 
 	@SuppressWarnings("IllegalCatch")
-	private Optional<Class<? extends C>> load(CtClass preloadedClass) {
+	private Optional<Class<? extends C>> load(String className) {
 		try {
-			Class<? extends C> loaded = loader.load(preloadedClass.getName())
+			Class<? extends C> loaded = loader.load(className)
 				.asSubclass(castedType);
 			return Optional.of(loaded);
 		}

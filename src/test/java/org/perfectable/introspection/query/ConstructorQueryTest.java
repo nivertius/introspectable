@@ -1,5 +1,7 @@
 package org.perfectable.introspection.query;
 
+import java.lang.reflect.Constructor;
+import java.util.Comparator;
 import java.util.regex.Pattern;
 
 import javassist.Modifier;
@@ -17,6 +19,7 @@ class ConstructorQueryTest {
 			ConstructorQuery.of(Subject.class);
 
 		assertThat(extracted)
+			.sortsCorrectlyWith(Comparator.comparing(Constructor::toString))
 			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
 				SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED,
@@ -30,6 +33,7 @@ class ConstructorQueryTest {
 			ConstructorQuery.of(Subject.class).named(Subject.class.getName());
 
 		assertThat(extracted)
+			.sortsCorrectlyWith(Comparator.comparing(Constructor::toString))
 			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
 				SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED,
@@ -53,6 +57,7 @@ class ConstructorQueryTest {
 			ConstructorQuery.of(Subject.class).nameMatching(Pattern.compile(".*Subj[ect]{3}$"));
 
 		assertThat(extracted)
+			.sortsCorrectlyWith(Comparator.comparing(Constructor::toString))
 			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
 				SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED,
@@ -76,6 +81,7 @@ class ConstructorQueryTest {
 			ConstructorQuery.of(Subject.class).parameters(ParametersFilter.count(1));
 
 		assertThat(extracted)
+			.sortsCorrectlyWith(Comparator.comparing(Constructor::toString))
 			.containsExactly(SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
@@ -87,6 +93,7 @@ class ConstructorQueryTest {
 			ConstructorQuery.of(Subject.class).parameters(String.class);
 
 		assertThat(extracted)
+			.sortsCorrectlyWith(Comparator.comparing(Constructor::toString))
 			.isSingleton(SubjectReflection.CONSTRUCTOR_STRING)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT);
 	}
@@ -98,6 +105,7 @@ class ConstructorQueryTest {
 				.filter(constructor -> Subject.class.equals(constructor.getDeclaringClass()));
 
 		assertThat(extracted)
+			.sortsCorrectlyWith(Comparator.comparing(Constructor::toString))
 			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
 				SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED,
@@ -143,6 +151,7 @@ class ConstructorQueryTest {
 				.excludingModifier(Modifier.PROTECTED);
 
 		assertThat(extracted)
+			.sortsCorrectlyWith(Comparator.comparing(Constructor::toString))
 			.containsExactly(SubjectReflection.CONSTRUCTOR_NO_ARGS,
 				SubjectReflection.CONSTRUCTOR_STRING,
 				SubjectReflection.CONSTRUCTOR_ANNOTATED)

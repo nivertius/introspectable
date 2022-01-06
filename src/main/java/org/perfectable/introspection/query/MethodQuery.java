@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -55,15 +56,26 @@ import static java.util.Objects.requireNonNull;
 public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 
 	/**
-	 * Queries for fields in specified class.
+	 * Queries for methods in specified class.
 	 *
 	 * @param type class to search methods in
-	 * @return query that returns all constructors in specified class.
+	 * @return query that returns all methods in specified class.
 	 */
 	public static MethodQuery of(Class<?> type) {
-		requireNonNull(type);
-		return new Complete<>(type);
+		return of(InheritanceQuery.of(type));
 	}
+
+	/**
+	 * Queries for methods in classes contained in specified inheritance chain.
+	 *
+	 * @param type classes to search methods in
+	 * @return query that returns all methods in specified classes.
+	 */
+	public static MethodQuery of(InheritanceQuery<?> type) {
+		requireNonNull(type);
+		return new InClasses<>(type);
+	}
+
 
 	@Override
 	public MethodQuery named(String name) {
@@ -81,6 +93,12 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 	public MethodQuery filter(Predicate<? super Method> filter) {
 		requireNonNull(filter);
 		return new Predicated(this, filter);
+	}
+
+	@Override
+	public MethodQuery sorted(Comparator<? super Method> comparator) {
+		requireNonNull(comparator);
+		return new Sorted(this, comparator);
 	}
 
 	@Override
@@ -163,11 +181,11 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		// package extension only
 	}
 
-	private static final class Complete<X> extends MethodQuery {
+	private static final class InClasses<X> extends MethodQuery {
 		private final InheritanceQuery<X> chain;
 
-		Complete(Class<X> type) {
-			this.chain = InheritanceQuery.of(type);
+		InClasses(InheritanceQuery<X> chain) {
+			this.chain = chain;
 		}
 
 		@Override
@@ -224,6 +242,33 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		@Override
 		protected boolean matches(Method candidate) {
 			return this.filter.test(candidate);
+		}
+	}
+
+	private static final class Sorted extends MethodQuery {
+		private final MethodQuery parent;
+		private final Comparator<? super Method> comparator;
+
+		Sorted(MethodQuery parent, Comparator<? super Method> comparator) {
+			this.parent = parent;
+			this.comparator = comparator;
+		}
+
+		@Override
+		public MethodQuery sorted(Comparator<? super Method> nextComparator) {
+			@SuppressWarnings("unchecked")
+			Comparator<@Nullable Object> casted = (Comparator<@Nullable Object>) nextComparator;
+			return new Sorted(parent, this.comparator.thenComparing(casted));
+		}
+
+		@Override
+		public Stream<Method> stream() {
+			return parent.stream().sorted(comparator);
+		}
+
+		@Override
+		public boolean contains(@Nullable Object candidate) {
+			return parent.contains(candidate);
 		}
 	}
 

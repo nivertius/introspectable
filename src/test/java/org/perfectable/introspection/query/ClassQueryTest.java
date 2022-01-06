@@ -2,6 +2,7 @@ package org.perfectable.introspection.query;
 
 import java.io.Serializable;
 import java.net.URLClassLoader;
+import java.util.Comparator;
 
 import javassist.CtClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -18,7 +19,12 @@ class ClassQueryTest {
 	abstract static class Methods {
 		private static final String EXAMPLE_STRING = "testString";
 
-		protected abstract ClassQuery<Object> createQuery();
+		protected abstract ClassQuery<Object> createRawQuery();
+
+		final ClassQuery<Object> createQuery() {
+			return createRawQuery()
+				.notInPackage("groovyjarjarantlr4"); // problematic package with big classes
+		}
 
 		@Test
 		void inPackage() {
@@ -26,6 +32,7 @@ class ClassQueryTest {
 				.inPackage(PACKAGE_NAME);
 
 			assertThat(query)
+				.sortsCorrectlyWith(Comparator.comparing(Class::toString))
 				.contains(Subject.OtherAnnotation.class, AnnotationFilter.class,
 					ClassQueryTest.class, ClassQuery.class, Subject.class, SubjectReflection.class)
 				.doesNotContain(Serializable.class, String.class, CtClass.class, EXAMPLE_STRING);
@@ -48,6 +55,7 @@ class ClassQueryTest {
 				.subtypeOf(AbstractQuery.class);
 
 			assertThat(query)
+				.sortsCorrectlyWith(Comparator.comparing(Class::toString))
 				.contains(ClassQuery.class, MethodQuery.class)
 				.doesNotContain(Serializable.class, AnnotationFilter.class, String.class, CtClass.class,
 					ClassQueryTest.class, Subject.class, SubjectReflection.class, EXAMPLE_STRING);
@@ -59,6 +67,7 @@ class ClassQueryTest {
 				.filter(Class::isInterface);
 
 			assertThat(query)
+				.sortsCorrectlyWith(Comparator.comparing(Class::toString))
 				.contains(AnnotationFilter.class)
 				.doesNotContain(String.class, CtClass.class, ClassQueryTest.class,
 					ClassQuery.class, Subject.class, SubjectReflection.class, EXAMPLE_STRING);
@@ -70,7 +79,7 @@ class ClassQueryTest {
 	@Nested
 	class SystemClassLoader extends Methods {
 		@Override
-		protected ClassQuery<Object> createQuery() {
+		protected ClassQuery<Object> createRawQuery() {
 			return ClassQuery.system();
 		}
 	}
@@ -79,7 +88,7 @@ class ClassQueryTest {
 	@Nested
 	class OfClassLoader extends Methods {
 		@Override
-		protected ClassQuery<Object> createQuery() {
+		protected ClassQuery<Object> createRawQuery() {
 			@Nullable ClassLoader classLoader = ClassQueryTest.class.getClassLoader();
 			Assumptions.assumeTrue(classLoader instanceof URLClassLoader);
 			@SuppressWarnings("cast.unsafe")
