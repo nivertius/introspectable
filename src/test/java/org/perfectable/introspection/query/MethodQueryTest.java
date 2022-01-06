@@ -56,6 +56,33 @@ class MethodQueryTest {
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.STATIC_FIELD);
 	}
 
+
+	@Test
+	void testInheritanceChain() {
+		MethodQuery extracted =
+			MethodQuery.of(InheritanceQuery.of(Subject.class).upToExcluding(Object.class));
+
+		assertThat(extracted)
+			.filteredOn(JACOCO_EXCLUSION)
+			.filteredOn(REGISTER_NATIVES_EXCLUSION)
+			.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT,
+				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
+				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
+				SubjectReflection.NO_RESULT_DOUBLE_ARGUMENT, SubjectReflection.NO_RESULT_TRIPLE_ARGUMENT,
+				SubjectReflection.NO_RESULT_STRING_NUMBER_ARGUMENT,
+				SubjectReflection.NO_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.NO_RESULT_VARARGS_DOUBLE_ARGUMENT,
+				SubjectReflection.METHOD_PROTECTED,
+				SubjectReflection.METHOD_PACKAGE,
+				SubjectReflection.METHOD_PRIVATE,
+				SubjectReflection.WITH_RESULT_NO_ARGUMENT, SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
+				SubjectReflection.WITH_RESULT_DOUBLE_ARGUMENT, SubjectReflection.WITH_RESULT_TRIPLE_ARGUMENT,
+				SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
+				SubjectReflection.ANNOTATED_METHOD,
+				SubjectReflection.TO_STRING)
+			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.STATIC_FIELD);
+	}
+
 	@Test
 	void testNamed() {
 		MethodQuery extracted =

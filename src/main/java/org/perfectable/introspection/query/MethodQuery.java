@@ -56,15 +56,26 @@ import static java.util.Objects.requireNonNull;
 public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 
 	/**
-	 * Queries for fields in specified class.
+	 * Queries for methods in specified class.
 	 *
 	 * @param type class to search methods in
-	 * @return query that returns all constructors in specified class.
+	 * @return query that returns all methods in specified class.
 	 */
 	public static MethodQuery of(Class<?> type) {
-		requireNonNull(type);
-		return new Complete<>(type);
+		return of(InheritanceQuery.of(type));
 	}
+
+	/**
+	 * Queries for methods in classes contained in specified inheritance chain.
+	 *
+	 * @param type classes to search methods in
+	 * @return query that returns all methods in specified classes.
+	 */
+	public static MethodQuery of(InheritanceQuery<?> type) {
+		requireNonNull(type);
+		return new InClasses<>(type);
+	}
+
 
 	@Override
 	public MethodQuery named(String name) {
@@ -170,11 +181,11 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		// package extension only
 	}
 
-	private static final class Complete<X> extends MethodQuery {
+	private static final class InClasses<X> extends MethodQuery {
 		private final InheritanceQuery<X> chain;
 
-		Complete(Class<X> type) {
-			this.chain = InheritanceQuery.of(type);
+		InClasses(InheritanceQuery<X> chain) {
+			this.chain = chain;
 		}
 
 		@Override
