@@ -192,7 +192,7 @@ class MethodInvocationTest {
 		instance.assertExecutedWith(firstArgument, new int[] {secondArgument, thirdArgument});
 	}
 
-	@SuppressWarnings("argument.type.incompatible")
+	@SuppressWarnings("argument")
 	@Test
 	void testEquality() {
 		VariablePrimitiveArguments instance = new VariablePrimitiveArguments();
@@ -295,7 +295,7 @@ class MethodInvocationTest {
 			second = actualSecond;
 		}
 
-		@SuppressWarnings("argument.type.incompatible")
+		@SuppressWarnings("argument")
 		void assertExecutedWith(String expectedFirst, String expectedSecond) {
 			assertThat(executed).isTrue();
 			assertThat(first).isEqualTo(expectedFirst);
@@ -319,7 +319,7 @@ class MethodInvocationTest {
 			variable = actualVariable;
 		}
 
-		@SuppressWarnings("argument.type.incompatible")
+		@SuppressWarnings("argument")
 		void assertExecutedWith(String expectedFirst, String[] expectedVariable) { // SUPPRESS UseVarargs
 			assertThat(executed).isTrue();
 			assertThat(first).isEqualTo(expectedFirst);
@@ -344,7 +344,7 @@ class MethodInvocationTest {
 			variable = actualVariable;
 		}
 
-		@SuppressWarnings("argument.type.incompatible")
+		@SuppressWarnings("argument")
 		void assertExecutedWith(String expectedFirst, int[] expectedVariable) { // SUPPRESS UseVarargs
 			assertThat(executed).isTrue();
 			assertThat(first).isEqualTo(expectedFirst);
@@ -367,7 +367,7 @@ class MethodInvocationTest {
 			assertThat(this.method).isEqualTo(expectedMethod);
 		}
 
-		@SuppressWarnings("argument.type.incompatible")
+		@SuppressWarnings("argument")
 		public void assertReceiver(@Nullable Object expectedReceiver) {
 			assertThat(this.receiver).isEqualTo(expectedReceiver);
 		}

@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 // SUPPRESS FILE MagicNumber
 // SUPPRESS FILE MultipleStringLiterals
-@SuppressWarnings({"ClassCanBeStatic", "argument.type.incompatible"})
+@SuppressWarnings({"ClassCanBeStatic", "argument", "assignment"})
 class AnnotationBuilderTest {
 
 	@Test

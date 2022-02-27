@@ -10,6 +10,7 @@ import static org.perfectable.introspection.SimpleReflections.getConstructor;
 import static org.perfectable.introspection.SimpleReflections.getField;
 import static org.perfectable.introspection.SimpleReflections.getMethod;
 
+@SuppressWarnings("assignment")
 public final class SubjectReflection {
 	static final String MESSAGE_METHOD_CALLED = "Test method should not be called";
 	static final String MESSAGE_CONSTRUCTOR_CALLED = "Test constructor should not be called";
@@ -75,19 +76,14 @@ public final class SubjectReflection {
 	public static final Method TO_STRING =
 		getMethod(Subject.class, "toString");
 
-	@SuppressWarnings("assignment.type.incompatible")
 	static final Subject.Special INSTANCE_SPECIAL =
 		Subject.class.getAnnotation(Subject.Special.class);
-	@SuppressWarnings("assignment.type.incompatible")
 	static final Subject.OtherAnnotation INSTANCE_OTHER =
 		Subject.class.getAnnotation(Subject.OtherAnnotation.class);
-	@SuppressWarnings("assignment.type.incompatible")
 	static final Subject.RepetitionContainer REPETITION_CONTAINER =
 		Subject.class.getAnnotation(Subject.RepetitionContainer.class);
-	@SuppressWarnings("assignment.type.incompatible")
 	static final Subject.Repetition[] REPETITIONS =
 		Subject.class.getDeclaredAnnotationsByType(Subject.Repetition.class);
-	@SuppressWarnings("assignment.type.incompatible")
 	static final Nullable INSTANCE_NULLABLE =
 		SubjectReflection.ANNOTATED_METHOD.getAnnotation(Nullable.class);
 

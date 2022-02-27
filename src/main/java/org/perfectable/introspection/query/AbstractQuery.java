@@ -19,7 +19,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * @param <E> type of element this query will return/contain
  * @param <Q> type of queries returned by restrictions
  */
-abstract class AbstractQuery<E extends @NonNull Object, Q extends AbstractQuery<E, ? extends Q>>
+abstract class AbstractQuery<E extends @NonNull Object, Q extends AbstractQuery<E, Q>>
 	implements Iterable<E> {
 
 	/**

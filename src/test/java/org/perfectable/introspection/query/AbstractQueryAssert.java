@@ -15,7 +15,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.util.Preconditions.checkArgument;
 
-//@SuppressWarnings("type.argument.type.incompatible")
 final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends AbstractQuery<ELEMENT, QUERY>>
 	extends AbstractObjectAssert<AbstractQueryAssert<ELEMENT, QUERY>, QUERY> {
 
@@ -55,7 +54,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 		return myself;
 	}
 
-	@SuppressWarnings("argument.type.incompatible")
+	@SuppressWarnings("argument")
 	AbstractQueryAssert<ELEMENT, QUERY> hasOption(ELEMENT onlyElement) {
 		checkOptionPresent();
 		Optional<? extends ELEMENT> option = actual.option();
@@ -87,7 +86,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 	}
 
 	@SafeVarargs
-	@SuppressWarnings({"varargs", "argument.type.incompatible"})
+	@SuppressWarnings({"varargs", "argument"})
 	final AbstractQueryAssert<ELEMENT, QUERY> contains(@Nullable ELEMENT... elements) {
 		checkArgument(elements.length > 0, "use isEmpty instead"); // SUPPRESS MultipleStringLiterals
 		List<? extends ELEMENT> mapped = collectElements();
@@ -97,7 +96,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 	}
 
 	@SafeVarargs
-	@SuppressWarnings({"varargs", "argument.type.incompatible"})
+	@SuppressWarnings({"varargs", "argument"})
 	final AbstractQueryAssert<ELEMENT, QUERY> containsExactly(@Nullable ELEMENT... elements) {
 		checkArgument(elements.length > 0, "use isEmpty instead"); // SUPPRESS MultipleStringLiterals
 		List<? extends ELEMENT> mapped = collectElements();
@@ -106,7 +105,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 		return myself;
 	}
 
-	@SuppressWarnings({"varargs", "argument.type.incompatible"})
+	@SuppressWarnings({"varargs", "argument"})
 	AbstractQueryAssert<ELEMENT, QUERY> sortsCorrectlyWith(Comparator<? super ELEMENT> comparator) {
 		Object[] expected = actual.stream().filter(filter).sorted(comparator).toArray();
 		QUERY tested = actual.sorted(comparator).filter(filter);
@@ -115,7 +114,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 	}
 
 
-	@SuppressWarnings("argument.type.incompatible")
+	@SuppressWarnings("argument")
 	AbstractQueryAssert<ELEMENT, QUERY> doesNotContain(@Nullable Object... elements) {
 		iterables.assertDoesNotContain(info, actual, elements);
 		for (@Nullable Object element : elements) {
@@ -143,7 +142,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 		}
 	}
 
-	@SuppressWarnings("argument.type.incompatible")
+	@SuppressWarnings("argument")
 	private void checkUniqueThrows(Class<? extends Throwable> exceptionClass) {
 		try {
 			ELEMENT uniqueResult = this.actual.unique();
@@ -156,7 +155,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 		}
 	}
 
-	@SuppressWarnings("argument.type.incompatible")
+	@SuppressWarnings("argument")
 	@SafeVarargs
 	private final void checkContains(@Nullable ELEMENT... elements) {
 		if (elements.length > 2) { // SUPPRESS AvoidLiteralsInIfCondition

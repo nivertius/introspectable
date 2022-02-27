@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SuppressWarnings({"MultipleStringLiterals", "argument.type.incompatible"})
+@SuppressWarnings({"MultipleStringLiterals", "argument"})
 public class InvocationHandlerBuilderTest {
 
 	@Test

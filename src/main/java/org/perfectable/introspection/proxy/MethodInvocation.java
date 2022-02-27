@@ -354,7 +354,7 @@ public final class MethodInvocation<T> implements Invocation<@Nullable Object, E
 			int overflowArguments = arguments.length - parameterTypes.length + 1;
 			methodHandle = methodHandle.asCollector(lastParameterType, overflowArguments);
 		}
-		@SuppressWarnings("argument.type.incompatible")
+		@SuppressWarnings("argument")
 		MethodHandle createdHandle = MethodHandles.insertArguments(methodHandle, 0, arguments);
 		this.handle = createdHandle;
 	}

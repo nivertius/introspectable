@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 
 import static java.util.Objects.requireNonNull;
 
-abstract class ExecutableQuery<E extends Executable, Q extends ExecutableQuery<E, ? extends Q>>
+abstract class ExecutableQuery<E extends Executable, Q extends ExecutableQuery<E, Q>>
 		extends MemberQuery<E, Q> {
 
 	public abstract Q parameters(ParametersFilter parametersFilter);

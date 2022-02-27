@@ -6,6 +6,8 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.util.regex.Pattern;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
+
 /**
  * Extension of {@link AbstractQuery} that matches {@link Member}, that are also {@link AnnotatedElement}.
  *
@@ -17,7 +19,7 @@ import java.util.regex.Pattern;
  * @param <M> Type of member
  * @param <Q> Type of query that would be produced from restricting results
  */
-abstract class MemberQuery<M extends Member & AnnotatedElement, Q extends MemberQuery<M, ? extends Q>>
+abstract class MemberQuery<M extends @NonNull Member & @NonNull AnnotatedElement, Q extends MemberQuery<M, Q>>
 		extends AbstractQuery<M, Q>
 		implements Iterable<M> {
 

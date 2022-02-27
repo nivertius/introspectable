@@ -37,7 +37,7 @@ public final class JdkProxyService implements ProxyService {
 		java.lang.reflect.InvocationHandler adapterHandler = JdkInvocationHandlerAdapter.adapt(handler);
 		Class<?>[] interfacesArray = (@NonNull Class<?>[]) interfaces.toArray(new Class<?>[0]);
 		try {
-			@SuppressWarnings({"unchecked", "argument.type.incompatible"})
+			@SuppressWarnings("unchecked")
 			I instance = (@NonNull I) Proxy.newProxyInstance(classLoader, interfacesArray, adapterHandler);
 			return instance;
 		}
@@ -57,10 +57,9 @@ public final class JdkProxyService implements ProxyService {
 			this.handler = handler;
 		}
 
-		@SuppressWarnings("override.return.invalid")
+		@SuppressWarnings("override.return")
 		@Override
-		public @Nullable Object invoke(Object proxy, Method method,
-							 @Nullable Object @Nullable [] args)
+		public @Nullable Object invoke(Object proxy, Method method, Object[] args)
 			throws Throwable {
 			requireNonNull(method);
 			if (method.equals(ObjectMethods.FINALIZE)) {

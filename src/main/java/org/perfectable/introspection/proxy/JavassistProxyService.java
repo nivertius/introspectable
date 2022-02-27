@@ -71,10 +71,10 @@ public final class JavassistProxyService implements ProxyService {
 		return proxy;
 	}
 
-	private static final class JavassistInvocationHandlerAdapter<T> implements MethodHandler {
+	private static final class JavassistInvocationHandlerAdapter<T extends @NonNull Object> implements MethodHandler {
 		private final InvocationHandler<?, ?, ? super MethodInvocation<T>> handler;
 
-		static <X> JavassistInvocationHandlerAdapter<X> adapt(
+		static <X extends @NonNull Object> JavassistInvocationHandlerAdapter<X> adapt(
 			InvocationHandler<?, ?, ? super MethodInvocation<X>> handler) {
 			return new JavassistInvocationHandlerAdapter<>(handler);
 		}
@@ -83,7 +83,7 @@ public final class JavassistProxyService implements ProxyService {
 			this.handler = handler;
 		}
 
-		@SuppressWarnings("override.return.invalid")
+		@SuppressWarnings("override.return")
 		@Override
 		public @Nullable Object invoke(Object self, Method thisMethod, Method proceed,
 							 @Nullable Object @Nullable [] args)

@@ -23,12 +23,12 @@ final class Properties {
 	private static final String STANDARD_GETTER_PREFIX = "get";
 	private static final String SETTER_PREFIX = "set";
 
-	static <T> PropertySchema<T, @Nullable Object> fromField(Field field) {
+	static <T extends @NonNull Object> PropertySchema<T, @Nullable Object> fromField(Field field) {
 		PrivilegedActions.markAccessible(field);
 		return new FieldPropertySchema<>(field);
 	}
 
-	static <CX> PropertySchema<CX, @Nullable Object> create(Class<CX> beanClass, String name) {
+	static <CX extends @NonNull Object> PropertySchema<CX, @Nullable Object> create(Class<CX> beanClass, String name) {
 		requireNonNull(beanClass);
 		Optional<Field> field = introspect(beanClass).fields().named(name).option();
 		if (field.isPresent()) {
@@ -108,8 +108,7 @@ final class Properties {
 		}
 
 		@Override
-		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions",
-			"argument.type.incompatible"})
+		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions", "argument"})
 		void set(CT bean, PT value) {
 			try {
 				this.field.set(bean, value);
@@ -175,8 +174,7 @@ final class Properties {
 			this.getter = requireNonNull(getter);
 		}
 
-		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions",
-			"argument.type.incompatible"})
+		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
 		@Override
 		public PT get(CT bean) {
 			try {
@@ -245,7 +243,7 @@ final class Properties {
 		}
 
 		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions",
-			"argument.type.incompatible"})
+			"argument"})
 		@Override
 		public void set(CT bean, PT value) {
 			try {
@@ -306,8 +304,7 @@ final class Properties {
 			this.setter = setter;
 		}
 
-		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions",
-			"argument.type.incompatible"})
+		@SuppressWarnings({"unchecked", "PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions"})
 		@Override
 		public PT get(CT bean) {
 			try {
@@ -322,8 +319,7 @@ final class Properties {
 		}
 
 		@Override
-		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions",
-			"argument.type.incompatible"})
+		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions", "argument"})
 		public void set(CT bean, PT value) {
 			try {
 				this.setter.invoke(bean, value);

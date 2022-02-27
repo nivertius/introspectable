@@ -65,7 +65,6 @@ public final class ArrayTypeView extends AbstractTypeView<GenericArrayType> {
 	 *
 	 * @return class view with class equivalent to this array type.
 	 */
-	@SuppressWarnings({"argument.type.incompatible", "assignment.type.incompatible"})
 	@Override
 	public ClassView<?> asClass() {
 		Type componentType = type.getGenericComponentType();

@@ -68,7 +68,7 @@ final class Invocations {
 
 		@Override
 		public S invoke() throws X {
-			@SuppressWarnings("assignment.type.incompatible")
+			@SuppressWarnings("assignment")
 			R result = parent.invoke();
 			return targetCast.cast(result);
 		}

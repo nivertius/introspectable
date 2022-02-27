@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class Streams {
 	static <E> Stream<E> generateSingle(E initial,
@@ -43,9 +42,9 @@ final class Streams {
 		private static final int ADDITIONAL_CHARACTERISTICS = 0;
 
 		private final Spliterator<? extends T> wrapped;
-		private final Function<? super @Nullable T, ? extends Stream<? extends T>> mutator;
+		private final Function<? super T, ? extends Stream<? extends T>> mutator;
 		private final Predicate<? super T> condition;
-		private final Deque<@Nullable T> buffer = new ArrayDeque<>();
+		private final Deque<T> buffer = new ArrayDeque<>();
 
 		static <T> GeneratorSpliterator<T> wrap(Spliterator<? extends T> wrapped,
 												Function<? super T, ? extends Stream<? extends T>> mutator,
@@ -54,7 +53,7 @@ final class Streams {
 		}
 
 		private GeneratorSpliterator(Spliterator<? extends T> wrapped,
-									 Function<? super @Nullable T, ? extends Stream<? extends T>> mutator,
+									 Function<? super T, ? extends Stream<? extends T>> mutator,
 									 Predicate<? super T> condition) {
 			super(Long.MAX_VALUE, ADDITIONAL_CHARACTERISTICS);
 			this.wrapped = wrapped;
@@ -63,9 +62,9 @@ final class Streams {
 		}
 
 		@Override
-		public boolean tryAdvance(Consumer<? super @Nullable T> consumer) {
-			Consumer<? super @Nullable T> wrappedAction = (@Nullable T element) -> {
-				consumer.accept(element);
+		public boolean tryAdvance(Consumer<? super T> action) {
+			Consumer<T> wrappedAction = (T element) -> {
+				action.accept(element);
 				mutator.apply(element)
 					.filter(condition)
 					.forEach(buffer::add);
@@ -74,7 +73,8 @@ final class Streams {
 				return wrapped.tryAdvance(wrappedAction);
 			}
 			else {
-				@Nullable T generated = buffer.pop();
+				@SuppressWarnings("assignment")
+				T generated = buffer.pop();
 				wrappedAction.accept(generated);
 				return true;
 			}
@@ -97,7 +97,7 @@ final class Streams {
 		}
 
 		@Override
-		public boolean tryAdvance(Consumer<? super @Nullable E> consumer) {
+		public boolean tryAdvance(Consumer<? super E> consumer) {
 			if (!enumeration.hasMoreElements()) {
 				return false;
 			}

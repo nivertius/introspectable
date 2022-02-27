@@ -72,7 +72,7 @@ public class TestHandler<T> implements InvocationHandler<@Nullable Object, Excep
 			this.result = Invocation.throwing(() -> thrown);
 		}
 
-		@SuppressWarnings("argument.type.incompatible")
+		@SuppressWarnings("argument")
 		public Invocation<?, ?> process(Method method, @Nullable T receiver, @Nullable Object... arguments) {
 			assertThat(receiver).isEqualTo(expectedProxy);
 			assertThat(method).isEqualTo(expectedMethod);
