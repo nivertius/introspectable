@@ -1,7 +1,5 @@
 package org.perfectable.introspection.query;
 
-import org.perfectable.introspection.PrivilegedActions;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Comparator;
@@ -359,7 +357,7 @@ public abstract class FieldQuery extends MemberQuery<Field, FieldQuery> {
 		@Override
 		public Stream<Field> stream() {
 			return this.parent.stream()
-				.peek(PrivilegedActions::markAccessible);
+				.peek(element -> element.setAccessible(true));
 		}
 
 		@Override

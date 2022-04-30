@@ -1,7 +1,5 @@
 package org.perfectable.introspection.bean;
 
-import org.perfectable.introspection.PrivilegedActions;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,7 +22,7 @@ final class Properties {
 	private static final String SETTER_PREFIX = "set";
 
 	static <T extends @NonNull Object> PropertySchema<T, @Nullable Object> fromField(Field field) {
-		PrivilegedActions.markAccessible(field);
+		field.setAccessible(true);
 		return new FieldPropertySchema<>(field);
 	}
 
@@ -44,12 +42,12 @@ final class Properties {
 		}
 		if (getterOption.isPresent()) {
 			Method getter = getterOption.get();
-			PrivilegedActions.markAccessible(getter);
+			getter.setAccessible(true);
 			return new ReadOnlyMethodPropertySchema<>(getter);
 		}
 		if (setterOption.isPresent()) {
 			Method setter = setterOption.get();
-			PrivilegedActions.markAccessible(setter);
+			setter.setAccessible(true);
 			return new WriteOnlyMethodPropertySchema<>(setter);
 		}
 		throw new IllegalArgumentException("No property " + name + " for " + beanClass);

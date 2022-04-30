@@ -166,7 +166,7 @@ public final class ClassIntrospection<X> {
 	public Constructor<X> parameterlessConstructor() {
 		try {
 			Constructor<X> constructor = type.getDeclaredConstructor();
-			PrivilegedActions.markAccessible(constructor);
+			constructor.setAccessible(true);
 			return constructor;
 		}
 		catch (NoSuchMethodException e) {

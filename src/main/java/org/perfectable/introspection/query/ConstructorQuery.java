@@ -1,7 +1,5 @@
 package org.perfectable.introspection.query;
 
-import org.perfectable.introspection.PrivilegedActions;
-
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -296,7 +294,7 @@ public abstract class ConstructorQuery<X>
 		@Override
 		public Stream<Constructor<X>> stream() {
 			return parent.stream()
-				.peek(PrivilegedActions::markAccessible);
+				.peek(element -> element.setAccessible(true));
 		}
 
 		@Override

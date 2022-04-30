@@ -1,7 +1,5 @@
 package org.perfectable.introspection.query;
 
-import org.perfectable.introspection.PrivilegedActions;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
@@ -380,7 +378,7 @@ public abstract class MethodQuery extends ExecutableQuery<Method, MethodQuery> {
 		@Override
 		public Stream<Method> stream() {
 			return parent.stream()
-				.peek(PrivilegedActions::markAccessible);
+				.peek(element -> element.setAccessible(true));
 		}
 
 		@Override
