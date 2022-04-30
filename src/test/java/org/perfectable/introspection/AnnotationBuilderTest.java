@@ -164,7 +164,6 @@ class AnnotationBuilderTest {
 		void hasRepresentation() {
 			String expected = String.format("@%s$Single(value=\"testValue\")", AnnotationBuilderTest.class.getName());
 			assertThat(annotation)
-				.returns(SingleHolder.HELD.toString(), Object::toString)
 				.returns(expected, Object::toString);
 		}
 	}
@@ -336,8 +335,7 @@ class AnnotationBuilderTest {
 			String expected = String.format("@%s$ArrayElements(value={\"one\", \"two\", \"three\"})",
 				AnnotationBuilderTest.class.getName());
 			assertThat(annotation)
-				.returns(expected, Object::toString)
-				.returns(ArrayElementsHolder.HELD.toString(), Object::toString);
+				.returns(expected, Object::toString);
 		}
 	}
 
