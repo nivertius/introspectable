@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.perfectable</groupId>
 		<artifactId>perfectable</artifactId>
-		<version>27.0.1-SNAPSHOT</version>
+		<version>28.0.0</version>
 	</parent>
 
 	<artifactId>introspectable</artifactId>
@@ -63,7 +63,7 @@
 
 		<dependency>
 			<groupId>com.google.auto.service</groupId>
-			<artifactId>auto-service</artifactId>
+			<artifactId>auto-service-annotations</artifactId>
 			<optional>true</optional>
 			<!-- compilation only -->
 		</dependency>
@@ -100,7 +100,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.codehaus.groovy</groupId>
+			<groupId>org.apache.groovy</groupId>
 			<artifactId>groovy</artifactId>
 			<scope>test</scope>
 		</dependency>
@@ -115,7 +115,7 @@
 					<configuration>
 						<ignoredUnusedDeclaredDependencies>
 							<!-- used for compilation, doesn't leave anything in bytecode -->
-							<dependency>com.google.auto.service:auto-service</dependency>
+							<dependency>com.google.auto.service:auto-service-annotations</dependency>
 						</ignoredUnusedDeclaredDependencies>
 					</configuration>
 				</plugin>
