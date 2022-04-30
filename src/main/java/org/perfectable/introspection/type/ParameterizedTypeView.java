@@ -393,9 +393,9 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		 *
 		 * @param parameterName name of parameter to replace
 		 * @param substitute new value type for specified parameter name
+		 * @return this, for chaining
 		 * @throws IllegalArgumentException when there is no type parameter named with provided name in base class
 		 * @throws IllegalArgumentException when provided type is outside bounds of matching parameter
-		 * @return this, for chaining
 		 */
 		@CanIgnoreReturnValue
 		public Builder withSubstitution(String parameterName, Type substitute) {
@@ -413,9 +413,9 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		 *
 		 * @param parameterName name of parameter to replace
 		 * @param substitute new value type for specified parameter name
+		 * @return this, for chaining
 		 * @throws IllegalArgumentException when there is no type parameter named with provided name in base class
 		 * @throws IllegalArgumentException when provided type is outside bounds of matching parameter
-		 * @return this, for chaining
 		 */
 		@CanIgnoreReturnValue
 		public Builder withSubstitution(String parameterName, TypeView substitute) {
@@ -429,9 +429,9 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		 *
 		 * @param parameterNumber index of parameter to replace
 		 * @param substitute new value type for specified parameter index
+		 * @return this, for chaining
 		 * @throws IllegalArgumentException when type parameter index is out of range
 		 * @throws IllegalArgumentException when provided type is outside bounds of matching parameter
-		 * @return this, for chaining
 		 */
 		@CanIgnoreReturnValue
 		public Builder withSubstitution(int parameterNumber, Type substitute) {
@@ -456,9 +456,9 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		 *
 		 * @param parameterNumber index of parameter to replace
 		 * @param substitute new value type for specified parameter index
+		 * @return this, for chaining
 		 * @throws IllegalArgumentException when type parameter index is out of range
 		 * @throws IllegalArgumentException when provided type is outside bounds of matching parameter
-		 * @return this, for chaining
 		 */
 		@CanIgnoreReturnValue
 		public Builder withSubstitution(int parameterNumber, TypeView substitute) {

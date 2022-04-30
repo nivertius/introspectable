@@ -59,7 +59,7 @@ public abstract class TypeView {
 		if (type instanceof GenericArrayType) {
 			return of((GenericArrayType) type);
 		}
-		throw new AssertionError("Unknown type: " + type);
+		throw new AssertionError("Unknown type: " + type); // SUPPRESS JavadocMethod
 	}
 
 	/**
