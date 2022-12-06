@@ -106,6 +106,44 @@ abstract class AbstractProxyServiceSpec extends Specification {
 		resultSecond == "second"
 	}
 
+	def 'interceptor'() {
+		setup:
+		InvocationHandler<Object, Exception, MethodInvocation<SimpleService>> handler = Mock()
+		InvocationHandler<Object, Exception, MethodInvocation<SimpleService>> interceptor = Mock()
+
+		when:
+		def proxy = ProxyBuilder.forInterface(SimpleService)
+				.withInterceptor(interceptor)
+				.usingService(service)
+				.instantiate(handler)
+
+		then:
+		proxy instanceof SimpleService
+
+		when:
+		def resultFirst = proxy.process("value")
+
+		then:
+		1 * interceptor.handle({ invocation(it, SimpleService.METHOD, proxy, "value") }) >>
+				{ MethodInvocation<SimpleService> i -> i.invoke() }
+
+		then:
+		1 * handler.handle({ invocation(it, SimpleService.METHOD, proxy, "value") }) >> "first"
+
+		and:
+		resultFirst == "first"
+
+		when:
+		def resultSecond = proxy.process("other")
+
+		then:
+		1 * interceptor.handle({ invocation(it, SimpleService.METHOD, proxy, "other") }) >> "second"
+		0 * handler.handle(_)
+
+		and:
+		resultSecond == "second"
+	}
+
 	def 'checked exception'() {
 		setup:
 		InvocationHandler<Object, Exception, MethodInvocation<CheckedService>> handler = Mock()

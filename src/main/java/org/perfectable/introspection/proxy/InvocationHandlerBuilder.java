@@ -123,7 +123,7 @@ public final class InvocationHandlerBuilder<T> {
 	 *
 	 * @return Invocation handler configured from this builder
 	 */
-	public InvocationHandler<?, ?, MethodInvocation<T>> build() {
+	public InvocationHandler<@Nullable ?, ?, MethodInvocation<T>> build() {
 		return new InvocationHandler<@Nullable Object, Exception, MethodInvocation<T>>() {
 			@Override
 			public @Nullable Object handle(MethodInvocation<T> invocation) throws Exception {
@@ -141,7 +141,7 @@ public final class InvocationHandlerBuilder<T> {
 	 * @return proxy instance backed by built handler
 	 */
 	public T instantiate(Class<T> proxyClass) {
-		InvocationHandler<?, ?, MethodInvocation<T>> handler = build();
+		InvocationHandler<@Nullable ?, ?, MethodInvocation<T>> handler = build();
 		return ProxyBuilder.forType(proxyClass).instantiate(handler);
 	}
 

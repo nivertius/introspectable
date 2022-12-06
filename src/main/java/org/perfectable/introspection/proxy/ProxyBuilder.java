@@ -21,10 +21,13 @@ import static com.google.common.base.Preconditions.checkArgument;
 @Immutable
 public final class ProxyBuilder<I> {
 	private ProxyBuilder(@Nullable ClassLoader classLoader, Class<?> baseClass,
-						 ImmutableList<? extends Class<?>> interfaces, ProxyService service) {
+						 ImmutableList<? extends Class<?>> interfaces,
+						 ImmutableList<InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>>> interceptors,
+						 ProxyService service) {
 		this.classLoader = classLoader;
 		this.baseClass = baseClass;
 		this.interfaces = interfaces;
+		this.interceptors = interceptors;
 		this.service = service;
 	}
 
@@ -32,6 +35,8 @@ public final class ProxyBuilder<I> {
 	private final @Nullable ClassLoader classLoader;
 	private final Class<?> baseClass;
 	private final ImmutableList<? extends Class<?>> interfaces;
+	@SuppressWarnings("Immutable")
+	private final ImmutableList<InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>>> interceptors;
 	private final ProxyService service;
 
 	/**
@@ -51,7 +56,8 @@ public final class ProxyBuilder<I> {
 		checkArgument(!Modifier.isFinal(superclass.getModifiers()));
 		@Nullable ClassLoader classLoader = superclass.getClassLoader();
 		ProxyService service = ProxyService.INSTANCES.get(ProxyService.Feature.SUPERCLASS);
-		return new ProxyBuilder<>(classLoader, superclass, ImmutableList.of(), service);
+		return new ProxyBuilder<>(classLoader, superclass, ImmutableList.of(),
+			ImmutableList.of(), service);
 	}
 
 	/**
@@ -68,7 +74,8 @@ public final class ProxyBuilder<I> {
 		checkArgument(baseInterface.isInterface());
 		@Nullable ClassLoader classLoader = baseInterface.getClassLoader();
 		ProxyService service = ProxyService.INSTANCES.get();
-		return new ProxyBuilder<>(classLoader, Object.class, ImmutableList.of(baseInterface), service);
+		return new ProxyBuilder<>(classLoader, Object.class, ImmutableList.of(baseInterface),
+			ImmutableList.of(), service);
 	}
 
 	/**
@@ -99,7 +106,24 @@ public final class ProxyBuilder<I> {
 		checkArgument(Objects.equals(classLoader, additionalInterface.getClassLoader()));
 		ImmutableList<? extends Class<?>> newInterfaces = ImmutableList.<Class<?>>builder()
 			.addAll(interfaces).add(additionalInterface).build();
-		return new ProxyBuilder<>(classLoader, baseClass, newInterfaces, service);
+		return new ProxyBuilder<>(classLoader, baseClass, newInterfaces, interceptors, service);
+	}
+
+	/**
+	 * Creates proxy builder that will apply specified interceptor to produced proxy.
+	 *
+	 * <p>Interceptors will be in order they are introduced, i.e. the first one passed to this method for specific proxy
+	 * will receive actual call, and will proceed to the next interceptor.
+	 *
+	 * @param interceptor interceptor to add
+	 * @return new proxy builder with added interceptor
+	 */
+	public ProxyBuilder<I> withInterceptor(
+			InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>> interceptor) {
+		ImmutableList<InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>>> newInterceptors =
+			ImmutableList.<InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>>>builder()
+				.add(interceptor).addAll(interceptors).build();
+		return new ProxyBuilder<>(classLoader, baseClass, interfaces, newInterceptors, service);
 	}
 
 	/**
@@ -112,7 +136,7 @@ public final class ProxyBuilder<I> {
 	 * @return new proxy builder with replaced service
 	 */
 	public ProxyBuilder<I> usingService(ProxyService newService) {
-		return new ProxyBuilder<>(classLoader, baseClass, interfaces, newService);
+		return new ProxyBuilder<>(classLoader, baseClass, interfaces, interceptors, newService);
 	}
 
 	/**
@@ -121,7 +145,20 @@ public final class ProxyBuilder<I> {
 	 * @param handler method that proxy will delegate its calls to
 	 * @return proxy instance
 	 */
-	public I instantiate(InvocationHandler<?, ?, ? super MethodInvocation<I>> handler) {
-		return service.instantiate(classLoader, baseClass, interfaces, handler);
+	public I instantiate(InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>> handler) {
+		InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>> finalHandler =
+			joinInterceptors(handler);
+		return service.instantiate(classLoader, baseClass, interfaces, finalHandler);
 	}
+
+	private InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>> joinInterceptors(
+		InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>> handler) {
+		InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>> current = handler;
+		for (InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>> wrapper : interceptors) {
+			InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>> finalCurrent = current;
+			current = invocation -> wrapper.handle(new InterceptedMethodInvocation<>(invocation, finalCurrent));
+		}
+		return current;
+	}
+
 }
