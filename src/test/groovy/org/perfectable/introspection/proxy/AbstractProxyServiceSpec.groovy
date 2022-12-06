@@ -1,6 +1,6 @@
 package org.perfectable.introspection.proxy
 
-
+import org.aopalliance.intercept.MethodInterceptor
 import spock.lang.Requires
 import spock.lang.Shared
 import spock.lang.Specification
@@ -144,6 +144,44 @@ abstract class AbstractProxyServiceSpec extends Specification {
 		resultSecond == "second"
 	}
 
+	def 'aopalliance interceptor'() {
+		setup:
+		InvocationHandler<Object, Exception, MethodInvocation<SimpleService>> handler = Mock()
+		MethodInterceptor interceptor = Mock()
+
+		when:
+		def proxy = ProxyBuilder.forInterface(SimpleService)
+				.withAopInterceptor(interceptor)
+				.usingService(service)
+				.instantiate(handler)
+
+		then:
+		proxy instanceof SimpleService
+
+		when:
+		def resultFirst = proxy.process("value")
+
+		then:
+		1 * interceptor.invoke({ aopinvocation(it, SimpleService.METHOD, proxy, "value") }) >>
+				{ org.aopalliance.intercept.MethodInvocation i -> i.proceed() }
+
+		then:
+		1 * handler.handle({ invocation(it, SimpleService.METHOD, proxy, "value") }) >> "first"
+
+		and:
+		resultFirst == "first"
+
+		when:
+		def resultSecond = proxy.process("other")
+
+		then:
+		1 * interceptor.invoke({ aopinvocation(it, SimpleService.METHOD, proxy, "other") }) >> "second"
+		0 * handler.handle(_)
+
+		and:
+		resultSecond == "second"
+	}
+
 	def 'checked exception'() {
 		setup:
 		InvocationHandler<Object, Exception, MethodInvocation<CheckedService>> handler = Mock()
@@ -242,6 +280,11 @@ abstract class AbstractProxyServiceSpec extends Specification {
 		return invocation.decompose({ Method actualMethod, I actualReceiver, Object[] actualArguments ->
 			method == actualMethod && receiver == actualReceiver && arguments == actualArguments
 		})
+	}
+
+	static boolean aopinvocation(org.aopalliance.intercept.MethodInvocation invocation,
+								 Method method, Object receiver, Object... arguments) {
+		return invocation.method == method && invocation.getThis() == receiver && invocation.arguments == arguments;
 	}
 
 	interface SimpleService {

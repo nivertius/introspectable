@@ -127,6 +127,19 @@ public final class ProxyBuilder<I> {
 	}
 
 	/**
+	 * Creates proxy builder that will apply specified AOP Alliance interceptor to produced proxy.
+	 *
+	 * <p>Interceptors will be in order they are introduced, i.e. the first one passed to this method for specific proxy
+	 * will receive actual call, and will proceed to the next interceptor.
+	 *
+	 * @param interceptor interceptor to add
+	 * @return new proxy builder with added interceptor
+	 */
+	public ProxyBuilder<I> withAopInterceptor(org.aopalliance.intercept.MethodInterceptor interceptor) {
+		return withInterceptor(new MethodInterceptorAdapter<>(interceptor));
+	}
+
+	/**
 	 * Creates proxy builder that have proxy service replaced.
 	 *
 	 * <p>This method is optional, and needed only if specific service needs to be used. ProxyBuilder will normally
