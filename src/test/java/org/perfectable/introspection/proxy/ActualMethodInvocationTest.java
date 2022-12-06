@@ -14,7 +14,7 @@ import static org.perfectable.introspection.SimpleReflections.getMethod;
 // SUPPRESS FILE MagicNumber
 // SUPPRESS FILE IllegalThrows
 @SuppressWarnings("DoNotCallSuggester")
-class MethodInvocationTest {
+class ActualMethodInvocationTest {
 
 	private static final String EXAMPLE_FIRST_ARGUMENT = "firstArgument";
 
@@ -22,7 +22,7 @@ class MethodInvocationTest {
 	void testNegativeCallabilityStaticNonNullReceiver() throws Throwable {
 		NoArguments instance = new NoArguments();
 
-		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD_STATIC, instance))
+		assertThatThrownBy(() -> ActualMethodInvocation.of(NoArguments.METHOD_STATIC, instance))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("Method " + NoArguments.METHOD_STATIC // SUPPRESS AvoidDuplicateLiterals
 				+ " is static, got " + instance + " as receiver");
@@ -30,7 +30,7 @@ class MethodInvocationTest {
 
 	@Test
 	void testNegativeCallabilityNonStaticNullReceiver() throws Throwable {
-		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD1, null))
+		assertThatThrownBy(() -> ActualMethodInvocation.of(NoArguments.METHOD1, null))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("Method " + NoArguments.METHOD1
 				+ " is not static, got null as receiver");
@@ -39,7 +39,7 @@ class MethodInvocationTest {
 	@Test
 	void testNegativeCallabilityInvalidReceiverType() throws Throwable {
 		VariableArguments instance = new VariableArguments();
-		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD1, instance))
+		assertThatThrownBy(() -> ActualMethodInvocation.of(NoArguments.METHOD1, instance))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("Method " + NoArguments.METHOD1
 				+ " requires " + NoArguments.class + " as receiver, got " + instance);
@@ -48,7 +48,7 @@ class MethodInvocationTest {
 	@Test
 	void testNegativeCallabilityInvalidArgumentCountConstantArguments() throws Throwable {
 		NoArguments instance = new NoArguments();
-		assertThatThrownBy(() -> MethodInvocation.of(NoArguments.METHOD1, instance, 1))
+		assertThatThrownBy(() -> ActualMethodInvocation.of(NoArguments.METHOD1, instance, 1))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("Method " + NoArguments.METHOD1
 				+ " requires 0 arguments, got 1");
@@ -57,7 +57,7 @@ class MethodInvocationTest {
 	@Test
 	void testNegativeCallabilityInvalidArgumentCountVariableArguments() throws Throwable {
 		VariableArguments instance = new VariableArguments();
-		assertThatThrownBy(() -> MethodInvocation.of(VariableArguments.METHOD, instance))
+		assertThatThrownBy(() -> ActualMethodInvocation.of(VariableArguments.METHOD, instance))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("Method " + VariableArguments.METHOD
 				+ " requires at least 1 arguments, got 0");
@@ -67,7 +67,8 @@ class MethodInvocationTest {
 	void testNegativeCallabilityNullPrimitiveArgument() throws Throwable {
 		String firstArgument = EXAMPLE_FIRST_ARGUMENT;
 		VariablePrimitiveArguments instance = new VariablePrimitiveArguments();
-		assertThatThrownBy(() -> MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance, firstArgument, null))
+		assertThatThrownBy(() -> ActualMethodInvocation.of(VariablePrimitiveArguments.METHOD,
+			instance, firstArgument, null))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("Method " + VariablePrimitiveArguments.METHOD
 				+ " has primitive int as parameter 2, got null argument");
@@ -78,7 +79,7 @@ class MethodInvocationTest {
 		String firstArgument = EXAMPLE_FIRST_ARGUMENT;
 		int secondArgument = 329387;
 		VariableArguments instance = new VariableArguments();
-		assertThatThrownBy(() -> MethodInvocation.of(VariableArguments.METHOD, instance,
+		assertThatThrownBy(() -> ActualMethodInvocation.of(VariableArguments.METHOD, instance,
 			firstArgument, secondArgument))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("Method " + VariableArguments.METHOD + " takes " + String.class + " as parameter 2,"
@@ -89,7 +90,7 @@ class MethodInvocationTest {
 	void testInvokeNoArguments() throws Throwable {
 		NoArguments instance = new NoArguments();
 
-		MethodInvocation<NoArguments> invocation = MethodInvocation.of(NoArguments.METHOD1, instance);
+		MethodInvocation<NoArguments> invocation = ActualMethodInvocation.of(NoArguments.METHOD1, instance);
 
 		@Nullable Object result = invocation.invoke();
 
@@ -103,7 +104,7 @@ class MethodInvocationTest {
 		NoArguments replaced = new NoArguments();
 
 		MethodInvocation<NoArguments> invocation =
-			MethodInvocation.of(NoArguments.METHOD1, instance).withReceiver(replaced);
+			ActualMethodInvocation.of(NoArguments.METHOD1, instance).withReceiver(replaced);
 
 		@Nullable Object result = invocation.invoke();
 
@@ -117,7 +118,7 @@ class MethodInvocationTest {
 		NoArguments instance = new NoArguments();
 
 		MethodInvocation<NoArguments> invocation =
-			MethodInvocation.of(NoArguments.METHOD1, instance).withMethod(NoArguments.METHOD2);
+			ActualMethodInvocation.of(NoArguments.METHOD1, instance).withMethod(NoArguments.METHOD2);
 
 		@Nullable Object result = invocation.invoke();
 
@@ -134,7 +135,7 @@ class MethodInvocationTest {
 		String replacedFirstArgument = "replacedFirstArgument";
 		String replacedSecondArgument = "replacedSecondArgument";
 		MethodInvocation<SimpleArguments> invocation =
-			MethodInvocation.of(SimpleArguments.METHOD, instance, firstArgument, secondArgument);
+			ActualMethodInvocation.of(SimpleArguments.METHOD, instance, firstArgument, secondArgument);
 		MethodInvocation<SimpleArguments> replaced =
 			invocation.withArguments(replacedFirstArgument, replacedSecondArgument);
 
@@ -151,7 +152,7 @@ class MethodInvocationTest {
 		String firstArgument = EXAMPLE_FIRST_ARGUMENT;
 		String secondArgument = "secondArgument";
 		MethodInvocation<SimpleArguments> invocation =
-			MethodInvocation.of(SimpleArguments.METHOD, instance, firstArgument, secondArgument);
+			ActualMethodInvocation.of(SimpleArguments.METHOD, instance, firstArgument, secondArgument);
 
 		@Nullable Object result = invocation.invoke();
 
@@ -167,7 +168,7 @@ class MethodInvocationTest {
 		String secondArgument = "secondArgument";
 		String thirdArgument = "thirdArgument";
 		MethodInvocation<VariableArguments> invocation =
-			MethodInvocation.of(VariableArguments.METHOD, instance, firstArgument, secondArgument, thirdArgument);
+			ActualMethodInvocation.of(VariableArguments.METHOD, instance, firstArgument, secondArgument, thirdArgument);
 
 		@Nullable Object result = invocation.invoke();
 
@@ -183,7 +184,7 @@ class MethodInvocationTest {
 		int secondArgument = 238;
 		int thirdArgument = 474;
 		MethodInvocation<VariablePrimitiveArguments> invocation =
-			MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
+			ActualMethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
 				firstArgument, secondArgument, thirdArgument);
 
 		@Nullable Object result = invocation.invoke();
@@ -202,21 +203,21 @@ class MethodInvocationTest {
 		int secondArgument = 238;
 		int thirdArgument = 474;
 		MethodInvocation<VariablePrimitiveArguments> invocation =
-			MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
+			ActualMethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
 				firstArgument, secondArgument, thirdArgument);
 
 		assertThat(invocation).isEqualTo(invocation);
 		assertThat(invocation).isEqualTo(
-			MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
+			ActualMethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
 				firstArgument, secondArgument, thirdArgument));
 		assertThat(invocation).isNotEqualTo(
-			MethodInvocation.of(VariablePrimitiveArguments.EXPECT_METHOD, instance,
+			ActualMethodInvocation.of(VariablePrimitiveArguments.EXPECT_METHOD, instance,
 				firstArgument, new int[] { secondArgument, thirdArgument }));
 		assertThat(invocation).isNotEqualTo(
-			MethodInvocation.of(VariablePrimitiveArguments.METHOD, otherInstance,
+			ActualMethodInvocation.of(VariablePrimitiveArguments.METHOD, otherInstance,
 				firstArgument, secondArgument, thirdArgument));
 		assertThat(invocation).isNotEqualTo(
-			MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
+			ActualMethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
 				firstArgument, secondArgument));
 		assertThat(invocation).isNotEqualTo(null);
 		assertThat(invocation).isNotEqualTo(new Object());
@@ -231,7 +232,7 @@ class MethodInvocationTest {
 		int secondArgument = 238;
 		int thirdArgument = 474;
 		MethodInvocation<VariablePrimitiveArguments> invocation =
-			MethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
+			ActualMethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
 				firstArgument, secondArgument, thirdArgument);
 
 
