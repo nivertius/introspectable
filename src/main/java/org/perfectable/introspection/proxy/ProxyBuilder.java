@@ -164,6 +164,16 @@ public final class ProxyBuilder<I> {
 		return service.instantiate(classLoader, baseClass, interfaces, finalHandler);
 	}
 
+	/**
+	 * Creates instance of configured proxy class.
+	 *
+	 * @param target Object that will receive intercepted calls.
+	 * @return proxy instance
+	 */
+	public I delegateTo(I target) {
+		return instantiate(ForwardingHandler.of(target));
+	}
+
 	private InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>> joinInterceptors(
 		InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>> handler) {
 		InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<I>> current = handler;
