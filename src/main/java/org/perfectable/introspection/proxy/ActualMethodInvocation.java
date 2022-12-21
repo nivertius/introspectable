@@ -76,7 +76,7 @@ final class ActualMethodInvocation<T> implements MethodInvocation<T> {
 	@Override
 	@CanIgnoreReturnValue
 	public <R> R decompose(Decomposer<? super T, R> decomposer) {
-		return decomposer.decompose(method, receiver, arguments.clone());
+		return decomposer.decompose(method, receiver, arguments);
 	}
 
 

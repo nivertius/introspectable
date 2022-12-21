@@ -99,6 +99,10 @@ public interface MethodInvocation<T> extends Invocation<@Nullable Object, Except
 	 *     return replacedMethodInvocation.invoke();
 	 * </pre>
 	 *
+	 * <p>Decomposition will return modifiable arguments array. This shouldn't be a problem in normal use - they are not
+	 * usually modified. If you are concerned when passing invocation, you can clone it. This decision was also made to
+	 * allow invocation to be compatible with {@link org.aopalliance.intercept.MethodInvocation} from AOP Alliance.
+	 *
 	 * @param decomposer decomposer to use for this invocation
 	 * @param <R> return type of decomposition
 	 * @return whatever decomposer returned on its {@link Decomposer#decompose} call
@@ -153,7 +157,8 @@ public interface MethodInvocation<T> extends Invocation<@Nullable Object, Except
 		 *
 		 * @param method method that was called
 		 * @param receiver receiver that the method was called on, or null if the method was static
-		 * @param arguments arguments passed to the method, in source (<i>flat</i>) representation
+		 * @param arguments arguments passed to the method, in source (<i>flat</i>) representation. In this library,
+		 *                  arguments are returned as-is, without cloning, so they can be modified.
 		 * @return result of decomposition
 		 */
 		R decompose(Method method, T receiver, @Nullable Object... arguments);
