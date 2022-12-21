@@ -185,6 +185,17 @@ public abstract class TypeView {
 		return of(parameter);
 	}
 
+	/**
+	 * Returns view return type of method.
+	 *
+	 * @param method to extract return type from
+	 * @return view of type of return type
+	 * @see #ofTypeParameterOf
+	 */
+	public static TypeView ofReturnType(Method method) {
+		return of(method.getGenericReturnType());
+	}
+
 	TypeView() {
 		// package-only extension
 	}
