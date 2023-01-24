@@ -35,7 +35,7 @@ public class MockitoExtension implements TestInstancePostProcessor, ParameterRes
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 		throws ParameterResolutionException {
 		Parameter parameter = parameterContext.getParameter();
-		@SuppressWarnings("cast.unsafe")
+		@SuppressWarnings("nullness:cast.unsafe")
 		Object casted = (@NonNull Object) Mockito.mock(parameter.getType(), parameter.getName());
 		return casted;
 	}

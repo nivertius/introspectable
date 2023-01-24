@@ -91,7 +91,7 @@ class ClassQueryTest {
 		protected ClassQuery<Object> createRawQuery() {
 			@Nullable ClassLoader classLoader = ClassQueryTest.class.getClassLoader();
 			Assumptions.assumeTrue(classLoader instanceof URLClassLoader);
-			@SuppressWarnings("cast.unsafe")
+			@SuppressWarnings("nullness:cast.unsafe")
 			ClassLoader castedClassLoader = (@NonNull ClassLoader) classLoader;
 			return ClassQuery.of(castedClassLoader);
 		}

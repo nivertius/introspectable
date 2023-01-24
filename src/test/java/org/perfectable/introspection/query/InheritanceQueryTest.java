@@ -57,7 +57,7 @@ class InheritanceQueryTest {
 
 	@Test
 	void testFilter() {
-		@SuppressWarnings("dereference.of.nullable")
+		@SuppressWarnings("nullness:dereference.of.nullable")
 		InheritanceQuery<Leaf> chain = InheritanceQuery.of(Leaf.class)
 			.filter(type -> type.getPackage().getName().startsWith("org.perfectable"));
 

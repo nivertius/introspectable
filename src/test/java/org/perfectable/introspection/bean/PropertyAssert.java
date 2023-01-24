@@ -53,14 +53,14 @@ final class PropertyAssert<VALUE>
 		return this;
 	}
 
-	@SuppressWarnings("argument")
+	@SuppressWarnings("nullness:argument")
 	public PropertyAssert<VALUE> hasNullValue() {
 		objects.assertNotNull(info, actual);
 		objects.assertNull(info, actual.get());
 		return this;
 	}
 
-	@SuppressWarnings("argument")
+	@SuppressWarnings("nullness:argument")
 	public PropertyAssert<VALUE> hasValueSameAs(@Nullable Object expectedValue) {
 		objects.assertNotNull(info, actual);
 		objects.assertSame(info, actual.get(), expectedValue);

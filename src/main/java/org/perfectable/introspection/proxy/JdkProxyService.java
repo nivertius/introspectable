@@ -57,7 +57,7 @@ public final class JdkProxyService implements ProxyService {
 			this.handler = handler;
 		}
 
-		@SuppressWarnings("override.return")
+		@SuppressWarnings("nullness:override.return")
 		@Override
 		public @Nullable Object invoke(Object proxy, Method method, Object[] args)
 			throws Throwable {

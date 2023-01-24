@@ -12,7 +12,7 @@ import org.mockito.Mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SuppressWarnings("initialization.field.uninitialized")
+@SuppressWarnings("nullness:initialization.field.uninitialized")
 @ExtendWith(MockitoExtension.class)
 class LazyInitializationTest {
 

@@ -181,7 +181,7 @@ final class ActualMethodInvocation<T> implements MethodInvocation<T> {
 			return actuals;
 		}
 		Class<?>[] formals = method.getParameterTypes();
-		@SuppressWarnings("cast.unsafe")
+		@SuppressWarnings("nullness:cast.unsafe") // vararg argument will never be null
 		Object variableActual = (@NonNull Object) actuals[actuals.length - 1];
 		int variableLength = Array.getLength(variableActual);
 		int resultSize = (formals.length - 1) + variableLength;
@@ -222,7 +222,7 @@ final class ActualMethodInvocation<T> implements MethodInvocation<T> {
 			int overflowArguments = arguments.length - parameterTypes.length + 1;
 			methodHandle = methodHandle.asCollector(lastParameterType, overflowArguments);
 		}
-		@SuppressWarnings("argument")
+		@SuppressWarnings("nullness:argument")
 		MethodHandle createdHandle = MethodHandles.insertArguments(methodHandle, 0, arguments);
 		this.handle = createdHandle;
 	}

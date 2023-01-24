@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SuppressWarnings({"MultipleStringLiterals", "argument"})
+@SuppressWarnings({"MultipleStringLiterals", "nullness:argument"})
 public class InvocationHandlerBuilderTest {
 
 	@Test
@@ -81,7 +81,7 @@ public class InvocationHandlerBuilderTest {
 		marker.check(proxy);
 	}
 
-	@SuppressWarnings("initialization.fields.uninitialized")
+	@SuppressWarnings("nullness:initialization.fields.uninitialized")
 	private static final class Marker<T, V> {
 		private boolean called;
 		private T acceptedReceiver;

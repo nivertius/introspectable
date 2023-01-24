@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import static org.perfectable.introspection.SimpleReflections.getField;
 import static org.perfectable.introspection.SimpleReflections.getMethod;
 
-@SuppressWarnings({"unused", "initialization.field.uninitialized"})
+@SuppressWarnings({"unused", "nullness:initialization.field.uninitialized"})
 final class TypeExamples {
 	interface Root<X> {
 		TypeVariable<?> CLASS_FIRST_VARIABLE = Root.class.getTypeParameters()[0];
@@ -38,7 +38,7 @@ final class TypeExamples {
 		<Y extends X> void methodWithExtendsTypeParameter(Y parameter);
 	}
 
-	@SuppressWarnings("initialization.fields.uninitialized")
+	@SuppressWarnings("nullness:initialization.fields.uninitialized")
 	abstract static class Unbounded<U extends Number> implements Root<U> {
 		static final TypeVariable<?> CLASS_FIRST_VARIABLE = Unbounded.class.getTypeParameters()[0];
 

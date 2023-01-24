@@ -14,10 +14,10 @@ import static org.perfectable.introspection.query.AbstractQueryAssert.assertThat
 class AnnotationQueryTest {
 	private static final String EXAMPLE_STRING = "testString";
 
-	@SuppressWarnings("assignment")
+	@SuppressWarnings("nullness:assignment")
 	private static final Documented INSTANCE_DOCUMENTED =
 		Nullable.class.getAnnotation(Documented.class);
-	@SuppressWarnings("assignment")
+	@SuppressWarnings("nullness:assignment")
 	private static final Retention INSTANCE_RETENTION =
 		Nullable.class.getAnnotation(Retention.class);
 

@@ -68,7 +68,7 @@ final class Invocations {
 
 		@Override
 		public S invoke() throws X {
-			@SuppressWarnings("assignment")
+			@SuppressWarnings("nullness:assignment")
 			R result = parent.invoke();
 			return targetCast.cast(result);
 		}

@@ -405,9 +405,9 @@ public abstract class AnnotationQuery<A extends Annotation>
 			return valueMethod;
 		}
 
-		@SuppressWarnings("cast.unsafe")
+		@SuppressWarnings("nullness:cast.unsafe") // annotation array in repeatable will never be null
 		public Stream<Annotation> extractContents(Annotation source, Method extractionMethod) {
-			Object resultArray;
+			@NonNull Object resultArray;
 			try {
 				resultArray = (@NonNull Object) extractionMethod.invoke(source);
 			}

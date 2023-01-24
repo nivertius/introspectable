@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.perfectable.introspection.bean.BeanAssert.assertThat;
 
 // SUPPRESS FILE MultipleStringLiterals
-@SuppressWarnings({"initialization.static.field.uninitialized", "initialization.field.uninitialized"})
+@SuppressWarnings({"nullness:initialization.static.field.uninitialized", "nullness:initialization.field.uninitialized"})
 class BeanTest {
 	private static final String MESSAGE_METHOD_CALLED = "Test method should not be called";
 	public static final String NON_EXISTENT_PROPERTY_NAME = "nonExistentProperty";
@@ -68,7 +68,7 @@ class BeanTest {
 			.hasValueSameAs(oneValue);
 	}
 
-	@SuppressWarnings({"initialization.static.fields.uninitialized", "initialization.field.uninitialized"})
+	@SuppressWarnings({"initialization.static.fields.uninitialized", "nullness:initialization.field.uninitialized"})
 	static class SingleFieldSubject {
 		static final String PROPERTY_ONE_NAME = "one";
 

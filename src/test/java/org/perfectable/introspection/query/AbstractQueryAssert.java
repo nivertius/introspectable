@@ -54,7 +54,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 		return myself;
 	}
 
-	@SuppressWarnings("argument")
+	@SuppressWarnings("nullness:argument")
 	AbstractQueryAssert<ELEMENT, QUERY> hasOption(ELEMENT onlyElement) {
 		checkOptionPresent();
 		Optional<? extends ELEMENT> option = actual.option();
@@ -86,7 +86,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 	}
 
 	@SafeVarargs
-	@SuppressWarnings({"varargs", "argument"})
+	@SuppressWarnings({"varargs", "nullness:argument"})
 	final AbstractQueryAssert<ELEMENT, QUERY> contains(@Nullable ELEMENT... elements) {
 		checkArgument(elements.length > 0, "use isEmpty instead"); // SUPPRESS MultipleStringLiterals
 		List<? extends ELEMENT> mapped = collectElements();
@@ -96,7 +96,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 	}
 
 	@SafeVarargs
-	@SuppressWarnings({"varargs", "argument"})
+	@SuppressWarnings({"varargs", "nullness:argument"})
 	final AbstractQueryAssert<ELEMENT, QUERY> containsExactly(@Nullable ELEMENT... elements) {
 		checkArgument(elements.length > 0, "use isEmpty instead"); // SUPPRESS MultipleStringLiterals
 		List<? extends ELEMENT> mapped = collectElements();
@@ -105,7 +105,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 		return myself;
 	}
 
-	@SuppressWarnings({"varargs", "argument"})
+	@SuppressWarnings({"varargs", "nullness:argument"})
 	AbstractQueryAssert<ELEMENT, QUERY> sortsCorrectlyWith(Comparator<? super ELEMENT> comparator) {
 		Object[] expected = actual.stream().filter(filter).sorted(comparator).toArray();
 		QUERY tested = actual.sorted(comparator).filter(filter);
@@ -114,7 +114,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 	}
 
 
-	@SuppressWarnings("argument")
+	@SuppressWarnings("nullness:argument")
 	AbstractQueryAssert<ELEMENT, QUERY> doesNotContain(@Nullable Object... elements) {
 		iterables.assertDoesNotContain(info, actual, elements);
 		for (@Nullable Object element : elements) {
@@ -142,7 +142,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 		}
 	}
 
-	@SuppressWarnings("argument")
+	@SuppressWarnings("nullness:argument")
 	private void checkUniqueThrows(Class<? extends Throwable> exceptionClass) {
 		try {
 			ELEMENT uniqueResult = this.actual.unique();
@@ -155,7 +155,7 @@ final class AbstractQueryAssert<ELEMENT extends @NonNull Object, QUERY extends A
 		}
 	}
 
-	@SuppressWarnings("argument")
+	@SuppressWarnings("nullness:argument")
 	@SafeVarargs
 	private final void checkContains(@Nullable ELEMENT... elements) {
 		if (elements.length > 2) { // SUPPRESS AvoidLiteralsInIfCondition

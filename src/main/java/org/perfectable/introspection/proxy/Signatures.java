@@ -113,7 +113,7 @@ public final class Signatures {
 		@Override
 		default Invocation<Void, X> toInvocation(@Nullable Object... arguments) {
 			checkArguments(arguments, 1);
-			@SuppressWarnings("assignment")
+			@SuppressWarnings("nullness:assignment")
 			P1 argument1 = (P1) arguments[0];
 			return () -> {
 				call(argument1);
@@ -143,9 +143,9 @@ public final class Signatures {
 		@Override
 		default Invocation<Void, X> toInvocation(@Nullable Object... arguments) {
 			checkArguments(arguments, 2);
-			@SuppressWarnings("assignment")
+			@SuppressWarnings("nullness:assignment")
 			P1 argument1 = (P1) arguments[0];
-			@SuppressWarnings("assignment")
+			@SuppressWarnings("nullness:assignment")
 			P2 argument2 = (P2) arguments[1];
 			return () -> {
 				call(argument1, argument2);
@@ -189,7 +189,7 @@ public final class Signatures {
 		@Override
 		default Invocation<R, X> toInvocation(@Nullable Object... arguments) {
 			checkArguments(arguments, 1);
-			@SuppressWarnings("assignment")
+			@SuppressWarnings("nullness:assignment")
 			P1 argument1 = (P1) arguments[0];
 			return () -> call(argument1);
 		}
@@ -216,9 +216,9 @@ public final class Signatures {
 		@Override
 		default Invocation<R, X> toInvocation(@Nullable Object... arguments) {
 			checkArguments(arguments, 2);
-			@SuppressWarnings("assignment")
+			@SuppressWarnings("nullness:assignment")
 			P1 argument1 = (P1) arguments[0];
-			@SuppressWarnings("assignment")
+			@SuppressWarnings("nullness:assignment")
 			P2 argument2 = (P2) arguments[1];
 			return () -> call(argument1, argument2);
 		}

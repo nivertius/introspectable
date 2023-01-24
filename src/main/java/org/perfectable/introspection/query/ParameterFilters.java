@@ -82,7 +82,7 @@ final class ParameterFilters {
 				else {
 					parameter = lastParameter;
 				}
-				@SuppressWarnings("cast.unsafe")
+				@SuppressWarnings("nullness:cast.unsafe")
 				Class<?> actualParameterType = parameter.equals(lastParameter) ?
 					(@NonNull Class<?>) parameter.getType().getComponentType() : parameter.getType();
 				if (!typeFilter.matches(actualParameterType)) {

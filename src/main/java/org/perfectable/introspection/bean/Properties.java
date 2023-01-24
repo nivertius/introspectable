@@ -106,7 +106,7 @@ final class Properties {
 		}
 
 		@Override
-		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions", "argument"})
+		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions", "nullness:argument"})
 		void set(CT bean, PT value) {
 			try {
 				this.field.set(bean, value);
@@ -241,7 +241,7 @@ final class Properties {
 		}
 
 		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions",
-			"argument"})
+			"nullness:argument"})
 		@Override
 		public void set(CT bean, PT value) {
 			try {
@@ -317,7 +317,7 @@ final class Properties {
 		}
 
 		@Override
-		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions", "argument"})
+		@SuppressWarnings({"PMD.AvoidThrowingRawExceptionTypes", "ThrowSpecificExceptions", "nullness:argument"})
 		public void set(CT bean, PT value) {
 			try {
 				this.setter.invoke(bean, value);

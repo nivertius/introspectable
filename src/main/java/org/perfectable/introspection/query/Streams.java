@@ -62,6 +62,7 @@ final class Streams {
 		}
 
 		@Override
+		@SuppressWarnings("nullness:argument")
 		public boolean tryAdvance(Consumer<? super T> action) {
 			Consumer<T> wrappedAction = (T element) -> {
 				action.accept(element);
@@ -73,7 +74,7 @@ final class Streams {
 				return wrapped.tryAdvance(wrappedAction);
 			}
 			else {
-				@SuppressWarnings("assignment")
+				@SuppressWarnings("nullness:assignment")
 				T generated = buffer.pop();
 				wrappedAction.accept(generated);
 				return true;
@@ -101,8 +102,8 @@ final class Streams {
 			if (!enumeration.hasMoreElements()) {
 				return false;
 			}
-			@SuppressWarnings("cast.unsafe")
-			E nextElement = (@NonNull E) enumeration.nextElement();
+			@SuppressWarnings({"nullness:assignment", "nullness:cast.unsafe"})
+			@NonNull E nextElement = (@NonNull E) enumeration.nextElement();
 			consumer.accept(nextElement);
 			return true;
 		}

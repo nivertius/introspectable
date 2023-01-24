@@ -10,7 +10,7 @@ import static org.perfectable.introspection.SimpleReflections.getConstructor;
 import static org.perfectable.introspection.SimpleReflections.getField;
 import static org.perfectable.introspection.SimpleReflections.getMethod;
 
-@SuppressWarnings("assignment")
+@SuppressWarnings("nullness:assignment")
 public final class SubjectReflection {
 	static final String MESSAGE_METHOD_CALLED = "Test method should not be called";
 	static final String MESSAGE_CONSTRUCTOR_CALLED = "Test constructor should not be called";

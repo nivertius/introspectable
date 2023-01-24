@@ -65,7 +65,7 @@ public final class JavassistProxyService implements ProxyService {
 	private static <I> I instantiateProxyClass(Class<I> proxyClass,
 											   InvocationHandler<?, ?, ? super MethodInvocation<I>> handler) {
 		MethodHandler handlerAdapter = JavassistInvocationHandlerAdapter.adapt(handler);
-		@SuppressWarnings("cast.unsafe")
+		@SuppressWarnings("nullness:cast.unsafe")
 		I proxy = (@NonNull I) OBJENESIS.newInstance(proxyClass);
 		((Proxy) proxy).setHandler(handlerAdapter);
 		return proxy;
@@ -83,7 +83,7 @@ public final class JavassistProxyService implements ProxyService {
 			this.handler = handler;
 		}
 
-		@SuppressWarnings("override.return")
+		@SuppressWarnings("nullness:override.return")
 		@Override
 		public @Nullable Object invoke(Object self, Method thisMethod, Method proceed,
 							 @Nullable Object @Nullable [] args)
@@ -92,7 +92,7 @@ public final class JavassistProxyService implements ProxyService {
 			if (thisMethod.equals(ObjectMethods.FINALIZE)) {
 				return null; // ignore proxy finalization
 			}
-			@SuppressWarnings({"unchecked"})
+			@SuppressWarnings({"unchecked", "nullness:cast.unsafe"})
 			@NonNull T castedSelf = (@NonNull T) self;
 			MethodInvocation<T> invocation = MethodInvocation.intercepted(thisMethod, castedSelf, args);
 			return this.handler.handle(invocation);

@@ -87,7 +87,7 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 		return capturingClass.replaceAll("/", ".");
 	}
 
-	@SuppressWarnings("cast.unsafe")
+	@SuppressWarnings("nullness:cast.unsafe") // serialized lambda is always returned
 	private static SerializedLambda extractSerializedLambda(FunctionalReference marker, Method writeReplace) {
 		SerializedLambda serializedForm;
 		try {
