@@ -249,7 +249,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 			if (ANNOTATION_TYPE_METHOD.equals(method)) {
 				return annotationType;
 			}
-			return valueMap.getOrDefault(method, method.getDefaultValue());
+			return getMember(method);
 		}
 
 		boolean calculateEquals(@Nullable Object other) {
@@ -262,7 +262,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 				return false;
 			}
 			for (Method method : annotationType.getDeclaredMethods()) {
-				Object thisValue = valueMap.getOrDefault(method, method.getDefaultValue());
+				Object thisValue = getMember(method);
 				@Nullable Object otherValue = safeInvoke(method, other);
 				if (otherValue == null) {
 					return false;
@@ -281,7 +281,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 					int current = 0;
 					for (Method method : annotationType.getDeclaredMethods()) {
 						String name = method.getName();
-						Object value = (@NonNull Object) valueMap.getOrDefault(method, method.getDefaultValue());
+						Object value = getMember(method);
 						current += MEMBER_NAME_HASH_MULTIPLIER * name.hashCode() ^ memberHashCode(value);
 					}
 					cachedHashCode = current;
@@ -300,7 +300,7 @@ public final class AnnotationBuilder<A extends Annotation> {
 					for (Method method : annotationType.getDeclaredMethods()) {
 						builder.append(written ? ", " : "");
 						written = true;
-						Object value = (@NonNull Object) valueMap.getOrDefault(method, method.getDefaultValue());
+						Object value = getMember(method);
 						builder.append(method.getName()).append("=").append(formatValue(value));
 					}
 					builder.append(")");
@@ -308,6 +308,10 @@ public final class AnnotationBuilder<A extends Annotation> {
 				}
 			}
 			return cachedRepresentation;
+		}
+
+		private Object getMember(Method method) {
+			return (@NonNull Object) valueMap.getOrDefault(method, method.getDefaultValue());
 		}
 	}
 
