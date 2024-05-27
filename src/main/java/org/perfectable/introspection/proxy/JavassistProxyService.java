@@ -37,7 +37,8 @@ public final class JavassistProxyService implements ProxyService {
 	}
 
 	@Override
-	public <I> I instantiate(@Nullable ClassLoader classLoader, Class<?> baseClass, List<? extends Class<?>> interfaces,
+	public <I extends @NonNull Object> I instantiate(@Nullable ClassLoader classLoader, Class<?> baseClass,
+	                                                 List<? extends Class<?>> interfaces,
 							 InvocationHandler<?, ?, ? super MethodInvocation<I>> handler)
 			throws UnsupportedFeatureException {
 		checkArgument(!Modifier.isFinal(baseClass.getModifiers()));
@@ -62,11 +63,11 @@ public final class JavassistProxyService implements ProxyService {
 		}
 	}
 
-	private static <I> I instantiateProxyClass(Class<I> proxyClass,
+	private static <I extends @NonNull Object> I instantiateProxyClass(Class<I> proxyClass,
 											   InvocationHandler<?, ?, ? super MethodInvocation<I>> handler) {
 		MethodHandler handlerAdapter = JavassistInvocationHandlerAdapter.adapt(handler);
 		@SuppressWarnings("nullness:cast.unsafe")
-		I proxy = (@NonNull I) OBJENESIS.newInstance(proxyClass);
+		I proxy = OBJENESIS.newInstance(proxyClass);
 		((Proxy) proxy).setHandler(handlerAdapter);
 		return proxy;
 	}

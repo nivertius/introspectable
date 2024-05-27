@@ -162,12 +162,12 @@ final class MethodSignature {
 			};
 		}
 
-		static Wildcard createWithUpperBound(FieldType upper) {
+		static Wildcard createWithUpperBound(@SuppressWarnings("unused") FieldType upper) {
 			return new Wildcard() {
 			};
 		}
 
-		static Wildcard createWithLowerBound(FieldType lower) {
+		static Wildcard createWithLowerBound(@SuppressWarnings("unused") FieldType lower) {
 			return new Wildcard() {
 			};
 		}

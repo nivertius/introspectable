@@ -42,7 +42,7 @@ class AnnotationBuilderTest {
 			.hasMessage("Annotation interface is not a marker");
 	}
 
-	@SuppressWarnings("argument.type.incompatible")
+	@SuppressWarnings("nullness:type.arguments.not.inferred")
 	@Test
 	void nullValue() {
 		AnnotationBuilder<Single> builder = AnnotationBuilder.of(Single.class);

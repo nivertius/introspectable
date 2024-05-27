@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 /**
  * Predicate-like interface for annotations on {@link AnnotatedElement}.
  */
+@SuppressWarnings("ClassInitializationDeadlock")
 @FunctionalInterface
 public interface AnnotationFilter {
 	/** Filter that matches any {@link AnnotatedElement element}. */

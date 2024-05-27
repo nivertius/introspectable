@@ -206,7 +206,7 @@ class ActualMethodInvocationTest {
 			ActualMethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
 				firstArgument, secondArgument, thirdArgument);
 
-		assertThat(invocation).isEqualTo(invocation);
+		assertThat(invocation.equals(invocation)).isTrue();
 		assertThat(invocation).isEqualTo(
 			ActualMethodInvocation.of(VariablePrimitiveArguments.METHOD, instance,
 				firstArgument, secondArgument, thirdArgument));

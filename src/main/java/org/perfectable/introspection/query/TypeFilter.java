@@ -5,6 +5,7 @@ import java.lang.reflect.Type;
 /**
  * Predicate-like interface for matching {@link Type}.
  */
+@SuppressWarnings("ClassInitializationDeadlock")
 @FunctionalInterface
 public interface TypeFilter {
 	/** Filter that matches any {@link Type}. */

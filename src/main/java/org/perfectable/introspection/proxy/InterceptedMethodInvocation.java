@@ -6,10 +6,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 final class InterceptedMethodInvocation<T> implements MethodInvocation<T> {
 	private final MethodInvocation<T> wrapped;
-	private final InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<T>> interceptor;
+	private final InvocationHandler<? extends @Nullable Object, ?, ? super MethodInvocation<T>> interceptor;
 
 	InterceptedMethodInvocation(MethodInvocation<T> wrapped,
-	                            InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<T>> interceptor) {
+	                            InvocationHandler<? extends @Nullable Object, ?,
+		                            ? super MethodInvocation<T>> interceptor) {
 		this.wrapped = wrapped;
 		this.interceptor = interceptor;
 	}
@@ -44,8 +45,8 @@ final class InterceptedMethodInvocation<T> implements MethodInvocation<T> {
 
 	private <S extends T> InterceptedMethodInvocation<S> replace(MethodInvocation<S> updated) {
 		@SuppressWarnings("unchecked")
-		InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<? super S>> casted =
-			(InvocationHandler<@Nullable ?, ?, ? super MethodInvocation<? super S>>) interceptor;
+		InvocationHandler<? extends @Nullable Object, ?, ? super MethodInvocation<? super S>> casted =
+			(InvocationHandler<? extends @Nullable Object, ?, ? super MethodInvocation<? super S>>) interceptor;
 		return new InterceptedMethodInvocation<>(updated, casted);
 	}
 }

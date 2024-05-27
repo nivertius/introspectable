@@ -1,8 +1,8 @@
 package org.perfectable.introspection.query;
 
-import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
@@ -38,13 +38,15 @@ final class Streams {
 		return StreamSupport.stream(spliterator, /* parallel= */false);
 	}
 
-	private static final class GeneratorSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
+	private static final class GeneratorSpliterator<T>
+			extends Spliterators.AbstractSpliterator<T> {
 		private static final int ADDITIONAL_CHARACTERISTICS = 0;
 
 		private final Spliterator<? extends T> wrapped;
 		private final Function<? super T, ? extends Stream<? extends T>> mutator;
 		private final Predicate<? super T> condition;
-		private final Deque<T> buffer = new ArrayDeque<>();
+		@SuppressWarnings("JdkObsolete") // needs to support null elements
+		private final Deque<T> buffer = new LinkedList<>();
 
 		static <T> GeneratorSpliterator<T> wrap(Spliterator<? extends T> wrapped,
 												Function<? super T, ? extends Stream<? extends T>> mutator,
@@ -62,7 +64,6 @@ final class Streams {
 		}
 
 		@Override
-		@SuppressWarnings("nullness:argument")
 		public boolean tryAdvance(Consumer<? super T> action) {
 			Consumer<T> wrappedAction = (T element) -> {
 				action.accept(element);

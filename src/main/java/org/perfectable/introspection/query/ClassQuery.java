@@ -27,6 +27,7 @@ import java.util.zip.ZipEntry;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Ordering;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.LoaderClassPath;
@@ -78,7 +79,7 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 	private static final Predicate<? super String> DEFAULT_CLASSNAME_FILTER = className -> true;
 	private static final Predicate<? super CtClass> DEFAULT_PRE_LOAD_FILTER = ctClass -> true;
 	private static final Predicate<? super Class<?>> DEFAULT_POST_LOAD_FILTER = type -> true;
-	private static final Comparator<? super Class<?>> DEFAULT_SORTING = (l, r) -> 0; // all equal
+	private static final Comparator<? super Class<?>> DEFAULT_SORTING = Ordering.allEqual();
 
 	private static final String CLASS_FILE_SUFFIX = ".class";
 

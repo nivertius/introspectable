@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 
 @SuppressWarnings("nullness:initialization.field.uninitialized")
 @ExtendWith(MockitoExtension.class)
@@ -24,8 +25,8 @@ class LazyInitializationTest {
 		TestInitializer<TestFirstInterface> initializer = new TestInitializer<>(this.firstMock);
 		TestFirstInterface proxy = LazyInitialization.createProxy(TestFirstInterface.class, initializer);
 		initializer.assertNotExecuted();
-		this.firstMock.firstMethod();
 		proxy.firstMethod();
+		verify(firstMock).firstMethod();
 		initializer.assertExecuted();
 	}
 
@@ -41,8 +42,8 @@ class LazyInitializationTest {
 				.extractInstance();
 		assertThat(uninitializedOption).isEmpty();
 
-		this.firstMock.firstMethod();
 		proxy.firstMethod();
+		verify(firstMock).firstMethod();
 
 		initializer.assertExecuted();
 

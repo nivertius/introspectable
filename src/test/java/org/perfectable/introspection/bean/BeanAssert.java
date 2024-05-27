@@ -18,6 +18,7 @@ import static org.assertj.core.internal.TypeComparators.defaultTypeComparators;
 final class BeanAssert<ELEMENT extends @NonNull Object>
 	extends AbstractObjectAssert<BeanAssert<ELEMENT>, Bean<ELEMENT>> {
 
+	@SuppressWarnings("HidingField")
 	private final Objects objects = Objects.instance();
 	private final Iterables iterables = Iterables.instance();
 	private final Map<String, Comparator<?>> comparatorByPropertyOrField = new TreeMap<>();

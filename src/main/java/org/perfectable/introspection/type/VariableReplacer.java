@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 @FunctionalInterface
 interface VariableReplacer {
@@ -53,9 +54,10 @@ interface VariableReplacer {
 			this.substitutions = substitutions;
 		}
 
+		@SuppressWarnings("nullness:cast.unsafe")
 		@Override
 		public Type replacementFor(Type type) {
-			return substitutions.getOrDefault(type, type);
+			return (@NonNull Type) substitutions.getOrDefault(type, type);
 		}
 	}
 }

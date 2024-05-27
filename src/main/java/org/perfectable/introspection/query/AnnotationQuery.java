@@ -288,7 +288,7 @@ public abstract class AnnotationQuery<A extends Annotation>
 		public Stream<X> stream() {
 			return parent.stream()
 					.filter(type::isInstance)
-					.map(type::cast);
+					.<@NonNull X>map(type::cast);
 		}
 
 		@Override

@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -16,7 +17,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  *
  * @param <T> type of proxies supported
  */
-public final class InvocationHandlerBuilder<T> {
+public final class InvocationHandlerBuilder<T extends @NonNull Object> {
 	private final Map<Method, InvocationHandler<?, ?, MethodInvocation<T>>> mapping;
 	private final InvocationHandler<?, ?, MethodInvocation<T>> fallback;
 
@@ -28,7 +29,7 @@ public final class InvocationHandlerBuilder<T> {
 	 * @param <T> Receiver type for intercepted methods
 	 * @return Unconfigured builder
 	 */
-	public static <T> InvocationHandlerBuilder<T> create() {
+	public static <T extends @NonNull Object> InvocationHandlerBuilder<T> create() {
 		InvocationHandler<?, ?, MethodInvocation<T>> fallback = invocation -> {
 			throw new UnsupportedOperationException(); // SUPPRESS JavadocMethod
 		};
@@ -123,7 +124,7 @@ public final class InvocationHandlerBuilder<T> {
 	 *
 	 * @return Invocation handler configured from this builder
 	 */
-	public InvocationHandler<@Nullable ?, ?, MethodInvocation<T>> build() {
+	public InvocationHandler<? extends @Nullable Object, ?, MethodInvocation<T>> build() {
 		return new InvocationHandler<@Nullable Object, Exception, MethodInvocation<T>>() {
 			@Override
 			public @Nullable Object handle(MethodInvocation<T> invocation) throws Exception {
@@ -141,7 +142,7 @@ public final class InvocationHandlerBuilder<T> {
 	 * @return proxy instance backed by built handler
 	 */
 	public T instantiate(Class<T> proxyClass) {
-		InvocationHandler<@Nullable ?, ?, MethodInvocation<T>> handler = build();
+		InvocationHandler<? extends @Nullable Object, ?, MethodInvocation<T>> handler = build();
 		return ProxyBuilder.forType(proxyClass).instantiate(handler);
 	}
 
@@ -166,7 +167,7 @@ public final class InvocationHandlerBuilder<T> {
 	 *
 	 * @param <T> type of proxy
 	 */
-	public interface Binder<T> {
+	public interface Binder<T extends @NonNull Object> {
 		/**
 		 * Binds method invocation to be handled by specific handler.
 		 *
@@ -182,8 +183,8 @@ public final class InvocationHandlerBuilder<T> {
 		 * @param <T> type of proxy
 		 * @param <F> method signature to be accepted
 		 */
-		interface Replacing<T, F extends Signatures.HeadCurryable<T, ? extends Signatures.InvocationConvertible<?, ?>>>
-			extends Binder<T> {
+		interface Replacing<T extends @NonNull Object, F extends
+			Signatures.HeadCurryable<T, ? extends Signatures.InvocationConvertible<?, ?>>> extends Binder<T> {
 
 			/**
 			 * Configures builder to use specified replacement execution when matching method is called.

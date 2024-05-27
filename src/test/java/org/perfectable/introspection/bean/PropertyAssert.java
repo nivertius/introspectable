@@ -7,6 +7,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @SuppressWarnings("BooleanParameter")
 final class PropertyAssert<VALUE>
 	extends AbstractObjectAssert<PropertyAssert<VALUE>, Property<?, VALUE>> {
+	@SuppressWarnings("HidingField")
 	private final Objects objects = Objects.instance();
 
 	private PropertyAssert(Property<?, VALUE> actual) {

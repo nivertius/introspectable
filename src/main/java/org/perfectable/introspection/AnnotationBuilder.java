@@ -311,16 +311,24 @@ public final class AnnotationBuilder<A extends Annotation> {
 		}
 
 		private Object getMember(Method method) {
-			return (@NonNull Object) valueMap.getOrDefault(method, method.getDefaultValue());
+			@Nullable Object explicitValue = valueMap.get(method);
+			if (explicitValue != null) {
+				return explicitValue;
+			}
+			@Nullable Object defaultValue = method.getDefaultValue();
+			if (defaultValue != null) {
+				return defaultValue;
+			}
+			throw new IllegalStateException("No default value for " + method);
 		}
 	}
 
 
 	@SuppressWarnings({"OverlyComplexMethod", "NeedBraces", "NPathComplexity", "CyclomaticComplexity"})
 	private static int memberHashCode(Object value) {
-		Class<@NonNull ?> valueClass = value.getClass();
+		Class<? extends @NonNull Object> valueClass = value.getClass();
 		if (!valueClass.isArray()) return value.hashCode();
-		Class<@Nullable ?> componentType = valueClass.getComponentType();
+		Class<? extends @Nullable Object> componentType = valueClass.getComponentType();
 		if (componentType.equals(byte.class)) return Arrays.hashCode((byte[]) value);
 		if (componentType.equals(char.class)) return Arrays.hashCode((char[]) value);
 		if (componentType.equals(double.class)) return Arrays.hashCode((double[]) value);
@@ -332,15 +340,14 @@ public final class AnnotationBuilder<A extends Annotation> {
 		return Arrays.hashCode((Object[]) value);
 	}
 
-
 	@SuppressWarnings({"OverlyComplexMethod", "NeedBraces", "NPathComplexity", "CyclomaticComplexity"})
 	private static boolean memberEquals(Object current, Object other) {
-		Class<@NonNull ?> valueClass = current.getClass();
+		Class<? extends @NonNull Object> valueClass = current.getClass();
 		if (!valueClass.equals(other.getClass())) {
 			return false;
 		}
 		if (!valueClass.isArray()) return current.equals(other);
-		Class<@Nullable ?> componentType = valueClass.getComponentType();
+		Class<? extends @Nullable Object> componentType = valueClass.getComponentType();
 		if (componentType.equals(byte.class)) return Arrays.equals((byte[]) current, (byte[]) other);
 		if (componentType.equals(char.class)) return Arrays.equals((char[]) current, (char[]) other);
 		if (componentType.equals(double.class)) return Arrays.equals((double[]) current, (double[]) other);
