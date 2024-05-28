@@ -40,7 +40,7 @@ abstract class AbstractProxyServiceSpec extends Specification {
 	}
 
 	@Requires({ instance.service.supportsFeature(ProxyService.Feature.SUPERCLASS) })
-	def 'class with interface'() {
+	def 'custom class with interface'() {
 		setup:
 		InvocationHandler<Object, Exception, MethodInvocation<Number>> handler = Mock()
 
@@ -71,6 +71,28 @@ abstract class AbstractProxyServiceSpec extends Specification {
 
 		and:
 		resultSecond == 23
+	}
+
+	def 'object class with interface'() {
+		setup:
+		InvocationHandler<Object, Exception, MethodInvocation<Package>> handler = Mock()
+		when:
+		def proxy = ProxyBuilder.forClass(Object)
+				.withInterface(SimpleService)
+				.usingService(service)
+				.instantiate(handler)
+
+		then:
+		proxy instanceof SimpleService
+
+		when:
+		def result = (proxy as SimpleService).process("value")
+
+		then:
+		1 * handler.handle({ invocation(it, SimpleService.METHOD, proxy, "value") }) >> "first"
+
+		and:
+		result == "first"
 	}
 
 	def 'multiple interfaces'() {

@@ -1,7 +1,6 @@
 package org.perfectable.introspection.proxy;
 
 import java.lang.reflect.Modifier;
-import java.util.Objects;
 
 import com.google.common.collect.ImmutableList;
 import com.google.errorprone.annotations.Immutable;
@@ -58,7 +57,9 @@ public final class ProxyBuilder<I extends @NonNull Object> {
 		checkArgument(!superclass.isPrimitive());
 		checkArgument(!Modifier.isFinal(superclass.getModifiers()));
 		@Nullable ClassLoader classLoader = superclass.getClassLoader();
-		ProxyService service = ProxyService.INSTANCES.get(ProxyService.Feature.SUPERCLASS);
+		ProxyService.Feature[] requiredFeatures = superclass == Object.class ?
+			new ProxyService.Feature[0] : new ProxyService.Feature[] {ProxyService.Feature.SUPERCLASS};
+		ProxyService service = ProxyService.INSTANCES.get(requiredFeatures);
 		return new ProxyBuilder<>(classLoader, superclass, ImmutableList.of(),
 			ImmutableList.of(), service);
 	}
@@ -106,10 +107,17 @@ public final class ProxyBuilder<I extends @NonNull Object> {
 	 */
 	public ProxyBuilder<I> withInterface(Class<?> additionalInterface) {
 		checkArgument(additionalInterface.isInterface());
-		checkArgument(Objects.equals(classLoader, additionalInterface.getClassLoader()));
+		@Nullable ClassLoader newClassLoader;
+		if (classLoader != null) {
+			checkArgument(classLoader.equals(additionalInterface.getClassLoader()));
+			newClassLoader = classLoader;
+		}
+		else {
+			newClassLoader = additionalInterface.getClassLoader();
+		}
 		ImmutableList<? extends Class<?>> newInterfaces = ImmutableList.<Class<?>>builder()
 			.addAll(interfaces).add(additionalInterface).build();
-		return new ProxyBuilder<>(classLoader, baseClass, newInterfaces, interceptors, service);
+		return new ProxyBuilder<>(newClassLoader, baseClass, newInterfaces, interceptors, service);
 	}
 
 	/**
