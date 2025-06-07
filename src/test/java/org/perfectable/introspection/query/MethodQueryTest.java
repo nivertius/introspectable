@@ -18,8 +18,9 @@ class MethodQueryTest {
 	private static final Predicate<Method> JACOCO_EXCLUSION =
 		method -> !method.getName().equals("$jacocoInit");
 	@SuppressWarnings({"UnnecessaryLambda", "Indentation"})
-	private static final Predicate<Method> REGISTER_NATIVES_EXCLUSION =
-		method -> !(method.getDeclaringClass().equals(Object.class) && method.getName().equals("registerNatives"));
+	private static final Predicate<Method> IGNORED_OBJECT_METHODS =
+		method -> !(method.getDeclaringClass().equals(Object.class) && (
+				method.getName().equals("registerNatives") || method.getName().equals("wait0")));
 	private static final String EXAMPLE_STRING = "testString";
 
 	@Test
@@ -29,7 +30,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.filteredOn(REGISTER_NATIVES_EXCLUSION)
+			.filteredOn(IGNORED_OBJECT_METHODS)
 			.sortsCorrectlyWith(Comparator.comparing(Method::toString))
 			.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT,
 				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
@@ -64,7 +65,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.filteredOn(REGISTER_NATIVES_EXCLUSION)
+			.filteredOn(IGNORED_OBJECT_METHODS)
 			.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT,
 				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
@@ -114,6 +115,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.filteredOn(IGNORED_OBJECT_METHODS)
 			.sortsCorrectlyWith(Comparator.comparing(Method::toString))
 			.containsExactly(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
@@ -131,6 +133,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.filteredOn(IGNORED_OBJECT_METHODS)
 			.sortsCorrectlyWith(Comparator.comparing(Method::toString))
 			.containsExactly(SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.WITH_RESULT_SINGLE_ARGUMENT,
@@ -148,6 +151,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
+			.filteredOn(IGNORED_OBJECT_METHODS)
 			.containsExactly(ObjectMethods.WAIT_TIMEOUT)
 			.doesNotContain(EXAMPLE_STRING, null, SubjectReflection.WITH_RESULT_VARARGS_ARGUMENT,
 				SubjectReflection.STATIC_FIELD);
@@ -160,7 +164,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.filteredOn(REGISTER_NATIVES_EXCLUSION)
+			.filteredOn(IGNORED_OBJECT_METHODS)
 			.containsExactly(ObjectMethods.HASH_CODE, ObjectMethods.EQUALS,
 				ObjectMethods.FINALIZE,
 				ObjectMethods.NOTIFY, ObjectMethods.NOTIFY_ALL,
@@ -223,7 +227,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.filteredOn(REGISTER_NATIVES_EXCLUSION)
+			.filteredOn(IGNORED_OBJECT_METHODS)
 			.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT,
 				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
@@ -251,7 +255,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.filteredOn(REGISTER_NATIVES_EXCLUSION)
+			.filteredOn(IGNORED_OBJECT_METHODS)
 			.sortsCorrectlyWith(Comparator.comparing(Method::toString))
 			.containsExactly(SubjectReflection.NO_RESULT_NO_ARGUMENT,
 				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
@@ -287,7 +291,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.filteredOn(REGISTER_NATIVES_EXCLUSION)
+			.filteredOn(IGNORED_OBJECT_METHODS)
 			.containsExactly(SubjectReflection.Extension.NO_RESULT_NO_ARGUMENT,
 				SubjectReflection.NO_RESULT_SINGLE_ARGUMENT,
 				SubjectReflection.NO_RESULT_PRIMITIVE_ARGUMENT, SubjectReflection.NO_RESULT_STRING_ARGUMENT,
@@ -361,7 +365,7 @@ class MethodQueryTest {
 
 		assertThat(extracted)
 			.filteredOn(JACOCO_EXCLUSION)
-			.filteredOn(REGISTER_NATIVES_EXCLUSION)
+			.filteredOn(IGNORED_OBJECT_METHODS)
 			.containsExactly(ObjectMethods.FINALIZE, ObjectMethods.CLONE,
 				SubjectReflection.METHOD_PROTECTED,
 				SubjectReflection.METHOD_PACKAGE,
