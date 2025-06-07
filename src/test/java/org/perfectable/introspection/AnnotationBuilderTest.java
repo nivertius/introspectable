@@ -105,10 +105,9 @@ class AnnotationBuilderTest {
 
 		@Test
 		void hasRepresentation() {
-			String expected = String.format("@%s$Marker()", AnnotationBuilderTest.class.getName());
+			String expected = String.format("@%s()", Marker.class.getName());
 			assertThat(annotation)
-				.returns(expected, Object::toString)
-				.returns(MarkerHolder.HELD.toString(), Object::toString);
+				.returns(expected, Object::toString);
 		}
 	}
 
@@ -162,7 +161,7 @@ class AnnotationBuilderTest {
 
 		@Test
 		void hasRepresentation() {
-			String expected = String.format("@%s$Single(value=\"testValue\")", AnnotationBuilderTest.class.getName());
+			String expected = String.format("@%s(value=\"testValue\")", Single.class.getName());
 			assertThat(annotation)
 				.returns(expected, Object::toString);
 		}
@@ -219,10 +218,9 @@ class AnnotationBuilderTest {
 
 			@Test
 			void hasRepresentation() {
-				String expected = String.format("@%s$Multiple(one=\"defaultOne\", two=\"testValue\", three=3)",
-					AnnotationBuilderTest.class.getName());
+				String expected = String.format("@%s(one=\"defaultOne\", three=3, two=\"testValue\")",
+					Multiple.class.getName());
 				assertThat(annotation)
-					.returns(MultipleHolder.HELD.toString(), Object::toString)
 					.returns(expected, Object::toString);
 			}
 		}
@@ -282,8 +280,8 @@ class AnnotationBuilderTest {
 
 			@Test
 			void hasRepresentation() {
-				String expected = String.format("@%s$Multiple(one=\"defaultOne\", two=\"twoOther\", three=100)",
-					AnnotationBuilderTest.class.getName());
+				String expected = String.format("@%s(one=\"defaultOne\", three=100, two=\"twoOther\")",
+					Multiple.class.getName());
 				assertThat(annotation)
 					.returns(expected, Object::toString);
 			}
@@ -332,8 +330,8 @@ class AnnotationBuilderTest {
 
 		@Test
 		void hasRepresentation() {
-			String expected = String.format("@%s$ArrayElements(value={\"one\", \"two\", \"three\"})",
-				AnnotationBuilderTest.class.getName());
+			String expected = String.format("@%s(value={\"one\", \"two\", \"three\"})",
+				ArrayElements.class.getName());
 			assertThat(annotation)
 				.returns(expected, Object::toString);
 		}

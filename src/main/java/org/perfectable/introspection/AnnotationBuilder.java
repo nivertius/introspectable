@@ -8,6 +8,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Comparator;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Primitives;
@@ -295,9 +296,12 @@ public final class AnnotationBuilder<A extends Annotation> {
 		private String calculateRepresentation() {
 			if (cachedRepresentation == null) {
 				synchronized (this) {
-					StringBuilder builder = new StringBuilder("@").append(annotationType.getName()).append("(");
+					StringBuilder builder = new StringBuilder("@")
+							.append(annotationType.getName()).append("(");
 					boolean written = false;
-					for (Method method : annotationType.getDeclaredMethods()) {
+					Method[] methods = annotationType.getDeclaredMethods();
+					Arrays.sort(methods, Comparator.comparing(Method::getName));
+					for (Method method : methods) {
 						builder.append(written ? ", " : "");
 						written = true;
 						Object value = getMember(method);
