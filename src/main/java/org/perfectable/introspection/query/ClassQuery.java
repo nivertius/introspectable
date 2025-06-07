@@ -1,10 +1,10 @@
 package org.perfectable.introspection.query; // SUPPRESS FILE FileLength
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileVisitResult;
@@ -448,9 +448,9 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 
 		@Override
 		public Stream<String> entries() {
-			Set<File> visited = new HashSet<>();
+			Set<Path> visited = new HashSet<>();
 			ImmutableSet.Builder<String> resultBuilder = ImmutableSet.builder();
-			generateUrls(url -> generateUrlEntry(url, resultBuilder, visited));
+			generatePaths(uri -> generateUrlEntry(uri, resultBuilder, visited));
 			return resultBuilder.build().stream();
 		}
 
@@ -459,15 +459,14 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			return entries().anyMatch(candidate::equals);
 		}
 
-		protected abstract void generateUrls(Consumer<URL> urlAction);
+		protected abstract void generatePaths(Consumer<Path> pathAction);
 
-		private static void generateUrlEntry(URL url, ImmutableSet.Builder<String> resultBuilder, Set<File> visited) {
-			File file = new File(url.getFile());
+		private static void generateUrlEntry(Path file, ImmutableSet.Builder<String> resultBuilder, Set<Path> visited) {
 			if (visited.contains(file)) {
 				return;
 			}
 			visited.add(file);
-			if (file.isDirectory()) {
+			if (Files.isDirectory(file)) {
 				generateDirectoryEntries(file, resultBuilder);
 			}
 			else {
@@ -475,11 +474,11 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 			}
 		}
 
-		private static void generateJarEntries(File jarPath,
+		private static void generateJarEntries(Path jarPath,
 											   ImmutableSet.Builder<String> resultBuilder,
-											   Set<File> visited) {
+											   Set<Path> visited) {
 			@Nullable String manifestClassPath;
-			try (JarFile jarFile = new JarFile(jarPath)) {
+			try (JarFile jarFile = new JarFile(jarPath.toFile())) {
 				manifestClassPath = getManifestClassPathString(jarFile);
 				Streams.from(jarFile.entries())
 					.filter(entry -> !entry.isDirectory())
@@ -494,15 +493,14 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 				return;
 			}
 			for (String manifestEntry : MANIFEST_CLASSPATH_ENTRY_SPLITTER.split(manifestClassPath)) {
-				URL manifestUrl = safeToUrl(manifestEntry);
-				generateUrlEntry(manifestUrl, resultBuilder, visited);
+				URI manifestUrl = URI.create(manifestEntry);
+				generateUrlEntry(Paths.get(manifestUrl.getPath()), resultBuilder, visited);
 			}
 		}
 
-		private static void generateDirectoryEntries(File directoryBase, ImmutableSet.Builder<String> resultBuilder) {
-			Path basePath = Paths.get(directoryBase.getPath());
-			try {
-				Files.walkFileTree(basePath, new ResultAddingFileVisitor(resultBuilder, basePath));
+		private static void generateDirectoryEntries(Path directoryBase, ImmutableSet.Builder<String> resultBuilder) {
+            try {
+				Files.walkFileTree(directoryBase, new ResultAddingFileVisitor(resultBuilder, directoryBase));
 			}
 			catch (IOException e) {
 				throw new AssertionError(e);
@@ -515,15 +513,6 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 				return null;
 			}
 			return manifest.getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
-		}
-
-		protected static URL safeToUrl(String entry) {
-			try {
-				return new URL(entry);
-			}
-			catch (MalformedURLException e) {
-				throw new AssertionError(e);
-			}
 		}
 
 		private static class ResultAddingFileVisitor extends SimpleFileVisitor<Path> {
@@ -548,18 +537,17 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		static final ClassPathResourceSource INSTANCE = new ClassPathResourceSource();
 
 		private static final Splitter CLASSPATH_SPLITTER = Splitter.on(':');
-		private static final String ENTRY_URL_PREFIX = "file://";
 
 		@Override
-		protected void generateUrls(Consumer<URL> urlAction) {
+		protected void generatePaths(Consumer<Path> pathAction) {
 			String classPathString = System.getProperty("java.class.path");
 			Iterable<String> classPathEntries = CLASSPATH_SPLITTER.split(classPathString);
 			for (String entry : classPathEntries) {
 				if (entry.endsWith("*")) {
 					throw new AssertionError("Wild-carded classpath is unsupported");
 				}
-				URL url = safeToUrl(ENTRY_URL_PREFIX + entry);
-				urlAction.accept(url);
+				Path path = Paths.get(entry);
+				pathAction.accept(path);
 			}
 		}
 	}
@@ -576,14 +564,20 @@ public final class ClassQuery<C> extends AbstractQuery<Class<? extends C>, Class
 		}
 
 		@Override
-		protected void generateUrls(Consumer<URL> urlAction) {
+		protected void generatePaths(Consumer<Path> pathAction) {
 			@Nullable ClassLoader currentClassLoader = classLoader;
 			while (currentClassLoader != null) {
 				if (currentClassLoader instanceof URLClassLoader) {
 					URLClassLoader urlClassLoader = (URLClassLoader) currentClassLoader;
 					for (URL url : urlClassLoader.getURLs()) {
-						urlAction.accept(url);
-					}
+                        try {
+							Path path = Paths.get(url.toURI());
+							pathAction.accept(path);
+                        }
+						catch (URISyntaxException e) {
+                            throw new AssertionError(e);
+                        }
+                    }
 				}
 				currentClassLoader = currentClassLoader.getParent();
 			}
