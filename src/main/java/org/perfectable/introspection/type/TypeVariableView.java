@@ -183,22 +183,19 @@ public final class TypeVariableView<D extends GenericDeclaration> extends Abstra
 			return of(replaced);
 		}
 		Type[] originalBounds = type.getBounds();
-		Type[] updatedBounds = type.getBounds().clone();
 		boolean changed = false;
-		for (int i = 0; i < originalBounds.length; i++) {
-			Type candidate = originalBounds[i];
+		Builder<D> builder = builder(type.getName(), type.getGenericDeclaration());
+		for (Type candidate : originalBounds) {
 			Type replacement = substitutions.replacementFor(candidate);
 			if (!candidate.equals(replacement)) {
-				updatedBounds[i] = replacement;
+				builder.withUpperBound(replacement);
 				changed = true;
 			}
 		}
 		if (!changed) {
 			return this;
 		}
-		TypeVariable<D> updated =
-			new SyntheticTypeVariable<>(type.getName(), type.getGenericDeclaration(), updatedBounds);
-		return of(updated);
+		return builder.build();
 	}
 
 	@Override

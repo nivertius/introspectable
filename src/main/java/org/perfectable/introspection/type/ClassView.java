@@ -111,10 +111,10 @@ public final class ClassView<X> extends AbstractTypeView<Class<X>> {
 	 */
 	@Override
 	public ParameterizedTypeView asParameterized() {
-		Type[] typeArguments = type.getTypeParameters();
-		@Nullable Class<?> ownerType = type.getEnclosingClass();
-		SyntheticParameterizedType replaced = new SyntheticParameterizedType(type, ownerType, typeArguments);
-		return new ParameterizedTypeView(replaced);
+		return parameterizedBuilder()
+			.withOwner(type.getEnclosingClass())
+			.withSubstitutions(type.getTypeParameters())
+			.build();
 	}
 
 	/**
@@ -175,8 +175,7 @@ public final class ClassView<X> extends AbstractTypeView<Class<X>> {
 			throw new IllegalStateException("Type has no array component");
 		}
 		@NonNull Class<?> checkedComponentType = componentType;
-		SyntheticGenericArrayType arrayType = new SyntheticGenericArrayType(checkedComponentType);
-		return new ArrayTypeView(arrayType);
+		return of(checkedComponentType).buildArray();
 	}
 
 	@SuppressWarnings("type.argument.type.incompatible")

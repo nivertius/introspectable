@@ -286,17 +286,15 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 
 	@Override
 	ParameterizedTypeView replaceVariables(VariableReplacer replacer) {
+		Builder builder = of((Class<?>) type.getRawType()).parameterizedBuilder()
+			.withOwner(type.getOwnerType());
 		Type[] actualArguments = type.getActualTypeArguments();
-		Type[] updatedArguments = new Type[actualArguments.length];
-		System.arraycopy(actualArguments, 0, updatedArguments, 0, actualArguments.length);
 		for (int i = 0; i < actualArguments.length; i++) {
 			Type candidate = actualArguments[i];
 			Type replacement = replacer.replacementFor(candidate);
-			updatedArguments[i] = replacement;
+			builder.withSubstitution(i, replacement);
 		}
-		ParameterizedType updated =
-			new SyntheticParameterizedType((Class<?>) type.getRawType(), type.getOwnerType(), updatedArguments);
-		return of(updated);
+		return builder.build();
 	}
 
 	@Override
@@ -383,7 +381,7 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 		 * @return this, for chaining
 		 */
 		@CanIgnoreReturnValue
-		public Builder withOwner(Type newOwnerType) {
+		public Builder withOwner(@Nullable Type newOwnerType) {
 			ownerType = newOwnerType;
 			return this;
 		}
@@ -465,6 +463,15 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 			return withSubstitution(parameterNumber, substitute.unwrap());
 		}
 
+		Builder withSubstitutions(Type[] newTypeArguments) {
+			checkArgument(newTypeArguments.length == typeArguments.length,
+				"Provided type argument count must be exactly equal to parameter count");
+			for (int i = 0; i < typeArguments.length; i++) {
+				withSubstitution(i, newTypeArguments[i]);
+			}
+			return this;
+		}
+
 		/**
 		 * Builds configured parameterized type.
 		 *
@@ -474,5 +481,6 @@ public final class ParameterizedTypeView extends AbstractTypeView<ParameterizedT
 			ParameterizedType parameterizedType = new SyntheticParameterizedType(baseType, ownerType, typeArguments);
 			return new ParameterizedTypeView(parameterizedType);
 		}
+
 	}
 }
