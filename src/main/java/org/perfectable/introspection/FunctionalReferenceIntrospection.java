@@ -9,22 +9,39 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandleInfo;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import groovy.lang.Closure;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.codehaus.groovy.runtime.ConvertedClosure;
+import org.codehaus.groovy.runtime.MethodClosure;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static org.perfectable.introspection.Introspections.introspect;
 
 abstract class FunctionalReferenceIntrospection implements FunctionalReference.Introspection {
+	private static final boolean GROOVY_PRESENT = classExists("org.codehaus.groovy.runtime.ConvertedClosure");
+
 	static FunctionalReferenceIntrospection of(FunctionalReference marker) {
 		Class<? extends FunctionalReference> markerClass = marker.getClass();
+		if (GROOVY_PRESENT && marker instanceof Proxy) {
+			InvocationHandler invocationHandler = Proxy.getInvocationHandler(marker);
+			if (invocationHandler instanceof ConvertedClosure) {
+				ConvertedClosure handler = (ConvertedClosure) invocationHandler;
+				Closure<?> delegate = (Closure<?>) handler.getDelegate();
+				return ofGroovyClosure(delegate);
+			}
+		}
 		Optional<Method> writeReplaceOption = MethodQuery.of(markerClass)
 			.named("writeReplace")
 			.returning(Object.class)
@@ -39,6 +56,20 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 			throw new IllegalArgumentException("Unsupported functional interface implementation " + marker);
 		}
 	}
+
+	private static FunctionalReferenceIntrospection ofGroovyClosure(Closure<?> handlerDelegate) {
+        if (!(handlerDelegate instanceof MethodClosure)) {
+            throw new IllegalArgumentException("Unsupported groovy closure " + handlerDelegate);
+        }
+		MethodClosure methodClosure = (MethodClosure) handlerDelegate;
+		if (!(methodClosure.getDelegate() instanceof Class<?>)) {
+			return OfBoundMethod.fromMethodClosure(methodClosure);
+		}
+		if (Boolean.TRUE.equals(handlerDelegate.getProperty(MethodClosure.ANY_INSTANCE_METHOD_EXISTS))) {
+			return OfInstanceMethod.fromMethodClosure(methodClosure);
+		}
+		return OfStaticMethod.fromMethodClosure(methodClosure);
+    }
 
 	private static FunctionalReferenceIntrospection ofNativeImplementation(
 			FunctionalReference marker, Method writeReplace, ClassLoaderIntrospection classLoader) {
@@ -173,6 +204,19 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 			return new OfInstanceMethod(implementationMethod, implementationClass, capturingType);
 		}
 
+		static OfInstanceMethod fromMethodClosure(MethodClosure closure) {
+			Class<?> implementationClass = (Class<?>) closure.getDelegate();
+			Class<?> capturingType = (Class<?>) closure.getOwner();
+            Method implementationMethod = MethodQuery.of(implementationClass)
+					.named(closure.getMethod())
+					.parameters(ParametersFilter.typesExact(stripFirstArgument(closure.getParameterTypes())))
+					.excludingModifier(Modifier.STATIC)
+					.notOverridden()
+					.asAccessible()
+					.unique();
+			return new OfInstanceMethod(implementationMethod, implementationClass, capturingType);
+		}
+
 		OfInstanceMethod(Method implementationMethod, Class<?> implementationClass, Class<?> capturingType) {
 			super(implementationMethod, implementationClass, capturingType);
 		}
@@ -223,6 +267,20 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 			return new OfBoundMethod(boundInstance, implementationMethod, implementationClass, capturingType);
 		}
 
+		static OfBoundMethod fromMethodClosure(MethodClosure closure) {
+			Object boundInstance = closure.getDelegate();
+			Class<?> implementationClass = boundInstance.getClass();
+			Object owner = closure.getOwner();
+			Class<?> capturingType = owner instanceof Class<?> ? (Class<?>) owner : owner.getClass();
+            Method implementationMethod = MethodQuery.of(implementationClass)
+					.named(closure.getMethod())
+					.parameters(ParametersFilter.typesExact(closure.getParameterTypes()))
+					.notOverridden()
+					.asAccessible()
+					.unique();
+			return new OfBoundMethod(boundInstance, implementationMethod, implementationClass, capturingType);
+		}
+
 		OfBoundMethod(Object boundInstance, Method implementationMethod, Class<?> implementationClass,
 							 Class<?> capturingType) {
 			super(implementationMethod, implementationClass, capturingType);
@@ -236,11 +294,24 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 	}
 
 	private static final class OfStaticMethod extends OfMethod {
-		static FunctionalReferenceIntrospection fromSerializedLambda(
+		static OfStaticMethod fromSerializedLambda(
 			SerializedLambda serializedForm, ClassLoaderIntrospection classLoader) {
 			Class<?> implementationClass = findImplementationClass(serializedForm, classLoader);
 			Class<?> capturingType = findCapturingType(serializedForm, classLoader);
 			Method implementationMethod = findImplementationMethod(serializedForm, classLoader, implementationClass);
+			return new OfStaticMethod(implementationMethod, implementationClass, capturingType);
+		}
+
+		static OfStaticMethod fromMethodClosure(MethodClosure closure) {
+			Class<?> implementationClass = (Class<?>) closure.getDelegate();
+			Class<?> capturingType = (Class<?>) closure.getOwner();
+			String methodName = closure.getMethod();
+			Method implementationMethod = MethodQuery.of(implementationClass)
+					.named(methodName)
+					.parameters(ParametersFilter.typesExact(closure.getParameterTypes()))
+					.notOverridden()
+					.asAccessible()
+					.unique();
 			return new OfStaticMethod(implementationMethod, implementationClass, capturingType);
 		}
 
@@ -349,6 +420,20 @@ abstract class FunctionalReferenceIntrospection implements FunctionalReference.I
 			checkParameterNumber(index);
 			Annotation[] annotations = implementationConstructor.getParameterAnnotations()[index];
 			return ImmutableSet.copyOf(annotations);
+		}
+	}
+
+	private static Class<?>[] stripFirstArgument(Class<?>[] parameterTypes) {
+		return (@NonNull Class<?>[]) Arrays.copyOfRange(parameterTypes, 1, parameterTypes.length);
+	}
+
+	private static boolean classExists(String className) {
+		try {
+			Class.forName(className);
+			return true;
+		}
+		catch (ClassNotFoundException e) {
+			return false;
 		}
 	}
 }
