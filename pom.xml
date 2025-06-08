@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.perfectable</groupId>
 		<artifactId>perfectable</artifactId>
-		<version>29.0.0</version>
+		<version>30.0.0</version>
 	</parent>
 
 	<artifactId>introspectable</artifactId>
